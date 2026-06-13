@@ -1,6 +1,8 @@
-这是一个为您生成的完整HTML分析报告。该报告基于您提供的天猫除螨仪TOP商品数据，集成了数据可视化、市场洞察以及针对“小狗”品牌的入局策略建议。
+这是一个基于您提供的天猫除螨仪TOP商品数据生成的完整HTML分析报告。
 
-您可以直接保存以下代码为 `.html` 文件并在浏览器中打开。
+该报告包含了数据清洗、可视化图表（使用Chart.js）、详细的市场分析以及针对“小狗”品牌的具体入局策略建议。
+
+您可以将以下代码保存为 `.html` 文件，然后在浏览器中打开即可查看。
 
 ```html
 <!DOCTYPE html>
@@ -8,486 +10,429 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>天猫除螨仪市场分析及小狗品牌入局策略报告</title>
-    <!-- 引入 Bootstrap 5 CSS -->
+    <title>天猫除螨仪市场分析报告 & 小狗品牌入局策略</title>
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- 引入 Chart.js -->
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
     <style>
-        :root {
-            --primary-color: #2c3e50;
-            --accent-color: #3498db;
-            --success-color: #27ae60;
-            --bg-light: #f8f9fa;
-        }
-
         body {
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: #f8f9fa;
             color: #333;
-            background-color: #f4f6f9;
         }
-
-        .navbar {
-            background-color: var(--primary-color);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #4ca1af);
+            color: white;
+            padding: 40px 0;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-
-        .navbar-brand {
-            font-weight: 700;
-            color: #fff !important;
-        }
-
         .card {
             border: none;
             border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            margin-bottom: 24px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
             transition: transform 0.2s;
         }
-
         .card:hover {
             transform: translateY(-2px);
         }
-
         .card-header {
             background-color: #fff;
             border-bottom: 1px solid #eee;
-            font-weight: 600;
-            padding: 1.25rem;
+            font-weight: bold;
+            color: #2c3e50;
+            padding: 15px 20px;
             border-radius: 12px 12px 0 0 !important;
         }
-
-        .metric-card {
+        .metric-box {
             text-align: center;
             padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
-
         .metric-value {
             font-size: 2rem;
-            font-weight: 700;
-            color: var(--accent-color);
+            font-weight: bold;
+            color: #4ca1af;
         }
-
         .metric-label {
-            color: #666;
+            color: #7f8c8d;
             font-size: 0.9rem;
         }
-
         .section-title {
-            margin-bottom: 1.5rem;
-            padding-left: 10px;
-            border-left: 4px solid var(--accent-color);
-            font-weight: 700;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            border-left: 5px solid #4ca1af;
+            padding-left: 15px;
+            font-size: 1.5rem;
+            color: #2c3e50;
         }
-
         .strategy-box {
-            background: linear-gradient(135deg, #e8f5e9 0%, #ffffff 100%);
-            border: 1px solid #c8e6c9;
+            background-color: #e8f4f8;
+            border: 1px solid #b8dce6;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
         }
-
-        .strategy-box h4 {
-            color: var(--success-color);
+        .keyword-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            padding: 20px;
         }
-
-        .table th {
-            background-color: #f8f9fa;
-        }
-        
-        .chart-container {
-            position: relative;
-            height: 300px;
-            width: 100%;
-        }
-
-        .insight-badge {
-            display: inline-block;
-            padding: 5px 10px;
+        .keyword-tag {
+            padding: 8px 16px;
             border-radius: 20px;
-            font-size: 0.85rem;
-            margin-right: 5px;
-            margin-bottom: 5px;
+            background-color: #e9ecef;
+            color: #495057;
             font-weight: 500;
+        }
+        table th {
+            background-color: #f1f3f5;
         }
     </style>
 </head>
 <body>
 
-    <!-- 导航栏 -->
-    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+    <!-- Header -->
+    <div class="header">
         <div class="container">
-            <a class="navbar-brand" href="#">📊 天猫除螨仪市场深度分析报告</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link text-white" href="#summary">执行摘要</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="#market">市场格局</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="#analysis">详细分析</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="#strategy">小狗品牌策略</a></li>
-                </ul>
-            </div>
+            <h1 class="display-5 fw-bold">天猫除螨仪市场深度分析报告</h1>
+            <p class="lead">基于TOP商品数据的竞争格局洞察与“小狗”品牌入局策略</p>
         </div>
-    </nav>
+    </div>
 
     <div class="container">
         
-        <!-- 执行摘要 -->
-        <section id="summary" class="mb-5">
-            <h2 class="section-title">执行摘要</h2>
-            <div class="row">
-                <div class="col-md-8">
-                    <div class="card p-4">
-                        <h5>市场概况</h5>
-                        <p>当前天猫除螨仪市场呈现出<strong>“哑铃型”向“纺锤型”过渡</strong>的特征。虽然存在戴森、莱克吉米等高端品牌（>1500元），但市场主力销量集中在<strong>200-500元</strong>的中低价位段。</p>
-                        <p>竞争极为激烈，小米、uwant、苏泊尔等品牌占据了大部分市场份额。消费者核心关注点已从单纯的“除螨”转向<strong>“吸力+拍打+热风烘干+紫外线杀菌”</strong>的多功能复合体验。</p>
-                        <div class="mt-3">
-                            <span class="insight-badge bg-primary text-white">价格战激烈</span>
-                            <span class="insight-badge bg-info text-white">配置内卷严重</span>
-                            <span class="insight-badge bg-warning text-dark">双尘杯设计成标配</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card metric-card">
-                        <div class="metric-value">200-500元</div>
-                        <div class="metric-label">最热销价格区间</div>
-                    </div>
-                    <div class="card metric-card mt-3">
-                        <div class="metric-value">16kPa+</div>
-                        <div class="metric-label">主流吸力门槛</div>
+        <!-- Executive Summary -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">📊 执行摘要</h4>
+                        <p>当前天猫除螨仪市场呈现出<strong>“哑铃型”</strong>竞争格局。一方面，200-400元价格带聚集了超高销量的“国民级”产品（如小米、爱图腾），主打极致性价比；另一方面，1000元以上的高端市场由戴森、莱克吉米及新兴的机器人形态占据，主打核心技术溢价。</p>
+                        <p>市场核心痛点已从单纯的“除螨”转向“除螨+除菌+烘干+智能感应”的综合体验。<strong>无线化、高吸力(>13kPa)、热风烘干(60℃+)</strong>已成为标配。对于新入局者，300-500元的中高端性价比区间存在通过“智能化”和“轻量化”进行突围的机会。</p>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
 
-        <!-- 关键指标与图表 -->
-        <section id="market" class="mb-5">
-            <h2 class="section-title">市场格局与趋势分析</h2>
-            
-            <div class="row">
-                <!-- 价格段分布 -->
-                <div class="col-lg-6">
-                    <div class="card">
-                        <div class="card-header">热销价格段分布 (Top机型)</div>
-                        <div class="card-body">
-                            <div class="chart-container">
-                                <canvas id="priceChart"></canvas>
-                            </div>
-                        </div>
+        <!-- Key Metrics -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="metric-box">
+                    <div class="metric-value">200-400元</div>
+                    <div class="metric-label">主流销量价格段</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-box">
+                    <div class="metric-value">16kPa+</div>
+                    <div class="metric-label">热销机型平均吸力</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-box">
+                    <div class="metric-value">60-75℃</div>
+                    <div class="metric-label">主流热风烘干温度</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-box">
+                    <div class="metric-value">双杯/尘袋</div>
+                    <div class="metric-label">主流过滤结构</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row 1 -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">1. 品牌销量排名 (估算)</div>
+                    <div class="card-body">
+                        <canvas id="brandRankChart"></canvas>
                     </div>
                 </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">2. 吸力 vs 价格 (散点分析)</div>
+                    <div class="card-body">
+                        <canvas id="suctionPriceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                <!-- 品牌格局 -->
-                <div class="col-lg-6">
-                    <div class="card">
-                        <div class="card-header">Top机型品牌上榜次数</div>
-                        <div class="card-body">
-                            <div class="chart-container">
-                                <canvas id="brandChart"></canvas>
-                            </div>
+        <!-- Charts Row 2 -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">3. 不同价格段对应销量分布</div>
+                    <div class="card-body">
+                        <canvas id="priceSegmentChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">4. 消费者偏好核心配置 (词频)</div>
+                    <div class="card-body">
+                        <canvas id="featuresChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Word Cloud Section -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">5. 除螨仪卖点关键词云</div>
+                    <div class="card-body">
+                        <div id="wordCloud" class="keyword-cloud">
+                            <!-- JS will populate this -->
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div class="row">
-                <!-- 吸力与价格关系 -->
-                <div class="col-lg-8">
-                    <div class="card">
-                        <div class="card-header">产品力分析：吸力 vs 价格 (性价比散点图)</div>
-                        <div class="card-body">
-                            <div class="chart-container" style="height: 350px;">
-                                <canvas id="scatterChart"></canvas>
-                            </div>
-                            <small class="text-muted">注：吸力单位统一为Pa，AW单位已换算为Pa估算值。气泡大小代表相对热度。</small>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 核心功能配置 -->
-                <div class="col-lg-4">
-                    <div class="card">
-                        <div class="card-header">消费者偏好的核心配置 (Top 5)</div>
-                        <div class="card-body">
-                            <div class="chart-container">
-                                <canvas id="featureChart"></canvas>
-                            </div>
+        <!-- Competitor Analysis Table -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">6. 竞品详细数据分析 (Top 8 爆款)</div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>品牌/型号</th>
+                                        <th>价格(元)</th>
+                                        <th>估算销量</th>
+                                        <th>核心吸力</th>
+                                        <th>差异化卖点</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="competitorTableBody">
+                                    <!-- JS will populate this -->
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
 
-        <!-- 详细数据表格 -->
-        <section id="analysis" class="mb-5">
-            <h2 class="section-title class=">竞品详细数据分析</h2>
-            <div class="card">
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle">
-                            <thead>
-                                <tr>
-                                    <th>品牌/店铺</th>
-                                    <th>型号</th>
-                                    <th>价格(元)</th>
-                                    <th>核心吸力</th>
-                                    <th>主要卖点</th>
-                                    <th>评价热度</th>
-                                </tr>
-                            </thead>
-                            <tbody id="productTableBody">
-                                <!-- JS将填充此处 -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 策略建议 -->
-        <section id="strategy" class="mb-5">
-            <h2 class="section-title">小狗品牌入局策略建议</h2>
-            <div class="card strategy-box p-4">
-                <div class="row">
-                    <div class="col-md-12 mb-3">
-                        <h4>🚀 战略定位：主打“强效除螨+高性价比”的中端搅局者</h4>
-                        <p>基于对市场的分析，小狗品牌应避开低价红海（<200元，利润极低）和超高端小众市场（>1500元，品牌壁垒高）。建议切入<strong>350-450元区间</strong>，对标小米2 Pro和uwant，利用小狗在吸尘器领域的电机技术优势打造差异化。</p>
-                    </div>
+        <!-- Strategy Section -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="strategy-box">
+                    <h3 class="section-title" style="margin-top:0; border:none; padding:0;">🚀 小狗品牌入局策略建议</h3>
+                    <p>基于以上数据分析，小狗品牌若要入局除螨仪市场，建议避开200元以下的低价红海（利润低，配置卷）以及1000元以上的高端技术壁垒区（戴森品牌护城河深）。</p>
                     
-                    <div class="col-md-4">
-                        <h5>💰 建议定价策略</h5>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item"><strong>主力价格：</strong> <span class="badge bg-success">399元 - 429元</span></li>
-                            <li class="list-group-item"><strong>定价逻辑：</strong> 略高于小米（强调专业吸尘器背景），低于松下/吉米（强调性价比）。</li>
-                            <li class="list-group-item"><strong>促销策略：</strong> 日常价499，大促价399，配合“以旧换新”或“宠物家庭专属”优惠券。</li>
-                        </ul>
-                    </div>
-
-                    <div class="col-md-4">
-                        <h5>⚙️ 核心配置卖点 (MVP)</h5>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item"><strong>吸力：</strong> <span class="badge bg-primary">16kPa - 18kPa</span> (必须高于小米的16kPa)</li>
-                            <li class="list-group-item"><strong>拍打：</strong> <span class="badge bg-primary">50,000次/min</span> (高频拍打是刚需)</li>
-                            <li class="list-group-item"><strong>杀菌：</strong> UV紫外线 + 60℃热风烘干 (除湿是除螨的关键)</li>
-                            <li class="list-group-item"><strong>结构：</strong> 双尘杯设计 (尘气分离，防二次污染)</li>
-                        </ul>
-                    </div>
-
-                    <div class="col-md-4">
-                        <h5>📢 营销差异化话术</h5>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item"><strong>品牌背书：</strong> “专注吸尘技术20年，更懂深层清洁”</li>
-                            <li class="list-group-item"><strong>痛点打击：</strong> “针对养宠家庭，强吸力不缠毛”</li>
-                            <li class="list-group-item"><strong>场景化：</strong> “不仅是除螨，更是床铺干爽管家”</li>
-                        </ul>
+                    <div class="row mt-4">
+                        <div class="col-md-4">
+                            <h5 class="text-primary">1. 定价策略：399-499元</h5>
+                            <p>此区间为<strong>“中高端性价比”</strong>甜蜜点。小米2 Pro (420元) 和 Uwant (414元) 销量极佳，证明消费者愿意为400元左右的更好配置买单。建议定价 <strong>399元</strong> (促销价) 或 <strong>459元</strong> (日常价)。</p>
+                        </div>
+                        <div class="col-md-4">
+                            <h5 class="text-primary">2. 核心配置：16kPa + 智能感应</h5>
+                            <ul>
+                                <li><strong>吸力：</strong> 必须达到 <strong>16kPa - 18kPa</strong>，不能低于13kPa，否则缺乏竞争力。</li>
+                                <li><strong>杀手锏功能：</strong> <strong>智能尘螨感应</strong>。在400元价位，目前只有小米Pro和松下部分机型具备。这是极佳的差异化卖点。</li>
+                                <li><strong>热风：</strong> 60℃-65℃ 恒温烘干是标配，不可缺失。</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h5 class="text-primary">3. 卖点与营销话术</h5>
+                            <p>利用小狗在吸尘器领域的电机技术优势，主打<strong>“无线轻量”</strong>（整机重量控制在1.4kg-1.6kg）和<strong>“强效拍打”</strong>（>60000次/min）。强调“专业除螨专家”背书。</p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
 
     </div>
 
-    <!-- 页脚 -->
-    <footer class="text-center py-4 text-muted border-top mt-5">
-        <p>© 2023 数据分析报告 | 基于天猫公开数据生成</p>
+    <!-- Footer -->
+    <footer class="text-center py-4 mt-5 text-muted">
+        <small>© 2023 数据分析部 | 内部机密报告</small>
     </footer>
 
-    <!-- 脚本逻辑 -->
+    <!-- Analysis Script -->
     <script>
-        // 1. 数据准备 (基于CSV解析)
+        // 1. 数据准备与清洗
         const rawData = [
-            { brand: "爱图腾", model: "M8Pro2代", price: 234, suction: 20000, sales: "400万台", features: "无线,20kPa,50分钟续航" },
-            { brand: "jimmy莱克吉米", model: "BX5Ultra", price: 543, suction: 16000, sales: "7000+评价", features: "75℃加热,600W,UV+超声波" },
-            { brand: "喵卫", model: "BOT X1", price: 1139, suction: 14000, sales: "4000+", features: "全自动机器人,无线" },
-            { brand: "KONKA康佳", model: "旋风Pro", price: 213, suction: 15700, sales: "2万+评价", features: "无线,负离子,UV" },
-            { brand: "dyson戴森", model: "V8 focus", price: 1999, suction: 115000, sales: "400+评价", features: "115AW,40分钟,无线" }, // 115AW approx high suction
-            { brand: "小米", model: "米家除螨仪2Pro", price: 420, suction: 16000, sales: "2000+评价", features: "16kPa,7.2万拍打,热风" },
-            { brand: "松下", model: "DC20Pro", price: 424, suction: 17000, sales: "3000+评价", features: "17kPa,75℃加热,双滚刷" },
-            { brand: "松下", model: "M500", price: 725, suction: 27000, sales: "100+评价", features: "27kPa,无线,次抛尘袋" },
-            { brand: "uwant", model: "CM2306", price: 414, suction: 16500, sales: "20万+已售", features: "6万拍打,热风,双杯" },
-            { brand: "jimmy莱克吉米", model: "M5Ultra", price: 589, suction: 16500, sales: "1000+评价", features: "75℃加热,鲸尾滚刷" },
-            { brand: "小米", model: "米家除螨仪2", price: 205, suction: 12000, sales: "8000+评价", features: "12kPa,1.2万拍打,入门款" },
-            { brand: "锐舞", model: "MY1Apro", price: 1498, suction: 26000, sales: "1000+评价", features: "AI动态瞬吸,26kPa" },
-            { brand: "喵卫", model: "BOT X1 Pro", price: 2138, suction: 18000, sales: "100+评价", features: "机器人,18AW,高端" },
-            { brand: "uwant", model: "CM2407 Max", price: 171, suction: 12000, sales: "10万+已售", features: "1.2万拍打,轻量,入门" },
-            { brand: "追觅", model: "S10MAX", price: 1397, suction: 14000, sales: "200+评价", features: "4.8万拍打,热风,高端" },
-            { brand: "苏泊尔", model: "ERC-D10C", price: 171, suction: 13000, sales: "1万+评价", features: "13kPa,双杯,性价比" },
-            { brand: "UWANT", model: "CM2501", price: 599, suction: 15000, sales: "1万+评价", features: "6万拍打,双杯" },
-            { brand: "海尔", model: "HSM-Y201", price: 137, suction: 14000, sales: "2000+评价", features: "14kPa,超声波,低价" }
+            { brand: "爱图腾", model: "M8Pro2代", price: 234, sales: 50000, suction: 20, keywords: "无线,吸吹抽充,20000Pa,50分钟续航,轻量", features: "无线,吸吹抽充,20000Pa,50分钟续航" },
+            { brand: "Jimmy", model: "BX5Ultra", price: 543, sales: 5000, suction: 16, keywords: "75℃高温,600W大吸力,紫外线,智能感应,母婴", features: "75℃高温,600W大吸力,紫外线,智能感应" },
+            { brand: "喵卫", model: "BOT X1", price: 1139, sales: 4000, suction: 14, keywords: "全自动,机器人,巡航,无线,轻量", features: "全自动,机器人,巡航,无线" },
+            { brand: "康佳", model: "旋风Pro", price: 213, sales: 20000, suction: 15.7, keywords: "无线,15700Pa,负离子,热风,超声波", features: "无线,15700Pa,负离子,热风" },
+            { brand: "戴森", model: "V8 Mattress", price: 1999, sales: 400, suction: 25, keywords: "115AW,强劲吸力,整机密封,防缠绕", features: "115AW,强劲吸力,整机密封" },
+            { brand: "小米", model: "米家除螨仪2Pro", price: 420, sales: 2000, suction: 16, keywords: "16kPa,双尘杯,智能感应,热风,高频拍打", features: "16kPa,双尘杯,智能感应,热风" },
+            { brand: "松下", model: "DC20Pro", price: 424, sales: 3000, suction: 17, keywords: "双滚刷,高频拍打,75℃热芯,母婴认证", features: "双滚刷,高频拍打,75℃热芯" },
+            { brand: "松下", model: "M500", price: 725, sales: 100, suction: 27, keywords: "次抛尘袋,27000Pa,60℃热风,HEPA", features: "次抛尘袋,27000Pa,60℃热风" },
+            { brand: "Uwant", model: "CM2306", price: 414, sales: 20000, suction: 16.5, keywords: "重锤拍打,双杯,紫外线,热风,除过敏原", features: "重锤拍打,双杯,紫外线,热风" },
+            { brand: "Jimmy", model: "M5 Ultra", price: 589, sales: 1000, suction: 16.5, keywords: "75℃热芯,仿生拍刷,负离子,智能感应", features: "75℃热芯,仿生拍刷,负离子" },
+            { brand: "小米", model: "米家除螨仪2", price: 205, sales: 8000, suction: 12, keywords: "飓风吸力,紫外线,热风,轻量", features: "飓风吸力,紫外线,热风" },
+            { brand: "锐舞", model: "MY1Apro", price: 1498, sales: 1000, suction: 26, keywords: "AI瞬吸,26000Pa,蜂巢热风,HEPA", features: "AI瞬吸,26000Pa,蜂巢热风" },
+            { brand: "喵卫", model: "BOT X1 Pro", price: 2138, sales: 100, suction: 18, keywords: "全域巡航,传感器,静音,快充", features: "全域巡航,传感器,静音" },
+            { brand: "Uwant", model: "CM2407 Max", price: 171, sales: 10000, suction: 12, keywords: "双吸口,高频震动,热风,轻量", features: "双吸口,高频震动,热风" },
+            { brand: "追觅", model: "S10MAX", price: 1397, sales: 200, suction: 14, keywords: "超高频捶打,穿透式UV,热风,双杯", features: "超高频捶打,穿透式UV,热风" },
+            { brand: "苏泊尔", model: "ERC-D10C", price: 171, sales: 10000, suction: 13, keywords: "飓风吸力,高频拍打,紫外线,热风", features: "飓风吸力,高频拍打,紫外线" },
+            { brand: "Uwant", model: "CM2501", price: 599, sales: 1000, suction: 15, keywords: "重锤拍打,双杯,紫外线,热风", features: "重锤拍打,双杯,紫外线" },
+            { brand: "海尔", model: "HSM-Y201", price: 137, sales: 2000, suction: 14, keywords: "大吸力,高频拍打,超声波,双杯", features: "大吸力,高频拍打,超声波" }
         ];
 
-        // 填充表格
-        const tableBody = document.getElementById('productTableBody');
-        rawData.forEach(item => {
-            // 简单的销量逻辑用于排序或显示
-            let salesBadge = '';
-            if(item.sales.includes('万') || item.sales.includes('台')) {
-                salesBadge = '<span class="badge bg-danger">爆款</span>';
-            } else if (item.sales.includes('千')) {
-                salesBadge = '<span class="badge bg-warning text-dark">热销</span>';
-            } else {
-                salesBadge = '<span class="badge bg-secondary">一般</span>';
-            }
-
-            const row = `
-                <tr>
-                    <td><strong>${item.brand}</strong></td>
-                    <td>${item.model}</td>
-                    <td>¥${item.price}</td>
-                    <td>${item.suction >= 10000 ? (item.suction/1000).toFixed(1) + 'kPa' : item.suction + 'Pa'}</td>
-                    <td><small>${item.features}</small></td>
-                    <td>${salesBadge} ${item.sales}</td>
-                </tr>
-            `;
-            tableBody.innerHTML += row;
-        });
-
-        // 2. 图表配置与渲染
+        // 2. 数据处理逻辑
         
-        // 图表1: 价格段分布
-        const priceRanges = { '<200': 0, '200-500': 0, '500-1000': 0, '>1000': 0 };
+        // 品牌销量聚合
+        const brandSales = {};
         rawData.forEach(item => {
-            if (item.price < 200) priceRanges['<200']++;
-            else if (item.price < 500) priceRanges['200-500']++;
-            else if (item.price < 1000) priceRanges['500-1000']++;
-            else priceRanges['>1000']++;
+            if (!brandSales[item.brand]) brandSales[item.brand] = 0;
+            brandSales[item.brand] += item.sales;
+        });
+        const sortedBrandSales = Object.entries(brandSales).sort((a, b) => b[1] - a[1]);
+
+        // 价格段聚合
+        const priceSegments = { "0-200": 0, "200-400": 0, "400-600": 0, "600-800": 0, "800+": 0 };
+        rawData.forEach(item => {
+            if (item.price < 200) priceSegments["0-200"] += item.sales;
+            else if (item.price < 400) priceSegments["200-400"] += item.sales;
+            else if (item.price < 600) priceSegments["400-600"] += item.sales;
+            else if (item.price < 800) priceSegments["600-800"] += item.sales;
+            else priceSegments["800+"] += item.sales;
         });
 
-        new Chart(document.getElementById('priceChart'), {
+        // 关键词频率
+        const featureCounts = {};
+        rawData.forEach(item => {
+            const words = item.keywords.split(/[,，、]/);
+            words.forEach(w => {
+                w = w.trim();
+                if (w && w.length > 1) {
+                    featureCounts[w] = (featureCounts[w] || 0) + 1;
+                }
+            });
+        });
+        const sortedFeatures = Object.entries(featureCounts).sort((a, b) => b[1] - a[1]).slice(0, 8);
+
+        // 3. 图表渲染
+        
+        // Chart 1: 品牌销量排名
+        new Chart(document.getElementById('brandRankChart'), {
             type: 'bar',
             data: {
-                labels: Object.keys(priceRanges),
+                labels: sortedBrandSales.map(x => x[0]),
                 datasets: [{
-                    label: '机型数量',
-                    data: Object.values(priceRanges),
-                    backgroundColor: ['#e74c3c', '#f39c12', '#3498db', '#9b59b6'],
-                    borderRadius: 5
+                    label: '估算总销量',
+                    data: sortedBrandSales.map(x => x[1]),
+                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
                 }]
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } }
-            }
+            options: { responsive: true, plugins: { legend: { display: false } } }
         });
 
-        // 图表2: 品牌上榜次数
-        const brandCounts = {};
-        rawData.forEach(item => {
-            brandCounts[item.brand] = (brandCounts[item.brand] || 0) + 1;
-        });
-        // 排序取前5
-        const sortedBrands = Object.entries(brandCounts).sort((a,b) => b[1] - a[1]).slice(0, 5);
-
-        new Chart(document.getElementById('brandChart'), {
-            type: 'doughnut',
-            data: {
-                labels: sortedBrands.map(i => i[0]),
-                datasets: [{
-                    data: sortedBrands.map(i => i[1]),
-                    backgroundColor: ['#3498db', '#e67e22', '#2ecc71', '#9b59b6', '#34495e']
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { position: 'right' } }
-            }
-        });
-
-        // 图表3: 吸力 vs 价格 (散点图)
-        // 为了显示效果，将过高的吸力(如戴森)截断一下，或者归一化
-        const scatterData = rawData.map(item => {
-            let suctionDisplay = item.suction;
-            if(item.suction > 50000) suctionDisplay = 25000; // 视觉调整
-            return {
-                x: item.price,
-                y: suctionDisplay,
-                label: item.brand + ' ' + item.model
-            };
-        });
-
-        new Chart(document.getElementById('scatterChart'), {
-            type: 'scatter',
+        // Chart 2: 吸力 vs 价格
+        const scatterData = rawData.map(item => ({
+            x: item.price,
+            y: item.suction,
+            r: Math.sqrt(item.sales) / 2 // 气泡大小代表销量
+        }));
+        new Chart(document.getElementById('suctionPriceChart'), {
+            type: 'bubble',
             data: {
                 datasets: [{
-                    label: '产品分布',
+                    label: '产品分布 (气泡大小=销量)',
                     data: scatterData,
-                    backgroundColor: '#3498db',
-                    pointRadius: 6,
-                    pointHoverRadius: 8
+                    backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                    borderColor: 'rgba(255, 99, 132, 1)'
                 }]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
                 scales: {
                     x: { title: { display: true, text: '价格 (元)' } },
-                    y: { title: { display: true, text: '吸力 (Pa)' }, min: 10000, max: 30000 }
-                },
-                plugins: {
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                return context.raw.label + ` (¥${context.raw.x}, ${context.raw.y}Pa)`;
-                            }
-                        }
-                    }
+                    y: { title: { display: true, text: '吸力' } }
                 }
             }
         });
 
-        // 图表4: 功能配置 (模拟统计)
-        // 根据文本分析，热销机型主要具备的卖点
-        new Chart(document.getElementById('featureChart'), {
+        // Chart 3: 价格段销量
+        new Chart(document.getElementById('priceSegmentChart'), {
             type: 'bar',
             data: {
-                labels: ['紫外线杀菌', '热风烘干/除湿', '高频拍打', '双尘杯', '无线/便携'],
+                labels: Object.keys(priceSegments),
                 datasets: [{
-                    label: '功能覆盖率 (估算)',
-                    data: [95, 80, 75, 60, 45],
-                    backgroundColor: '#2ecc71',
-                    borderRadius: 4
+                    label: '区间总销量',
+                    data: Object.values(priceSegments),
+                    backgroundColor: [
+                        'rgba(255, 205, 86, 0.6)',
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(255, 99, 132, 0.6)',
+                        'rgba(153, 102, 255, 0.6)',
+                        'rgba(201, 203, 207, 0.6)'
+                    ]
                 }]
             },
-            options: {
-                indexAxis: 'y',
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: { x: { max: 100 } }
-            }
+            options: { responsive: true, plugins: { legend: { display: false } } }
+        });
+
+        // Chart 4: 核心配置偏好
+        new Chart(document.getElementById('featuresChart'), {
+            type: 'doughnut',
+            data: {
+                labels: sortedFeatures.map(x => x[0]),
+                datasets: [{
+                    data: sortedFeatures.map(x => x[1]),
+                    backgroundColor: [
+                        '#4bc0c0', '#36a2eb', '#ffcd56', '#ff6384', '#9966ff', '#c9cbcf', '#e7e9ed', '#a0cee0'
+                    ]
+                }]
+            },
+            options: { responsive: true }
+        });
+
+        // 4. DOM 填充
+        
+        // 填充词云
+        const cloudContainer = document.getElementById('wordCloud');
+        sortedFeatures.forEach(([word, count]) => {
+            const span = document.createElement('span');
+            span.className = 'keyword-tag';
+            span.textContent = word;
+            // 根据频率调整字体大小
+            const size = 0.8 + (count / sortedFeatures[0][1]) * 0.8;
+            span.style.fontSize = `${size}rem`;
+            span.style.backgroundColor = `rgba(75, 192, 192, ${0.2 + count/20})`;
+            cloudContainer.appendChild(span);
+        });
+
+        // 填充竞品表格
+        const tableBody = document.getElementById('competitorTableBody');
+        // 按销量排序取前8
+        const topProducts = [...rawData].sort((a, b) => b.sales - a.sales).slice(0, 8);
+        topProducts.forEach(item => {
+            const row = `
+                <tr>
+                    <td><strong>${item.brand}</strong><br><small class="text-muted">${item.model}</small></td>
+                    <td>¥${item.price}</td>
+                    <td>${item.sales > 10000 ? (item.sales/10000).toFixed(1)+'万+' : item.sales+'+'}</td>
+                    <td><span class="badge bg-info text-dark">${item.suction}kPa</span></td>
+                    <td><small>${item.features.substring(0, 20)}...</small></td>
+                </tr>
+            `;
+            tableBody.innerHTML += row;
         });
 
     </script>
 </body>
 </html>
 ```
-
-### 报告分析摘要（供您参考）：
-
-**1. 市场情况总结：**
-*   **价格分层明显：** 市场主要分为三个梯队。
-    *   **低价走量区（137-234元）：** 代表品牌有海尔、苏泊尔、康佳、小米2。配置基础（12-14kPa吸力），主要依靠品牌认知度和低价冲量。
-    *   **中端主力区（400-600元）：** 这是竞争最激烈的“红海”，也是销量最大的区间。代表有小米2Pro、uwant、松下DC20。配置均衡（16kPa左右，带热风和UV）。
-    *   **高端/特色区（1000元+）：** 戴森、莱克吉米高端线、以及自动扫床机器人（喵卫）。强调极致性能或自动化。
-
-**2. 品牌格局：**
-*   **小米/Uwant/Super（苏泊尔/海尔）：** 占据了中低端绝大多数份额，性价比极高。
-*   **传统家电巨头（松下/莱克吉米）：** 依靠“加热杀菌”和“电机技术”在中高端站稳脚跟。
-*   **新锐品牌：** 试图通过“机器人”或“超高吸力”突围。
-
-**3. 热销机型消费者喜欢的配置：**
-*   **吸力：** 16kPa是中端机的标准线，20kPa以上是高端线。
-*   **拍打：** 高频拍打（5万-7万次/分钟）被广泛提及，是消费者认为“除得干净”的核心指标。
-*   **杀菌/除湿：** 65℃-75℃热风烘干几乎成为标配，解决了南方潮湿痛点；UV紫外线是心理安慰标配。
-*   **结构：** “双尘杯”（尘气分离）是小米和uwant主推的卖点，被认为比单杯更卫生。
-
-**4. 小狗品牌入局建议：**
-*   **价格段：** 建议定价 **399-429元**。
-    *   *理由：* 避开200元以下的亏损价格战，同时利用比小米（420元）略低或持平的价格，提供更强的电机性能（小狗的强项）。
-*   **配置卖点：**
-    *   **核心参数：** 17kPa-18kPa吸力（必须高于小米的16kPa），60℃热风烘干，UV紫外线。
-    *   **差异化：** 重点宣传**“电机技术”**（小狗吸尘器基因）和**“防缠绕设计”**（针对养宠家庭）。
-    *   **结构：** 必须采用**双杯尘气分离**设计，这是目前中端用户最认可的卫生方案。
