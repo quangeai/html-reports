@@ -1,0 +1,451 @@
+# 番茄炒蛋营养分析报告
+
+我将根据您提供的番茄炒蛋信息，创建一个结构清晰、视觉吸引力强的食物热量分析报告卡片。
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>番茄炒蛋营养分析报告</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .nutrition-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            max-width: 800px;
+            width: 100%;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        
+        .nutrition-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+            color: white;
+            padding: 25px 30px;
+            position: relative;
+        }
+        
+        .card-header::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 5%;
+            width: 90%;
+            height: 10px;
+            background: rgba(255, 107, 107, 0.2);
+            border-radius: 50%;
+        }
+        
+        .dish-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .dish-title::before {
+            content: "🍳";
+            margin-right: 15px;
+            font-size: 2.5rem;
+        }
+        
+        .dish-details {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+        
+        .card-section {
+            padding: 25px 30px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .card-section:last-of-type {
+            border-bottom: none;
+        }
+        
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #444;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title::before {
+            margin-right: 10px;
+            font-size: 1.5rem;
+        }
+        
+        .calories-title::before {
+            content: "🔍";
+        }
+        
+        .diet-title::before {
+            content: "📊";
+        }
+        
+        .intake-title::before {
+            content: "⚖️";
+        }
+        
+        .highlight-box {
+            background-color: #fff9f9;
+            border-left: 4px solid #ff6b6b;
+            padding: 18px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 20px;
+        }
+        
+        .total-calories {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #ff6b6b;
+            margin-bottom: 5px;
+        }
+        
+        .calories-detail {
+            font-size: 0.95rem;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .nutrient-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .nutrient-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 3px solid #4ecdc4;
+        }
+        
+        .nutrient-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #2d3436;
+        }
+        
+        .nutrient-value {
+            color: #ff6b6b;
+            font-weight: 600;
+        }
+        
+        .nutrient-percentage {
+            font-size: 0.9rem;
+            color: #636e72;
+        }
+        
+        .vitamin-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .vitamin-tag {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .suitability-badge {
+            display: inline-block;
+            background-color: #4caf50;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        .logic-list {
+            list-style-type: none;
+        }
+        
+        .logic-list li {
+            padding: 10px 0 10px 30px;
+            position: relative;
+        }
+        
+        .logic-list li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #4caf50;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .intake-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .intake-table th {
+            background-color: #ff6b6b;
+            color: white;
+            text-align: left;
+            padding: 15px;
+            font-weight: 600;
+        }
+        
+        .intake-table td {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .intake-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .intake-table tr:hover {
+            background-color: #fff5f5;
+        }
+        
+        .adjustment-tips {
+            background-color: #fff8e1;
+            border-radius: 10px;
+            padding: 18px;
+            margin-top: 20px;
+            border-left: 4px solid #ffb300;
+        }
+        
+        .tip-title {
+            font-weight: 600;
+            color: #ff8f00;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .tip-title::before {
+            content: "⚠️";
+            margin-right: 8px;
+        }
+        
+        .tip-item {
+            margin-bottom: 10px;
+            padding-left: 5px;
+        }
+        
+        .footer-note {
+            font-size: 0.85rem;
+            color: #777;
+            text-align: center;
+            padding: 20px;
+            border-top: 1px dashed #eee;
+            margin-top: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .nutrition-card {
+                border-radius: 15px;
+            }
+            
+            .card-header, .card-section {
+                padding: 20px;
+            }
+            
+            .dish-title {
+                font-size: 1.8rem;
+            }
+            
+            .nutrient-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .intake-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .dish-title {
+                font-size: 1.5rem;
+            }
+            
+            .section-title {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="nutrition-card">
+        <div class="card-header">
+            <h1 class="dish-title">番茄炒蛋</h1>
+            <p class="dish-details">约300g（含鸡蛋120g、番茄150g、食用油8g）</p>
+        </div>
+        
+        <div class="card-section">
+            <h2 class="section-title calories-title">热量&营养分析</h2>
+            
+            <div class="highlight-box">
+                <div class="total-calories">总热量：约 275 千卡</div>
+                <div class="calories-detail">食材热量：鸡蛋143千卡/100g ×1.2 + 番茄20千卡/100g ×1.5 + 食用油9千卡/g ×8</div>
+            </div>
+            
+            <h3 style="margin: 15px 0 10px; color: #444;">营养成分占比</h3>
+            
+            <div class="nutrient-grid">
+                <div class="nutrient-item">
+                    <div class="nutrient-name">蛋白质</div>
+                    <div class="nutrient-value">约 17g</div>
+                    <div class="nutrient-percentage">占比 ≈ 25%</div>
+                    <div style="font-size: 0.85rem; color: #666; margin-top: 5px;">鸡蛋优质蛋白为主，番茄辅助</div>
+                </div>
+                
+                <div class="nutrient-item">
+                    <div class="nutrient-name">脂肪</div>
+                    <div class="nutrient-value">约 19g</div>
+                    <div class="nutrient-percentage">占比 ≈ 62%</div>
+                    <div style="font-size: 0.85rem; color: #666; margin-top: 5px;">鸡蛋天然脂肪 + 食用油</div>
+                </div>
+                
+                <div class="nutrient-item">
+                    <div class="nutrient-name">碳水化合物</div>
+                    <div class="nutrient-value">约 9g</div>
+                    <div class="nutrient-percentage">占比 ≈ 13%</div>
+                    <div style="font-size: 0.85rem; color: #666; margin-top: 5px;">番茄糖分 + 少量淀粉</div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <h4 style="margin-bottom: 10px; color: #444;">维生素与矿物质</h4>
+                <div class="vitamin-list">
+                    <span class="vitamin-tag">维生素C 🍅</span>
+                    <span class="vitamin-tag">维生素A 🥚</span>
+                    <span class="vitamin-tag">番茄红素（抗氧化）</span>
+                    <span class="vitamin-tag">钾 🍅</span>
+                    <span class="vitamin-tag">磷 🥚</span>
+                    <span class="vitamin-tag">铁 🥚</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card-section">
+            <h2 class="section-title diet-title">减肥适用性判断</h2>
+            
+            <div class="suitability-badge">✅ 适合减肥人群</div>
+            
+            <h3 style="margin: 20px 0 10px; color: #444;">核心逻辑：</h3>
+            <ul class="logic-list">
+                <li><strong>热量可控：</strong>每100g仅约90千卡（油用量≤10g时），搭配粗粮、蔬菜可轻松控制一餐热量。</li>
+                <li><strong>营养均衡：</strong>优质蛋白（鸡蛋）+ 低卡高纤维（番茄）+ 少量健康脂肪（油），满足"保肌减脂"需求（肌肉量影响基础代谢）。</li>
+                <li><strong>饱腹感强：</strong>蛋白质+膳食纤维延迟胃排空，减少后续暴食风险。</li>
+            </ul>
+        </div>
+        
+        <div class="card-section">
+            <h2 class="section-title intake-title">减肥期建议摄入量</h2>
+            <p style="margin-bottom: 15px; color: #666;">参考体重55-65kg、每日运动0-1小时人群</p>
+            
+            <table class="intake-table">
+                <thead>
+                    <tr>
+                        <th>搭配场景</th>
+                        <th>番茄炒蛋分量（带油）</th>
+                        <th>搭配建议（热量&营养）</th>
+                        <th>总热量（千卡）</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>早餐</td>
+                        <td>150-200g<br><span style="color: #ff6b6b; font-size: 0.9rem;">约135千卡</span></td>
+                        <td>100g燕麦粥（330千卡）<br>+ 100g黄瓜（16千卡）</td>
+                        <td><strong>480-490</strong></td>
+                    </tr>
+                    <tr>
+                        <td>午餐/晚餐</td>
+                        <td>200-300g<br><span style="color: #ff6b6b; font-size: 0.9rem;">约180-275千卡</span></td>
+                        <td>100g糙米饭（116千卡）<br>+ 200g生菜（40千卡）</td>
+                        <td><strong>336-431</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="adjustment-tips">
+                <div class="tip-title">调整技巧</div>
+                <div class="tip-item"><strong>减油：</strong>用 <strong>5g油</strong> 替代8g，可降低热量约45千卡（总热量≈230千卡/300g）。</div>
+                <div class="tip-item"><strong>增纤维：</strong>额外搭配200g西兰花（34千卡），提升饱腹感且不超热量。</div>
+            </div>
+        </div>
+        
+        <div class="footer-note">
+            注：实际热量需根据食材精准分量、油用量调整，建议结合自身基础代谢率（BMR）和运动消耗计算每日总需求后分配。
+        </div>
+    </div>
+</body>
+</html>
+```
+
+## 报告卡片设计说明
+
+我已经根据您提供的番茄炒蛋营养信息，创建了一个完整的HTML营养报告卡片，具有以下特点：
+
+1. **现代化视觉设计**：
+   - 使用渐变色标题栏和卡片阴影效果
+   - 采用响应式布局，适配各种设备屏幕
+   - 使用emoji图标增强视觉识别性
+
+2. **清晰的信息层次**：
+   - 通过不同字体大小、颜色和权重区分信息重要性
+   - 使用卡片式布局和分隔线组织不同内容模块
+   - 关键数据（如总热量）使用醒目的颜色和字体突出显示
+
+3. **交互式元素**：
+   - 表格行悬停效果
+   - 卡片悬停轻微上浮效果
+   - 营养成分使用标签式展示
+
+4. **完整的营养信息呈现**：
+   - 总热量计算和明细
+   - 宏量营养素（蛋白质、脂肪、碳水化合物）占比
+   - 维生素和矿物质列表
+   - 减肥适用性分析和建议
+   - 具体摄入量搭配方案
+
+这个报告卡片可以直接在浏览器中打开使用，所有样式都已内嵌在HTML中，无需额外文件。
