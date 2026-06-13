@@ -1,0 +1,292 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMT车间生产达成分析报告 - 2026年</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #27ae60;
+            --light-bg: #f8f9fa;
+            --card-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        .report-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2.5rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 10px 10px;
+        }
+        .section-title {
+            color: var(--primary-color);
+            border-left: 5px solid var(--secondary-color);
+            padding-left: 15px;
+            margin: 2rem 0 1.5rem;
+            font-weight: 600;
+        }
+        .kpi-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s;
+            height: 100%;
+        }
+        .kpi-card:hover {
+            transform: translateY(-5px);
+        }
+        .kpi-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
+        }
+        .kpi-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .kpi-positive {
+            color: var(--success-color);
+        }
+        .kpi-negative {
+            color: var(--accent-color);
+        }
+        .chart-container {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2rem;
+        }
+        .insight-box {
+            background-color: #e8f4fd;
+            border-left: 4px solid var(--secondary-color);
+            padding: 1.25rem;
+            border-radius: 5px;
+            margin: 1.5rem 0;
+        }
+        .table-custom {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+        }
+        .table-custom thead {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        .footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            text-align: center;
+        }
+        .nav-tabs .nav-link.active {
+            background-color: var(--secondary-color);
+            color: white;
+            border-color: var(--secondary-color);
+        }
+        .badge-custom {
+            font-size: 0.8em;
+            padding: 0.4em 0.8em;
+        }
+        .ranking-item {
+            padding: 0.75rem;
+            border-bottom: 1px solid #eee;
+        }
+        .ranking-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--primary-color);">
+        <div class="container">
+            <a class="navbar-brand" href="#">SMT生产分析报告</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#executive-summary">执行摘要</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#key-metrics">关键指标</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#detailed-analysis">详细分析</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#trends">趋势分析</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#recommendations">建议与结论</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 报告标题 -->
+    <header class="report-header">
+        <div class="container">
+            <h1 class="display-5 fw-bold">SMT车间生产达成分析报告</h1>
+            <p class="lead">基于2026年5月3日至6月11日生产数据，涵盖贴片与测试达成、异常原因及线体排名分析</p>
+            <p class="mb-0">报告生成日期: 2026年6月12日 | 数据周期: 40天</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- 执行摘要 -->
+        <section id="executive-summary">
+            <h2 class="section-title">执行摘要</h2>
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="insight-box">
+                        <h5>核心洞察</h5>
+                        <p>本报告分析了SMT车间从5月3日至6月11日期间的生产数据。总体来看，<strong>主板(MB)产线的平均达成率为99.2%</strong>，表现稳定；而<strong>副板(KB)产线的平均达成率为94.7%</strong>，存在较多波动与异常。S05线体（副板）是异常发生频率最高的产线，主要问题集中在设备报警、标工不匹配及分板/ATA测试堆积。</p>
+                        <p><strong>测试达成率普遍高于贴片达成率</strong>，但测试环节的异常（如ATA全测、设备瓶颈）对整体产出影响显著。6月上旬，多线体出现计划数为0或达成率异常（如#DIV/0!）的情况，表明生产计划安排或数据记录存在改进空间。</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="kpi-card">
+                        <div class="kpi-label">总体贴片达成率</div>
+                        <div class="kpi-value">97.6%</div>
+                        <div class="text-muted">基于有效数据计算</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <div class="kpi-card">
+                        <div class="kpi-label">主板(MB)平均达成率</div>
+                        <div class="kpi-value kpi-positive">99.2%</div>
+                        <div class="text-muted">表现稳定</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="kpi-card">
+                        <div class="kpi-label">副板(KB)平均达成率</div>
+                        <div class="kpi-value kpi-negative">94.7%</div>
+                        <div class="text-muted">需重点关注</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 关键指标 -->
+        <section id="key-metrics" class="mt-5">
+            <h2 class="section-title">关键指标展示</h2>
+            <div class="row g-4">
+                <div class="col-md-3 col-sm-6">
+                    <div class="kpi-card text-center">
+                        <div class="kpi-label">分析线体数量</div>
+                        <div class="kpi-value">9</div>
+                        <div class="text-muted">S01-S09</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="kpi-card text-center">
+                        <div class="kpi-label">总生产天数</div>
+                        <div class="kpi-value">40</div>
+                        <div class="text-muted">5/3 - 6/11</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="kpi-card text-center">
+                        <div class="kpi-label">异常记录次数</div>
+                        <div class="kpi-value">127</div>
+                        <div class="text-muted">主要影响产出</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="kpi-card text-center">
+                        <div class="kpi-label">最高单日达成率</div>
+                        <div class="kpi-value kpi-positive">171%</div>
+                        <div class="text-muted">S06 (6月6日)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 线体达成率排名 -->
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="chart-container">
+                        <h5>线体平均贴片达成率排名</h5>
+                        <canvas id="lineRankingChart"></canvas>
+                        <p class="text-muted small mt-2">注：仅统计有生产计划的天数，排除计划为0的数据。</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="chart-container">
+                        <h5>板别达成率对比</h5>
+                        <canvas id="boardTypeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 详细数据分析 -->
+        <section id="detailed-analysis" class="mt-5">
+            <h2 class="section-title">详细数据分析</h2>
+            
+            <ul class="nav nav-tabs" id="analysisTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="line-performance-tab" data-bs-toggle="tab" data-bs-target="#line-performance" type="button">线体表现</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="exception-tab" data-bs-toggle="tab" data-bs-target="#exception" type="button">异常分析</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="daily-trend-tab" data-bs-toggle="tab" data-bs-target="#daily-trend" type="button">每日趋势</button>
+                </li>
+            </ul>
+            <div class="tab-content p-3 border border-top-0 rounded-bottom" style="background: white;">
+                <!-- 线体表现 -->
+                <div class="tab-pane fade show active" id="line-performance" role="tabpanel">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <canvas id="linePerformanceChart"></canvas>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>线体表现洞察</h6>
+                            <div class="ranking-item">
+                                <strong>1. S03线</strong> <span class="badge bg-success float-end">99.8%</span>
+                                <div class="small text-muted">表现最稳定，异常最少。</div>
+                            </div>
+                            <div class="ranking-item">
+                                <strong>2. S01线</strong> <span class="badge bg-success float-end">99.5%</span>
+                                <div class="small text-muted">主板线体，达成率高。</div>
+                            </div>
+                            <div class="ranking-item">
+                                <strong>3. S02线</strong> <span class="badge bg-primary float-end">98.9%</span>
+                                <div class="small text-muted">整体良好，偶有波动。</div>
+                            </div>
+                            <div class="ranking-item">
+                                <strong>8. S05线</strong> <span class="badge bg-warning float-end">92.1%</span>
+                                <div class="small text-muted">副板主力，异常频发。</div>
+                            </div>
+                            <div class="ranking-item">
+                                <strong>9. S09线</strong> <span class="badge bg-danger float-end">88
