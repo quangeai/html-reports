@@ -1,0 +1,874 @@
+# 主题异常数据汇总分类分析报告
+
+我将为您创建一个专业、美观的HTML分析报告，展示主题异常数据的汇总分类分析。由于没有提供具体数据，我将使用模拟数据来展示报告的结构和功能。
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>主题异常数据汇总分类分析报告</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- 自定义样式 -->
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        
+        .report-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 20px 20px;
+        }
+        
+        .section-title {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+            margin-bottom: 20px;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            font-weight: 600;
+        }
+        
+        .kpi-card {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            height: 100%;
+        }
+        
+        .kpi-1 { background: linear-gradient(135deg, #3498db, #2c3e50); }
+        .kpi-2 { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+        .kpi-3 { background: linear-gradient(135deg, #27ae60, #219653); }
+        .kpi-4 { background: linear-gradient(135deg, #f39c12, #e67e22); }
+        
+        .kpi-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+        
+        .kpi-label {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 20px;
+        }
+        
+        .insight-box {
+            background-color: #f8f9fa;
+            border-left: 5px solid var(--secondary-color);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .recommendation {
+            background-color: #e8f4fc;
+            border-left: 5px solid var(--success-color);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            text-align: center;
+            border-radius: 20px 20px 0 0;
+        }
+        
+        .table-custom {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .table-custom thead {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .badge-custom {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+        
+        .nav-tabs .nav-link {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        
+        .nav-tabs .nav-link.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--primary-color);">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-graph-up-arrow"></i> 数据分析平台
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#executive-summary">执行摘要</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#key-metrics">关键指标</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#detailed-analysis">详细分析</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#trends">趋势分析</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#conclusions">结论建议</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 报告标题 -->
+    <header class="report-header">
+        <div class="container">
+            <h1 class="display-4 fw-bold">主题异常数据汇总分类分析报告</h1>
+            <p class="lead">基于2026年第一季度异常数据监测的深度分析</p>
+            <p class="mb-0">报告生成日期：2026年3月15日</p>
+        </div>
+    </header>
+
+    <!-- 报告内容 -->
+    <div class="container">
+        <!-- 执行摘要 -->
+        <section id="executive-summary" class="mb-5">
+            <h2 class="section-title">执行摘要</h2>
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">核心发现</h5>
+                            <p>本报告对2026年第一季度的主题异常数据进行了全面分析，共识别出<strong>1,247个异常数据点</strong>，涉及<strong>8个主要主题类别</strong>。分析显示，异常数据主要集中在<strong>数据完整性</strong>和<strong>格式规范</strong>两类问题，占总异常数的68%。</p>
+                            
+                            <div class="insight-box">
+                                <h6><i class="bi bi-lightbulb"></i> 关键洞察</h6>
+                                <ul>
+                                    <li><strong>数据完整性异常</strong>是主要问题，占总异常的42%，主要出现在用户行为数据采集过程中</li>
+                                    <li><strong>格式规范异常</strong>呈现上升趋势，环比增长15%，需要关注数据输入验证机制</li>
+                                    <li><strong>时间序列异常</strong>集中在特定时间段（周一上午和周五下午），可能与系统负载有关</li>
+                                    <li>异常数据的地理分布显示，<strong>亚太地区</strong>的异常率最高，达到3.2%</li>
+                                </ul>
+                            </div>
+                            
+                            <p>通过深入分析，我们发现异常数据与数据采集频率、系统集成点和数据验证规则有显著相关性。建议优先优化数据采集流程和加强输入验证，预计可减少异常数据45%以上。</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">分析范围</h5>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>数据时间范围</span>
+                                    <span class="badge bg-primary">2026年1-3月</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>数据总量</span>
+                                    <span class="badge bg-primary">385,742条</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>异常数据量</span>
+                                    <span class="badge bg-danger">1,247条</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>异常率</span>
+                                    <span class="badge bg-warning">0.32%</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>涉及主题类别</span>
+                                    <span class="badge bg-success">8类</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 关键指标 -->
+        <section id="key-metrics" class="mb-5">
+            <h2 class="section-title">关键指标</h2>
+            <div class="row">
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="kpi-card kpi-1">
+                        <i class="bi bi-exclamation-triangle" style="font-size: 2rem;"></i>
+                        <div class="kpi-value">1,247</div>
+                        <div class="kpi-label">异常数据总数</div>
+                        <small>环比增长 +8.5%</small>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="kpi-card kpi-2">
+                        <i class="bi bi-percent" style="font-size: 2rem;"></i>
+                        <div class="kpi-value">0.32%</div>
+                        <div class="kpi-label">整体异常率</div>
+                        <small>行业基准 0.25%</small>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="kpi-card kpi-3">
+                        <i class="bi bi-folder" style="font-size: 2rem;"></i>
+                        <div class="kpi-value">8</div>
+                        <div class="kpi-label">主题分类数</div>
+                        <small>新增2个分类</small>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="kpi-card kpi-4">
+                        <i class="bi bi-clock-history" style="font-size: 2rem;"></i>
+                        <div class="kpi-value">42%</div>
+                        <div class="kpi-label">数据完整性异常占比</div>
+                        <small>主要问题类别</small>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 详细分析 -->
+        <section id="detailed-analysis" class="mb-5">
+            <h2 class="section-title">详细数据分析</h2>
+            
+            <div class="row mb-4">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">
+                            异常数据按主题分类分布
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="categoryChart"></canvas>
+                            </div>
+                            <div class="insight-box">
+                                <h6><i class="bi bi-graph-up"></i> 分析洞察</h6>
+                                <p><strong>数据完整性异常</strong>（42%）和<strong>格式规范异常</strong>（26%）是两大主要问题类别，合计占总异常的68%。这提示我们需要加强数据采集验证和输入格式标准化流程。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">
+                            异常数据严重程度分布
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="severityChart"></canvas>
+                            </div>
+                            <div class="insight-box">
+                                <h6><i class="bi bi-exclamation-octagon"></i> 分析洞察</h6>
+                                <p>虽然<strong>高严重性异常</strong>仅占15%，但对业务影响最大，需要优先处理。<strong>中等严重性异常</strong>占比最高（52%），是优化数据质量的主要切入点。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-header">
+                            异常数据详细分类表
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover table-custom">
+                                    <thead>
+                                        <tr>
+                                            <th>主题分类</th>
+                                            <th>异常数量</th>
+                                            <th>占比</th>
+                                            <th>环比变化</th>
+                                            <th>主要来源</th>
+                                            <th>平均解决时间</th>
+                                            <th>严重程度</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>数据完整性异常</strong></td>
+                                            <td>524</td>
+                                            <td>42.0%</td>
+                                            <td><span class="badge bg-danger">+12.5%</span></td>
+                                            <td>用户行为日志</td>
+                                            <td>4.2小时</td>
+                                            <td><span class="badge bg-warning badge-custom">中</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>格式规范异常</strong></td>
+                                            <td>324</td>
+                                            <td>26.0%</td>
+                                            <td><span class="badge bg-danger">+15.0%</span></td>
+                                            <td>API接口数据</td>
+                                            <td>2.1小时</td>
+                                            <td><span class="badge bg-secondary badge-custom">低</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>时间序列异常</strong></td>
+                                            <td>187</td>
+                                            <td>15.0%</td>
+                                            <td><span class="badge bg-success">-5.2%</span></td>
+                                            <td>监控系统</td>
+                                            <td>6.8小时</td>
+                                            <td><span class="badge bg-danger badge-custom">高</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>逻辑一致性异常</strong></td>
+                                            <td>98</td>
+                                            <td>7.9%</td>
+                                            <td><span class="badge bg-warning">+3.1%</span></td>
+                                            <td>业务数据库</td>
+                                            <td>8.5小时</td>
+                                            <td><span class="badge bg-danger badge-custom">高</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>数值范围异常</strong></td>
+                                            <td>64</td>
+                                            <td>5.1%</td>
+                                            <td><span class="badge bg-success">-8.7%</span></td>
+                                            <td>传感器数据</td>
+                                            <td>3.3小时</td>
+                                            <td><span class="badge bg-warning badge-custom">中</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>其他异常</strong></td>
+                                            <td>50</td>
+                                            <td>4.0%</td>
+                                            <td><span class="badge bg-warning">+2.3%</span></td>
+                                            <td>多数据源</td>
+                                            <td>5.7小时</td>
+                                            <td><span class="badge bg-secondary badge-custom">低</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 趋势分析 -->
+        <section id="trends" class="mb-5">
+            <h2 class="section-title">趋势分析</h2>
+            
+            <div class="row mb-4">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header">
+                            异常数据月度趋势
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="trendChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-header">
+                            异常数据时间分布
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="timeChart"></canvas>
+                            </div>
+                            <div class="insight-box mt-3">
+                                <h6><i class="bi bi-clock"></i> 时间模式分析</h6>
+                                <p>异常数据在<strong>周一上午（9-11点）</strong>和<strong>周五下午（3-5点）</strong>出现高峰，可能与系统负载和人工操作模式相关。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-header">
+                            异常数据解决效率趋势
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="resolutionChart"></canvas>
+                            </div>
+                            <div class="insight-box">
+                                <h6><i class="bi bi-speedometer2"></i> 效率分析</h6>
+                                <p>异常解决平均时间从1月的<strong>6.2小时</strong>下降到3月的<strong>4.5小时</strong>，效率提升27.4%。但<strong>高严重性异常</strong>的解决时间仍然较长，需要优化处理流程。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 结论建议 -->
+        <section id="conclusions" class="mb-5">
+            <h2 class="section-title">结论与建议</h2>
+            
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">
+                            主要结论
+                        </div>
+                        <div class="card-body">
+                            <ol>
+                                <li><strong>数据完整性是核心问题</strong>：42%的异常源于数据缺失或不完整，主要影响用户行为分析准确性。</li>
+                                <li><strong>格式规范异常增长迅速</strong>：环比增长15%，表明数据输入验证机制需要加强。</li>
+                                <li><strong>异常分布具有时间规律</strong>：周一上午和周五下午是异常高发时段，需针对性监控。</li>
+                                <li><strong>解决效率有所提升</strong>：平均解决时间下降27.4%，但高严重性异常处理仍有优化空间。</li>
+                                <li><strong>异常率略高于行业基准</strong>：0.32% vs 0.25%，存在改进空间。</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">
+                            优化建议
+                        </div>
+                        <div class="card-body">
+                            <div class="recommendation">
+                                <h6><i class="bi bi-check-circle"></i> 短期建议（1个月内）</h6>
+                                <ul>
+                                    <li>加强数据采集点的完整性校验，减少42%的数据完整性异常</li>
+                                    <li>优化API接口的输入验证规则，降低格式规范异常</li>
+                                    <li>在异常高发时段（周一上午、周五下午）增加监控频率</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="recommendation">
+                                <h6><i class="bi bi-calendar-check"></i> 中期建议（1-3个月）</h6>
+                                <ul>
+                                    <li>建立异常数据自动分类和处理流程，减少人工干预时间</li>
+                                    <li>实施数据质量监控仪表板，实时跟踪异常率变化</li>
+                                    <li>开展数据质量培训，提高团队对异常数据的识别和处理能力</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="recommendation">
+                                <h6><i class="bi bi-bar-chart"></i> 长期建议（3个月以上）</h6>
+                                <ul>
+                                    <li>构建数据质量管理系统，实现异常预防、检测和处理的闭环</li>
+                                    <li>建立数据质量KPI体系，将异常率纳入团队考核指标</li>
+                                    <li>探索AI驱动的异常检测和根因分析，提升自动化处理水平</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-4">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-header">
+                            预期效果
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-md-3 mb-3">
+                                    <div class="p-3 border rounded">
+                                        <h3 class="text-primary">45%</h3>
+                                        <p class="mb-0">异常数据减少</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <div class="p-3 border rounded">
+                                        <h3 class="text-success">30%</h3>
+                                        <p class="mb-0">解决时间缩短</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <div class="p-3 border rounded">
+                                        <h3 class="text-warning">0.22%</h3>
+                                        <p class="mb-0">目标异常率</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <div class="p-3 border rounded">
+                                        <h3 class="text-danger">15%</h3>
+                                        <p class="mb-0">人工干预减少</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="mt-3">通过实施上述建议，预计可在3个月内将异常数据减少45%，异常率降至0.22%（低于行业基准），同时减少人工干预15%，显著提升数据质量和分析效率。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <p class="mb-2">主题异常数据汇总分类分析报告 © 2026</p>
+            <p class="mb-0">本报告基于2026年第一季度数据生成，仅供参考和决策支持</p>
+            <p class="mt-3 small">报告版本：v2.1 | 最后更新：2026年3月15日</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- 图表数据 -->
+    <script>
+        // 等待页面加载完成
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // 1. 异常数据按主题分类分布（饼图）
+            const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+            const categoryChart = new Chart(categoryCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['数据完整性异常', '格式规范异常', '时间序列异常', '逻辑一致性异常', '数值范围异常', '其他异常'],
+                    datasets: [{
+                        data: [524, 324, 187, 98, 64, 50],
+                        backgroundColor: [
+                            '#e74c3c', // 红色
+                            '#3498db', // 蓝色
+                            '#f39c12', // 橙色
+                            '#9b59b6', // 紫色
+                            '#2ecc71', // 绿色
+                            '#95a5a6'  // 灰色
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // 2. 异常数据严重程度分布（环形图）
+            const severityCtx = document.getElementById('severityChart').getContext('2d');
+            const severityChart = new Chart(severityCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['高严重性', '中等严重性', '低严重性'],
+                    datasets: [{
+                        data: [187, 649, 411],
+                        backgroundColor: [
+                            '#e74c3c', // 红色
+                            '#f39c12', // 橙色
+                            '#3498db'  // 蓝色
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // 3. 异常数据月度趋势（折线图）
+            const trendCtx = document.getElementById('trendChart').getContext('2d');
+            const trendChart = new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: ['1月', '2月', '3月'],
+                    datasets: [
+                        {
+                            label: '异常数据总数',
+                            data: [380, 410, 457],
+                            borderColor: '#e74c3c',
+                            backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.3
+                        },
+                        {
+                            label: '数据完整性异常',
+                            data: [150, 180, 194],
+                            borderColor: '#3498db',
+                            backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.3
+                        },
+                        {
+                            label: '格式规范异常',
+                            data: [90, 105, 129],
+                            borderColor: '#f39c12',
+                            backgroundColor: 'rgba(243, 156, 18, 0.1)',
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '异常数量'
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    }
+                }
+            });
+            
+            // 4. 异常数据时间分布（柱状图）
+            const timeCtx = document.getElementById('timeChart').getContext('2d');
+            const timeChart = new Chart(timeCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['0-3时', '3-6时', '6-9时', '9-12时', '12-15时', '15-18时', '18-21时', '21-24时'],
+                    datasets: [{
+                        label: '异常数量',
+                        data: [45, 32, 78, 156, 124, 187, 98, 67],
+                        backgroundColor: [
+                            '#3498db', '#3498db', '#3498db', 
+                            '#e74c3c', // 红色突出显示高峰
+                            '#3498db', '#e74c3c', // 红色突出显示高峰
+                            '#3498db', '#3498db'
+                        ],
+                        borderWidth: 1,
+                        borderColor: '#2c3e50'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '异常数量'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // 5. 异常数据解决效率趋势（折线图）
+            const resolutionCtx = document.getElementById('resolutionChart').getContext('2d');
+            const resolutionChart = new Chart(resolutionCtx, {
+                type: 'line',
+                data: {
+                    labels: ['1月', '2月', '3月'],
+                    datasets: [
+                        {
+                            label: '平均解决时间（小时）',
+                            data: [6.2, 5.3, 4.5],
+                            borderColor: '#27ae60',
+                            backgroundColor: 'rgba(39, 174, 96, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.3
+                        },
+                        {
+                            label: '高严重性异常解决时间',
+                            data: [12.5, 11.2, 10.8],
+                            borderColor: '#e74c3c',
+                            backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.3
+                        },
+                        {
+                            label: '低严重性异常解决时间',
+                            data: [3.2, 2.8, 2.1],
+                            borderColor: '#3498db',
+                            backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '解决时间（小时）'
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    }
+                }
+            });
+            
+            // 平滑滚动到锚点
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    if(targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if(targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+```
+
+## 报告特点
+
+1. **专业数据分析**：
+   - 对异常数据进行分类统计和趋势分析
+   - 识别了主要问题类别（数据完整性和格式规范异常）
+   - 提供了关键洞察和商业影响分析
+
+2. **交互式可视化**：
+   - 使用Chart.js创建了5种不同类型的图表
+   - 包括饼图、环形图、折线图和柱状图
+   - 协调的配色方案和清晰的标签
+
+3. **现代响应式设计**：
+   - 使用Bootstrap 5构建响应式布局
+   - 适配各种屏幕尺寸
+   - 专业美观的UI设计
+
+4. **完整报告结构**：
+   - 执行摘要：提供核心发现和分析范围
+   - 关键指标：突出显示最重要的数据点
+   - 详细分析：深入分析异常数据分布
+   - 趋势分析：展示异常数据的时间模式
+   - 结论建议：提供可操作的优化建议
+
+5. **用户体验优化**：
+   - 平滑的页面内导航
+   - 悬停效果增强交互性
+   - 清晰的信息层次结构
+
+这个报告可以直接在浏览器中打开使用，所有依赖项都通过CDN加载，无需额外安装。
