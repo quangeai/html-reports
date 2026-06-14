@@ -1,0 +1,251 @@
+# 航空公司杂志广告投放分析报告
+
+以下是根据您提供的CSV数据生成的完整HTML分析报告代码。该报告包含数据可视化、深度分析和具体建议。
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>航空公司杂志广告投放分析报告 - 《中国之翼》商业洞察</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #1a3c8b; /* 国航蓝 */
+            --secondary-color: #c8102e; /* 南航红 */
+            --tertiary-color: #1d5ba6; /* 东航蓝 */
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --info-color: #17a2b8;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark-color);
+            background-color: #f9f9f9;
+        }
+        
+        .report-header {
+            background: linear-gradient(135deg, var(--primary-color), #0d2a5c);
+            color: white;
+            padding: 2.5rem 0;
+            margin-bottom: 2rem;
+            border-bottom: 5px solid var(--warning-color);
+        }
+        
+        .report-title {
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .report-subtitle {
+            font-weight: 300;
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .section-title {
+            color: var(--primary-color);
+            border-left: 5px solid var(--primary-color);
+            padding-left: 15px;
+            margin-top: 2rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            font-weight: 600;
+            padding: 1rem 1.25rem;
+        }
+        
+        .kpi-card {
+            text-align: center;
+            padding: 1.5rem;
+            height: 100%;
+        }
+        
+        .kpi-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .kpi-label {
+            font-size: 1rem;
+            color: #6c757d;
+            font-weight: 500;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin-bottom: 2rem;
+        }
+        
+        .insight-box {
+            background-color: #f0f7ff;
+            border-left: 4px solid var(--info-color);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .recommendation-box {
+            background-color: #f8fff0;
+            border-left: 4px solid var(--success-color);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .airline-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        
+        .airline-ca {
+            background-color: rgba(26, 60, 139, 0.1);
+            color: var(--primary-color);
+        }
+        
+        .airline-cz {
+            background-color: rgba(200, 16, 46, 0.1);
+            color: var(--secondary-color);
+        }
+        
+        .airline-mu {
+            background-color: rgba(29, 91, 166, 0.1);
+            color: var(--tertiary-color);
+        }
+        
+        .nav-tabs .nav-link {
+            color: var(--dark-color);
+            font-weight: 500;
+        }
+        
+        .nav-tabs .nav-link.active {
+            color: var(--primary-color);
+            font-weight: 600;
+            border-bottom: 3px solid var(--primary-color);
+        }
+        
+        footer {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            .report-title {
+                font-size: 2rem;
+            }
+            
+            .chart-container {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 报告标题 -->
+    <header class="report-header">
+        <div class="container">
+            <h1 class="report-title">航空公司杂志广告投放分析报告</h1>
+            <p class="report-subtitle">基于2026年1-5月《中国之翼》及竞品杂志广告数据</p>
+            <p class="mb-0">生成日期: <span id="current-date"></span></p>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- 执行摘要 -->
+        <section id="executive-summary">
+            <h2 class="section-title">执行摘要</h2>
+            <div class="card">
+                <div class="card-body">
+                    <p>本报告基于2026年1月至5月东航、南航杂志广告投放数据，对《中国之翼》的竞品广告格局进行深入分析。数据涵盖外部广告投放的品类、区位、版位等维度。</p>
+                    
+                    <div class="insight-box">
+                        <h5>核心发现：</h5>
+                        <ul>
+                            <li><strong>数据覆盖情况：</strong>本次分析仅包含东航和南航数据，<strong>国航《中国之翼》数据缺失</strong>，无法进行直接对比，但可从竞品分析中获取借鉴。</li>
+                            <li><strong>广告总量对比：</strong>南航在广告总量上显著领先东航，体现了更强的商业变现能力。</li>
+                            <li><strong>品类结构差异：</strong>南航广告品类更加多元化，涵盖家居、教育、工商服务等；东航则聚焦金融、赛事等高端品类。</li>
+                            <li><strong>区位特征明显：</strong>两家航司广告均体现主基地区位优势，南航突出华南家居产业，东航聚焦华东金融与赛事。</li>
+                            <li><strong>趋势观察：</strong>酒水品类（听花酒）为跨航司稳定投放品类，展现高端杂志对特定奢侈品类的吸引力。</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 关键指标 -->
+        <section id="key-metrics">
+            <h2 class="section-title">关键指标概览</h2>
+            <div class="row">
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="card kpi-card">
+                        <div class="kpi-value" id="total-ads">47</div>
+                        <div class="kpi-label">广告总数量</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="card kpi-card">
+                        <div class="kpi-value" id="airlines-count">2</div>
+                        <div class="kpi-label">涉及航空公司</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="card kpi-card">
+                        <div class="kpi-value" id="months-count">5</div>
+                        <div class="kpi-label">分析月份</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="card kpi-card">
+                        <div class="kpi-value" id="categories-count">8</div>
+                        <div class="kpi-label">广告品类数</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="alert alert-warning" role="alert">
+                <strong>数据说明：</strong>本次分析数据仅包含东航和南航的广告投放记录，国航《中国之翼》数据暂缺，因此报告中的对比分析仅限于东航与南航之间。
+            </div>
+        </section>
+
+        <!-- 外部广告分析 -->
+        <section id="external-ads-analysis">
+            <h2 class="section-title">外部广告详细分析</h2>
+            
+            <!-- 航司广告总量对比 -->
+            <div class="card">
+                <div class="card-header">
+                    航司外部广告总量对比
