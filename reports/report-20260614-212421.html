@@ -1,0 +1,215 @@
+# 《中国之翼》杂志广告投放分析报告
+
+以下是基于提供的CSV数据生成的完整HTML分析报告。报告包含了数据可视化、深度分析和具体建议。
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>《中国之翼》杂志广告投放分析报告 (2026年1-5月)</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #1a237e; /* 深蓝 */
+            --secondary-color: #d32f2f; /* 红色-国航主题色 */
+            --accent-color: #1976d2; /* 蓝色-东航主题色 */
+            --success-color: #388e3c; /* 绿色-南航主题色 */
+            --light-bg: #f5f7fa;
+        }
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        .report-header {
+            background: linear-gradient(135deg, var(--primary-color), #283593);
+            color: white;
+            padding: 2.5rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .nav-tabs .nav-link {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        .nav-tabs .nav-link.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+            margin-bottom: 1.5rem;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .card-header {
+            background-color: white;
+            border-bottom: 2px solid var(--light-bg);
+            font-weight: 600;
+            color: var(--primary-color);
+            border-radius: 12px 12px 0 0 !important;
+            padding: 1rem 1.5rem;
+        }
+        .kpi-card {
+            text-align: center;
+            padding: 1.5rem;
+            border-top: 4px solid var(--primary-color);
+        }
+        .kpi-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 0.5rem 0;
+        }
+        .kpi-label {
+            font-size: 0.9rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 1.5rem 0;
+        }
+        .insight-box {
+            background-color: #e8f4fd;
+            border-left: 4px solid var(--accent-color);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .recommendation-box {
+            background-color: #f0f7f0;
+            border-left: 4px solid var(--success-color);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .airline-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+        .badge-ca {
+            background-color: rgba(211, 47, 47, 0.1);
+            color: var(--secondary-color);
+            border: 1px solid rgba(211, 47, 47, 0.3);
+        }
+        .badge-mu {
+            background-color: rgba(25, 118, 210, 0.1);
+            color: var(--accent-color);
+            border: 1px solid rgba(25, 118, 210, 0.3);
+        }
+        .badge-cz {
+            background-color: rgba(56, 142, 60, 0.1);
+            color: var(--success-color);
+            border: 1px solid rgba(56, 142, 60, 0.3);
+        }
+        .footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            text-align: center;
+        }
+        .section-title {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--light-bg);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        .table-custom {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .alert-custom {
+            border-radius: 8px;
+            border-left: 4px solid #ff9800;
+        }
+    </style>
+</head>
+<body>
+    <!-- 报告标题 -->
+    <header class="report-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="display-5 fw-bold">《中国之翼》杂志广告投放分析报告</h1>
+                    <p class="lead">基于2026年1-5月东航、南航杂志广告数据对比分析</p>
+                    <p class="mb-0">生成时间: 2026-06-14 | 分析周期: 2026年1月-5月</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <span class="airline-badge badge-mu">东方航空</span>
+                    <span class="airline-badge badge-cz">南方航空</span>
+                    <div class="mt-2">
+                        <small class="text-light opacity-75">数据可视化分析报告</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 导航 -->
+    <div class="container mb-4">
+        <ul class="nav nav-tabs" id="reportTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab">执行摘要</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="external-tab" data-bs-toggle="tab" data-bs-target="#external" type="button" role="tab">外部广告分析</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="internal-tab" data-bs-toggle="tab" data-bs-target="#internal" type="button" role="tab">自有及联名广告</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="trends-tab" data-bs-toggle="tab" data-bs-target="#trends" type="button" role="tab">趋势分析</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="recommendations-tab" data-bs-toggle="tab" data-bs-target="#recommendations" type="button" role="tab">国航改善建议</button>
+            </li>
+        </ul>
+    </div>
+
+    <!-- 报告内容 -->
+    <div class="container">
+        <div class="tab-content" id="reportTabsContent">
+            
+            <!-- 执行摘要 -->
+            <div class="tab-pane fade show active" id="overview" role="tabpanel">
+                <div class="alert alert-custom alert-warning">
+                    <strong>数据说明：</strong> 本报告基于提供的2026年1-5月数据。分析发现数据中仅包含<strong>东方航空</strong>和<strong>南方航空</strong>的广告信息，<strong>国航数据缺失</strong>，因此本报告主要进行东航与南航的对比分析，并为国航提供借鉴建议。
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card kpi-card">
+                            <div class="kpi-value">2</div>
+                            <div class="kpi-label">航司数量</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card kpi-card">
+                            <div class="kpi-value">5</div>
+                            <div class="kpi-label">分析月份</div>
+                        </div>
+                    </div>
+                    <div class="col
