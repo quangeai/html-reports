@@ -1,0 +1,411 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>航空公司广告投放分析报告</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .report-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .section-title {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin: 30px 0 20px 0;
+        }
+        .card {
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .card-header {
+            background-color: #3498db;
+            color: white;
+            font-weight: bold;
+            border-radius: 8px 8px 0 0 !important;
+        }
+        .stat-card {
+            text-align: center;
+            padding: 20px;
+        }
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .stat-label {
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+        .chart-container {
+            height: 300px;
+            margin: 20px 0;
+        }
+        .missing-data {
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .recommendation-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .recommendation-list li {
+            background-color: #e8f4f8;
+            border-left: 4px solid #3498db;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            border-radius: 0 4px 4px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="report-container">
+        <header class="text-center mb-4">
+            <h1 class="text-primary">航空公司广告投放分析报告</h1>
+            <p class="text-muted">数据周期：2026年1月-2029年4月</p>
+        </header>
+
+        <!-- 关键指标概览 -->
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="stat-number">2</div>
+                    <div class="stat-label">参与分析的航空公司</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="stat-number">53</div>
+                    <div class="stat-label">总广告投放量</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="stat-number">8</div>
+                    <div class="stat-label">广告品类数量</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="stat-number">4</div>
+                    <div class="stat-label">数据覆盖年份</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 数据完整性提示 -->
+        <div class="missing-data">
+            <strong>注意：</strong>数据中缺少中国国际航空公司（国航）的广告投放数据，因此国航不参与本次分析对比。
+        </div>
+
+        <!-- 外部广告总量对比 -->
+        <section>
+            <h2 class="section-title">一、外部广告总量对比</h2>
+            <div class="card">
+                <div class="card-header">各航空公司广告投放总量</div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="totalAdsChart"></canvas>
+                    </div>
+                    <p>数据分析：</p>
+                    <ul>
+                        <li>南航投放总量为39个广告单元，占比73.6%</li>
+                        <li>东航投放总量为14个广告单元，占比26.4%</li>
+                        <li>南航的广告投放活跃度显著高于东航，可能与其更积极的商业化策略有关</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 品类分布与占比 -->
+        <section>
+            <h2 class="section-title">二、广告品类分布与占比</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">东航广告品类分布</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="donghangCategoryChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">南航广告品类分布</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="nanhangCategoryChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">品类差异对比分析</div>
+                <div class="card-body">
+                    <h5>共同品类：</h5>
+                    <ul>
+                        <li>酒水：两家航司均有投放，南航投放量更大(10 vs 6)</li>
+                        <li>赛事活动：两家航司均有投放，但东航更侧重上海本地赛事</li>
+                        <li>文化娱乐休闲：两家航司均有旅游相关广告投放</li>
+                    </ul>
+                    
+                    <h5>东航独有品类：</h5>
+                    <ul>
+                        <li>金融投资：上海浦发银行广告，体现上海金融中心区位优势</li>
+                    </ul>
+                    
+                    <h5>南航独有品类：</h5>
+                    <ul>
+                        <li>家居用品：简一大理石瓷砖、美人计塑身衣，体现广州家居产业优势</li>
+                        <li>教育：北京大学汇丰商学院广告</li>
+                        <li>工业办公用品及工商服务：盛诺一家、福来品牌资讯等</li>
+                    </ul>
+                    
+                    <p><strong>关键发现：</strong>南航在品类多样性上更丰富，覆盖了家居、教育、工商服务等多个东航未涉及的领域，而东航则更聚焦于金融、赛事等上海优势产业。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 区位优势分析 -->
+        <section>
+            <h2 class="section-title">三、区位优势与广告格局成因</h2>
+            <div class="card">
+                <div class="card-header">区位优势对广告投放的影响</div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>东航（上海基地）：</h5>
+                            <ul>
+                                <li>金融投资类广告（浦发银行）：依托上海国际金融中心地位</li>
+                                <li>高端赛事活动（F1大奖赛、马术冠军赛）：上海国际化都市定位</li>
+                                <li>文化娱乐（上海交响乐团）：上海文化中心城市属性</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>南航（广州基地）：</h5>
+                            <ul>
+                                <li>家居用品（简一大理石瓷砖）：广州作为家居建材产业集群地</li>
+                                <li>多元化品类布局：南航更积极地拓展全品类广告客户</li>
+                                <li>跨区域合作：与北京、四川、湖南等地企业的合作</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p><strong>分析结论：</strong>两家航司的广告投放均体现了其主基地的产业区位优势，东航聚焦上海的金融、文化、赛事特色，南航则依托广州的家居产业基础并积极拓展多元化品类。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 趋势分析 -->
+        <section>
+            <h2 class="section-title">四、广告投放趋势分析</h2>
+            <div class="card">
+                <div class="card-header">月度投放趋势</div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="monthlyTrendChart"></canvas>
+                    </div>
+                    <p>趋势分析：</p>
+                    <ul>
+                        <li>南航在2026年3月投放量达到峰值(8个广告单元)</li>
+                        <li>东航的投放量相对平稳，但整体规模远小于南航</li>
+                        <li>酒水类广告（听花酒）在两家航司均有持续投放，显示该品牌对航空媒体的重视</li>
+                        <li>南航在2027-2029年持续投放美人计塑身衣广告，显示长期合作关系</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 国航改善建议 -->
+        <section>
+            <h2 class="section-title">五、国航《中国之翼》杂志广告投放建议</h2>
+            <div class="card">
+                <div class="card-header">针对国航的具体建议</div>
+                <div class="card-body">
+                    <h5>品类拓展建议：</h5>
+                    <ul class="recommendation-list">
+                        <li>充分利用北京作为央企总部聚集地的优势，重点开发央企品牌广告</li>
+                        <li>依托北京文旅资源，大力拓展文化旅游类广告客户</li>
+                        <li>借鉴南航的多元化策略，引入教育、工商服务等品类广告</li>
+                        <li>开发北京特色高端消费品类，如奢侈品、高端餐饮等</li>
+                    </ul>
+                    
+                    <h5>区位利用建议：</h5>
+                    <ul class="recommendation-list">
+                        <li>重点挖掘北京本地优质企业资源，打造"北京名片"特色广告板块</li>
+                        <li>利用国航的国际航线网络，开发国际品牌在中国市场的广告投放</li>
+                        <li>结合北京的政治文化中心定位，开发会议、展览等商务活动广告</li>
+                    </ul>
+                    
+                    <h5>联名开发建议：</h5>
+                    <ul class="recommendation-list">
+                        <li>与故宫、颐和园等北京文化IP开展联名广告合作</li>
+                        <li>与央企品牌推出联合营销活动，提升杂志品牌影响力</li>
+                        <li>开发"国航尊享"专属广告套餐，为高端客户提供定制化服务</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 执行摘要 -->
+        <section>
+            <h2 class="section-title">六、执行摘要</h2>
+            <div class="card">
+                <div class="card-header">核心发现与建议</div>
+                <div class="card-body">
+                    <p><strong>核心发现：</strong></p>
+                    <ul>
+                        <li>南航广告投放活跃度远高于东航，品类覆盖更广泛</li>
+                        <li>两家航司均充分利用了主基地的产业区位优势</li>
+                        <li>酒水类广告在两家航司均有持续投放，显示航空媒体对快消品牌的吸引力</li>
+                    </ul>
+                    
+                    <p><strong>国航机遇：</strong></p>
+                    <ul>
+                        <li>国航可依托北京的央企、文旅资源，打造差异化竞争优势</li>
+                        <li>目前南航和东航均未充分开发央企和高端文旅品类，为国航提供了市场空间</li>
+                        <li>国航可通过特色联名合作提升杂志品牌价值</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // 初始化图表
+        document.addEventListener('DOMContentLoaded', function() {
+            // 总广告量对比图表
+            new Chart(document.getElementById('totalAdsChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['南航', '东航'],
+                    datasets: [{
+                        label: '广告单元数量',
+                        data: [39, 14],
+                        backgroundColor: ['#2ecc71', '#3498db'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: '航空公司广告投放总量对比'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '广告单元数量'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 东航品类分布
+            new Chart(document.getElementById('donghangCategoryChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['酒水', '赛事活动', '金融投资', '文化娱乐休闲'],
+                    datasets: [{
+                        data: [6, 3, 1, 4],
+                        backgroundColor: ['#e74c3c', '#f39c12', '#9b59b6', '#1abc9c']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '东航广告品类分布'
+                        }
+                    }
+                }
+            });
+
+            // 南航品类分布
+            new Chart(document.getElementById('nanhangCategoryChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['酒水', '家居用品', '教育', '工业办公用品及工商服务', '文化娱乐休闲'],
+                    datasets: [{
+                        data: [10, 5, 5, 10, 4],
+                        backgroundColor: ['#e74c3c', '#2ecc71', '#3498db', '#f39c12', '#1abc9c']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '南航广告品类分布'
+                        }
+                    }
+                }
+            });
+
+            // 月度趋势图表
+            new Chart(document.getElementById('monthlyTrendChart'), {
+                type: 'line',
+                data: {
+                    labels: ['1月', '2月', '3月', '4月', '5月', '2027-4月', '2028-4月', '2029-4月'],
+                    datasets: [
+                        {
+                            label: '南航',
+                            data: [4, 5, 8, 7, 7, 1, 1, 1],
+                            borderColor: '#2ecc71',
+                            backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                            fill: true,
+                            tension: 0.3
+                        },
+                        {
+                            label: '东航',
+                            data: [4, 0, 4, 1, 4, 0, 0, 0],
+                            borderColor: '#3498db',
+                            backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                            fill: true,
+                            tension: 0.3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '月度广告投放趋势'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '广告单元数量'
+                            }
+                        }
+                    }
+                }
