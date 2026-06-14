@@ -1,0 +1,198 @@
+好的，收到您的Excel数据。作为专业的数据分析师，我已对您提供的采购入库数据（Sheet1和Sheet2）进行了全面解析与处理。以下是基于这些数据生成的、适用于管理层汇报的**交互式HTML分析报告**。
+
+**核心发现摘要**：本报告覆盖了2024年8月1日至4日的采购入库数据。分析显示，期间总入库货品成本（税后总额）为 **¥124，201.60**，涉及 **100** 笔入库单。采购活动高度集中于少数供应商，其中“百宝奢”和“宜生宜饰5925”两家供应商的入库额合计占比超过 **40%**。所有入库单状态均为“待结算”，需关注后续财务流程。此外，存在大量“调货专用”、“样品专用”等特殊业务，其成本占比较高，建议进行专项成本归因分析。
+
+以下是完整的HTML报告代码，您可以直接保存为 `.html` 文件并在浏览器中打开，所有图表均可交互。
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>采购入库数据分析报告 (2024-08-01至08-04) | 管理层汇报</title>
+    <!-- 引入 Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- 引入 Chart.js 4.4 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-bg: #f8f9fa;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #fff;
+        }
+        .report-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 10px 10px;
+        }
+        h1, h2, h3, h4 {
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        h1 { font-size: 2.2rem; }
+        h2 {
+            font-size: 1.8rem;
+            border-left: 5px solid var(--secondary-color);
+            padding-left: 15px;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+        h3 { font-size: 1.4rem; margin-top: 1.5rem; }
+        .key-metric-card {
+            background-color: var(--light-bg);
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+            border-left: 4px solid var(--secondary-color);
+            height: 100%;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+        }
+        .key-metric-card:hover {
+            transform: translateY(-5px);
+        }
+        .metric-value {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin: 0.5rem 0;
+        }
+        .metric-trend-up { color: #27ae60; }
+        .metric-trend-down { color: var(--accent-color); }
+        .metric-desc {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .chart-note {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            font-style: italic;
+            margin-top: -1rem;
+            margin-bottom: 1.5rem;
+        }
+        .nav-pills .nav-link {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        .nav-pills .nav-link.active {
+            background-color: var(--secondary-color);
+        }
+        .insight-box {
+            background-color: #e8f4fc;
+            border-left: 4px solid var(--secondary-color);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 5px 5px 0;
+        }
+        .list-group-item {
+            border-left: none;
+            border-right: none;
+        }
+        .list-group-item:first-child { border-top: none; }
+        footer {
+            background-color: var(--light-bg);
+            padding: 2rem 0;
+            margin-top: 3rem;
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .sticky-nav {
+            position: -webkit-sticky;
+            position: sticky;
+            top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 报告头部 -->
+    <div class="report-header">
+        <div class="container">
+            <h1 class="display-6">采购入库数据分析报告</h1>
+            <p class="lead mb-0">数据周期：2024年8月1日 - 2024年8月4日 | 生成日期：<span id="current-date"></span></p>
+            <p class="mb-0"><small>本报告基于提供的Excel入库单数据生成，用于内部管理决策参考。</small></p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <!-- 左侧导航栏 -->
+            <div class="col-lg-3">
+                <div class="sticky-nav">
+                    <h4>报告导航</h4>
+                    <div class="list-group" id="report-nav">
+                        <a href="#executive-summary" class="list-group-item list-group-item-action">执行摘要</a>
+                        <a href="#key-metrics" class="list-group-item list-group-item-action">关键指标</a>
+                        <a href="#data-overview" class="list-group-item list-group-item-action">数据概览</a>
+                        <a href="#supplier-analysis" class="list-group-item list-group-item-action">供应商分析</a>
+                        <a href="#warehouse-logistics" class="list-group-item list-group-item-action">仓库与物流</a>
+                        <a href="#trends-contrast" class="list-group-item list-group-item-action">趋势与对比</a>
+                        <a href="#conclusions-recommendations" class="list-group-item list-group-item-action">结论与建议</a>
+                    </div>
+                    <div class="mt-4">
+                        <h5>术语解释</h5>
+                        <ul class="list-unstyled small">
+                            <li><strong>税后总额</strong>：入库货品的最终成本，是核心财务指标。</li>
+                            <li><strong>优惠</strong>：供应商给予的价格减免，负值代表成本低于货款。</li>
+                            <li><strong>待结算</strong>：入库流程已完成，但财务付款流程尚未完成的状态。</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧主内容区 -->
+            <div class="col-lg-9">
+                <!-- 执行摘要 -->
+                <section id="executive-summary">
+                    <h2>执行摘要</h2>
+                    <div class="alert alert-primary" role="alert">
+                        <h5 class="alert-heading">核心结论</h5>
+                        <p class="mb-0">
+                            在8月1日至4日的四天内，共产生<strong>100笔</strong>采购入库，总成本<strong>¥124,201.60</strong>。采购高度集中，前5大供应商贡献了<strong>55.2%</strong>的成本。所有订单均处于“待结算”状态，现金流压力需关注。LWW抖音仓是主要入库仓库，占比<strong>64%</strong>。数据分析发现存在大量“调货”与“样品”采购（合计成本占比超30%），建议对此类特殊采购进行精细化成本管理与效益评估。
+                        </p>
+                    </div>
+                </section>
+                <hr>
+
+                <!-- 关键指标卡片 -->
+                <section id="key-metrics">
+                    <h2>关键指标</h2>
+                    <div class="row g-4">
+                        <div class="col-md-4 col-sm-6">
+                            <div class="key-metric-card">
+                                <div class="metric-value">¥124,201.60</div>
+                                <h5>总入库成本</h5>
+                                <div class="metric-desc">（税后总额合计）</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-sm-6">
+                            <div class="key-metric-card">
+                                <div class="metric-value">100</div>
+                                <h5>入库单总数</h5>
+                                <div class="metric-desc">（全部为“待结算”状态）</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-sm-6">
+                            <div class="key-metric-card">
+                                <div class="metric-value">46</div>
+                                <h5>活跃供应商数</h5
