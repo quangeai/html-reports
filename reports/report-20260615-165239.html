@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>小红书数据看板</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    :root{
+      --red:#FF2442;--red-light:#FF6B81;--red-bg:#FFF5F5;
+      --bg:#F5F6FA;--card:#FFFFFF;
+      --text:#1A1A2E;--text2:#6B7280;--text3:#9CA3AF;
+      --border:#E5E7EB;
+      --shadow:0 2px 12px rgba(0,0,0,0.06);
+      --shadow-h:0 6px 24px rgba(255,36,66,0.12);
+      --r:16px;
+    }
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+    /* Header */
+    .header{background:linear-gradient(135deg,var(--red) 0%,#E91E3A 100%);padding:24px 40px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 4px 20px rgba(255,36,66,0.3);}
+    .header-left{display:flex;align-items:center;gap:16px;}
+    .header-logo{width:42px;height:42px;background:#fff;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:var(--red);}
+    .header-title{color:#fff;font-size:22px;font-weight:700;letter-spacing:1px;}
+    .header-sub{color:rgba(255,255,255,0.8);font-size:13px;margin-top:2px;}
+    .header-date{color:rgba(255,255,255,0.9);font-size:14px;background:rgba(255,255,255,0.15);padding:8px 16px;border-radius:8px;}
+
+    /* Main */
+    .main{max-width:1440px;margin:0 auto;padding:28px 32px 40px;}
+
+    /* KPI */
+    .kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:18px;margin-bottom:28px;}
+    .kpi-card{background:var(--card);border-radius:var(--r);padding:22px 24px;box-shadow:var(--shadow);transition:all .3s;position:relative;overflow:hidden;cursor:default;}
+    .kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--red),var(--red-light));opacity:0;transition:opacity .3s;}
+    .kpi-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-h);}
+    .kpi-card:hover::before{opacity:1;}
+    .kpi-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:14px;}
+    .kpi-label{font-size:13px;color:var(--text2);margin-bottom:8px;}
+    .kpi-value{font-size:28px;font-weight:700;line-height:1;}
+
+    /* Section */
+    .section-title{font-size:17px;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:8px;}
+    .section-title::before{content:'';width:4px;height:18px;background:var(--red);border-radius:2px;}
+
+    /* Charts */
+    .chart-row{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:28px;}
+    .chart-card{background:var(--card);border-radius:var(--r);padding:24px;box-shadow:var(--shadow);}
+    .chart-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+    .chart-header h3{font-size:15px;font-weight:600;}
+    .chart-wrap{position:relative;height:280px;}
+
+    /* Three column */
+    .three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-bottom:28px;}
+    .donut-wrap{position:relative;height:220px;display:flex;align-items:center;justify-content:center;}
+
+    /* Table */
+    .table-card{background:var(--card);border-radius:var(--r);padding:24px;box-shadow:var(--shadow);overflow-x:auto;margin-bottom:28px;}
+    .data-table{width:100%;border-collapse:collapse;}
+    .data-table th{text-align:left;font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;padding:10px 12px;border-bottom:2px solid var(--border);white-space:nowrap;}
+    .data-table td{padding:12px;font-size:13px;border-bottom:1px solid #F3F4F6;vertical-align:middle;white-space:nowrap;}
+    .data-table tr:hover td{background:var(--red-bg);}
+    .note-title-cell{display:flex;align-items:center;gap:10px;}
+    .note-thumb{width:40px;height:40px;border-radius:8px;background:linear-gradient(135deg,#fce4ec,#f8bbd0);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px;}
+    .note-title-text{font-weight:500;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .tag{display:inline-block;padding:3px 10px;border-radius:4px;font-size:11px;font-weight:600;}
+    .tag-image{background:#FEF3C7;color:#D97706;}
+    .tag-video{background:#DBEAFE;color:#2563EB;}
+
+
+    /* Responsive */
+    @media(max-width:1200px){.kpi-grid{grid-template-columns:repeat(3,1fr);}.three-col{grid-template-columns:1fr 1fr;}}
+    @media(max-width:768px){.kpi-grid{grid-template-columns:1fr 1fr;}.chart-row,.three-col{grid-template-columns:1fr;}.main{padding:16px;}}
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-left">
+    <div class="header-logo">RED</div>
+    <div>
+      <div class="header-title">小红书数据看板</div>
+      <div class="header-sub" id="headerSub">数据分析 · Creator Analytics</div>
+    </div>
+  </div>
+  <div class="header-date" id="headerDate"></div>
+</div>
+
+<div class="main">
+
+  <!-- KPI Cards -->
+  <div class="kpi-grid" id="kpiGrid"></div>
+
+  <!-- 趋势分析 -->
+  <div class="section-title">趋势分析</div>
+  <div class="chart-row">
+    <div class="chart-card">
+      <div class="chart-header"><h3>曝光与观看趋势</h3></div>
+      <div class="chart-wrap"><canvas id="trendChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-header"><h3>互动数据趋势</h3></div>
+      <div class="chart-wrap"><canvas id="engageChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- 内容分析 -->
+  <div class="section-title">内容分析</div>
+  <div class="three-col">
+    <div class="chart-card">
+      <div class="chart-header"><h3>笔记类型分布</h3></div>
+      <div class="donut-wrap"><canvas id="typeChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-header"><h3>TOP5 互动对比</h3></div>
+      <div class="chart-wrap"><canvas id="topChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-header"><h3>内容转化漏斗</h3></div>
+      <div id="funnelBox" style="padding:10px 0;"></div>
+    </div>
+  </div>
+
+  <!-- 笔记明细 -->
+  <div class="section-title">笔记数据明细</div>
+  <div class="table-card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>排名</th><th>笔记标题</th><th>类型</th><th>发布时间</th>
+          <th>曝光</th><th>观看</th><th>点击率</th><th>点赞</th>
+          <th>评论</th><th>收藏</th><th>涨粉</th><th>分享</th>
+          <th>时长</th><th>弹幕</th>
+        </tr>
+      </thead>
+      <tbody id="noteTable"></tbody>
+    </table>
+  </div>
+
+</div>
+
+<script id="coze-embedded-data" type="application/json">{"notes": [{"title": "50 万创业，选实体还是电商？", "publish_time": "2026年03月04日19时45分01秒", "type": "视频", "exposure": 13.0, "views": 0.0, "click_rate": 0.0, "likes": 0.0, "comments": 0.0, "favorites": 0.0, "followers": 0.0, "shares": 0.0, "avg_duration": 0.0, "danmaku": 0.0}, {"title": "超全入行指南这不就来了！😉", "publish_time": "2026年03月03日19时45分01秒", "type": "视频", "exposure": 155.0, "views": 1.0, "click_rate": 0.006, "likes": 0.0, "comments": 0.0, "favorites": 0.0, "followers": 0.0, "shares": 0.0, "avg_duration": 1.0, "danmaku": 0.0}, {"title": "南宁开公司，全程不用到场！", "publish_time": "2026年03月02日19时45分01秒", "type": "视频", "exposure": 169.0, "views": 2.0, "click_rate": 0.012, "likes": 0.0, "comments": 0.0, "favorites": 0.0, "followers": 0.0, "shares": 0.0, "avg_duration": 24.0, "danmaku": 0.0}, {"title": "广西注册公司，避开这些坑！", "publish_time": "2026年03月01日19时45分01秒", "type": "视频", "exposure": 126.0, "views": 4.0, "click_rate": 0.016, "likes": 0.0, "comments": 0.0, "favorites": 0.0, "followers": 0.0, "shares": 0.0, "avg_duration": 3.0, "danmaku": 0.0}, {"title": "超全入行指南这不就来了！😉", "publish_time": "2026年02月28日19时45分01秒", "type": "视频", "exposure": 184.0, "views": 2.0, "click_rate": 0.011, "likes": 0.0, "comments": 1.0, "favorites": 0.0, "followers": 0.0, "shares": 0.0, "avg_duration": 14.0, "danmaku": 0.0}, {"title": "公司地址变更，老板们不用愁！", "publish_time": "2026年02月27日19时45分01秒", "type": "视频", "exposure": 184.0, "views": 3.0, "click_rate": 0.016, "likes": 0.0, "comments": 0.0, "favorites": 0.0, "followers": 0.0, "shares": 0.0, "avg_duration": 4.0, "danmaku": 0.0}, {"title": "搞定了记账报税，远离税务罚Q！", "publish_time": "2026年02月26日19时45分01秒", "type": "视频", "exposure": 24.0, "views": 3.0, "click_rate": 0.125, "likes": 0.0, "comments": 0.0, "favorites": 0.0, "followers": 0.0, "shares": 0.0, "avg_duration": 1.0, "danmaku": 0.0}, {"title": "公司/个体户，最快3天拿证！", "publish_time": "2026年02月25日19时45分01秒", "type": "视频", "exposure": 126.0, "views": 3.0, "click_rate": 0.008, "likes": 0.0, "comments": 0.0, "favorites": 0.0, "followers": 0.0, "shares": 0.0, "avg_duration": 31.0, "danmaku": 0.0}, {"title": "公司税务异常，还能注销吗？", "publish_time": "2026年02月24日19时45分01秒", "type": "视频", "exposure": 92.0, "views": 4.0, "click_rate": 0.011, "likes": 0.0, "comments": 0.0, "favorites": 0.0, "followers": 0.0, "shares": 0.0, "avg_duration": 7.0, "danmaku": 0.0}, {"title": "隔壁小李公司差点被吊销！", "publish_time": "2026年02月23日19时45分01秒", "type": "视频", "exposure": 173.0, "views": 4.0, "click_rate": 0.006, "likes": 0.0, "comments": 0.0, "favorites": 0.0, "followers": 1.0, "shares": 0.0, "avg_duration": 1.0, "danmaku": 0.0}, {"title": "公司财税不规范，小心风险找上门", "publish_time": "2026年02月22日19时45分00秒", "type": "视频", "exposure": 35.0, "views": 5.0, "click_rate": 0.118, "likes": 1.0, "comments": 2.0, "favorites": 0.0, "followers": 0.0, "shares": 0.0, "avg_duration": 8.0, "danmaku": 0.0}, {"title": "个体户和公司我究竟该怎么选？", "publish_time": "2026年02月21日19时45分00秒", "type": "视频", "exposure": 168.0, "views": 4.0, "click_rate": 0.012, "likes": 0.0, "comments": 0.0, "favorites": 0.0, "followers": 0.0, "shares": 0.0, "avg_duration": 14.0, "danmaku": 0.0}, {"title": "个体户看过来！", "publish_time": "2026年02月20日19时45分00秒", "type": "视频", "exposure": 166.0, "views": 6.0, "click_rate": 0.012, "likes": 0.0, "comments": 0.0, "favorites": 1.0, "followers": 0.0, "shares": 0.0, "avg_duration": 24.0, "danmaku": 0.0}, {"title": "在南宁创业，一步轻松搞定营业执照‼️", "publish_time": "2026年02月19日19时45分00秒", "type": "视频", "exposure": 124.0, "views": 2.0, "click_rate": 0.008, "likes": 0.0, "comments": 0.0, "favorites": 0.0, "followers": 0.0, "shares": 0.0, "avg_duration": 0.0, "danmaku": 0.0}, {"title": "为什么不能用现金发工资？", "publish_time": "2026年02月18日19时45分00秒", "type": "视频", "exposure": 73.0, "views": 6.0, "click_rate": 0.015, "likes": 0.0, "comments": 0.0, "favorites": 0.0, "followers": 0.0, "shares": 0.0, "avg_duration": 5.0, "danmaku": 0.0}, {"title": "夫妻开公司千万别这么做！", "publish_time": "2026年02月17日19时45分00秒", "type": "视频", "exposure": 170.0, "views": 2.0, "click_rate": 0.012, "likes": 0.0, "comments": 0.0, "favorites": 0.0, "followers": 0.0, "shares": 0.0, "avg_duration": 2.0, "danmaku": 0.0}, {"title": "50 万创业，选实体还是电商？", "publish_time": "2026年02月16日19时45分01秒", "type": "视频", "exposure": 207.0, "views": 8.0, "click_rate": 0.024, "likes": 0.0, "comments": 0.0, "favorites": 0.0, "followers": 0.0, "shares": 0.0, "avg_duration": 32.0, "danmaku": 0.0}, {"title": "超全入行指南这不就来了！😉", "publish_time": "2026年02月15日19时45分01秒", "type": "视频", "exposure": 247.0, "views": 5.0, "click_rate": 0.016, "likes": 1.0, "comments": 1.0, "favorites": 0.0, "followers": 0.0, "shares": 0.0, "avg_duration": 9.0, "danmaku": 0.0}, {"title": "南宁开公司，全程不用到场！", "publish_time": "2026年02月14日19时45分01秒", "type": "视频", "exposure": 182.0, "views": 7.0, "click_rate": 0.039, "likes": 0.0, "comments": 0.0, "favorites": 0.0, "followers": 0.0, "shares": 0.0, "avg_duration": 5.0, "danmaku": 0.0}], "analysis": {"topics": ["#南宁注册公司", "#南宁创业", "#工商财税"], "diagnosis": ["{"notes":[{"title":"50 万创业，选实体还是电商？","publish_time":"2026-03-04","type":"视频","exposure":13,"views":0,"click_rate":0,"likes":0,"comments":0,"favorites":0,"followers":0,"shares":0,"avg_duration":0,"danmaku":0},{"title":"超全入行指南这不就来了！😉","publish_time":"2026-03-03","type":"视频","exposure":155,"views":1,"click_rate":0.6,"likes":0,"comments":0,"favorites":0,"followers":0,"shares":0,"avg_duration":1,"danmaku":0},{"title":"南宁开公司，全程不用到场！","publish_time":"2026-03-02","type":"视频","exposure":169,"views":2,"click_rate":1.2,"likes":0,"comments":0,"favorites":0,"followers":0,"shares":0,"avg_duration":24,"danmaku":0},{"title":"广西注册公司，避开这些坑！","publish_time":"2026-03-01","type":"视频","exposure":126,"views":4,"click_rate":1.6,"likes":0,"comments":0,"favorites":0,"followers":0,"shares":0,"avg_duration":3,"danmaku":0},{"title":"超全入行指南这不就来了！😉","publish_time":"2026-02-28","type":"视频","exposure":184,"views":2,"click_rate":1.1,"likes":0,"comments":1,"favorites":0,"followers":0,"shares":0,"avg_duration":14,"danmaku":0},{"title":"公司地址变更，老板们不用愁！","publish_time":"2026-02-27","type":"视频","exposure":184,"views":3,"click_rate":1.6,"likes":0,"comments":0,"favorites":0,"followers":0,"shares":0,"avg_duration":4,"danmaku":0},{"title":"搞定了记账报税，远离税务罚Q！","publish_time":"2026-02-26","type":"视频","exposure":24,"views":3,"click_rate":12.5,"likes":0,"comments":0,"favorites":0,"followers":0,"shares":0,"avg_duration":1,"danmaku":0},{"title":"公司/个体户，最快3天拿证！","publish_time":"2026-02-25","type":"视频","exposure":126,"views":3,"click_rate":0.8,"likes":0,"comments":0,"favorites":0,"followers":0,"shares":0,"avg_duration":31,"danmaku":0},{"title":"公司税务异常，还能注销吗？","publish_time":"2026-02-24","type":"视频","exposure":92,"views":4,"click_rate":1.1,"likes":0,"comments":0,"favorites":0,"followers":0,"shares":0,"avg_duration":7,"danmaku":0},{"title":"隔壁小李公司差点被吊销！","publish_time":"2026-02-23","type":"视频","exposure":173,"views":4,"click_rate":0.6,"likes":0,"comments":0,"favorites":0,"followers":1,"shares":0,"avg_duration":1,"danmaku":0},{"title":"公司财税不规范，小心风险找上门","publish_time":"2026-02-22","type":"视频","exposure":35,"views":5,"click_rate":11.8,"likes":1,"comments":2,"favorites":0,"followers":0,"shares":0,"avg_duration":8,"danmaku":0},{"title":"个体户和公司我究竟该怎么选？","publish_time":"2026-02-21","type":"视频","exposure":168,"views":4,"click_rate":1.2,"likes":0,"comments":0,"favorites":0,"followers":0,"shares":0,"avg_duration":14,"danmaku":0},{"title":"个体户看过来！","publish_time":"2026-02-20","type":"视频","exposure":166,"views":6,"click_rate":1.2,"likes":0,"comments":0,"favorites":1,"followers":0,"shares":0,"avg_duration":24,"danmaku":0},{"title":"在南宁创业，一步轻松搞定营业执照‼️","publish_time":"2026-02-19","type":"视频","exposure":124,"views":2,"click_rate":0.8,"likes":0,"comments":0,"favorites":0,"followers":0,"shares":0,"avg_duration":0,"danmaku":0},{"title":"为什么不能用现金发工资？","publish_time":"2026-02-18","type":"视频","exposure":73,"views":6,"click_rate":1.5,"likes":0,"comments":0,"favorites":0,"followers":0,"shares":0,"avg_duration":5,"danmaku":0},{"title":"夫妻开公司千万别这么做！","publish_time":"2026-02-17","type":"视频","exposure":170,"views":2,"click_rate":1.2,"likes":0,"comments":0,"favorites":0,"followers":0,"shares":0,"avg_duration":2,"danmaku":0},{"title":"50 万创业，选实体还是电商？","publish_time":"2026-02-16","type":"视频","exposure":207,"views":8,"click_rate":2.4,"likes":0,"comments":0,"favorites":0,"followers":0,"shares":0,"avg_duration":32,"danmaku":0},{"title":"超全入行指南这不就来了！😉","publish_time":"2026-02-15","type":"视频","exposure":247,"views":5,"click_rate":1.6,"likes":1,"comments":1,"favorites":0,"followers":0,"shares":0,"avg_duration":9,"danmaku":0},{"title":"南宁开公司，全程不用到场！","publish_time":"2026-02-14","type":"视频","exposure":182,"views":7,"click_rate":3.9,"likes":0,"comments":0,"favorites":0,"followers":0,"shares":0,"avg_duration":5,"danmaku":0}],"analysis":{"metrics":{"health_score":"42","engage_rate":"1.8%","growth_rate":"0.26%","grade":"C"},"diagnosis":["整体账号内容曝光量极低，近19条笔记最高曝光仅247，多数笔记曝光不足200，流量池初始层级极低","封面点击率极差，仅2条笔记点击率超过10%，超80%笔记点击率低于2%，无法有效吸引用户点击进入内容","互动数据极差，19条笔记中仅5条获得点赞/评论/收藏，仅1条实现涨粉，内容没有触动用户产生互动行为","内容标签定位模糊，多数同城企业服务类内容没有匹配同城流量标签，难以触达精准需求用户"],"suggestions":["优化封面设计，突出核心利益点比如「南宁注册公司0服务费」「3天拿证」等强吸引点，提升封面点击率","批量发布前测试不同封面点击率，保留点击率超过5%的封面风格，淘汰低点击率模板","为每条南宁本地工商财税内容添加同城定位和#南宁注册公司 #南宁创业 等本地话题标签，获取同城精准流量","定期复盘低曝光低互动笔记，暂停无互动内容方向，集中精力打造符合用户需求的爆文笔记"],"topics":["#南宁注册公司","#南宁创业","#工商财税"],"competitor":[{"账号":"南宁本地工商注册通","粉丝":"1.8w","互动率":"6.2%","优势":"内容聚焦单品类痛点，封面统一带本地关键词，精准获取同城流量，稳定出爆文"}]}}}"]}}</script>
+<script src="https://cdn.bootcdn.net/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+// ========== 工具函数 ==========
+const fmt = n => n>=10000?(n/10000).toFixed(1)+'w':n>=1000?(n/1000).toFixed(1)+'k':String(Math.round(n));
+const fmtDur = s => {if(!s)return'--';const m=Math.floor(s/60),ss=Math.round(s%60);return m>0?m+'分'+ss+'秒':ss+'秒';};
+const sum = (arr,key) => arr.reduce((a,b)=>a+(Number(b[key])||0),0);
+const avg = (arr,key) => arr.length?(sum(arr,key)/arr.length):0;
+
+document.getElementById('headerDate').textContent = new Date().toISOString().slice(0,10);
+
+// ========== Chart 实例管理 ==========
+const charts = {};
+function makeChart(id, cfg) {
+  if(typeof Chart==='undefined') return;
+  if(charts[id]) charts[id].destroy();
+  charts[id] = new Chart(document.getElementById(id), cfg);
+}
+if(typeof Chart!=='undefined'){
+  Chart.defaults.font.family = "-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif";
+  Chart.defaults.font.size = 12;
+  Chart.defaults.color = '#6B7280';
+  Chart.defaults.plugins.legend.labels.usePointStyle = true;
+}
+
+// ========== 核心渲染 ==========
+function renderDashboard(data) {
+  const notes = data.notes || [];
+
+  if(!notes.length) return;
+
+  notes.sort((a,b) => (a.publish_time||'').localeCompare(b.publish_time||''));
+
+  // --- KPI ---
+  const totalExposure = sum(notes,'exposure');
+  const totalViews = sum(notes,'views');
+  const totalLikes = sum(notes,'likes');
+  const totalComments = sum(notes,'comments');
+  const totalFav = sum(notes,'favorites');
+  const totalFollowers = sum(notes,'followers');
+  const totalShares = sum(notes,'shares');
+  const avgClickRate = avg(notes,'click_rate');
+  const interaction = totalLikes + totalComments + totalFav;
+
+  const kpis = [
+    {icon:'&#128221;',bg:'#FFF7ED',color:'#F97316',label:'笔记总数',value:notes.length},
+    {icon:'&#128064;',bg:'#FEF2F2',color:'#EF4444',label:'总曝光',value:fmt(totalExposure)},
+    {icon:'&#9654;&#65039;',bg:'#EEF2FF',color:'#6366F1',label:'总观看',value:fmt(totalViews)},
+    {icon:'&#10084;&#65039;',bg:'#FEF3C7',color:'#EAB308',label:'总互动',value:fmt(interaction)},
+    {icon:'&#128200;',bg:'#ECFDF5',color:'#10B981',label:'平均点击率',value:avgClickRate.toFixed(1)+'%'}
+  ];
+  document.getElementById('kpiGrid').innerHTML = kpis.map(k=>`
+    <div class="kpi-card">
+      <div class="kpi-icon" style="background:${k.bg};color:${k.color};">${k.icon}</div>
+      <div class="kpi-label">${k.label}</div>
+      <div class="kpi-value">${k.value}</div>
+    </div>`).join('');
+
+  // --- 日期聚合 ---
+  const byDate = {};
+  notes.forEach(n => {
+    const d = (n.publish_time||'').slice(0,10);
+    if(!d) return;
+    if(!byDate[d]) byDate[d]={exposure:0,views:0,likes:0,comments:0,favorites:0,shares:0,followers:0};
+    const g=byDate[d];
+    g.exposure+=n.exposure||0; g.views+=n.views||0; g.likes+=n.likes||0;
+    g.comments+=n.comments||0; g.favorites+=n.favorites||0; g.shares+=n.shares||0; g.followers+=n.followers||0;
+  });
+  const dates = Object.keys(byDate).sort();
+  const dateLabels = dates.map(d=>d.slice(5));
+
+  // --- 曝光与观看趋势 ---
+  makeChart('trendChart',{
+    type:'line',
+    data:{labels:dateLabels,datasets:[
+      {label:'曝光',data:dates.map(d=>byDate[d].exposure),borderColor:'#FF2442',backgroundColor:'rgba(255,36,66,.08)',fill:true,tension:.4,pointRadius:0,pointHoverRadius:5,pointHoverBackgroundColor:'#FF2442',borderWidth:2.5},
+      {label:'观看',data:dates.map(d=>byDate[d].views),borderColor:'#3B82F6',backgroundColor:'transparent',tension:.4,pointRadius:0,borderWidth:2}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'top',align:'end'},tooltip:{backgroundColor:'#1A1A2E',titleColor:'#fff',bodyColor:'#fff',cornerRadius:8,padding:12}},
+      scales:{x:{grid:{display:false},ticks:{maxTicksLimit:10}},y:{grid:{color:'#F3F4F6'},ticks:{callback:v=>fmt(v)}}}}
+  });
+
+  // --- 互动趋势 ---
+  makeChart('engageChart',{
+    type:'line',
+    data:{labels:dateLabels,datasets:[
+      {label:'点赞',data:dates.map(d=>byDate[d].likes),borderColor:'#FF2442',tension:.4,pointRadius:0,borderWidth:2},
+      {label:'评论',data:dates.map(d=>byDate[d].comments),borderColor:'#3B82F6',tension:.4,pointRadius:0,borderWidth:2},
+      {label:'收藏',data:dates.map(d=>byDate[d].favorites),borderColor:'#F59E0B',tension:.4,pointRadius:0,borderWidth:2},
+      {label:'分享',data:dates.map(d=>byDate[d].shares),borderColor:'#10B981',tension:.4,pointRadius:0,borderWidth:2}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'top',align:'end'},tooltip:{backgroundColor:'#1A1A2E',cornerRadius:8,padding:12}},
+      scales:{x:{grid:{display:false},ticks:{maxTicksLimit:10}},y:{grid:{color:'#F3F4F6'}}}}
+  });
+
+  // --- 类型分布 ---
+  const typeMap = {};
+  notes.forEach(n=>{ const t=n.type||'未知'; typeMap[t]=(typeMap[t]||0)+1; });
+  const typeLabels = Object.keys(typeMap);
+  const typeColors = ['#FF2442','#3B82F6','#F59E0B','#10B981','#8B5CF6','#EC4899'];
+  makeChart('typeChart',{
+    type:'doughnut',
+    data:{labels:typeLabels,datasets:[{data:typeLabels.map(t=>typeMap[t]),backgroundColor:typeColors.slice(0,typeLabels.length),borderWidth:0,hoverOffset:6}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{position:'bottom',labels:{padding:16}}}}
+  });
+
+  // --- TOP5 互动 ---
+  const top5 = [...notes].sort((a,b)=>((b.likes||0)+(b.comments||0)+(b.favorites||0))-((a.likes||0)+(a.comments||0)+(a.favorites||0))).slice(0,5);
+  const shortT = t => t&&t.length>10?t.slice(0,10)+'…':(t||'');
+  makeChart('topChart',{
+    type:'bar',
+    data:{labels:top5.map(n=>shortT(n.title)),datasets:[
+      {label:'点赞',data:top5.map(n=>n.likes||0),backgroundColor:'#FF2442',borderRadius:4,maxBarThickness:20},
+      {label:'评论',data:top5.map(n=>n.comments||0),backgroundColor:'#3B82F6',borderRadius:4,maxBarThickness:20},
+      {label:'收藏',data:top5.map(n=>n.favorites||0),backgroundColor:'#F59E0B',borderRadius:4,maxBarThickness:20}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'top',align:'end'}},
+      scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{grid:{color:'#F3F4F6'},ticks:{callback:v=>fmt(v)}}}}
+  });
+
+  // --- 漏斗 ---
+  const funnel = [
+    {label:'总曝光',value:totalExposure},
+    {label:'总观看',value:totalViews},
+    {label:'总互动',value:interaction},
+    {label:'总涨粉',value:totalFollowers},
+    {label:'总分享',value:totalShares}
+  ];
+  const fMax = funnel[0].value || 1;
+  document.getElementById('funnelBox').innerHTML = funnel.map((f,i)=>{
+    const w = Math.max(30, 100-i*15);
+    const pct = (f.value/fMax*100).toFixed(1);
+    const op = (1-i*0.18).toFixed(2);
+    return `<div style="display:flex;align-items:center;margin-bottom:8px;">
+      <div style="flex:1;display:flex;justify-content:center;">
+        <div style="width:${w}%;height:42px;background:linear-gradient(90deg,rgba(255,36,66,${op}),rgba(255,107,129,${op}));border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:600;">${f.label}</div>
+      </div>
+      <div style="width:120px;text-align:right;font-size:13px;">
+        <b>${fmt(f.value)}</b> <span style="color:var(--text3);">${pct}%</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  // --- 笔记表格 ---
+  const sorted = [...notes].sort((a,b)=>(b.likes||0)-(a.likes||0));
+  document.getElementById('noteTable').innerHTML = sorted.map((n,i)=>{
+    const tagCls = (n.type||'').includes('视频')?'tag-video':'tag-image';
+    const thumbIcon = (n.type||'').includes('视频')?'&#127909;':'&#128247;';
+    return `<tr>
+      <td style="font-weight:700;color:${i<3?'var(--red)':'var(--text2)'};">${i+1}</td>
+      <td><div class="note-title-cell"><div class="note-thumb">${thumbIcon}</div><span class="note-title-text" title="${n.title||''}">${n.title||''}</span></div></td>
+      <td><span class="tag ${tagCls}">${n.type||''}</span></td>
+      <td style="color:var(--text3);">${n.publish_time||''}</td>
+      <td>${fmt(n.exposure||0)}</td>
+      <td>${fmt(n.views||0)}</td>
+      <td>${(n.click_rate||0).toFixed(1)}%</td>
+      <td style="font-weight:600;">${fmt(n.likes||0)}</td>
+      <td>${fmt(n.comments||0)}</td>
+      <td>${fmt(n.favorites||0)}</td>
+      <td>${fmt(n.followers||0)}</td>
+      <td>${fmt(n.shares||0)}</td>
+      <td>${fmtDur(n.avg_duration)}</td>
+      <td>${n.danmaku||0}</td>
+    </tr>`;
+  }).join('');
+
+  // --- header更新 ---
+  if(dates.length>=2) document.getElementById('headerSub').textContent = dates[0]+' ~ '+dates[dates.length-1]+' · '+notes.length+'篇笔记';
+}
+
+
+// ========== 全局API ==========
+window.cozeUpdate = function(data){
+  if(typeof data==='string') data=JSON.parse(data);
+  renderDashboard(data);
+};
+
+// ========== 自动加载 ==========
+(function(){
+  function showInfo(msg,color){
+    var g=document.getElementById('kpiGrid');
+    if(g) g.innerHTML='<div style="grid-column:1/-1;background:'+(color==='warn'?'#FFFBEB':'#FEF2F2')+';border:2px solid '+(color==='warn'?'#F59E0B':'#EF4444')+';border-radius:12px;padding:20px;color:'+(color==='warn'?'#92400E':'#B91C1C')+';font-size:13px;line-height:1.8;">'+msg+'</div>';
+  }
+  var el=document.getElementById('coze-embedded-data');
+  if(!el){showInfo('错误：未找到数据标签','err');return;}
+  var raw=(el.textContent||'').trim();
+  if(!raw){showInfo('错误：数据标签内容为空','err');return;}
+  var placeholder='__COZE'+'_DATA__';
+  if(raw===placeholder){showInfo('错误：数据占位符未被替换，请检查代码节点','err');return;}
+  try{
+    var d=JSON.parse(raw);
+    if(d&&typeof d==='object'){
+      if(!d.notes||!d.notes.length){
+        showInfo('提示：笔记数据为空（notes=0条）<br><b>请检查代码节点的 raw_data 参数是否已连接 read 插件的 data 输出</b>','warn');
+      }
+      renderDashboard(d);
+      return;
+    }
+  }catch(e){
+    showInfo('JSON解析失败: '+e.message,'err');
+  }
+})();
+
+window.addEventListener('message',function(e){if(e.data&&e.data.type==='coze_data'){renderDashboard(e.data.payload);}});
+</script>
+</body>
+</html>
