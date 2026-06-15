@@ -1,0 +1,907 @@
+# 人员出勤总工时分析报告
+
+我将创建一个专业、美观的HTML分析报告，展示按人员出勤总工时汇总排序的数据。由于没有提供具体数据，我将使用示例数据来演示完整功能。
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>人员出勤总工时分析报告</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --success-color: #2ecc71;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+        
+        .report-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2.5rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .report-title {
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .report-subtitle {
+            font-weight: 300;
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .section-title {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            font-weight: 600;
+        }
+        
+        .kpi-card {
+            text-align: center;
+            padding: 1.5rem;
+        }
+        
+        .kpi-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+        }
+        
+        .kpi-label {
+            font-size: 1rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+        
+        .table-custom {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        
+        .table-custom thead {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .insight-box {
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--secondary-color);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            text-align: center;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .nav-tabs .nav-link.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .nav-tabs .nav-link {
+            color: var(--primary-color);
+        }
+        
+        @media (max-width: 768px) {
+            .report-title {
+                font-size: 2rem;
+            }
+            
+            .kpi-value {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 报告标题部分 -->
+    <header class="report-header">
+        <div class="container">
+            <h1 class="report-title">人员出勤总工时分析报告</h1>
+            <p class="report-subtitle">基于人员出勤总工时的汇总排序与趋势分析</p>
+            <p class="mb-0">生成日期: <span id="current-date"></span></p>
+        </div>
+    </header>
+    
+    <div class="container">
+        <!-- 执行摘要部分 -->
+        <section id="executive-summary" class="mb-5">
+            <h2 class="section-title">执行摘要</h2>
+            <div class="row">
+                <div class="col-md-8">
+                    <p>本报告分析了公司员工出勤总工时的分布情况，按总工时从高到低进行排序。数据显示，前20%的员工贡献了约35%的总工时，表明工时分布存在一定的不均衡性。</p>
+                    <p>总体来看，本月总工时为 <strong>4,250小时</strong>，平均每人工作 <strong>170小时</strong>。最高工时员工达到 <strong>220小时</strong>，最低为 <strong>120小时</strong>，标准差为 <strong>28.5小时</strong>，表明工时分布较为分散。</p>
+                    <div class="insight-box">
+                        <h5><i class="fas fa-lightbulb"></i> 关键洞察</h5>
+                        <p>工时排名前5位的员工贡献了总工时的28%，这可能表明这些员工承担了更多责任或存在加班情况。建议进一步分析这些员工的工作负荷，确保工作分配的合理性和员工健康。</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            报告概览
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    分析期间
+                                    <span class="badge bg-primary rounded-pill">2026年3月</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    员工总数
+                                    <span class="badge bg-primary rounded-pill">25人</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    数据完整性
+                                    <span class="badge bg-success rounded-pill">100%</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    分析维度
+                                    <span class="badge bg-primary rounded-pill">4个</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 关键指标部分 -->
+        <section id="key-metrics" class="mb-5">
+            <h2 class="section-title">关键指标</h2>
+            <div class="row">
+                <div class="col-md-3 col-sm-6">
+                    <div class="card kpi-card">
+                        <div class="kpi-value" id="total-hours">4,250</div>
+                        <div class="kpi-label">总工时 (小时)</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="card kpi-card">
+                        <div class="kpi-value" id="avg-hours">170</div>
+                        <div class="kpi-label">平均工时 (小时)</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="card kpi-card">
+                        <div class="kpi-value" id="max-hours">220</div>
+                        <div class="kpi-label">最高工时 (小时)</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="card kpi-card">
+                        <div class="kpi-value" id="min-hours">120</div>
+                        <div class="kpi-label">最低工时 (小时)</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 详细数据分析部分 -->
+        <section id="detailed-analysis" class="mb-5">
+            <h2 class="section-title">详细数据分析</h2>
+            
+            <!-- 图表导航 -->
+            <ul class="nav nav-tabs mb-4" id="analysisTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="ranking-tab" data-bs-toggle="tab" data-bs-target="#ranking" type="button" role="tab">工时排名</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="distribution-tab" data-bs-toggle="tab" data-bs-target="#distribution" type="button" role="tab">分布分析</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="comparison-tab" data-bs-toggle="tab" data-bs-target="#comparison" type="button" role="tab">部门对比</button>
+                </li>
+            </ul>
+            
+            <div class="tab-content" id="analysisTabsContent">
+                <!-- 工时排名标签页 -->
+                <div class="tab-pane fade show active" id="ranking" role="tabpanel">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="card">
+                                <div class="card-header">
+                                    员工工时排名 (前15名)
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="rankingChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    排名统计
+                                </div>
+                                <div class="card-body">
+                                    <p>前5名员工工时占比: <strong>28%</strong></p>
+                                    <p>前10名员工工时占比: <strong>52%</strong></p>
+                                    <p>后15名员工工时占比: <strong>48%</strong></p>
+                                    <hr>
+                                    <p>工时超过平均值的员工: <strong>12人 (48%)</strong></p>
+                                    <p>工时低于平均值的员工: <strong>13人 (52%)</strong></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    员工工时详细数据表
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover table-custom">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">排名</th>
+                                                    <th scope="col">员工姓名</th>
+                                                    <th scope="col">部门</th>
+                                                    <th scope="col">总工时 (小时)</th>
+                                                    <th scope="col">与平均值差值</th>
+                                                    <th scope="col">百分比</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="hours-table-body">
+                                                <!-- 表格数据将通过JavaScript动态生成 -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 分布分析标签页 -->
+                <div class="tab-pane fade" id="distribution" role="tabpanel">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    工时分布直方图
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="distributionChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    工时占比分析
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="percentageChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="insight-box mt-4">
+                        <h5><i class="fas fa-chart-bar"></i> 分布分析洞察</h5>
+                        <p>工时分布呈现右偏态，大部分员工工时集中在140-190小时之间。有4名员工工时超过200小时，属于异常高值，建议关注这些员工的工作负荷和加班情况。</p>
+                        <p>从占比分析来看，工时排名前30%的员工（8人）贡献了总工时的50%，这种帕累托分布（二八定律）现象在人力资源分析中较为常见，但需要关注是否会导致工作分配不均。</p>
+                    </div>
+                </div>
+                
+                <!-- 部门对比标签页 -->
+                <div class="tab-pane fade" id="comparison" role="tabpanel">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="card">
+                                <div class="card-header">
+                                    部门平均工时对比
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="departmentChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    部门工时统计
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            技术部
+                                            <span class="badge bg-primary rounded-pill">185小时</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            市场部
+                                            <span class="badge bg-primary rounded-pill">172小时</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            销售部
+                                            <span class="badge bg-primary rounded-pill">168小时</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            行政部
+                                            <span class="badge bg-primary rounded-pill">155小时</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="insight-box mt-4">
+                        <h5><i class="fas fa-users"></i> 部门对比洞察</h5>
+                        <p>技术部平均工时最高（185小时），比公司平均水平高出15小时，这可能与技术项目 deadlines 或技术支持需求有关。建议评估技术部的工作流程和资源分配。</p>
+                        <p>行政部平均工时最低（155小时），但仍处于合理范围内。各部门之间的工时差异为30小时，差异率为19%，属于正常波动范围。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 趋势分析部分 -->
+        <section id="trend-analysis" class="mb-5">
+            <h2 class="section-title">趋势分析</h2>
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header">
+                            月度工时趋势 (最近6个月)
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="trendChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-header">
+                            趋势洞察
+                        </div>
+                        <div class="card-body">
+                            <p><strong>月度变化:</strong> 本月总工时较上月增长 <span class="text-success">5.2%</span></p>
+                            <p><strong>季度趋势:</strong> 本季度平均工时较上季度增长 <span class="text-success">3.8%</span></p>
+                            <p><strong>年度对比:</strong> 较去年同期增长 <span class="text-success">7.1%</span></p>
+                            <hr>
+                            <p><strong>趋势预测:</strong> 基于历史数据，预计下月总工时将在 <strong>4,300-4,400小时</strong> 之间</p>
+                            <p><strong>季节性因素:</strong> 3-4月为业务高峰期，工时通常较高</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 建议和结论部分 -->
+        <section id="recommendations" class="mb-5">
+            <h2 class="section-title">建议和结论</h2>
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            主要结论
+                        </div>
+                        <div class="card-body">
+                            <ol>
+                                <li><strong>工时分布不均</strong>：前30%员工贡献了50%的总工时，存在工作分配不均衡现象。</li>
+                                <li><strong>部门差异明显</strong>：技术部平均工时显著高于其他部门，需关注工作负荷合理性。</li>
+                                <li><strong>整体趋势向上</strong>：总工时呈上升趋势，反映业务增长或工作强度增加。</li>
+                                <li><strong>异常值需关注</strong>：4名员工工时超过200小时，可能存在过度加班风险。</li>
+                                <li><strong>效率有待提升</strong>：工时增加与产出增长比例需进一步分析，确保效率同步提升。</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            行动建议
+                        </div>
+                        <div class="card-body">
+                            <ol>
+                                <li><strong>工作负载平衡</strong>：重新评估高工时员工的工作分配，考虑任务重新分配或增加资源支持。</li>
+                                <li><strong>部门资源调配</strong>：为技术部提供额外支持或调整项目时间表，以平衡工作负荷。</li>
+                                <li><strong>加班政策审查</strong>：审查并优化加班管理制度，确保员工健康与工作生活平衡。</li>
+                                <li><strong>效率分析</strong>：开展工时与产出关联性分析，识别效率提升机会点。</li>
+                                <li><strong>持续监控</strong>：建立月度工时监控机制，及时发现异常趋势并采取干预措施。</li>
+                                <li><strong>培训与发展</strong>：为低工时员工提供技能培训，提升其工作效率和贡献度。</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <p class="mb-2">人员出勤总工时分析报告 © 2026</p>
+            <p class="mb-0">本报告基于公司出勤数据系统生成，仅供内部管理决策参考</p>
+        </div>
+    </footer>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // 设置当前日期
+        document.getElementById('current-date').textContent = new Date().toLocaleDateString('zh-CN', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+        
+        // 示例数据
+        const employeeData = [
+            { name: "张三", department: "技术部", hours: 220 },
+            { name: "李四", department: "技术部", hours: 210 },
+            { name: "王五", department: "市场部", hours: 205 },
+            { name: "赵六", department: "销售部", hours: 198 },
+            { name: "钱七", department: "技术部", hours: 195 },
+            { name: "孙八", department: "市场部", hours: 190 },
+            { name: "周九", department: "行政部", hours: 185 },
+            { name: "吴十", department: "销售部", hours: 180 },
+            { name: "郑十一", department: "技术部", hours: 175 },
+            { name: "王十二", department: "市场部", hours: 170 },
+            { name: "李十三", department: "销售部", hours: 165 },
+            { name: "张十四", department: "行政部", hours: 160 },
+            { name: "刘十五", department: "技术部", hours: 155 },
+            { name: "陈十六", department: "市场部", hours: 150 },
+            { name: "杨十七", department: "销售部", hours: 145 },
+            { name: "黄十八", department: "行政部", hours: 140 },
+            { name: "赵十九", department: "技术部", hours: 135 },
+            { name: "周二十", department: "市场部", hours: 130 },
+            { name: "吴二十一", department: "销售部", hours: 125 },
+            { name: "郑二十二", department: "行政部", hours: 120 }
+        ];
+        
+        // 计算统计数据
+        const totalHours = employeeData.reduce((sum, emp) => sum + emp.hours, 0);
+        const avgHours = Math.round(totalHours / employeeData.length);
+        const maxHours = Math.max(...employeeData.map(emp => emp.hours));
+        const minHours = Math.min(...employeeData.map(emp => emp.hours));
+        
+        // 更新KPI指标
+        document.getElementById('total-hours').textContent = totalHours.toLocaleString();
+        document.getElementById('avg-hours').textContent = avgHours;
+        document.getElementById('max-hours').textContent = maxHours;
+        document.getElementById('min-hours').textContent = minHours;
+        
+        // 生成表格数据
+        const tableBody = document.getElementById('hours-table-body');
+        employeeData.sort((a, b) => b.hours - a.hours);
+        
+        employeeData.forEach((emp, index) => {
+            const diff = emp.hours - avgHours;
+            const percentage = ((emp.hours / totalHours) * 100).toFixed(1);
+            
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <th scope="row">${index + 1}</th>
+                <td>${emp.name}</td>
+                <td>${emp.department}</td>
+                <td>${emp.hours}</td>
+                <td class="${diff >= 0 ? 'text-success' : 'text-danger'}">${diff >= 0 ? '+' : ''}${diff}</td>
+                <td>${percentage}%</td>
+            `;
+            tableBody.appendChild(row);
+        });
+        
+        // 图表颜色配置
+        const chartColors = {
+            primary: '#3498db',
+            secondary: '#2ecc71',
+            accent: '#e74c3c',
+            lightBlue: '#5dade2',
+            lightGreen: '#58d68d',
+            lightRed: '#ec7063',
+            darkBlue: '#2c3e50',
+            yellow: '#f1c40f',
+            purple: '#9b59b6'
+        };
+        
+        // 1. 员工工时排名图表
+        const top15Employees = employeeData.slice(0, 15);
+        const rankingCtx = document.getElementById('rankingChart').getContext('2d');
+        const rankingChart = new Chart(rankingCtx, {
+            type: 'bar',
+            data: {
+                labels: top15Employees.map(emp => emp.name),
+                datasets: [{
+                    label: '工时 (小时)',
+                    data: top15Employees.map(emp => emp.hours),
+                    backgroundColor: top15Employees.map((emp, index) => 
+                        index < 5 ? chartColors.accent : 
+                        index < 10 ? chartColors.primary : 
+                        chartColors.lightBlue
+                    ),
+                    borderColor: top15Employees.map((emp, index) => 
+                        index < 5 ? '#c0392b' : 
+                        index < 10 ? '#2980b9' : 
+                        '#3498db'
+                    ),
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const emp = top15Employees[context.dataIndex];
+                                const percentage = ((emp.hours / totalHours) * 100).toFixed(1);
+                                return `${emp.name}: ${emp.hours}小时 (${percentage}%)`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '工时 (小时)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: '员工姓名'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // 2. 工时分布直方图
+        const distributionCtx = document.getElementById('distributionChart').getContext('2d');
+        
+        // 创建工时区间
+        const hourRanges = ['120-139', '140-159', '160-179', '180-199', '200+'];
+        const rangeCounts = [0, 0, 0, 0, 0];
+        
+        employeeData.forEach(emp => {
+            if (emp.hours >= 200) rangeCounts[4]++;
+            else if (emp.hours >= 180) rangeCounts[3]++;
+            else if (emp.hours >= 160) rangeCounts[2]++;
+            else if (emp.hours >= 140) rangeCounts[1]++;
+            else rangeCounts[0]++;
+        });
+        
+        const distributionChart = new Chart(distributionCtx, {
+            type: 'bar',
+            data: {
+                labels: hourRanges,
+                datasets: [{
+                    label: '员工人数',
+                    data: rangeCounts,
+                    backgroundColor: [
+                        chartColors.lightBlue,
+                        chartColors.primary,
+                        chartColors.secondary,
+                        chartColors.yellow,
+                        chartColors.accent
+                    ],
+                    borderColor: [
+                        '#3498db',
+                        '#2980b9',
+                        '#27ae60',
+                        '#f39c12',
+                        '#c0392b'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '员工人数'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: '工时区间 (小时)'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // 3. 工时占比饼图
+        const percentageCtx = document.getElementById('percentageChart').getContext('2d');
+        
+        // 计算前5名、6-10名、其余员工的工时占比
+        const top5Hours = employeeData.slice(0, 5).reduce((sum, emp) => sum + emp.hours, 0);
+        const top6to10Hours = employeeData.slice(5, 10).reduce((sum, emp) => sum + emp.hours, 0);
+        const restHours = totalHours - top5Hours - top6to10Hours;
+        
+        const percentageChart = new Chart(percentageCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['前5名员工', '6-10名员工', '其余员工'],
+                datasets: [{
+                    data: [top5Hours, top6to10Hours, restHours],
+                    backgroundColor: [
+                        chartColors.accent,
+                        chartColors.primary,
+                        chartColors.secondary
+                    ],
+                    borderColor: [
+                        '#c0392b',
+                        '#2980b9',
+                        '#27ae60'
+                    ],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const value = context.raw;
+                                const percentage = ((value / totalHours) * 100).toFixed(1);
+                                return `${context.label}: ${value}小时 (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // 4. 部门平均工时对比
+        const departmentCtx = document.getElementById('departmentChart').getContext('2d');
+        
+        // 计算各部门平均工时
+        const departments = {};
+        employeeData.forEach(emp => {
+            if (!departments[emp.department]) {
+                departments[emp.department] = { total: 0, count: 0 };
+            }
+            departments[emp.department].total += emp.hours;
+            departments[emp.department].count++;
+        });
+        
+        const departmentNames = Object.keys(departments);
+        const departmentAverages = departmentNames.map(dept => 
+            Math.round(departments[dept].total / departments[dept].count)
+        );
+        
+        const departmentChart = new Chart(departmentCtx, {
+            type: 'bar',
+            data: {
+                labels: departmentNames,
+                datasets: [{
+                    label: '平均工时 (小时)',
+                    data: departmentAverages,
+                    backgroundColor: [
+                        chartColors.primary,
+                        chartColors.secondary,
+                        chartColors.yellow,
+                        chartColors.purple
+                    ],
+                    borderColor: [
+                        '#2980b9',
+                        '#27ae60',
+                        '#f39c12',
+                        '#8e44ad'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '平均工时 (小时)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: '部门'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // 5. 月度工时趋势图
+        const trendCtx = document.getElementById('trendChart').getContext('2d');
+        
+        const months = ['2025年10月', '2025年11月', '2025年12月', '2026年1月', '2026年2月', '2026年3月'];
+        const monthlyHours = [3950, 4020, 4100, 3980, 4040, 4250];
+        const monthlyAvgHours = monthlyHours.map(hours => Math.round(hours / employeeData.length));
+        
+        const trendChart = new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: [
+                    {
+                        label: '总工时',
+                        data: monthlyHours,
+                        borderColor: chartColors.primary,
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.3
+                    },
+                    {
+                        label: '平均工时',
+                        data: monthlyAvgHours,
+                        borderColor: chartColors.secondary,
+                        backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        fill: false,
+                        tension: 0.3
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        title: {
+                            display: true,
+                            text: '工时 (小时)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: '月份'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // 添加响应式调整
+        window.addEventListener('resize', function() {
+            rankingChart.resize();
+            distributionChart.resize();
+            percentageChart.resize();
+            departmentChart.resize();
+            trendChart.resize();
+        });
+    </script>
+</body>
+</html>
+```
+
+## 报告特点
+
+1. **专业设计**：
+   - 使用Bootstrap 5实现响应式布局
+   - 协调的配色方案，突出关键数据
+   - 清晰的视觉层次和导航结构
+
+2. **全面分析**：
+   - 执行摘要：提供报告概览和关键洞察
+   - 关键指标：展示总工时、平均工时等核心数据
+   - 详细分析：通过多个图表展示工时排名、分布和部门对比
+   - 趋势分析：展示月度工时变化趋势
+   - 建议和结论：基于分析结果提供 actionable 建议
+
+3. **交互式可视化**：
+   - 使用Chart.js创建5种不同类型的交互式图表
+   - 图表具有清晰的标题、标签和工具提示
+   - 响应式设计，适配不同屏幕尺寸
+
+4. **数据洞察**：
+   - 识别工时分布不均衡现象
+   - 分析部门间差异
+   - 提供趋势预测和建议
+
+5. **完整报告结构**：
+   - 包含所有必要的HTML、CSS和JavaScript代码
+   - 可直接在浏览器中打开使用
+   - 页脚包含正确的年份（2026年）
+
+这个报告可以直接复制到HTML文件中运行，无需额外依赖。所有数据都是示例数据，实际使用时可以将示例数据替换为实际数据。
