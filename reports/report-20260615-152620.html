@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>经营分析分析</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+body{background:#f8f9f6;font-family-apple-system,-apple-system,BlinkMacSystemFont,linear-gradient(135deg,#1e3c72,#2a5298);color:#fff;padding:24px;border-radius:0 0 24px;
+margin-bottom:32px;}.card{background:rgba(255,255,255,0.12);backdrop-filter:solid #1e3c72;padding-left:12px;margin:2.5rem 0 1.5rem;font-size:1.4rem;card border:none;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.3);}.card:hover{transform:translateY(-3px);transition:all 0.3s;}.card-header{height:100%;white-space:nowrap;}
+</style>
+</head>
+<body>
+<div class="ban"><h1>经营数据洞察报告</h1></div>
+<div class="container mt-3">
+<div class="sec-title">一、数据分析结论</div>
+<div class="row row-cols-md-3 g-4">
+<div class="col">
+<div class="card p-4 border-top 4 border-primary">
+<h6 class="text-muted mb-1">过程指标概况</h6>
+<p id="c1" class="fs-5 text-dark mb-1"></p>
+<div id="c1-data" class="small text-muted m-0"></div>
+</div>
+</div>
+<div class="col">
+<div class="card p-4 border-top 4 border-info">
+<h6 class="text-muted mb-1">结果指标概况</h6>
+<p id="c2" class="fs-5 text-dark mb-1"></p>
+<div id="c2-data" class="small text-muted m-0"></div>
+</div>
+</div>
+<div class="col">
+<div class="card p-4 border-top 4 border-warning">
+<h6 class="text-muted mb-1">整体表现排名</h6>
+<p id="c3" class="fs-5 text-dark mb-1"></p>
+<div id="c3-name" class="small text-muted m-0"></div>
+</div>
+</div>
+</div>
+<div class="sec-title mt-4">二、优化提升策略</div>
+<div class="row row-cols-md-3 g-4">
+<div class="col">
+<div class="card p-4 border-top 4 border-success">
+<h6 class="text-muted mb-1">策略标题1</h6>
+<p id="s1" class="fs-6 text-dark m-0"></p>
+</div>
+</div>
+<div class="col">
+<div class="card p-4 border-top 4 border-secondary">
+<h6 class="text-muted mb-1">策略标题2</h6>
+<p id="s2" class="fs-6 text-dark m-0"></p>
+</div>
+</div>
+<div class="col">
+<div class="card p-4 border-top 4 border-danger">
+<h6 class="text-muted mb-1">策略标题3</h6>
+<p id="s3" class="fs-6 text-dark m-0"></p>
+</div>
+</div>
+</div>
+<div class="sec-title mt-4">三、数据趋势及明细</div>
+<div class="card p-4 mb-4">
+<h6 class="wb mb-3 ps-2 border-start border-primary">过程指标趋势</h6>
+<div class="row g-4 align-items-stretch">
+<div class="col-md-6">
+<canvas id="traffic_line" width="400" height="220"></canvas>
+</div>
+<div class="col-md-6">
+<table class="table table-striped table-hover text-nowrap">
+<thead class="table-light">
+<tr>
+<th>月份</th>
+<th>曝光量</th>
+<th>访问数</th>
+<th>环比</th>
+</tr>
+</thead>
+<tbody id="traffic_table"></tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="card p-4 mb-4">
+<h6 class="wb mb-3 ps-2 border-start border-3 border-purple">结果指标概览</h6>
+<div class="row g-4 align-items-stretch">
+<div class="col-md-6">
+<canvas id="leads_line" width="400" height="220"></canvas>
+</div>
+<div class="col-md-6">
+<div class="row g-3">
+<div class="col-12">
+<h6 class="text-muted mb-2">全量数据洞察</h6>
+<table class="table table-striped table-hover text-nowrap">
+<thead class="table-light">
+<tr>
+<th>月份</th>
+<th>总客资</th>
+<th>渠道明细</th>
+</tr>
+</thead>
+<tbody id="leads_table"></tbody>
+</table>
+</div>
+<div class="col-12">
+<h6 class="text-muted mb-2">渠道分布饼图</h6>
+<canvas id="pie_chart" width="400" height="200"></canvas>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+const __DATA_PLACEHOLDER__ = {"conclusions":{"leads_data":"总销售量增长210%，从1009份增长至3128份","leads_summary":"销售合同规模随采购端同步增长，整体实现翻倍以上的高速扩张","rank_name":"规模冠军","rank_summary":"益光国际事业部合同规模位居全集团第一，增长表现突出，其他、能化事业部紧随其后","traffic_data":"总采购量增长226%，从1093份增长至3561份","traffic_summary":"全集团采购合同规模从200W阶段到300W阶段实现大幅增长，绝大多数事业部采购量均有明显提升"},"leads_analysis":{"labels":["200W阶段","300W阶段"],"pie_chart":{"data":[718,594,444,344,218,810],"labels":["其他","益光国际事业部","能化事业部","再生资源事业部","区域发展事业部","其余事业部合计"]},"table_rows":[{"average":78,"mom":"-","month":"200W阶段","total":1009},{"average":241,"mom":"+210%","month":"300W阶段","total":3128}],"total_leads_data":[1009,3128]},"strategies":[{"content":"针对益光国际、能化、再生资源等规模和增长双优的事业部，加大供应链、获客渠道支持，进一步放大业务增量，巩固市场优势","title":"加大头部优势事业部资源倾斜"},{"content":"针对合金事业部、价格管理事业部等规模较小、增长放缓的业务，梳理存量订单，淘汰低效亏损业务，集中资源聚焦高毛利项目","title":"优化低效低增长业务结构"},{"content":"针对采购增长快于销售的事业部加大市场拓展消化备货，针对销售增长快于供应的事业部提前锁定上游产能，保障订单交付，平衡供需差","title":"推进供需匹配动态调整"}],"traffic_analysis":{"exposure_data":[1093,3561],"labels":["200W阶段","300W阶段"],"table_rows":[{"exposure":1093,"mom":"-","month":"200W阶段","visit":84},{"exposure":3561,"mom":"+226%","month":"300W阶段","visit":274}],"visit_data":[84,274]}};
+const fmt = (num) => isNaN(Number(num)) ? num : Number(num).toLocaleString();
+document.addEventListener('DOMContentLoaded',()=>{
+const el = (id)=>document.getElementById(id);
+const d = __DATA_PLACEHOLDER__;
+// 结论区域
+el('c1').innerText = d.conclusions.traffic_summary;
+el('c1-data').innerText = d.conclusions.traffic_data;
+el('c2').innerText = d.conclusions.leads_summary;
+el('c2-data').innerText = d.conclusions.leads_data;
+el('c3').innerText = d.conclusions.rank_summary;
+el('c3-name').innerText = d.conclusions.rank_name;
+// 策略区域
+el('s1').innerText = d.strategies[0].content;
+el('s2').innerText = d.strategies[1].content;
+el('s3').innerText = d.strategies[2].content;
+// 流量折线图
+const traffic = d.traffic_analysis;
+new Chart(el('traffic_line'),{
+type:'line',
+data:{
+labels:traffic.labels,
+datasets:[
+{label:"曝光",data:traffic.exposure_data,borderColor:'#0d6efd',backgroundColor:'rgba(13,110,253,0.1)'},
+{label:"访问",data:traffic.visit_data,borderColor:'#198754',backgroundColor:'rgba(25,135,84,0.1)'}
+]
+},
+options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}}}
+});
+// 客资折线图
+const leads = d.leads_analysis;
+new Chart(el('leads_line'),{
+type:'line',
+data:{
+labels:leads.labels,
+datasets:[{label:"核心结果",data:leads.total_leads_data,borderColor:'#6f42c1',backgroundColor:'rgba(111,66,193,0.1)'}]
+},
+options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}}}
+});
+// 饼图
+new Chart(el('pie_chart'),{
+type:'doughnut',
+data:{
+labels:leads.pie_chart.labels,
+datasets:[{data:leads.pie_chart.data,backgroundColor:['#1a73e8','#ea4335','#fbbc05','#34a853']}]
+},
+options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}}}
+});
+// 流量表格渲染
+const tRows = traffic.table_rows.map(item=>`<tr><td>${item.month}</td><td>${fmt(item.exposure)}</td><td>${fmt(item.visit)}</td><td>${item.mom}</td></tr>`).join('');
+el('traffic_table').innerHTML = tRows;
+// 客资表格渲染
+const lRows = leads.table_rows.map(item=>`<tr><td>${item.month}</td><td>${fmt(item.total)}</td><td>${JSON.stringify(item).replace(/{"total":.*,"month":"${item.month}",/,'')}</td></tr>`).join('');
+el('leads_table').innerHTML = lRows;
+})
+</script>
+</body>
+</html>
