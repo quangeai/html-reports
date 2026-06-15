@@ -1,10 +1,4 @@
-您好！为了制作符合您需求的图表看板，请提供以下信息：
-1. 具体数据内容：如销售数据、用户行为数据、运营指标等（可提供表格/JSON格式数据）
-2. 图表类型偏好：折线图、柱状图、饼图、仪表盘、雷达图等
-3. 风格需求：深色/浅色主题、品牌配色等
-4. 功能需求：交互效果、响应式布局等
-
-以下为您提供一个**月度销售数据分析看板**示例代码，您可以直接运行并替换成自己的数据：
+以下是一个基于ECharts和Tailwind CSS的销售数据看板HTML代码，包含关键指标卡片、趋势折线图、区域柱状图和产品占比饼图，支持响应式布局：
 
 ```html
 <!DOCTYPE html>
@@ -12,196 +6,335 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>销售数据分析看板</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <style>
-        .dashboard-card {
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease;
+    <title>销售数据可视化看板</title>
+    <!-- 引入Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入ECharts -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    
+    <!-- 自定义Tailwind配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        success: '#00B42A',
+                        warning: '#FF7D00',
+                        danger: '#F53F3F',
+                        dark: '#1D2129',
+                        light: '#F2F3F5'
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
         }
-        .dashboard-card:hover {
-            transform: translateY(-5px);
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .card-shadow {
+                box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.08);
+            }
+            .chart-container {
+                height: 350px;
+                width: 100%;
+            }
         }
-        .card-icon {
-            font-size: 2.5rem;
-            opacity: 0.8;
-        }
-        .text-success { color: #10b981; }
-        .text-warning { color: #f59e0b; }
     </style>
 </head>
-<body class="bg-light">
-    <div class="container-fluid p-4">
-        <h2 class="mb-4 fw-bold">📊 月度销售数据分析看板</h2>
-        
-        <!-- 指标卡片区域 -->
-        <div class="row mb-4">
-            <div class="col-md-3 mb-3">
-                <div class="card dashboard-card bg-white p-4">
-                    <div class="d-flex align-items-center">
-                        <div class="card-icon text-primary me-3">💰</div>
-                        <div>
-                            <p class="text-muted mb-1">总销售额</p>
-                            <h4 class="fw-bold">¥1,256,890</h4>
-                            <p class="text-success small"><i class="bi bi-arrow-up"></i> 12.5% 同比增长</p>
-                        </div>
+<body class="bg-light font-inter text-dark min-h-screen">
+    <div class="container mx-auto px-4 py-6">
+        <!-- 看板标题 -->
+        <div class="mb-6">
+            <h1 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-dark">销售数据总览</h1>
+            <p class="text-gray-500 mt-2">实时业务数据监控与分析</p>
+        </div>
+
+        <!-- 关键指标卡片 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <!-- 总销售额 -->
+            <div class="bg-white rounded-lg p-5 card-shadow">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-gray-500 text-sm">总销售额</p>
+                        <h3 class="text-2xl font-bold mt-1">¥1,256,890</h3>
+                        <p class="text-success text-sm mt-2 flex items-center">
+                            <span class="mr-1">↑12.5%</span>
+                            <span>较上月</span>
+                        </p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3 mb-3">
-                <div class="card dashboard-card bg-white p-4">
-                    <div class="d-flex align-items-center">
-                        <div class="card-icon text-success me-3">📦</div>
-                        <div>
-                            <p class="text-muted mb-1">总订单数</p>
-                            <h4 class="fw-bold">8,652</h4>
-                            <p class="text-success small"><i class="bi bi-arrow-up"></i> 8.3% 环比增长</p>
-                        </div>
+
+            <!-- 订单数量 -->
+            <div class="bg-white rounded-lg p-5 card-shadow">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-gray-500 text-sm">订单数量</p>
+                        <h3 class="text-2xl font-bold mt-1">8,542</h3>
+                        <p class="text-success text-sm mt-2 flex items-center">
+                            <span class="mr-1">↑8.3%</span>
+                            <span>较上月</span>
+                        </p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-success/10 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                        </svg>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3 mb-3">
-                <div class="card dashboard-card bg-white p-4">
-                    <div class="d-flex align-items-center">
-                        <div class="card-icon text-warning me-3">👥</div>
-                        <div>
-                            <p class="text-muted mb-1">新增客户</p>
-                            <h4 class="fw-bold">1,245</h4>
-                            <p class="text-warning small"><i class="bi bi-arrow-down"></i> 2.1% 环比下降</p>
-                        </div>
+
+            <!-- 转化率 -->
+            <div class="bg-white rounded-lg p-5 card-shadow">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-gray-500 text-sm">转化率</p>
+                        <h3 class="text-2xl font-bold mt-1">32.7%</h3>
+                        <p class="text-warning text-sm mt-2 flex items-center">
+                            <span class="mr-1">↓2.1%</span>
+                            <span>较上月</span>
+                        </p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-warning/10 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3 mb-3">
-                <div class="card dashboard-card bg-white p-4">
-                    <div class="d-flex align-items-center">
-                        <div class="card-icon text-info me-3">💸</div>
-                        <div>
-                            <p class="text-muted mb-1">客单价</p>
-                            <h4 class="fw-bold">¥145.27</h4>
-                            <p class="text-success small"><i class="bi bi-arrow-up"></i> 5.6% 同比增长</p>
-                        </div>
+
+            <!-- 客单价 -->
+            <div class="bg-white rounded-lg p-5 card-shadow">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-gray-500 text-sm">客单价</p>
+                        <h3 class="text-2xl font-bold mt-1">¥147.1</h3>
+                        <p class="text-success text-sm mt-2 flex items-center">
+                            <span class="mr-1">↑5.6%</span>
+                            <span>较上月</span>
+                        </p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- 图表区域 -->
-        <div class="row mb-4">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
             <!-- 月度销售趋势图 -->
-            <div class="col-md-8 mb-3">
-                <div class="card dashboard-card bg-white p-4">
-                    <h5 class="fw-bold mb-3">月度销售趋势</h5>
-                    <canvas id="salesTrendChart" height="250"></canvas>
+            <div class="bg-white rounded-lg p-5 card-shadow lg:col-span-2">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="font-semibold text-lg">月度销售趋势</h2>
+                    <select class="border border-gray-200 rounded-md px-3 py-1 text-sm">
+                        <option>2024年</option>
+                        <option>2023年</option>
+                    </select>
                 </div>
+                <div id="salesTrendChart" class="chart-container"></div>
             </div>
-            <!-- 产品分类占比 -->
-            <div class="col-md-4 mb-3">
-                <div class="card dashboard-card bg-white p-4">
-                    <h5 class="fw-bold mb-3">产品分类占比</h5>
-                    <canvas id="categoryChart" height="250"></canvas>
-                </div>
+
+            <!-- 产品类别占比 -->
+            <div class="bg-white rounded-lg p-5 card-shadow">
+                <h2 class="font-semibold text-lg mb-4">产品类别占比</h2>
+                <div id="productPieChart" class="chart-container"></div>
             </div>
         </div>
 
         <!-- 区域销售对比 -->
-        <div class="row">
-            <div class="col-12">
-                <div class="card dashboard-card bg-white p-4">
-                    <h5 class="fw-bold mb-3">区域销售对比</h5>
-                    <canvas id="regionChart" height="300"></canvas>
-                </div>
+        <div class="bg-white rounded-lg p-5 card-shadow">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="font-semibold text-lg">区域销售对比</h2>
+                <button class="text-primary text-sm hover:underline">查看详情</button>
             </div>
+            <div id="regionBarChart" class="chart-container"></div>
         </div>
     </div>
 
     <script>
-        // 月度销售趋势图
-        const salesTrendCtx = document.getElementById('salesTrendChart').getContext('2d');
-        new Chart(salesTrendCtx, {
-            type: 'line',
-            data: {
-                labels: ['1月', '2月', '3月', '4月', '5月', '6月'],
-                datasets: [{
-                    label: '销售额(万元)',
-                    data: [98, 105, 112, 130, 145, 168],
-                    borderColor: '#3b82f6',
-                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                    tension: 0.3,
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { position: 'top' },
-                    tooltip: { mode: 'index', intersect: false }
+        // 等待DOM加载完成
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化月度销售趋势折线图
+            const salesTrendChart = echarts.init(document.getElementById('salesTrendChart'));
+            const salesTrendOption = {
+                tooltip: {
+                    trigger: 'axis',
+                    backgroundColor: 'rgba(255,255,255,0.95)',
+                    borderColor: '#ddd',
+                    textStyle: {
+                        color: '#333'
+                    }
                 },
-                scales: {
-                    y: { beginAtZero: true }
-                }
-            }
-        });
-
-        // 产品分类占比图
-        const categoryCtx = document.getElementById('categoryChart').getContext('2d');
-        new Chart(categoryCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['电子产品', '服装服饰', '家居用品', '食品生鲜'],
-                datasets: [{
-                    data: [45, 25, 20, 10],
-                    backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444'],
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { position: 'bottom' }
-                }
-            }
-        });
-
-        // 区域销售对比图
-        const regionCtx = document.getElementById('regionChart').getContext('2d');
-        new Chart(regionCtx, {
-            type: 'bar',
-            data: {
-                labels: ['华东', '华南', '华北', '西南', '西北'],
-                datasets: [{
-                    label: '销售额(万元)',
-                    data: [420, 350, 280, 180, 120],
-                    backgroundColor: '#3b82f6',
-                    borderRadius: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: { mode: 'index', intersect: false }
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
                 },
-                scales: {
-                    y: { beginAtZero: true }
-                }
-            }
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLabel: {
+                        formatter: '¥{value}'
+                    }
+                },
+                series: [
+                    {
+                        name: '销售额',
+                        type: 'line',
+                        smooth: true,
+                        data: [85000, 92000, 105000, 98000, 120000, 135000, 142000, 138000, 150000, 165000, 178000, 192000],
+                        lineStyle: {
+                            color: '#165DFF',
+                            width: 3
+                        },
+                        areaStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                {offset: 0, color: 'rgba(22, 93, 255, 0.3)'},
+                                {offset: 1, color: 'rgba(22, 93, 255, 0.05)'}
+                            ])
+                        },
+                        itemStyle: {
+                            color: '#165DFF'
+                        }
+                    }
+                ]
+            };
+            salesTrendChart.setOption(salesTrendOption);
+
+            // 初始化产品类别占比饼图
+            const productPieChart = echarts.init(document.getElementById('productPieChart'));
+            const productPieOption = {
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{a} <br/>{b}: {c} ({d}%)'
+                },
+                legend: {
+                    orient: 'vertical',
+                    left: 'left',
+                    textStyle: {
+                        fontSize: 12
+                    }
+                },
+                series: [
+                    {
+                        name: '销售额',
+                        type: 'pie',
+                        radius: ['40%', '70%'],
+                        avoidLabelOverlap: false,
+                        itemStyle: {
+                            borderRadius: 10,
+                            borderColor: '#fff',
+                            borderWidth: 2
+                        },
+                        label: {
+                            show: false,
+                            position: 'center'
+                        },
+                        emphasis: {
+                            label: {
+                                show: true,
+                                fontSize: 16,
+                                fontWeight: 'bold'
+                            }
+                        },
+                        labelLine: {
+                            show: false
+                        },
+                        data: [
+                            {value: 420000, name: '电子产品', itemStyle: {color: '#165DFF'}},
+                            {value: 350000, name: '服装', itemStyle: {color: '#00B42A'}},
+                            {value: 280000, name: '家居', itemStyle: {color: '#FF7D00'}},
+                            {value: 206890, name: '食品', itemStyle: {color: '#F53F3F'}}
+                        ]
+                    }
+                ]
+            };
+            productPieChart.setOption(productPieOption);
+
+            // 初始化区域销售对比柱状图
+            const regionBarChart = echarts.init(document.getElementById('regionBarChart'));
+            const regionBarOption = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'shadow'
+                    },
+                    backgroundColor: 'rgba(255,255,255,0.95)',
+                    borderColor: '#ddd',
+                    textStyle: {
+                        color: '#333'
+                    }
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: ['华东', '华南', '华北', '西南', '西北', '东北'],
+                    axisLabel: {
+                        fontSize: 12
+                    }
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLabel: {
+                        formatter: '¥{value}'
+                    }
+                },
+                series: [
+                    {
+                        name: '销售额',
+                        type: 'bar',
+                        barWidth: '60%',
+                        data: [380000, 320000, 250000, 150000, 100000, 56890],
+                        itemStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                {offset: 0, color: '#165DFF'},
+                                {offset: 1, color: '#69B1FF'}
+                            ])
+                        }
+                    }
+                ]
+            };
+            regionBarChart.setOption(regionBarOption);
+
+            // 响应式适配
+            window.addEventListener('resize', function() {
+                salesTrendChart.resize();
+                productPieChart.resize();
+                regionBarChart.resize();
+            });
         });
     </script>
-
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </body>
 </html>
 ```
 
-### 使用说明：
-1. 直接将代码保存为HTML文件即可在浏览器中打开查看效果
-2. 替换代码中的数据部分（如销售额、订单数、图表数据）即可生成您的专属看板
-3. 可以修改颜色、图表类型、布局结构来适配您的需求
+这个看板具有以下特点：
+1. **响应式布局**：使用Tailwind CSS实现，在手机、平板和桌面设备上都有良好的显示效果
+2. **多种图表类型**：包含折线图（趋势分析）、饼图（占比分析）、柱状图（对比分析）
+3. **关键指标卡片**：展示核心业务数据，带有趋势标识
+4. **视觉设计**：采用现代化的卡片式设计，带有阴影和渐变效果，色彩搭配专业
+5. **交互体验**：图表支持鼠标悬停显示详细数据，窗口大小变化时自动适配
 
-如果您提供具体数据和需求，我可以为您定制更贴合的看板！ 🎨
+你可以直接将这段代码保存为HTML文件，在浏览器中打开即可查看效果。如果需要修改数据，只需在JavaScript部分修改对应图表的data数据即可。
