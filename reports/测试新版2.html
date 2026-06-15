@@ -1,0 +1,431 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试新版2</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            background-color: #f0f2f5;
+        }
+        .report-header {
+            background: linear-gradient(135deg, #2385bb 0%, #1a5e80 100%);
+            color: white;
+            padding: 2.5rem 0;
+            margin-bottom: 2rem;
+        }
+        .card {
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+        .chart-container {
+            height: 350px;
+            min-height: 350px;
+            margin: 1.5rem 0;
+        }
+        .metric-card {
+            text-align: center;
+            padding: 1.5rem;
+        }
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2385bb;
+        }
+        .metric-label {
+            color: #666;
+            margin-top: 0.5rem;
+            font-size: 1rem;
+        }
+        .table-responsive {
+            overflow-x: auto;
+        }
+        footer {
+            background-color: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 1.5rem 0;
+            margin-top: 3rem;
+        }
+    </style>
+</head>
+<body>
+    <header class="report-header">
+        <div class="container">
+            <h1 class="display-4">直播运营数据分析报表</h1>
+            <p class="lead">统计周期：2024年10月21日 - 2024年11月21日</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="row">
+            <div class="col-12">
+                <div class="card p-4">
+                    <h3>执行摘要</h3>
+                    <hr>
+                    <p>本次统计共包含23场直播数据，整体呈现出初期高流量高曝光，后期流量持续下滑的趋势。直播时长从初期的平均5小时逐步缩减到1.5小时左右，曝光量和观看人数随之同步下降，但曝光观看率仍维持在58%左右的平均水平。当前直播运营存在时长不稳定、流量下滑严重、在线峰值偏低等问题，需要及时调整运营策略。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="row mt-4">
+            <div class="col-lg-3 col-md-6 col-sm-12">
+                <div class="card metric-card">
+                    <div class="metric-value">23</div>
+                    <div class="metric-label">总直播场次</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-12">
+                <div class="card metric-card">
+                    <div class="metric-value">12311</div>
+                    <div class="metric-label">总曝光次数</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-12">
+                <div class="card metric-card">
+                    <div class="metric-value">4162</div>
+                    <div class="metric-label">总累积观看人数</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-12">
+                <div class="card metric-card">
+                    <div class="metric-value">58.72%</div>
+                    <div class="metric-label">平均曝光观看率</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="row mt-4">
+            <div class="col-12">
+                <div class="card p-4">
+                    <h3>流量趋势分析</h3>
+                    <div class="chart-container">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                    <div class="mt-3">
+                        <h5>趋势解读：</h5>
+                        <p>直播曝光次数和观看人数呈现明显的持续下降趋势：10月21日首场直播曝光达到2937次，累积观看1641人，为整个周期最高值；后续随着直播时长缩短，曝光和观看量逐步下跌，近期基本维持在200-400次曝光区间。流量下滑幅度超过85%，说明直播吸引力或平台推流力度大幅下降。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="row mt-4">
+            <div class="col-md-6 col-sm-12">
+                <div class="card p-4">
+                    <h3>曝光观看率分布</h3>
+                    <div class="chart-container">
+                        <canvas id="ratePieChart"></canvas>
+                    </div>
+                    <p>超过60%（14场）直播的曝光观看率在50%-70%区间，说明流量转化效率整体处于中等水平；仅有4场直播转化率低于50%，反映出当前用户点击意愿相对稳定，但整体流量基数下滑是核心问题。</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-12">
+                <div class="card p-4">
+                    <h3>各场次最高在线人数分布</h3>
+                    <div class="chart-container">
+                        <canvas id="onlineBarChart"></canvas>
+                    </div>
+                    <p>78%（18场）直播最高在线人数低于10人，仅有1场直播最高在线达到50人，说明当前直播留存和互动热度非常低，用户停留意愿差，需要优化内容吸引力和互动玩法。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="row mt-4">
+            <div class="col-12">
+                <div class="card p-4">
+                    <h3>详细数据总结</h3>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover mt-3">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>指标类型</th>
+                                    <th>最大值</th>
+                                    <th>最小值</th>
+                                    <th>平均值</th>
+                                    <th>核心发现</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>直播时长（分钟）</td>
+                                    <td>355</td>
+                                    <td>85</td>
+                                    <td>142</td>
+                                    <td>时长从初期5小时+缩减至1.5小时，缩短60%</td>
+                                </tr>
+                                <tr>
+                                    <td>曝光次数</td>
+                                    <td>2937</td>
+                                    <td>216</td>
+                                    <td>535</td>
+                                    <td>曝光量下滑幅度达92%，流量衰减严重</td>
+                                </tr>
+                                <tr>
+                                    <td>累积观看人数</td>
+                                    <td>1641</td>
+                                    <td>58</td>
+                                    <td>181</td>
+                                    <td>观看人数同步下滑，当前场均不足150人</td>
+                                </tr>
+                                <tr>
+                                    <td>曝光观看率</td>
+                                    <td>74.14%</td>
+                                    <td>39.29%</td>
+                                    <td>58.72%</td>
+                                    <td>转化率整体稳定，流量获取是核心瓶颈</td>
+                                </tr>
+                                <tr>
+                                    <td>最高在线人数</td>
+                                    <td>50</td>
+                                    <td>3</td>
+                                    <td>7</td>
+                                    <td>在线峰值极低，互动热度严重不足</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mt-4">
+                        <h5>现存问题总结：</h5>
+                        <ul>
+                            <li>直播时长大幅缩减，内容输出不稳定，用户观看习惯难以培养</li>
+                            <li>自然流量持续下滑，平台推流效果越来越差，需要重新激活流量</li>
+                            <li>最高在线人数持续低位，直播间氛围冷清，难以拉动用户停留和转化</li>
+                            <li>开播时间不固定，频次不稳定，用户沉淀难度大</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="row mt-4">
+            <div class="col-12">
+                <div class="card p-4">
+                    <h3>运营建议与规划</h3>
+                    <div class="mt-3">
+                        <h5>短期优化方案：</h5>
+                        <ol>
+                            <li><strong>恢复稳定直播时长</strong>：固定每场直播不低于3小时时长，培养用户观看习惯，提升平台流量权重</li>
+                            <li><strong>增加流量投放</strong>：针对近期低流量现状，增加平台推广投放，快速拉升曝光量，测试流量转化效果</li>
+                            <li><strong>优化互动玩法</strong>：增加福袋、抽奖、问答等互动环节，提升用户停留时长和在线峰值，改善直播间氛围</li>
+                            <li><strong>固定开播时间</strong>：统一每日14:00开播，形成用户认知，提升粉丝复看率</li>
+                        </ol>
+                    </div>
+                    <div class="mt-4">
+                        <h5>长期发展规划：</h5>
+                        <ol>
+                            <li><strong>搭建粉丝社群</strong>：将直播观众引导至私域社群，提前预告直播内容，提升老用户复看率，降低对公域流量依赖</li>
+                            <li><strong>内容体系化打造</strong>：规划直播主题，形成系列化内容，提升内容吸引力，让用户产生持续观看需求</li>
+                            <li><strong>建立数据监测机制</strong>：每周跟踪曝光量、转化率、在线人数核心指标，及时调整运营策略，避免持续下滑</li>
+                            <li><strong>拓展流量渠道</strong>：除平台自然流量外，通过短视频预热、账号矩阵引流等方式，为直播间引入更多外部流量</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>© 2024 直播运营数据分析报表 | 测试新版2</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof Chart === 'undefined') {
+                console.error('Chart.js 加载失败，请检查网络连接');
+                return;
+            }
+
+            // 原始数据处理
+            const dates = [
+                '10/21', '10/22', '10/23', '10/24', '10/28', '10/29', '10/31',
+                '11/01', '11/04', '11/05', '11/06', '11/07', '11/08', '11/10',
+                '11/11', '11/12', '11/13', '11/14', '11/15', '11/18', '11/19',
+                '11/20', '11/21'
+            ];
+            const exposures = [
+                2937, 1787, 679, 615, 1113, 983, 315,
+                680, 326, 234, 392, 365, 254, 386,
+                408, 302, 331, 216, 253, 264, 404,
+                359, 330
+            ];
+            const viewers = [
+                1641, 1018, 316, 189, 264, 242, 93,
+                162, 66, 116, 190, 180, 93, 97,
+                136, 124, 162, 58, 106, 125, 143,
+                96, 144
+            ];
+            const rates = [
+                69.24, 74.14, 68.55, 63.00, 55.81, 63.35, 47.45,
+                51.43, 39.29, 64.80, 70.90, 64.29, 56.02, 40.76,
+                56.90, 59.90, 70.74, 55.24, 62.35, 68.31, 48.15,
+                43.84, 65.75
+            ];
+            const maxOnline = [
+                50, 12, 4, 4, 5, 4, 4,
+                6, 4, 4, 6, 8, 5, 3,
+                11, 4, 7, 4, 4, 4, 5,
+                3, 4
+            ];
+
+            // 趋势图
+            const trendCtx = document.getElementById('trendChart').getContext('2d');
+            new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [
+                        {
+                            label: '直播曝光次数',
+                            data: exposures,
+                            borderColor: 'rgba(35, 133, 187, 0.8)',
+                            backgroundColor: 'rgba(35, 133, 187, 0.1)',
+                            tension: 0.3,
+                            fill: true
+                        },
+                        {
+                            label: '累积观看人数',
+                            data: viewers,
+                            borderColor: 'rgba(231, 76, 60, 0.8)',
+                            backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                            tension: 0.3,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '直播曝光与观看人数趋势变化'
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: '直播日期（月/日）'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: '数量'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 曝光观看率分布饼图
+            const rateData = [
+                rates.filter(r => r < 50).length,
+                rates.filter(r => r >= 50 && r < 60).length,
+                rates.filter(r => r >= 60 && r < 70).length,
+                rates.filter(r => r >= 70).length
+            ];
+            const rateLabels = ['<50%', '50%-60%', '60%-70%', '≥70%'];
+            const rateColors = [
+                'rgba(231, 76, 60, 0.7)',
+                'rgba(243, 156, 18, 0.7)',
+                'rgba(35, 133, 187, 0.7)',
+                'rgba(46, 204, 113, 0.7)'
+            ];
+
+            const rateCtx = document.getElementById('ratePieChart').getContext('2d');
+            new Chart(rateCtx, {
+                type: 'pie',
+                data: {
+                    labels: rateLabels,
+                    datasets: [{
+                        data: rateData,
+                        backgroundColor: rateColors,
+                        borderWidth: 1,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '曝光观看率区间分布（场次）'
+                        }
+                    }
+                }
+            });
+
+            // 最高在线人数柱状图
+            const onlineCounts = [
+                maxOnline.filter(n => n <= 5).length,
+                maxOnline.filter(n => n > 5 && n <= 10).length,
+                maxOnline.filter(n => n > 10 && n <= 20).length,
+                maxOnline.filter(n => n > 20).length
+            ];
+            const onlineLabels = ['1-5人', '6-10人', '11-20人', '20人以上'];
+
+            const onlineCtx = document.getElementById('onlineBarChart').getContext('2d');
+            new Chart(onlineCtx, {
+                type: 'bar',
+                data: {
+                    labels: onlineLabels,
+                    datasets: [{
+                        label: '直播场次',
+                        data: onlineCounts,
+                        backgroundColor: 'rgba(155, 89, 182, 0.7)',
+                        borderColor: 'rgba(155, 89, 182, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '最高在线人数区间分布'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '场次数量'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: '最高在线人数区间'
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+```
