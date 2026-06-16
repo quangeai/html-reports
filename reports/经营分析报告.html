@@ -1,331 +1,804 @@
+以下是为您打造的A公司2025年度经营分析商务科技风看板，整合了所有核心数据、对比分析和风险提示，采用深色科技配色，支持响应式适配各类设备：
 ```html
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A公司（集团）经营分析看板</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#3b82f6',
-                        secondary: '#06b6d4',
-                        success: '#10b981',
-                        warning: '#f97316',
-                        danger: '#ef4444',
-                        dark: '#0f172a',
-                        card: 'rgba(30, 41, 59, 0.7)'
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'system-ui', 'sans-serif']
-                    },
-                    boxShadow: {
-                        'tech': '0 0 15px rgba(56, 189, 248, 0.15)',
-                        'tech-hover': '0 0 20px rgba(56, 189, 248, 0.3)'
-                    }
-                }
-            }
-        }
-    </script>
-    <style type="text/tailwindcss">
-        @layer utilities {
-            .tech-card {
-                @apply bg-card border border-primary/30 rounded-lg shadow-tech p-4 hover:shadow-tech-hover transition-all duration-300;
-            }
-            .gradient-bg {
-                background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            }
-            .glow-text {
-                text-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A公司2025年度经营分析看板</title>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Microsoft Yahei', sans-serif;
+    }
+    body {
+      background-color: #0a0e27;
+      color: #eaecef;
+      padding: 20px;
+    }
+    .dashboard-container {
+      max-width: 1920px;
+      margin: 0 auto;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    header h1 {
+      font-size: 32px;
+      background: linear-gradient(90deg, #409eff, #b37dff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 10px;
+    }
+    header .sub-title {
+      color: #909399;
+      font-size: 14px;
+    }
+    /* KPI卡片行 */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+    .kpi-card {
+      background: linear-gradient(135deg, #161b33 0%, #1a1f3a 100%);
+      border: 1px solid rgba(64, 158, 255, 0.2);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 20px rgba(64, 158, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+    .kpi-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(64, 158, 255, 0.2);
+      border-color: rgba(64, 158, 255, 0.5);
+    }
+    .kpi-card .kpi-name {
+      font-size: 14px;
+      color: #909399;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .kpi-card .kpi-value {
+      font-size: 28px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+    .kpi-card .kpi-compare {
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .kpi-card .kpi-compare .year24 {
+      color: #909399;
+    }
+    .kpi-card .kpi-compare .up {
+      color: #67c23a;
+    }
+    .kpi-card .kpi-compare .down {
+      color: #f56c6c;
+    }
+    /* 普通行布局 */
+    .row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+    .row-3 {
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    }
+    .card {
+      background: linear-gradient(135deg, #161b33 0%, #1a1f3a 100%);
+      border: 1px solid rgba(64, 158, 255, 0.2);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 20px rgba(64, 158, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+    .card:hover {
+      box-shadow: 0 8px 30px rgba(64, 158, 255, 0.2);
+      border-color: rgba(64, 158, 255, 0.5);
+    }
+    .card .card-title {
+      font-size: 16px;
+      color: #409eff;
+      margin-bottom: 20px;
+      font-weight: 500;
+      border-left: 3px solid #409eff;
+      padding-left: 10px;
+    }
+    .chart-card {
+      height: 400px;
+    }
+    .chart-card .chart {
+      width: 100%;
+      height: calc(100% - 30px);
+    }
+    /* 告警卡片 */
+    .alert-card {
+      height: 400px;
+      overflow-y: auto;
+    }
+    .alert-card::-webkit-scrollbar {
+      width: 6px;
+    }
+    .alert-card::-webkit-scrollbar-track {
+      background: rgba(144, 147, 153, 0.1);
+      border-radius: 3px;
+    }
+    .alert-card::-webkit-scrollbar-thumb {
+      background: rgba(64, 158, 255, 0.3);
+      border-radius: 3px;
+    }
+    .alert-item {
+      background: rgba(245, 108, 108, 0.1);
+      border: 1px solid rgba(245, 108, 108, 0.3);
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+    .alert-item .alert-title {
+      color: #f56c6c;
+      font-size: 15px;
+      font-weight: 500;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .alert-item .alert-desc {
+      color: #eaecef;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .highlight-item {
+      background: rgba(103, 194, 58, 0.1);
+      border: 1px solid rgba(103, 194, 58, 0.3);
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+    .highlight-item .highlight-title {
+      color: #67c23a;
+      font-size: 15px;
+      font-weight: 500;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .highlight-item .highlight-desc {
+      color: #eaecef;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    /* 响应式 */
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+      header h1 {
+        font-size: 24px;
+      }
+      .kpi-row {
+        grid-template-columns: 1fr;
+      }
+      .row {
+        grid-template-columns: 1fr;
+      }
+      .chart-card, .alert-card {
+        height: 350px;
+      }
+    }
+  </style>
 </head>
-<body class="gradient-bg min-h-screen text-gray-100 font-sans p-4 md:p-6">
-    <!-- 头部标题 -->
-    <header class="mb-6">
-        <h1 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-secondary glow-text text-center">A公司（集团）2025年经营分析看板</h1>
-        <p class="text-gray-400 text-center mt-2">数据周期：2024年-2025年</p>
-    </header>
+<body>
+<div class="dashboard-container">
+  <header>
+    <h1>A公司（集团）2025年度经营分析看板</h1>
+    <div class="sub-title">数据周期：2024年-2025年 | 单位：万元、%、天</div>
+  </header>
 
-    <!-- 核心指标概览 -->
-    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-        <div class="tech-card">
-            <p class="text-gray-400 text-sm mb-2">总资产（亿元）</p>
-            <h3 class="text-2xl font-bold mb-2">851.17</h3>
-            <div class="flex items-center text-sm">
-                <span class="text-gray-400 mr-2">2024年: 830.36</span>
-                <span class="text-success"><i class="fa fa-arrow-up mr-1"></i>2.51%</span>
-            </div>
-        </div>
-        <div class="tech-card">
-            <p class="text-gray-400 text-sm mb-2">营业收入（亿元）</p>
-            <h3 class="text-2xl font-bold mb-2">596.53</h3>
-            <div class="flex items-center text-sm">
-                <span class="text-gray-400 mr-2">2024年: 573.59</span>
-                <span class="text-success"><i class="fa fa-arrow-up mr-1"></i>3.99%</span>
-            </div>
-        </div>
-        <div class="tech-card">
-            <p class="text-gray-400 text-sm mb-2">净利润（亿元）</p>
-            <h3 class="text-2xl font-bold mb-2">53.88</h3>
-            <div class="flex items-center text-sm">
-                <span class="text-gray-400 mr-2">2024年: 49.48</span>
-                <span class="text-success"><i class="fa fa-arrow-up mr-1"></i>8.89%</span>
-            </div>
-        </div>
-        <div class="tech-card">
-            <p class="text-gray-400 text-sm mb-2">应收账款净额（亿元）</p>
-            <h3 class="text-2xl font-bold mb-2">72.04</h3>
-            <div class="flex items-center text-sm">
-                <span class="text-gray-400 mr-2">2024年: 69.12</span>
-                <span class="text-warning"><i class="fa fa-arrow-up mr-1"></i>4.22%</span>
-            </div>
-        </div>
-        <div class="tech-card">
-            <p class="text-gray-400 text-sm mb-2">经营活动现金流净额（亿元）</p>
-            <h3 class="text-2xl font-bold mb-2">81.08</h3>
-            <div class="flex items-center text-sm">
-                <span class="text-gray-400 mr-2">2024年: 78.23</span>
-                <span class="text-success"><i class="fa fa-arrow-up mr-1"></i>3.64%</span>
-            </div>
-        </div>
-    </section>
+  <!-- 核心KPI区域 -->
+  <div class="kpi-row">
+    <div class="kpi-card">
+      <div class="kpi-name">营业总收入 <i class="fa fa-line-chart"></i></div>
+      <div class="kpi-value">596,530.0</div>
+      <div class="kpi-compare">
+        <span class="year24">2024年: 573,586.5</span>
+        <span class="up"><i class="fa fa-arrow-up"></i> 3.99%</span>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-name">净利润 <i class="fa fa-money"></i></div>
+      <div class="kpi-value">53,884.4</div>
+      <div class="kpi-compare">
+        <span class="year24">2024年: 49,479.3</span>
+        <span class="up"><i class="fa fa-arrow-up"></i> 8.90%</span>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-name">总资产 <i class="fa fa-cubes"></i></div>
+      <div class="kpi-value">851,165.6</div>
+      <div class="kpi-compare">
+        <span class="year24">2024年: 830,355.2</span>
+        <span class="up"><i class="fa fa-arrow-up"></i> 2.51%</span>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-name">所有者权益 <i class="fa fa-users"></i></div>
+      <div class="kpi-value">646,027.6</div>
+      <div class="kpi-compare">
+        <span class="year24">2024年: 618,782.3</span>
+        <span class="up"><i class="fa fa-arrow-up"></i> 4.40%</span>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-name">经营活动现金流净额 <i class="fa fa-rmb"></i></div>
+      <div class="kpi-value">81,079.9</div>
+      <div class="kpi-compare">
+        <span class="year24">2024年: 78,231.4</span>
+        <span class="up"><i class="fa fa-arrow-up"></i> 3.64%</span>
+      </div>
+    </div>
+  </div>
 
-    <!-- 第一行图表 -->
-    <section class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        <div class="tech-card">
-            <h2 class="text-lg font-semibold mb-4 text-secondary">核心指标同比增速对比</h2>
-            <div id="rateChart" class="h-[300px]"></div>
-        </div>
-        <div class="tech-card">
-            <h2 class="text-lg font-semibold mb-4 text-secondary">资产效率指标对比</h2>
-            <div id="efficiencyChart" class="h-[300px]"></div>
-        </div>
-    </section>
+  <!-- 第一行：核心指标对比 + 风险亮点 -->
+  <div class="row">
+    <div class="card chart-card">
+      <div class="card-title">核心经营指标2024-2025对比</div>
+      <div class="chart" id="coreIndexChart"></div>
+    </div>
+    <div class="card alert-card">
+      <div class="card-title">经营风险与亮点提示</div>
+      <div class="alert-item">
+        <div class="alert-title"><i class="fa fa-exclamation-triangle"></i> 现金保障能力大幅下降</div>
+        <div class="alert-desc">现金比率从2024年的119.27%降至2025年的60.11%，同比下降49.57%，主要因对外投资增加50亿元、筹资活动净流出扩大2.88亿元，短期偿债压力显著上升。</div>
+      </div>
+      <div class="alert-item">
+        <div class="alert-title"><i class="fa fa-exclamation-triangle"></i> 应收账款周转放缓</div>
+        <div class="alert-desc">应收账款周转率从8.70次降至8.02次，周转天数延长3.56天，同比下降7.82%，回款速度减慢。华东、华中区域应收占比超73%，客户集中度较高，存在区域市场波动风险。</div>
+      </div>
+      <div class="highlight-item">
+        <div class="highlight-title"><i class="fa fa-check-circle"></i> 存货管控效率显著提升</div>
+        <div class="highlight-desc">存货周转率同比提升26.13%，周转天数缩短38天，2024年去库存成效显著，2025年供应链优化持续见效，库存积压风险有效降低。</div>
+      </div>
+      <div class="highlight-item">
+        <div class="highlight-title"><i class="fa fa-check-circle"></i> 组织盈利效率增强</div>
+        <div class="highlight-desc">人力成本覆盖率同比提升3.98个百分点至82.90%，净利润对人力成本的覆盖能力增强，人均创利水平稳步提升。</div>
+      </div>
+      <div class="highlight-item">
+        <div class="highlight-title"><i class="fa fa-check-circle"></i> 华东区域优势扩大</div>
+        <div class="highlight-desc">华东区域营收占比提升0.72个百分点至42.14%，持续巩固核心市场地位；华西、境外新兴区域占比稳步提升，增长潜力逐步释放。</div>
+      </div>
+    </div>
+  </div>
 
-    <!-- 第二行图表 -->
-    <section class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        <div class="tech-card">
-            <h2 class="text-lg font-semibold mb-4 text-secondary">2025年区域营收占比</h2>
-            <div id="revenueAreaChart" class="h-[300px]"></div>
-        </div>
-        <div class="tech-card">
-            <h2 class="text-lg font-semibold mb-4 text-secondary">2025年区域应收账款占比</h2>
-            <div id="receivableAreaChart" class="h-[300px]"></div>
-        </div>
-    </section>
+  <!-- 第二行：资产效率分析 -->
+  <div class="row">
+    <div class="card chart-card">
+      <div class="card-title">资产周转效率对比</div>
+      <div class="chart" id="turnoverRateChart"></div>
+    </div>
+    <div class="card chart-card">
+      <div class="card-title">现金能力变化</div>
+      <div class="chart" id="cashAbilityChart"></div>
+    </div>
+  </div>
 
-    <!-- 第三行图表 -->
-    <section class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        <div class="tech-card">
-            <h2 class="text-lg font-semibold mb-4 text-secondary">近四年营收&应收账款趋势</h2>
-            <div id="trendChart" class="h-[300px]"></div>
-        </div>
-        <div class="tech-card">
-            <h2 class="text-lg font-semibold mb-4 text-secondary">存货&研发投入变化</h2>
-            <div id="inventoryChart" class="h-[300px]"></div>
-        </div>
-    </section>
+  <!-- 第三行：业务结构分析 -->
+  <div class="row row-3">
+    <div class="card chart-card">
+      <div class="card-title">2025年各地区营收占比</div>
+      <div class="chart" id="revenueStructureChart"></div>
+    </div>
+    <div class="card chart-card">
+      <div class="card-title">各地区营收占比同比变化</div>
+      <div class="chart" id="regionGrowthChart"></div>
+    </div>
+    <div class="card chart-card">
+      <div class="card-title">2025年应收账款地区分布</div>
+      <div class="chart" id="receivableStructureChart"></div>
+    </div>
+  </div>
 
-    <!-- 核心结论 -->
-    <section class="tech-card mb-6">
-        <h2 class="text-lg font-semibold mb-3 text-secondary">核心经营结论</h2>
-        <ul class="list-disc pl-5 space-y-2 text-gray-300">
-            <li>核心指标均实现正向增长，净利润增速（8.89%）显著高于营收增速（3.99%），盈利质量持续提升</li>
-            <li>应收账款增速（4.22%）略高于营收增速，华中地区应收账款占比偏高，回款效率弱于其他区域，需重点关注账款回收风险</li>
-            <li>存货周转率大幅提升，周转天数缩短38天，存货余额同比下降29.6%，去库存效果突出</li>
-            <li>华东、华中为核心营收区域，合计占比64.73%；华西、境外区域营收增速高于整体，成为新的增长极</li>
-            <li>研发投入保持稳定增长，占营收比例维持在5%左右，人力成本与营收规模匹配度稳定，组织效能良好</li>
-        </ul>
-    </section>
+  <!-- 第四行：财务结构与现金流 -->
+  <div class="row row-3">
+    <div class="card chart-card">
+      <div class="card-title">资产结构变化</div>
+      <div class="chart" id="assetStructureChart"></div>
+    </div>
+    <div class="card chart-card">
+      <div class="card-title">资本结构变化</div>
+      <div class="chart" id="capitalStructureChart"></div>
+    </div>
+    <div class="card chart-card">
+      <div class="card-title">现金流净额对比</div>
+      <div class="chart" id="cashFlowChart"></div>
+    </div>
+  </div>
 
-    <script>
-        // 核心指标增速对比
-        const rateChart = echarts.init(document.getElementById('rateChart'));
-        rateChart.setOption({
-            tooltip: {trigger: 'axis', axisPointer: {type: 'shadow'}},
-            grid: {left: '3%', right: '4%', bottom: '3%', containLabel: true},
-            xAxis: {
-                type: 'category',
-                data: ['总资产', '营业收入', '净利润', '应收账款', '经营现金流'],
-                axisLine: {lineStyle: {color: '#475569'}},
-                axisLabel: {color: '#cbd5e1'}
-            },
-            yAxis: {
-                type: 'value',
-                name: '增速(%)',
-                axisLine: {lineStyle: {color: '#475569'}},
-                axisLabel: {color: '#cbd5e1'},
-                splitLine: {lineStyle: {color: 'rgba(71, 85, 105, 0.3)'}}
-            },
-            series: [{
-                data: [2.51, 3.99, 8.89, 4.22, 3.64],
-                type: 'bar',
-                itemStyle: {
-                    color: function(params) {
-                        const colorList = ['#3b82f6', '#3b82f6', '#10b981', '#f97316', '#06b6d4'];
-                        return colorList[params.dataIndex];
-                    }
-                },
-                label: {show: true, position: 'top', formatter: '{c}%', color: '#cbd5e1'}
-            }]
-        });
+  <!-- 第五行：研发与组织效能 -->
+  <div class="row">
+    <div class="card chart-card">
+      <div class="card-title">研发投入情况</div>
+      <div class="chart" id="rdChart"></div>
+    </div>
+    <div class="card chart-card">
+      <div class="card-title">组织效能指标</div>
+      <div class="chart" id="orgChart"></div>
+    </div>
+  </div>
+</div>
 
-        // 资产效率对比
-        const efficiencyChart = echarts.init(document.getElementById('efficiencyChart'));
-        efficiencyChart.setOption({
-            tooltip: {trigger: 'axis', axisPointer: {type: 'shadow'}},
-            legend: {data: ['2024年', '2025年'], textStyle: {color: '#cbd5e1'}},
-            grid: {left: '3%', right: '4%', bottom: '3%', containLabel: true},
-            xAxis: {
-                type: 'category',
-                data: ['应收账款周转率(次)', '存货周转率(次)', '总资产周转率(次)', '总资产收益率(%)'],
-                axisLine: {lineStyle: {color: '#475569'}},
-                axisLabel: {color: '#cbd5e1'}
-            },
-            yAxis: {
-                type: 'value',
-                axisLine: {lineStyle: {color: '#475569'}},
-                axisLabel: {color: '#cbd5e1'},
-                splitLine: {lineStyle: {color: 'rgba(71, 85, 105, 0.3)'}}
-            },
-            series: [
-                {name: '2024年', type: 'bar', data: [9.15, 1.99, 0.73, 5.96], itemStyle: {color: '#3b82f6'}},
-                {name: '2025年', type: 'bar', data: [8.45, 2.51, 0.71, 6.33], itemStyle: {color: '#06b6d4'}}
-            ]
-        });
+<script>
+// 全局配色
+const colors = ['#409eff', '#67c23a', '#e6a23c', '#f56c6c', '#b37dff', '#909399'];
+// 全局ECharts配置
+echarts.registerTheme('business', {
+  color: colors,
+  backgroundColor: 'transparent',
+  textStyle: {
+    color: '#eaecef'
+  },
+  title: {
+    textStyle: {
+      color: '#eaecef'
+    },
+    subtextStyle: {
+      color: '#909399'
+    }
+  },
+  tooltip: {
+    backgroundColor: 'rgba(22, 27, 51, 0.9)',
+    borderColor: 'rgba(64, 158, 255, 0.5)',
+    textStyle: {
+      color: '#eaecef'
+    }
+  },
+  legend: {
+    textStyle: {
+      color: '#909399'
+    }
+  },
+  grid: {
+    left: '3%',
+    right: '4%',
+    bottom: '3%',
+    containLabel: true
+  },
+  xAxis: {
+    axisLine: {
+      lineStyle: {
+        color: 'rgba(144, 147, 153, 0.3)'
+      }
+    },
+    axisLabel: {
+      color: '#909399'
+    },
+    splitLine: {
+      lineStyle: {
+        color: 'rgba(144, 147, 153, 0.1)'
+      }
+    }
+  },
+  yAxis: {
+    axisLine: {
+      lineStyle: {
+        color: 'rgba(144, 147, 153, 0.3)'
+      }
+    },
+    axisLabel: {
+      color: '#909399'
+    },
+    splitLine: {
+      lineStyle: {
+        color: 'rgba(144, 147, 153, 0.1)'
+      }
+    }
+  }
+});
 
-        // 区域营收占比
-        const revenueAreaChart = echarts.init(document.getElementById('revenueAreaChart'));
-        revenueAreaChart.setOption({
-            tooltip: {trigger: 'item', formatter: '{b}: {c}% ({d}%)'},
-            legend: {orient: 'vertical', left: 'left', textStyle: {color: '#cbd5e1'}},
-            series: [{
-                name: '营收占比',
-                type: 'pie',
-                radius: ['40%', '70%'],
-                avoidLabelOverlap: false,
-                itemStyle: {borderRadius: 10, borderColor: '#1e293b', borderWidth: 2},
-                label: {show: false, position: 'center'},
-                emphasis: {label: {show: true, fontSize: 16, fontWeight: 'bold', color: '#fff'}},
-                labelLine: {show: false},
-                data: [
-                    {value: 41.61, name: '华东', itemStyle: {color: '#3b82f6'}},
-                    {value: 23.12, name: '华中', itemStyle: {color: '#f97316'}},
-                    {value: 14.44, name: '华南', itemStyle: {color: '#10b981'}},
-                    {value: 9.17, name: '华西', itemStyle: {color: '#8b5cf6'}},
-                    {value: 1.58, name: '境外', itemStyle: {color: '#06b6d4'}},
-                    {value: 100-41.61-23.12-14.44-9.17-1.58, name: '其他', itemStyle: {color: '#64748b'}}
-                ]
-            }]
-        });
+// 1. 核心指标对比图
+const coreIndexChart = echarts.init(document.getElementById('coreIndexChart'), 'business');
+const coreIndexOption = {
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: { type: 'shadow' },
+    formatter: '{b}<br/>{a}: {c} 万元'
+  },
+  legend: { data: ['2024年', '2025年'], top: 0 },
+  xAxis: {
+    type: 'category',
+    data: ['营业总收入', '净利润', '总资产', '所有者权益', '经营现金流']
+  },
+  yAxis: { type: 'value', name: '万元' },
+  series: [
+    {
+      name: '2024年',
+      type: 'bar',
+      data: [573586.53, 49479.32, 830355.19, 618782.31, 78231.38],
+      itemStyle: { color: 'rgba(64, 158, 255, 0.7)' }
+    },
+    {
+      name: '2025年',
+      type: 'bar',
+      data: [596529.99, 53884.37, 851165.62, 646027.57, 81079.88],
+      itemStyle: { color: 'rgba(103, 194, 58, 0.7)' }
+    }
+  ]
+};
+coreIndexChart.setOption(coreIndexOption);
 
-        // 区域应收占比
-        const receivableAreaChart = echarts.init(document.getElementById('receivableAreaChart'));
-        receivableAreaChart.setOption({
-            tooltip: {trigger: 'item', formatter: '{b}: {c}% ({d}%)'},
-            legend: {orient: 'vertical', left: 'left', textStyle: {color: '#cbd5e1'}},
-            series: [{
-                name: '应收占比',
-                type: 'pie',
-                radius: ['40%', '70%'],
-                avoidLabelOverlap: false,
-                itemStyle: {borderRadius: 10, borderColor: '#1e293b', borderWidth: 2},
-                label: {show: false, position: 'center'},
-                emphasis: {label: {show: true, fontSize: 16, fontWeight: 'bold', color: '#fff'}},
-                labelLine: {show: false},
-                data: [
-                    {value: 43.9, name: '华东', itemStyle: {color: '#3b82f6'}},
-                    {value: 29.9, name: '华中', itemStyle: {color: '#f97316'}},
-                    {value: 10.9, name: '华南', itemStyle: {color: '#10b981'}},
-                    {value: 5.2, name: '华西', itemStyle: {color: '#8b5cf6'}},
-                    {value: 0.1, name: '境外', itemStyle: {color: '#06b6d4'}},
-                    {value: 10, name: '其他', itemStyle: {color: '#64748b'}}
-                ]
-            }]
-        });
+// 2. 资产周转效率对比图
+const turnoverRateChart = echarts.init(document.getElementById('turnoverRateChart'), 'business');
+const turnoverOption = {
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: { type: 'shadow' },
+    formatter: function(params) {
+      let res = params[0].name + '<br/>';
+      params.forEach(item => {
+        let unit = item.seriesName.includes('周转天数') ? '天' : '次';
+        res += `${item.seriesName}: ${item.value} ${unit}<br/>`;
+      });
+      return res;
+    }
+  },
+  legend: {
+    data: ['2024年周转率', '2025年周转率', '2024年周转天数', '2025年周转天数'],
+    top: 0
+  },
+  xAxis: { type: 'category', data: ['应收账款', '存货', '总资产'] },
+  yAxis: [
+    { type: 'value', name: '周转率（次）', position: 'left' },
+    {
+      type: 'value', name: '周转天数（天）', position: 'right',
+      axisLine: { lineStyle: { color: colors[2] } }
+    }
+  ],
+  series: [
+    {
+      name: '2024年周转率', type: 'bar', yAxisIndex: 0,
+      data: [8.70, 1.99, 0.73],
+      itemStyle: { color: 'rgba(64, 158, 255, 0.7)' }
+    },
+    {
+      name: '2025年周转率', type: 'bar', yAxisIndex: 0,
+      data: [8.02, 2.51, 0.71],
+      itemStyle: { color: 'rgba(103, 194, 58, 0.7)' }
+    },
+    {
+      name: '2024年周转天数', type: 'line', yAxisIndex: 1,
+      data: [41.95, 183.42, 500],
+      itemStyle: { color: colors[2] }, lineStyle: { type: 'dashed' }
+    },
+    {
+      name: '2025年周转天数', type: 'line', yAxisIndex: 1,
+      data: [45.51, 145.42, 514],
+      itemStyle: { color: colors[3] }
+    }
+  ]
+};
+turnoverRateChart.setOption(turnoverOption);
 
-        // 趋势图
-        const trendChart = echarts.init(document.getElementById('trendChart'));
-        trendChart.setOption({
-            tooltip: {trigger: 'axis'},
-            legend: {data: ['营业收入(亿元)', '应收账款净额(亿元)'], textStyle: {color: '#cbd5e1'}},
-            grid: {left: '3%', right: '4%', bottom: '3%', containLabel: true},
-            xAxis: {
-                type: 'category',
-                boundaryGap: false,
-                data: ['2022年', '2023年', '2024年', '2025年'],
-                axisLine: {lineStyle: {color: '#475569'}},
-                axisLabel: {color: '#cbd5e1'}
-            },
-            yAxis: {
-                type: 'value',
-                axisLine: {lineStyle: {color: '#475569'}},
-                axisLabel: {color: '#cbd5e1'},
-                splitLine: {lineStyle: {color: 'rgba(71, 85, 105, 0.3)'}}
-            },
-            series: [
-                {
-                    name: '营业收入(亿元)',
-                    type: 'line',
-                    data: [499.78, 550.16, 573.59, 596.53],
-                    itemStyle: {color: '#3b82f6'},
-                    lineStyle: {width: 3},
-                    symbol: 'circle',
-                    symbolSize: 8
-                },
-                {
-                    name: '应收账款净额(亿元)',
-                    type: 'line',
-                    data: [27.01, 56.18, 69.12, 72.04],
-                    itemStyle: {color: '#f97316'},
-                    lineStyle: {width: 3},
-                    symbol: 'circle',
-                    symbolSize: 8
-                }
-            ]
-        });
+// 3. 现金能力变化图
+const cashAbilityChart = echarts.init(document.getElementById('cashAbilityChart'), 'business');
+const cashOption = {
+  tooltip: {
+    trigger: 'axis', axisPointer: { type: 'cross' },
+    formatter: function(params) {
+      let res = params[0].name + '<br/>';
+      params.forEach(item => {
+        let unit = item.seriesName === '现金比率' ? '%' : '万元';
+        res += `${item.seriesName}: ${item.value} ${unit}<br/>`;
+      });
+      return res;
+    }
+  },
+  legend: { data: ['货币资金', '现金比率'], top: 0 },
+  xAxis: { type: 'category', data: ['2024年', '2025年'] },
+  yAxis: [
+    { type: 'value', name: '货币资金（万元）', position: 'left' },
+    {
+      type: 'value', name: '现金比率（%）', position: 'right', max: 130,
+      axisLine: { lineStyle: { color: colors[3] } }
+    }
+  ],
+  series: [
+    {
+      name: '货币资金', type: 'bar', yAxisIndex: 0,
+      data: [181043.49, 90000.00],
+      itemStyle: { color: 'rgba(64, 158, 255, 0.7)' }
+    },
+    {
+      name: '现金比率', type: 'line', yAxisIndex: 1,
+      data: [119.27, 60.11],
+      itemStyle: { color: colors[3] }, lineStyle: { width: 3 },
+      label: { show: true, formatter: '{c}%', color: colors[3] }
+    }
+  ]
+};
+cashAbilityChart.setOption(cashOption);
 
-        // 存货&研发
-        const inventoryChart = echarts.init(document.getElementById('inventoryChart'));
-        inventoryChart.setOption({
-            tooltip: {trigger: 'axis', axisPointer: {type: 'shadow'}},
-            legend: {data: ['2024年', '2025年'], textStyle: {color: '#cbd5e1'}},
-            grid: {left: '3%', right: '4%', bottom: '3%', containLabel: true},
-            xAxis: {
-                type: 'category',
-                data: ['存货余额(亿元)', '存货周转天数(天)', '研发投入占比(%)', '人力成本占比(%)'],
-                axisLine: {lineStyle: {color: '#475569'}},
-                axisLabel: {color: '#cbd5e1'}
-            },
-            yAxis: {
-                type: 'value',
-                axisLine: {lineStyle: {color: '#475569'}},
-                axisLabel: {color: '#cbd5e1'},
-                splitLine: {lineStyle: {color: 'rgba(71, 85, 105, 0.3)'}}
-            },
-            series: [
-                {name: '2024年', type: 'bar', data: [90.44, 183.4, 5.15, 1.09], itemStyle: {color: '#3b82f6'}},
-                {name: '2025年', type: 'bar', data: [63.64, 145.4, 5.00, 1.09], itemStyle: {color: '#10b981'}}
-            ]
-        });
+// 4. 营收结构饼图
+const revenueStructureChart = echarts.init(document.getElementById('revenueStructureChart'), 'business');
+const revenueOption = {
+  tooltip: {
+    trigger: 'item',
+    formatter: '{b}<br/>营收占比: {d}%<br/>金额: {c} 万元'
+  },
+  legend: { orient: 'vertical', left: 'left', top: 'center' },
+  series: [
+    {
+      name: '营收占比', type: 'pie', radius: ['40%', '70%'], center: ['60%', '55%'],
+      avoidLabelOverlap: false,
+      itemStyle: { borderRadius: 10, borderColor: '#161b33', borderWidth: 2 },
+      label: { show: false, position: 'center' },
+      emphasis: { label: { show: true, fontSize: 16, fontWeight: 'bold' } },
+      labelLine: { show: false },
+      data: [
+        { value: 248209.86, name: '华东' },
+        { value: 137894.37, name: '华中' },
+        { value: 86113.63, name: '华南' },
+        { value: 54707.48, name: '华西' },
+        { value: 52681.28, name: '华北' },
+        { value: 9409.89, name: '境外' }
+      ]
+    }
+  ]
+};
+revenueStructureChart.setOption(revenueOption);
 
-        // 响应式适配
-        window.addEventListener('resize', () => {
-            rateChart.resize();
-            efficiencyChart.resize();
-            revenueAreaChart.resize();
-            receivableAreaChart.resize();
-            trendChart.resize();
-            inventoryChart.resize();
-        });
-    </script>
+// 5. 地区营收占比同比变化
+const regionGrowthChart = echarts.init(document.getElementById('regionGrowthChart'), 'business');
+const regionGrowthOption = {
+  tooltip: {
+    trigger: 'axis', axisPointer: { type: 'shadow' },
+    formatter: '{b}<br/>占比同比变化: {c} pct'
+  },
+  xAxis: { type: 'value', name: '变化（pct）' },
+  yAxis: { type: 'category', data: ['境外', '华西', '华东', '华北', '华南', '华中'] },
+  series: [
+    {
+      name: '占比同比变化', type: 'bar',
+      data: [
+        { value: 0.23, itemStyle: { color: colors[1] } },
+        { value: 0.41, itemStyle: { color: colors[1] } },
+        { value: 0.72, itemStyle: { color: colors[1] } },
+        { value: 0.02, itemStyle: { color: colors[0] } },
+        { value: -0.05, itemStyle: { color: colors[0] } },
+        { value: -1.25, itemStyle: { color: colors[3] } }
+      ],
+      label: { show: true, position: 'right', formatter: '{c} pct' }
+    }
+  ]
+};
+regionGrowthChart.setOption(regionGrowthOption);
+
+// 6. 应收账款地区分布饼图
+const receivableStructureChart = echarts.init(document.getElementById('receivableStructureChart'), 'business');
+const receivableOption = {
+  tooltip: {
+    trigger: 'item',
+    formatter: '{b}<br/>应收占比: {d}%<br/>金额: {c} 万元'
+  },
+  legend: { orient: 'vertical', left: 'left', top: 'center' },
+  series: [
+    {
+      name: '应收账款占比', type: 'pie', radius: ['40%', '70%'], center: ['60%', '55%'],
+      avoidLabelOverlap: false,
+      itemStyle: { borderRadius: 10, borderColor: '#161b33', borderWidth: 2 },
+      label: { show: false, position: 'center' },
+      emphasis: { label: { show: true, fontSize: 16, fontWeight: 'bold' } },
+      labelLine: { show: false },
+      data: [
+        { value: 33353.37, name: '华东', itemStyle: { color: colors[0] } },
+        { value: 22740.93, name: '华中', itemStyle: { color: colors[3] } },
+        { value: 8262.54, name: '华南', itemStyle: { color: colors[2] } },
+        { value: 7580.31, name: '华北', itemStyle: { color: colors[4] } },
+        { value: 3935.93, name: '华西', itemStyle: { color: colors[1] } },
+        { value: 87.47, name: '境外', itemStyle: { color: colors[5] } }
+      ]
+    }
+  ]
+};
+receivableStructureChart.setOption(receivableOption);
+
+// 7. 资产结构变化图
+const assetStructureChart = echarts.init(document.getElementById('assetStructureChart'), 'business');
+const assetOption = {
+  tooltip: {
+    trigger: 'axis', axisPointer: { type: 'shadow' },
+    formatter: '{b}<br/>{a}: {c} 万元'
+  },
+  legend: { data: ['流动资产', '非流动资产'], top: 0 },
+  xAxis: { type: 'category', data: ['2024年', '2025年'] },
+  yAxis: { type: 'value', name: '万元', stack: 'total' },
+  series: [
+    {
+      name: '流动资产', type: 'bar', stack: 'total',
+      data: [613289.92, 630221.69],
+      itemStyle: { color: 'rgba(64, 158, 255, 0.7)' }
+    },
+    {
+      name: '非流动资产', type: 'bar', stack: 'total',
+      data: [217065.27, 220943.92],
+      itemStyle: { color: 'rgba(179, 125, 255, 0.7)' }
+    }
+  ]
+};
+assetStructureChart.setOption(assetOption);
+
+// 8. 资本结构变化图
+const capitalStructureChart = echarts.init(document.getElementById('capitalStructureChart'), 'business');
+const capitalOption = {
+  tooltip: {
+    trigger: 'axis', axisPointer: { type: 'shadow' },
+    formatter: '{b}<br/>{a}: {c} 万元'
+  },
+  legend: { data: ['流动负债', '非流动负债', '所有者权益'], top: 0 },
+  xAxis: { type: 'category', data: ['2024年', '2025年'] },
+  yAxis: { type: 'value', name: '万元', stack: 'total' },
+  series: [
+    {
+      name: '流动负债', type: 'bar', stack: 'total',
+      data: [151792.38, 149738.04],
+      itemStyle: { color: 'rgba(245, 108, 108, 0.7)' }
+    },
+    {
+      name: '非流动负债', type: 'bar', stack: 'total',
+      data: [59780.50, 55400.00],
+      itemStyle: { color: 'rgba(230, 162, 60, 0.7)' }
+    },
+    {
+      name: '所有者权益', type: 'bar', stack: 'total',
+      data: [618782.31, 646027.57],
+      itemStyle: { color: 'rgba(103, 194, 58, 0.7)' }
+    }
+  ]
+};
+capitalStructureChart.setOption(capitalOption);
+
+// 9. 现金流对比图
+const cashFlowChart = echarts.init(document.getElementById('cashFlowChart'), 'business');
+const cashFlowOption = {
+  tooltip: {
+    trigger: 'axis', axisPointer: { type: 'shadow' },
+    formatter: '{b}<br/>{a}: {c} 万元'
+  },
+  legend: { data: ['2024年', '2025年'], top: 0 },
+  xAxis: { type: 'category', data: ['经营活动现金流', '投资活动现金流', '筹资活动现金流'] },
+  yAxis: { type: 'value', name: '万元' },
+  series: [
+    {
+      name: '2024年', type: 'bar',
+      data: [78231.38, -90337.50, -22159.20],
+      itemStyle: {
+        color: function(params) {
+          return params.value >= 0 ? 'rgba(64, 158, 255, 0.7)' : 'rgba(245, 108, 108, 0.7)';
+        }
+      }
+    },
+    {
+      name: '2025年', type: 'bar',
+      data: [81079.88, -87920.00, -28800.00],
+      itemStyle: {
+        color: function(params) {
+          return params.value >= 0 ? 'rgba(103, 194, 58, 0.7)' : 'rgba(245, 108, 108, 0.7)';
+        }
+      }
+    }
+  ]
+};
+cashFlowChart.setOption(cashFlowOption);
+
+// 10. 研发投入图
+const rdChart = echarts.init(document.getElementById('rdChart'), 'business');
+const rdOption = {
+  tooltip: {
+    trigger: 'axis', axisPointer: { type: 'cross' },
+    formatter: function(params) {
+      let res = params[0].name + '<br/>';
+      params.forEach(item => {
+        let unit = item.seriesName === '研发投入占比' ? '%' : '万元';
+        res += `${item.seriesName}: ${item.value} ${unit}<br/>`;
+      });
+      return res;
+    }
+  },
+  legend: { data: ['研发费用', '研发投入占比'], top: 0 },
+  xAxis: { type: 'category', data: ['2024年', '2025年'] },
+  yAxis: [
+    { type: 'value', name: '研发费用（万元）', position: 'left' },
+    {
+      type: 'value', name: '占比（%）', position: 'right', max: 6,
+      axisLine: { lineStyle: { color: colors[4] } }
+    }
+  ],
+  series: [
+    {
+      name: '研发费用', type: 'bar', yAxisIndex: 0,
+      data: [29517.19, 29826.50],
+      itemStyle: { color: 'rgba(64, 158, 255, 0.7)' }
+    },
+    {
+      name: '研发投入占比', type: 'line', yAxisIndex: 1,
+      data: [5.15, 5.00],
+      itemStyle: { color: colors[4] },
+      label: { show: true, formatter: '{c}%', color: colors[4] }
+    }
+  ]
+};
+rdChart.setOption(rdOption);
+
+// 11. 组织效能图
+const orgChart = echarts.init(document.getElementById('orgChart'), 'business');
+const orgOption = {
+  tooltip: {
+    trigger: 'axis', axisPointer: { type: 'shadow' },
+    formatter: '{b}<br/>{a}: {c}%'
+  },
+  legend: { data: ['人力成本覆盖率'], top: 0 },
+  xAxis: { type: 'category', data: ['2024年', '2025年'] },
+  yAxis: { type: 'value', name: '覆盖率（%）', max: 90 },
+  series: [
+    {
+      name: '人力成本覆盖率', type: 'bar',
+      data: [78.92, 82.90],
+      itemStyle: {
+        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+          { offset: 0, color: 'rgba(103, 194, 58, 0.9)' },
+          { offset: 1, color: 'rgba(64, 158, 255, 0.7)' }
+        ])
+      },
+      label: { show: true, position: 'top', formatter: '{c}%', color: '#fff' }
+    }
+  ]
+};
+orgChart.setOption(orgOption);
+
+// 响应式调整
+window.addEventListener('resize', function() {
+  coreIndexChart.resize();
+  turnoverRateChart.resize();
+  cashAbilityChart.resize();
+  revenueStructureChart.resize();
+  regionGrowthChart.resize();
+  receivableStructureChart.resize();
+  assetStructureChart.resize();
+  capitalStructureChart.resize();
+  cashFlowChart.resize();
+  rdChart.resize();
+  orgChart.resize();
+});
+</script>
 </body>
 </html>
 ```
+### 看板功能说明：
+1. **核心概览区**：顶部5个KPI卡片直观展示核心经营指标及同比变化，关键数据一目了然
+2. **风险亮点提示**：重点标注经营风险点（现金比率下降、应收账款放缓）和经营亮点（存货效率提升、组织效能增强）
+3. **资产效率分析**：双轴对比展示各类资产周转效率变化，现金能力变化图直观反映货币资金和短期偿债能力变动
+4. **业务结构分析**：包含地区营收占比、营收变动趋势、应收账款分布三个维度，清晰展示业务结构和集中度风险
+5. **财务结构分析**：资产/资本结构堆叠图展示两年财务结构变化，现金流对比图直观反映三类现金流变化趋势
+6. **研发与组织效能**：展示研发投入变化和人力成本覆盖能力，反映长期发展潜力和组织运营效率
+
+### 交互特性：
+- 所有图表支持hover查看详细数据
+- 卡片hover有浮动高亮效果，增强科技感
+- 全响应式设计，适配PC、平板、手机等各类设备
+- 深色科技配色，符合商务分析场景的专业感和视觉舒适度
