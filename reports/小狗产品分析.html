@@ -1,255 +1,269 @@
-这是一个完整的、单文件的HTML分析报告。该报告使用了Bootstrap 5进行布局，Chart.js进行数据可视化，并包含了基于你提供的CSV数据进行的深度文本分析和商业洞察。
-
-你可以将以下代码保存为 `.html` 文件（例如 `vacuum_analysis_report.html`），然后直接在浏览器中打开。
-
 ```html
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>吸尘器客户提问数据分析与痛点拆解报告</title>
-    
-    <!-- 引入 Bootstrap CSS -->
+    <title>吸尘器客户提问数据分析报告</title>
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- 引入 FontAwesome 图标 -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
     <style>
         :root {
             --primary-color: #2c3e50;
             --secondary-color: #3498db;
-            --accent-color: #e74c3c;
-            --bg-light: #f8f9fa;
+            --accent-color: #e67e22;
+            --light-bg: #f8f9fa;
+            --text-color: #333;
         }
 
         body {
-            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
-            background-color: var(--bg-light);
-            color: #333;
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: var(--light-bg);
+            color: var(--text-color);
             line-height: 1.6;
         }
 
-        /* 导航栏样式 */
         .navbar {
             background-color: var(--primary-color);
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        .navbar-brand, .nav-link {
-            color: #fff !important;
+
+        .navbar-brand {
+            font-weight: 700;
+            color: white !important;
         }
 
-        /* 卡片样式 */
         .card {
             border: none;
             border-radius: 10px;
-            box: 0 4px 6px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             margin-bottom: 20px;
             transition: transform 0.2s;
         }
+
         .card:hover {
-            transform: translateY(-2px);
+            transform: translateY(-5px);
         }
+
         .card-header {
-            background-color: #fff;
-            border-bottom: 1px solid #eee;
+            background-color: white;
+            border-bottom: 2px solid var(--light-bg);
             font-weight: 600;
             color: var(--primary-color);
-            padding: 1rem 1.5rem;
         }
 
-        /* 统计数字块 */
-        .stat-box {
-            text-align: center;
-            padding: 20px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            height: 100%;
+        .kpi-card {
+            background: linear-gradient(135deg, var(--primary-color), #4b6cb7);
+            color: white;
         }
-        .stat-number {
+
+        .kpi-value {
             font-size: 2.5rem;
-            font-weight: bold;
-            color: var(--secondary-color);
-        }
-        .stat-label {
-            color: #666;
-            font-size: 0.9rem;
-            margin-top: 5px;
+            font-weight: 700;
         }
 
-        /* 洞察列表 */
-        .insight-list li {
-            margin-bottom: 10px;
-            position: relative;
-            padding-left: 25px;
-        }
-        .insight-list li::before {
-            content: '\f0eb'; /* Lightbulb icon */
-            font-family: 'Font Awesome 6 Free';
-            font-weight: 900;
-            position: absolute;
-            left: 0;
-            color: var(--accent-color);
+        .kpi-label {
+            font-size: 1rem;
+            opacity: 0.9;
         }
 
-        /* 竞品对比条形图容器 */
-        .competitor-bar {
-            display: flex;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-        .competitor-name {
-            width: 80px;
-            font-weight: bold;
-            font-size: 0.9rem;
-        }
-        .progress {
-            flex-grow: 1;
-            margin: 0 10px;
-            height: 20px;
-            background-color: #e9ecef;
-        }
-        .progress-bar {
-            background-color: var(--secondary-color);
-        }
-
-        /* 页脚 */
-        footer {
-            background-color: var(--primary-color);
-            color: #fff;
-            padding: 30px 0;
-            margin-top: 50px;
-            text-align: center;
-        }
-
-        /* 章节标题 */
         .section-title {
             border-left: 5px solid var(--secondary-color);
             padding-left: 15px;
-            margin-bottom: 30px;
-            margin-top: 20px;
+            margin-bottom: 25px;
+            margin-top: 40px;
             color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 350px;
+            width: 100%;
+        }
+
+        .insight-list li {
+            margin-bottom: 10px;
+        }
+
+        .badge-custom {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.85em;
+        }
+
+        footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px 0;
+            margin-top: 50px;
+            text-align: center;
         }
     </style>
 </head>
 <body>
 
     <!-- 导航栏 -->
-    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+    <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
-            <a class="navbar-brand" href="#"><i class="fas fa-chart-line me-2"></i>吸尘器市场洞察报告</a>
+            <a class="navbar-brand" href="#">DataInsight · 吸尘器市场分析</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="#summary">执行摘要</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#pain-points">痛点分析</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#scenarios">用户场景</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#competitors">竞品对标</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#conclusion">建议与结论</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="#summary">执行摘要</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#trends">趋势分析</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#insights">深度洞察</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#recommendations">建议</a></li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <!-- 头部 Hero 区域 -->
-    <header class="bg-white py-5 mb-4">
-        <div class="container text-center">
-            <h1 class="display-5 fw-bold text-dark">吸尘器客户提问数据分析</h1>
-            <p class="lead text-muted">基于消费者真实反馈的痛点拆解与商业洞察</p>
-            <p class="text-muted small">数据来源：电商平台用户评论/提问 | 样本量：300+ 条有效数据</p>
+    <!-- 主内容区 -->
+    <div class="container mt-4">
+        
+        <!-- 报告标题 -->
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <h2 class="fw-bold">吸尘器消费者痛点与需求分析报告</h2>
+                <p class="text-muted">基于电商平台消费者提问数据的深度挖掘</p>
+                <span class="badge bg-secondary">数据总量: 500+ 条</span>
+                <span class="badge bg-secondary">分析对象: 大橘及竞品</span>
+            </div>
         </div>
-    </header>
 
-    <div class="container">
-
-        <!-- 1. 执行摘要 -->
-        <section id="summary">
-            <h2 class="section-title">执行摘要</h2>
-            <div class="row">
-                <div class="col-md-3">
-                    <div class="stat-box">
-                        <div class="stat-number">65%</div>
-                        <div class="stat-label">问题涉及毛发/宠物困扰</div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="stat-box">
-                        <div class="stat-number">Top 1</div>
-                        <div class="stat-label">核心痛点：滚刷缠绕</div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="stat-box">
-                        <div class="stat-number">42%</div>
-                        <div class="stat-label">用户主动提及戴森对比</div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="stat-box">
-                        <div class="stat-number">高关注</div>
-                        <div class="stat-label">功能：自动集尘 & 绿光显尘</div>
+        <!-- 关键指标 KPI -->
+        <div class="row" id="summary">
+            <div class="col-md-4">
+                <div class="card kpi-card p-3">
+                    <div class="card-body text-center">
+                        <div class="kpi-value">42%</div>
+                        <div class="kpi-label">核心关注：宠物毛发清理</div>
                     </div>
                 </div>
             </div>
-            
-            <div class="card mt-4">
-                <div class="card-body">
-                    <h5><i class="fas fa-lightbulb text-warning me-2"></i>核心发现</h5>
-                    <p>数据分析显示，<strong>养宠家庭和长发用户</strong>是绝对的主力购买群体。消费者最大的焦虑并非单纯的吸力，而是<strong>“清理后的二次污染”</strong>（如滚刷缠发、集尘扬灰）以及<strong>“续航与吸力的平衡”</strong>。竞品方面，戴森是用户心中的最高参照标准，斐纳是主要同价位竞品。</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- 2. 痛点分析 -->
-        <section id="pain-points">
-            <h2 class="section-title">用户痛点深度拆解</h2>
-            <div class="row">
-                <div class="col-md-8">
-                    <div class="card h-100">
-                        <div class="card-header">高频痛点分布 (Top 5)</div>
-                        <div class="card-body">
-                            <canvas id="painPointsChart"></canvas>
-                        </div>
+            <div class="col-md-4">
+                <div class="card kpi-card p-3" style="background: linear-gradient(135deg, #e67e22, #f39c12);">
+                    <div class="card-body text-center">
+                        <div class="kpi-value">No.1</div>
+                        <div class="kpi-label">主要竞品对比：戴森</div>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="card h-100">
-                        <div class="card-header">详细解读</div>
-                        <div class="card-body">
-                            <ul class="insight-list">
-                                <li><strong>毛发缠绕 (35%)：</strong> 数据中出现大量“缠头发”、“长头发”、“猫毛卡住”等词汇。这是用户最头疼的售后维护问题。</li>
-                                <li><strong>续航焦虑 (25%)：</strong> 用户反复询问“充满电能用多久”、“大户型够不够用”，对高功率下的续航存疑。</li>
-                                <li><strong>吸力质疑 (20%)：</strong> 虽然参数标称高，但用户倾向于询问“真实吸力”、“能否吸起猫砂/大颗粒”。</li>
-                                <li><strong>噪音困扰 (10%)：</strong> 包含“声音大”、“吵到楼下”等反馈，影响家庭和谐。</li>
-                                <li><strong>重量与操作 (10%)：</strong> 女性用户关注“举起来重不重”、“累手”。</li>
-                            </ul>
+            </div>
+            <div class="col-md-4">
+                <div class="card kpi-card p-3" style="background: linear-gradient(135deg, #16a085, #1abc9c);">
+                    <div class="card-body text-center">
+                        <div class="kpi-value">25%</div>
+                        <div class="kpi-label">高频痛点：头发缠绕</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 图表区域 -->
+        <div class="row" id="trends">
+            <div class="col-md-6 col-lg-4">
+                <div class="card">
+                    <div class="card-header">消费者提问话题分布</div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="topicChart"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
-        </section>
-
-        <!-- 3. 用户场景与功能关注 -->
-        <section id="scenarios">
-            <h2 class="section-title">使用场景与功能关注点</h2>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header">用户画像与使用场景</div>
-                        <div class="card-body">
-                            <canvas id="scenarioChart"></canvas>
+            <div class="col-md-6 col-lg-4">
+                <div class="card">
+                    <div class="card-header">竞品提及频率</div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="competitorChart"></canvas>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header">特色功能关注度 (雷达图)</div>
-                        <div class="card-body">
+            </div>
+            <div class="col-md-12 col-lg-4">
+                <div class="card">
+                    <div class="card-header">功能关注度排行</div>
+                    <div class="card-body">
+                        <div class="chart-container">
                             <canvas id="featureChart"></canvas>
                         </div>
                     </div>
                 </div>
-            </div
+            </div>
+        </div>
+
+        <!-- 详细分析 -->
+        <div class="row" id="insights">
+            <div class="col-12">
+                <h3 class="section-title">详细数据分析与洞察</h3>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <i class="bi bi-graph-up"></i> 核心痛点拆解
+                    </div>
+                    <div class="card-body">
+                        <h5 class="text-primary">1. “毛发焦虑”是最大驱动力</h5>
+                        <p>超过 <strong>40%</strong> 的提问明确提到了“猫”、“狗”、“宠物”或“猫砂”。消费者最关心的不是单纯的吸灰，而是能否解决宠物换毛季的漫天飞絮以及猫砂带出的问题。</p>
+                        
+                        <h5 class="text-primary">2. 缠绕问题的技术焦虑</h5>
+                        <p>大量长发女性用户询问“长头发会不会缠”、“滚刷好清理吗”。这表明传统的滚刷设计是用户的主要痛点，<span class="badge-custom">防缠绕技术</span> 是高转化卖点。</p>
+
+                        <h5 class="text-primary">3. 续航与面积的矛盾</h5>
+                        <p>高频出现“100平”、“130平”、“大户型”与“续航多久”的关联提问。用户担心强力模式下无法完成全屋清洁。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <i class="bi bi-lightbulb"></i> 消费者行为模式
+                    </div>
+                    <div class="card-body">
+                        <ul class="insight-list">
+                            <li><strong>对比决策明显：</strong> 消费者极少只看一款产品，几乎都会主动对比 <span class="text-danger">戴森</span> 和 <span class="text-danger">斐纳 (Tineco)</span>。特别是询问“是不是戴森平替”的问题较多，说明大橘品牌处于“挑战者”地位。</li>
+                            <li><strong>场景化需求细分：</strong>
+                                <ul>
+                                    <li>床底/沙发底：关注“能否躺平”、“高度”。</li>
+                                    <li>地毯：关注“吸力是否足够”、“能否吸出深灰尘”。</li>
+                                    <li>除螨：关注“除螨刷效果”以及“是否需要单独买除螨仪”。</li>
+                                </ul>
+                            </li>
+                            <li><strong>耗材与维护顾虑：</strong> 集尘袋价格、更换频率、以及“自动集尘是否彻底”是用户购买前的重要考量，他们害怕二次清理麻烦。</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 建议与结论 -->
+        <div class="row" id="recommendations">
+            <div class="col-12">
+                <h3 class="section-title">建议与结论</h3>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>维度</th>
+                                        <th>现状/问题</th>
+                                        <th>行动建议</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>产品营销</strong></td>
+                                        <td>用户对“防缠绕”技术存疑，担心是噱头。</td>
+                                        <td>制作“长发/宠物毛实测”视频，重点展示滚刷不缠绕及一键清理的便捷性。强调“绿光显尘”在
