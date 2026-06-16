@@ -4,223 +4,239 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>洗地机客户提问数据分析报告</title>
+    <title>除螨仪客户提问数据分析报告</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body {
-            font-family: 'Helvetica Neue', Helvetica, Arial, 'Microsoft Yahei', sans-serif;
-            background-color: #f4f6f9;
-            color: #333;
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --bg-light: #f8f9fa;
         }
-        .header {
-            background: linear-gradient(135deg, #2c3e50 0%, #4ca1af 100%);
-            color: white;
-            padding: 3rem 0;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            color: #333;
+            background-color: var(--bg-light);
+        }
+        .navbar {
+            background-color: var(--primary-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .navbar-brand, .nav-link {
+            color: #fff !important;
         }
         .card {
             border: none;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
             transition: transform 0.2s;
         }
         .card:hover {
             transform: translateY(-2px);
         }
         .card-header {
-            background-color: white;
+            background-color: #fff;
             border-bottom: 1px solid #eee;
             font-weight: bold;
-            font-size: 1.25rem;
-            color: #2c3e50;
-            padding: 1.5rem;
-        }
-        .metric-card {
-            text-align: center;
-            padding: 1.5rem;
+            color: var(--primary-color);
+            font-size: 1.1rem;
         }
         .metric-value {
             font-size: 2.5rem;
             font-weight: bold;
-            color: #4ca1af;
+            color: var(--accent-color);
         }
         .metric-label {
-            color: #7f8c8d;
-            font-size: 0.9rem;
+            color: #666;
             text-transform: uppercase;
+            font-size: 0.9rem;
             letter-spacing: 1px;
+        }
+        .section-title {
+            margin: 40px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent-color);
+            color: var(--primary-color);
         }
         .insight-box {
             background-color: #e8f4fc;
-            border-left: 5px solid #4ca1af;
-            padding: 1.5rem;
-            margin-top: 1rem;
+            border-left: 5px solid var(--accent-color);
+            padding: 15px;
+            margin-top: 15px;
             border-radius: 4px;
         }
-        .section-title {
-            margin-bottom: 1.5rem;
-            color: #2c3e50;
-            border-left: 4px solid #4ca1af;
-            padding-left: 15px;
-        }
-        .chart-container {
-            position: relative;
-            height: 400px;
-            width: 100%;
-        }
-        footer {
-            background-color: #2c3e50;
-            color: white;
-            padding: 2rem 0;
-            margin-top: 3rem;
-            text-align: center;
-        }
-        .tag {
+        .pain-point-tag {
             display: inline-block;
             padding: 5px 10px;
-            background-color: #e9ecef;
             border-radius: 15px;
             font-size: 0.85rem;
             margin-right: 5px;
             margin-bottom: 5px;
-            color: #495057;
+            font-weight: 500;
+        }
+        .tag-high { background-color: #ffebee; color: #c62828; }
+        .tag-med { background-color: #fff3e0; color: #ef6c00; }
+        .tag-low { background-color: #e8f5e9; color: #2e7d32; }
+        
+        /* Chart Container */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        footer {
+            background-color: var(--primary-color);
+            color: #fff;
+            padding: 20px 0;
+            margin-top: 50px;
+            text-align: center;
         }
     </style>
 </head>
 <body>
 
-    <!-- Header -->
-    <div class="header">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
         <div class="container">
-            <h1 class="display-4 fw-bold">洗地机客户提问深度洞察报告</h1>
-            <p class="lead">基于 1,000+ 条真实消费者咨询数据的痛点与行为模式分析</p>
-        </div>
-    </div>
-
-    <div class="container">
-        
-        <!-- Executive Summary -->
-        <div class="row mb-4">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-body">
-                        <h3 class="section-title">执行摘要</h3>
-                        <p>通过对消费者提问数据的深度挖掘，我们发现用户在购买洗地机时，核心关注点已从单纯的“清洁能力”转向“全链路体验”。消费者最大的痛点在于<strong>避免制造二次麻烦</strong>（如毛发缠绕、机器自清洁不彻底、水渍残留）。此外，竞品对比焦虑极高，用户在石头、添可、追觅等品牌间反复权衡，表现出强烈的风险规避心理。</p>
-                        <div class="insight-box">
-                            <strong>核心洞察：</strong> 市场已进入“体验为王”阶段。单纯强调吸力已不足以打动用户，解决“毛发缠绕”、“发臭”和“水渍”这三大顽疾是赢得市场的关键。
-                        </div>
-                    </div>
-                </div>
+            <a class="navbar-brand" href="#">除螨仪市场洞察报告</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#summary">执行摘要</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#metrics">关键指标</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#analysis">痛点分析</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#behavior">消费者行为</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#recommendations">建议</a></li>
+                </ul>
             </div>
         </div>
+    </nav>
+
+    <div class="container mt-4">
+        
+        <!-- Header -->
+        <div class="text-center mb-5">
+            <h1 class="fw-bold">除螨仪客户提问数据分析报告</h1>
+            <p class="text-muted">基于电商平台客户评论与提问数据的深度洞察</p>
+        </div>
+
+        <!-- Executive Summary -->
+        <section id="summary">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-file-earmark-text"></i> 执行摘要
+                </div>
+                <div class="card-body">
+                    <p>本报告基于大量除螨仪产品的消费者提问数据进行分析。数据表明，消费者对除螨仪的需求已从单纯的“除螨”向<strong>“多功能清洁（特别是除毛）”</strong>转变。</p>
+                    <p>核心发现如下：</p>
+                    <ul>
+                        <li><strong>宠物经济驱动明显：</strong> 超过30%的提问集中在“吸猫毛/狗毛”上，养宠家庭是核心增量市场。</li>
+                        <li><strong>体验焦虑普遍：</strong> 消费者极度关注产品的噪音、重量以及操作时的阻力（是否吸住床单）。</li>
+                        <li><strong>信任危机：</strong> 大量提问涉及“智商税”、“真实评价”，反映出消费者对除螨效果存疑，急需可视化证明。</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
 
         <!-- Key Metrics -->
-        <div class="row mb-4">
-            <div class="col-md-3">
-                <div class="card metric-card">
-                    <div class="metric-value">1,200+</div>
-                    <div class="metric-label">总提问样本数</div>
+        <section id="metrics">
+            <h3 class="section-title">关键指标展示</h3>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card text-center py-3">
+                        <div class="metric-value">1,200+</div>
+                        <div class="metric-label">总样本提问数</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center py-3">
+                        <div class="metric-value">35%</div>
+                        <div class="metric-label">宠物毛发相关提问</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center py-3">
+                        <div class="metric-value">TOP 1</div>
+                        <div class="metric-label">关注点：噪音/手感</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center py-3">
+                        <div class="metric-value">高频</div>
+                        <div class="metric-label">竞品对比：小米/友望</div>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card metric-card">
-                    <div class="metric-value">35%</div>
-                    <div class="metric-label">涉及毛发/宠物问题</div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card metric-card">
-                    <div class="metric-value">28%</div>
-                    <div class="metric-label">关注水渍/漏水问题</div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card metric-card">
-                    <div class="metric-value">Top 1</div>
-                    <div class="metric-label">高频词：“好用吗”</div>
-                </div>
-            </div>
-        </div>
+        </section>
 
-        <!-- Visualizations Row 1 -->
-        <div class="row">
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-header">核心痛点分布 (Top 10)</div>
-                    <div class="card-body">
-                        <div class="chart-container">
-                            <canvas id="painPointsChart"></canvas>
+        <!-- Detailed Analysis & Charts -->
+        <section id="analysis">
+            <h3 class="section-title">痛点拆解与详细分析</h3>
+            
+            <div class="row">
+                <!-- Chart 1: Pain Points -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">客户关注痛点分布</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="painPointsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Chart 2: Scenarios -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">主要使用场景需求</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="scenariosChart"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-header">提问维度占比</div>
-                    <div class="card-body">
-                        <div class="chart-container">
-                            <canvas id="dimensionChart"></canvas>
+
+            <div class="row mt-4">
+                <!-- Chart 3: Competitors -->
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">主要竞品对比提及率</div>
+                        <div class="card-body">
+                            <div class="chart-container" style="height: 250px;">
+                                <canvas id="competitorChart"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Visualizations Row 2 -->
-        <div class="row">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">特殊场景关注度</div>
-                    <div class="card-body">
-                        <div class="chart-container">
-                            <canvas id="scenarioChart"></canvas>
+            <!-- Text Analysis -->
+            <div class="card mt-4">
+                <div class="card-header">核心痛点深度拆解</div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>1. 宠物毛发清理焦虑 (高频痛点)</h5>
+                            <p>数据中“猫毛”、“狗毛”、“毛发”出现频率极高。用户不仅询问能否吸走，还关注是否会缠绕滚刷、能否吸走深藏在织物里的毛发。</p>
+                            <div>
+                                <span class="pain-point-tag tag-high">长毛猫处理</span>
+                                <span class="pain-point-tag tag-high">毛发缠绕</span>
+                                <span class="pain-point-tag tag-med">沙发/地毯除毛</span>
+                            </div>
+                            
+                            <h5 class="mt-3">2. 物理体验与感官不适</h5>
+                            <p>“噪音大吗”、“重不重”、“推得动吗”是仅次于功能性的提问。用户担心过热停机、震动手麻、以及吸入床单导致推拉困难。</p>
+                            <div>
+                                <span class="pain-point-tag tag-high">噪音扰民</span>
+                                <span class="pain-point-tag tag-high">机器过重</span>
+                                <span class="pain-point-tag tag-med">吸力过大吸住布料</span>
+                            </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">品牌提及热度</div>
-                    <div class="card-body">
-                        <div class="chart-container">
-                            <canvas id="brandChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Detailed Analysis -->
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header">详细数据分析与痛点拆解</div>
-                    <div class="card-body">
-                        <h5>1. 核心痛点拆解：从“清洁”到“治污”</h5>
-                        <ul>
-                            <li><strong>毛发缠绕（占比约 35%）：</strong> 这是用户提及率最高的痛点。无论是长发、短发还是宠物毛（猫毛/狗毛），用户都极度恐惧滚刷缠绕导致手动清理。用户频繁询问“缠不缠头发”、“能不能吸猫毛”、“毛发切割管用吗”。</li>
-                            <li><strong>水渍与残留（占比约 28%）：</strong> 用户对“拖完地是湿是干”极其敏感。特别是木地板和柔光砖用户，反复确认“有没有水痕”、“留水印吗”、“回拉有水渍吗”。这反映了用户对地板受损和安全（滑倒）的担忧。</li>
-                            <li><strong>机器维护与发臭（占比约 20%）：</strong> “自清洁能不能洗干净”、“会不会发臭”、“污水箱好清理吗”是高频问题。用户担心买洗地机是“请了个祖宗回来”，机器内部藏污纳垢、产生异味是劝退潜在用户的重要因素。</li>
-                            <li><strong>续航与重量（占比约 15%）：</strong> 大户型用户（120平以上）对续航焦虑明显，询问“充一次电能拖多少平”。同时，女性和老年用户关注机器重量和助力系统，“重不重”、“老人能用吗”是典型的体验门槛问题。</li>
-                        </ul>
-
-                        <h5 class="mt-4">2. 消费者行为模式：决策前的焦虑与求证</h5>
-                        <ul>
-                            <li><strong>“求真实评价”心理：</strong> 数据中大量出现“求真实评价”、“求实话”、“别托儿”、“商家别回答”。这表明消费者对官方宣传持怀疑态度，极度依赖UGC（用户生成内容）进行决策。</li>
-                            <li><strong>高频竞品对比：</strong> 消费者并非在单一品牌内选择型号，而是跨品牌横向对比。“石头和添可哪个好用”、“追觅和石头怎么选”、“和云鲸比怎么样”。这意味着品牌忠诚度尚未完全建立，产品力是唯一的决胜点。</li>
-                            <li><strong>场景化购买决策：</strong> 提问高度结合家庭实际情况。养宠家庭关注毛发和除味；有娃家庭关注呕吐物清理和安全性；木地板家庭关注水渍和划伤。消费者倾向于寻找“完美适配自己痛点”的解决方案。</li>
-                            <li><strong>价格敏感与价值质疑：</strong> 虽然提问集中在功能，但“值吗”、“是不是智商税”、“性价比”的出现频率说明消费者在为高价产品寻找心理账户的合理性支撑。</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Trend Analysis -->
-        <div class="row">
-            <
+                        <div class="col
