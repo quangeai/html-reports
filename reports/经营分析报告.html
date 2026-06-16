@@ -1,4 +1,5 @@
-以下是一个基于ECharts和Tailwind CSS的销售数据看板HTML代码，包含关键指标卡片、趋势折线图、区域柱状图和产品占比饼图，支持响应式布局：
+### 商务科技风格数据可视化看板
+这份看板采用深色科技商务设计，包含核心KPI指标、趋势分析、占比分析、区域分布、热销榜单等常用商务分析模块，所有图表使用ECharts实现，响应式适配不同屏幕尺寸，直接保存为HTML文件即可打开使用。
 
 ```html
 <!DOCTYPE html>
@@ -6,13 +7,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>销售数据可视化看板</title>
-    <!-- 引入Tailwind CSS -->
+    <title>商务数据运营看板</title>
+    <!-- 引入外部资源 -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- 引入ECharts -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
     
-    <!-- 自定义Tailwind配置 -->
+    <!-- Tailwind 自定义配置 -->
     <script>
         tailwind.config = {
             theme: {
@@ -22,319 +23,290 @@
                         success: '#00B42A',
                         warning: '#FF7D00',
                         danger: '#F53F3F',
-                        dark: '#1D2129',
-                        light: '#F2F3F5'
+                        darkbg: '#0F172A',
+                        cardbg: '#1E293B',
+                        lighttext: '#94A3B8'
                     },
                     fontFamily: {
-                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
                     },
                 }
             }
         }
     </script>
-    
     <style type="text/tailwindcss">
         @layer utilities {
             .card-shadow {
-                box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.08);
+                box-shadow: 0 4px 20px rgba(22, 93, 255, 0.15);
             }
-            .chart-container {
-                height: 350px;
-                width: 100%;
+            .card-hover {
+                transition: all 0.3s ease;
+            }
+            .card-hover:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 8px 30px rgba(22, 93, 255, 0.25);
+            }
+            .gradient-border {
+                position: relative;
+            }
+            .gradient-border::before {
+                content: '';
+                position: absolute;
+                inset: -1px;
+                z-index: -1;
+                border-radius: 0.75rem;
+                background: linear-gradient(135deg, #165DFF, #722ED1);
             }
         }
     </style>
 </head>
-<body class="bg-light font-inter text-dark min-h-screen">
-    <div class="container mx-auto px-4 py-6">
-        <!-- 看板标题 -->
-        <div class="mb-6">
-            <h1 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-dark">销售数据总览</h1>
-            <p class="text-gray-500 mt-2">实时业务数据监控与分析</p>
+<body class="bg-darkbg text-white min-h-screen p-4 md:p-6">
+    <!-- 顶部导航 -->
+    <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+        <div>
+            <h1 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold bg-gradient-to-r from-primary to-purple-500 bg-clip-text text-transparent">
+                <i class="fa fa-dashboard mr-2"></i>企业运营数据分析看板
+            </h1>
+            <p class="text-lighttext mt-1">数据更新时间：2024-01-15 09:30:00</p>
         </div>
+        <div class="flex gap-3 mt-4 md:mt-0">
+            <div class="bg-cardbg rounded-lg px-4 py-2 flex items-center gap-2 card-shadow">
+                <i class="fa fa-calendar text-primary"></i>
+                <select class="bg-transparent outline-none text-lighttext">
+                    <option>近30天</option>
+                    <option>近7天</option>
+                    <option>本月</option>
+                    <option>全年</option>
+                </select>
+            </div>
+            <button class="bg-primary hover:bg-primary/90 rounded-lg px-4 py-2 flex items-center gap-2 transition-all">
+                <i class="fa fa-refresh"></i>
+                <span>刷新数据</span>
+            </button>
+        </div>
+    </header>
 
-        <!-- 关键指标卡片 -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <!-- 总销售额 -->
-            <div class="bg-white rounded-lg p-5 card-shadow">
+    <!-- KPI核心指标区域 -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <!-- 营收卡片 -->
+        <div class="gradient-border rounded-xl card-hover">
+            <div class="bg-cardbg p-5 rounded-xl">
                 <div class="flex justify-between items-start">
                     <div>
-                        <p class="text-gray-500 text-sm">总销售额</p>
-                        <h3 class="text-2xl font-bold mt-1">¥1,256,890</h3>
+                        <p class="text-lighttext text-sm">总营收</p>
+                        <h3 class="text-2xl font-bold mt-1">¥128.5<small class="text-sm ml-1">万</small></h3>
                         <p class="text-success text-sm mt-2 flex items-center">
-                            <span class="mr-1">↑12.5%</span>
-                            <span>较上月</span>
+                            <i class="fa fa-arrow-up mr-1"></i> 12.3% <span class="text-lighttext ml-1">环比上月</span>
                         </p>
                     </div>
-                    <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
+                    <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xl">
+                        <i class="fa fa-rmb"></i>
                     </div>
                 </div>
-            </div>
-
-            <!-- 订单数量 -->
-            <div class="bg-white rounded-lg p-5 card-shadow">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <p class="text-gray-500 text-sm">订单数量</p>
-                        <h3 class="text-2xl font-bold mt-1">8,542</h3>
-                        <p class="text-success text-sm mt-2 flex items-center">
-                            <span class="mr-1">↑8.3%</span>
-                            <span>较上月</span>
-                        </p>
-                    </div>
-                    <div class="w-12 h-12 rounded-full bg-success/10 flex items-center justify-center">
-                        <svg class="w-6 h-6 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                        </svg>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 转化率 -->
-            <div class="bg-white rounded-lg p-5 card-shadow">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <p class="text-gray-500 text-sm">转化率</p>
-                        <h3 class="text-2xl font-bold mt-1">32.7%</h3>
-                        <p class="text-warning text-sm mt-2 flex items-center">
-                            <span class="mr-1">↓2.1%</span>
-                            <span>较上月</span>
-                        </p>
-                    </div>
-                    <div class="w-12 h-12 rounded-full bg-warning/10 flex items-center justify-center">
-                        <svg class="w-6 h-6 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                        </svg>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 客单价 -->
-            <div class="bg-white rounded-lg p-5 card-shadow">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <p class="text-gray-500 text-sm">客单价</p>
-                        <h3 class="text-2xl font-bold mt-1">¥147.1</h3>
-                        <p class="text-success text-sm mt-2 flex items-center">
-                            <span class="mr-1">↑5.6%</span>
-                            <span>较上月</span>
-                        </p>
-                    </div>
-                    <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                        </svg>
-                    </div>
+                <div class="mt-3 h-10">
+                    <div id="kpi1" class="w-full h-full"></div>
                 </div>
             </div>
         </div>
 
-        <!-- 图表区域 -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
-            <!-- 月度销售趋势图 -->
-            <div class="bg-white rounded-lg p-5 card-shadow lg:col-span-2">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="font-semibold text-lg">月度销售趋势</h2>
-                    <select class="border border-gray-200 rounded-md px-3 py-1 text-sm">
-                        <option>2024年</option>
-                        <option>2023年</option>
-                    </select>
+        <!-- 用户卡片 -->
+        <div class="gradient-border rounded-xl card-hover">
+            <div class="bg-cardbg p-5 rounded-xl">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-lighttext text-sm">活跃用户</p>
+                        <h3 class="text-2xl font-bold mt-1">8.92<small class="text-sm ml-1">万</small></h3>
+                        <p class="text-success text-sm mt-2 flex items-center">
+                            <i class="fa fa-arrow-up mr-1"></i> 8.7% <span class="text-lighttext ml-1">环比上月</span>
+                        </p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-success/10 flex items-center justify-center text-success text-xl">
+                        <i class="fa fa-users"></i>
+                    </div>
                 </div>
-                <div id="salesTrendChart" class="chart-container"></div>
-            </div>
-
-            <!-- 产品类别占比 -->
-            <div class="bg-white rounded-lg p-5 card-shadow">
-                <h2 class="font-semibold text-lg mb-4">产品类别占比</h2>
-                <div id="productPieChart" class="chart-container"></div>
+                <div class="mt-3 h-10">
+                    <div id="kpi2" class="w-full h-full"></div>
+                </div>
             </div>
         </div>
 
-        <!-- 区域销售对比 -->
-        <div class="bg-white rounded-lg p-5 card-shadow">
+        <!-- 订单卡片 -->
+        <div class="gradient-border rounded-xl card-hover">
+            <div class="bg-cardbg p-5 rounded-xl">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-lighttext text-sm">订单总量</p>
+                        <h3 class="text-2xl font-bold mt-1">3.24<small class="text-sm ml-1">万</small></h3>
+                        <p class="text-danger text-sm mt-2 flex items-center">
+                            <i class="fa fa-arrow-down mr-1"></i> 2.1% <span class="text-lighttext ml-1">环比上月</span>
+                        </p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-warning/10 flex items-center justify-center text-warning text-xl">
+                        <i class="fa fa-shopping-cart"></i>
+                    </div>
+                </div>
+                <div class="mt-3 h-10">
+                    <div id="kpi3" class="w-full h-full"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 转化率卡片 -->
+        <div class="gradient-border rounded-xl card-hover">
+            <div class="bg-cardbg p-5 rounded-xl">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-lighttext text-sm">转化率</p>
+                        <h3 class="text-2xl font-bold mt-1">4.32<small class="text-sm ml-1">%</small></h3>
+                        <p class="text-success text-sm mt-2 flex items-center">
+                            <i class="fa fa-arrow-up mr-1"></i> 1.5% <span class="text-lighttext ml-1">环比上月</span>
+                        </p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-500 text-xl">
+                        <i class="fa fa-percent"></i>
+                    </div>
+                </div>
+                <div class="mt-3 h-10">
+                    <div id="kpi4" class="w-full h-full"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 图表区域第一行 -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <!-- 销售趋势图 -->
+        <div class="bg-cardbg rounded-xl p-5 card-shadow card-hover">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="font-semibold text-lg">区域销售对比</h2>
-                <button class="text-primary text-sm hover:underline">查看详情</button>
+                <h3 class="font-bold text-lg">月度销售趋势</h3>
+                <div class="flex gap-3">
+                    <span class="flex items-center text-sm text-lighttext"><span class="w-3 h-3 rounded-full bg-primary mr-1"></span>实际销售额</span>
+                    <span class="flex items-center text-sm text-lighttext"><span class="w-3 h-3 rounded-full bg-purple-400 mr-1"></span>目标销售额</span>
+                </div>
             </div>
-            <div id="regionBarChart" class="chart-container"></div>
+            <div id="saleTrend" class="w-full h-[300px]"></div>
+        </div>
+
+        <!-- 产品分类占比 -->
+        <div class="bg-cardbg rounded-xl p-5 card-shadow card-hover">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-lg">产品类别占比</h3>
+                <i class="fa fa-ellipsis-v text-lighttext cursor-pointer"></i>
+            </div>
+            <div id="productRate" class="w-full h-[300px]"></div>
+        </div>
+    </div>
+
+    <!-- 图表区域第二行 -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- 区域销售分布 -->
+        <div class="bg-cardbg rounded-xl p-5 card-shadow card-hover">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-lg">区域销售分布</h3>
+                <i class="fa fa-download text-lighttext cursor-pointer"></i>
+            </div>
+            <div id="areaSale" class="w-full h-[350px]"></div>
+        </div>
+
+        <!-- 热销产品榜单 -->
+        <div class="bg-cardbg rounded-xl p-5 card-shadow card-hover">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-lg">TOP5热销产品</h3>
+                <span class="text-xs bg-primary/20 text-primary px-2 py-1 rounded">本月</span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b border-gray-700">
+                            <th class="text-left py-3 text-lighttext font-normal text-sm">排名</th>
+                            <th class="text-left py-3 text-lighttext font-normal text-sm">产品名称</th>
+                            <th class="text-right py-3 text-lighttext font-normal text-sm">销量</th>
+                            <th class="text-right py-3 text-lighttext font-normal text-sm">占比</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b border-gray-700/50 hover:bg-primary/5 transition-all">
+                            <td class="py-3"><span class="bg-primary text-white w-5 h-5 rounded-full text-xs flex items-center justify-center">1</span></td>
+                            <td class="py-3">智能蓝牙耳机</td>
+                            <td class="py-3 text-right">4289</td>
+                            <td class="py-3">
+                                <div class="flex items-center justify-end gap-2">
+                                    <div class="w-24 h-2 bg-gray-700 rounded-full overflow-hidden">
+                                        <div class="h-full bg-primary rounded-full" style="width: 86%"></div>
+                                    </div>
+                                    <span class="text-sm">86%</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="border-b border-gray-700/50 hover:bg-primary/5 transition-all">
+                            <td class="py-3"><span class="bg-primary/80 text-white w-5 h-5 rounded-full text-xs flex items-center justify-center">2</span></td>
+                            <td class="py-3">超薄笔记本电脑</td>
+                            <td class="py-3 text-right">3126</td>
+                            <td class="py-3">
+                                <div class="flex items-center justify-end gap-2">
+                                    <div class="w-24 h-2 bg-gray-700 rounded-full overflow-hidden">
+                                        <div class="h-full bg-purple-500 rounded-full" style="width: 72%"></div>
+                                    </div>
+                                    <span class="text-sm">72%</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="border-b border-gray-700/50 hover:bg-primary/5 transition-all">
+                            <td class="py-3"><span class="bg-primary/60 text-white w-5 h-5 rounded-full text-xs flex items-center justify-center">3</span></td>
+                            <td class="py-3">智能手表</td>
+                            <td class="py-3 text-right">2890</td>
+                            <td class="py-3">
+                                <div class="flex items-center justify-end gap-2">
+                                    <div class="w-24 h-2 bg-gray-700 rounded-full overflow-hidden">
+                                        <div class="h-full bg-cyan-500 rounded-full" style="width: 65%"></div>
+                                    </div>
+                                    <span class="text-sm">65%</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="border-b border-gray-700/50 hover:bg-primary/5 transition-all">
+                            <td class="py-3"><span class="bg-primary/40 text-white w-5 h-5 rounded-full text-xs flex items-center justify-center">4</span></td>
+                            <td class="py-3">无线充电器</td>
+                            <td class="py-3 text-right">1987</td>
+                            <td class="py-3">
+                                <div class="flex items-center justify-end gap-2">
+                                    <div class="w-24 h-2 bg-gray-700 rounded-full overflow-hidden">
+                                        <div class="h-full bg-green-500 rounded-full" style="width: 48%"></div>
+                                    </div>
+                                    <span class="text-sm">48%</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-primary/5 transition-all">
+                            <td class="py-3"><span class="bg-primary/20 text-white w-5 h-5 rounded-full text-xs flex items-center justify-center">5</span></td>
+                            <td class="py-3">智能家居套装</td>
+                            <td class="py-3 text-right">1542</td>
+                            <td class="py-3">
+                                <div class="flex items-center justify-end gap-2">
+                                    <div class="w-24 h-2 bg-gray-700 rounded-full overflow-hidden">
+                                        <div class="h-full bg-yellow-500 rounded-full" style="width: 32%"></div>
+                                    </div>
+                                    <span class="text-sm">32%</span>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
     <script>
-        // 等待DOM加载完成
-        document.addEventListener('DOMContentLoaded', function() {
-            // 初始化月度销售趋势折线图
-            const salesTrendChart = echarts.init(document.getElementById('salesTrendChart'));
-            const salesTrendOption = {
-                tooltip: {
-                    trigger: 'axis',
-                    backgroundColor: 'rgba(255,255,255,0.95)',
-                    borderColor: '#ddd',
-                    textStyle: {
-                        color: '#333'
-                    }
-                },
-                grid: {
-                    left: '3%',
-                    right: '4%',
-                    bottom: '3%',
-                    containLabel: true
-                },
-                xAxis: {
-                    type: 'category',
-                    boundaryGap: false,
-                    data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
-                },
-                yAxis: {
-                    type: 'value',
-                    axisLabel: {
-                        formatter: '¥{value}'
-                    }
-                },
-                series: [
-                    {
-                        name: '销售额',
-                        type: 'line',
-                        smooth: true,
-                        data: [85000, 92000, 105000, 98000, 120000, 135000, 142000, 138000, 150000, 165000, 178000, 192000],
-                        lineStyle: {
-                            color: '#165DFF',
-                            width: 3
-                        },
-                        areaStyle: {
-                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                                {offset: 0, color: 'rgba(22, 93, 255, 0.3)'},
-                                {offset: 1, color: 'rgba(22, 93, 255, 0.05)'}
-                            ])
-                        },
-                        itemStyle: {
-                            color: '#165DFF'
-                        }
-                    }
-                ]
-            };
-            salesTrendChart.setOption(salesTrendOption);
-
-            // 初始化产品类别占比饼图
-            const productPieChart = echarts.init(document.getElementById('productPieChart'));
-            const productPieOption = {
-                tooltip: {
-                    trigger: 'item',
-                    formatter: '{a} <br/>{b}: {c} ({d}%)'
-                },
-                legend: {
-                    orient: 'vertical',
-                    left: 'left',
-                    textStyle: {
-                        fontSize: 12
-                    }
-                },
-                series: [
-                    {
-                        name: '销售额',
-                        type: 'pie',
-                        radius: ['40%', '70%'],
-                        avoidLabelOverlap: false,
-                        itemStyle: {
-                            borderRadius: 10,
-                            borderColor: '#fff',
-                            borderWidth: 2
-                        },
-                        label: {
-                            show: false,
-                            position: 'center'
-                        },
-                        emphasis: {
-                            label: {
-                                show: true,
-                                fontSize: 16,
-                                fontWeight: 'bold'
-                            }
-                        },
-                        labelLine: {
-                            show: false
-                        },
-                        data: [
-                            {value: 420000, name: '电子产品', itemStyle: {color: '#165DFF'}},
-                            {value: 350000, name: '服装', itemStyle: {color: '#00B42A'}},
-                            {value: 280000, name: '家居', itemStyle: {color: '#FF7D00'}},
-                            {value: 206890, name: '食品', itemStyle: {color: '#F53F3F'}}
-                        ]
-                    }
-                ]
-            };
-            productPieChart.setOption(productPieOption);
-
-            // 初始化区域销售对比柱状图
-            const regionBarChart = echarts.init(document.getElementById('regionBarChart'));
-            const regionBarOption = {
-                tooltip: {
-                    trigger: 'axis',
-                    axisPointer: {
-                        type: 'shadow'
-                    },
-                    backgroundColor: 'rgba(255,255,255,0.95)',
-                    borderColor: '#ddd',
-                    textStyle: {
-                        color: '#333'
-                    }
-                },
-                grid: {
-                    left: '3%',
-                    right: '4%',
-                    bottom: '3%',
-                    containLabel: true
-                },
-                xAxis: {
-                    type: 'category',
-                    data: ['华东', '华南', '华北', '西南', '西北', '东北'],
-                    axisLabel: {
-                        fontSize: 12
-                    }
-                },
-                yAxis: {
-                    type: 'value',
-                    axisLabel: {
-                        formatter: '¥{value}'
-                    }
-                },
-                series: [
-                    {
-                        name: '销售额',
-                        type: 'bar',
-                        barWidth: '60%',
-                        data: [380000, 320000, 250000, 150000, 100000, 56890],
-                        itemStyle: {
-                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                                {offset: 0, color: '#165DFF'},
-                                {offset: 1, color: '#69B1FF'}
-                            ])
-                        }
-                    }
-                ]
-            };
-            regionBarChart.setOption(regionBarOption);
-
-            // 响应式适配
-            window.addEventListener('resize', function() {
-                salesTrendChart.resize();
-                productPieChart.resize();
-                regionBarChart.resize();
-            });
-        });
-    </script>
-</body>
-</html>
-```
-
-这个看板具有以下特点：
-1. **响应式布局**：使用Tailwind CSS实现，在手机、平板和桌面设备上都有良好的显示效果
-2. **多种图表类型**：包含折线图（趋势分析）、饼图（占比分析）、柱状图（对比分析）
-3. **关键指标卡片**：展示核心业务数据，带有趋势标识
-4. **视觉设计**：采用现代化的卡片式设计，带有阴影和渐变效果，色彩搭配专业
-5. **交互体验**：图表支持鼠标悬停显示详细数据，窗口大小变化时自动适配
-
-你可以直接将这段代码保存为HTML文件，在浏览器中打开即可查看效果。如果需要修改数据，只需在JavaScript部分修改对应图表的data数据即可。
+        // 迷你KPI图初始化
+        function initMiniChart(id, color, data) {
+            const chart = echarts.init(document.getElementById(id));
+            chart.setOption({
+                grid: { left: 0, right: 0, top: 0, bottom: 0 },
+                xAxis: { show: false, type: 'category', data: Array.from({length: 7}, (_,i)=>i) },
+                yAxis: { show: false },
+                series: [{
+                    data: data,
+                    type: 'line',
+                    smooth: true,
+                    symbol: 'none',
+                    lineStyle: { width:
