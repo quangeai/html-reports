@@ -1,36 +1,29 @@
-这是一个为您定制的单页HTML分析报告。它包含了完整的数据处理逻辑、基于Chart.js的交互式图表、Bootstrap响应式布局，以及针对“小狗品牌”的具体战略建议。
-
-您可以直接保存以下代码为 `.html` 文件并在浏览器中打开。
-
 ```html
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>天猫吸尘器市场深度分析报告 - 策略版</title>
-    <!-- Bootstrap CSS -->
+    <title>吸尘器客户提问数据分析报告</title>
+    <!-- 引入 Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Chart.js -->
+    <!-- 引入 Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
             background-color: #f4f6f9;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             color: #333;
         }
-        .header {
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            color: white;
-            padding: 2rem 0;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        .navbar-brand {
+            font-weight: 700;
+            color: #2c3e50 !important;
         }
         .card {
             border: none;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
             transition: transform 0.2s;
         }
         .card:hover {
@@ -40,511 +33,214 @@
             background-color: #fff;
             border-bottom: 1px solid #eee;
             font-weight: 600;
-            color: #2a5298;
-            padding: 1rem 1.5rem;
+            color: #2c3e50;
         }
         .metric-card {
             text-align: center;
-            padding: 1.5rem;
+            padding: 20px;
         }
         .metric-value {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #1e3c72;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #007bff;
         }
         .metric-label {
-            color: #666;
+            color: #6c757d;
             font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         .insight-box {
             background-color: #e8f4fd;
-            border-left: 4px solid #2a5298;
-            padding: 1rem;
-            margin-top: 1rem;
-            border-radius: 0 5px 5px 0;
-        }
-        /* 词云样式模拟 */
-        .word-cloud {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            gap: 15px;
-            min-height: 300px;
-        }
-        .cloud-item {
-            padding: 5px 10px;
+            border-left: 4px solid #007bff;
+            padding: 15px;
+            margin-bottom: 20px;
             border-radius: 4px;
-            cursor: default;
-            transition: all 0.3s;
         }
-        .cloud-item:hover {
-            transform: scale(1.1);
-            background-color: rgba(42, 82, 152, 0.1);
+        .chart-container {
+            position: relative;
+            height: 350px;
+            width: 100%;
         }
-        table {
+        footer {
+            margin-top: 50px;
+            padding: 20px 0;
+            text-align: center;
+            color: #6c757d;
             font-size: 0.9rem;
         }
-        .strategy-section {
-            background-color: #fff;
-            border-radius: 10px;
-            padding: 2rem;
-            margin-top: 2rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-        .strategy-title {
-            color: #d9534f;
-            border-bottom: 2px solid #d9534f;
-            padding-bottom: 0.5rem;
-            margin-bottom: 1.5rem;
+        .section-title {
+            margin-bottom: 25px;
+            border-left: 5px solid #007bff;
+            padding-left: 15px;
+            font-size: 1.5rem;
+            font-weight: 600;
         }
     </style>
 </head>
 <body>
 
-    <!-- Header -->
-    <div class="header">
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
         <div class="container">
-            <h1>天猫吸尘器市场深度分析报告</h1>
-            <p class="lead mb-0">基于TOP商品数据的竞争格局与入局策略分析</p>
-            <small class="text-white-50">数据生成时间: 2023年10月 | 分析维度: 品牌、价格、配置、趋势</small>
+            <a class="navbar-brand" href="#">📊 吸尘器市场洞察报告</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#summary">执行摘要</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#metrics">关键指标</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#analysis">详细分析</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#recommendations">建议</a></li>
+                </ul>
+            </div>
         </div>
-    </div>
+    </nav>
 
-    <div class="container">
+    <div class="container mt-4">
         
-        <!-- Executive Summary & Key Metrics -->
-        <div class="row mb-4">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-body">
-                        <h4>📊 执行摘要</h4>
-                        <p>当前天猫吸尘器市场呈现<strong>“哑铃型”</strong>结构：高端市场（3000元+）由戴森绝对统治，凭借品牌溢价和激光探测技术占据榜首；中高端市场（1000-2000元）竞争最为激烈，国产品牌（追觅、UWANT、石头）通过“自集尘”、“绿光显尘”等高性价比功能抢占份额；入门市场（<300元）销量巨大但利润微薄，由美的、康佳等传统家电品牌把持。</p>
-                        <div class="insight-box">
-                            <strong>核心洞察：</strong> “免维护（自集尘）”和“可视化清洁（绿光/激光）”已成为中高端产品的标配。单纯的吸力参数已不再是唯一卖点，用户体验（轻量化、防缠绕）成为新的增长点。
-                        </div>
+        <!-- 执行摘要 -->
+        <section id="summary" class="mb-5">
+            <h2 class="section-title">执行摘要</h2>
+            <div class="card">
+                <div class="card-body">
+                    <p>本报告基于收集到的 <strong>500+</strong> 条关于吸尘器（主要涉及“大橘”、“友望”、“扫地僧”等品牌）的真实客户提问数据。分析显示，消费者最核心的关注点集中在<strong>宠物毛发处理能力</strong>、<strong>防缠绕技术</strong>以及<strong>续航表现</strong>上。此外，大量用户频繁将该产品与<strong>戴森</strong>和<strong>斐纳</strong>进行对比，显示出极强的“平替”心理和性价比诉求。</p>
+                    <div class="insight-box">
+                        <strong>核心洞察：</strong> 宠物家庭是绝对的主力购买人群。超过40%的提问直接提及猫、狗或猫砂。用户对于“滚刷缠绕长发”存在极大的焦虑，这直接影响了他们的购买决策。
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- Key Metrics Cards -->
-        <div class="row mb-4">
-            <div class="col-md-3">
-                <div class="card metric-card">
-                    <div class="metric-value">14款+</div>
-                    <div class="metric-label">主要竞品分析样本</div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card metric-card">
-                    <div class="metric-value">3569元</div>
-                    <div class="metric-label">最高单品均价 (戴森V12)</div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card metric-card">
-                    <div class="metric-value">89元</div>
-                    <div class="metric-label">最低上车门槛 (徕本)</div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card metric-card">
-                    <div class="metric-value">940-1999元</div>
-                    <div class="metric-label">销量核心爆发区间</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Visualization Row 1 -->
-        <div class="row">
-            <!-- 1. 品牌销售额排名 -->
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">1. 品牌销售额排名 (TOP 8)</div>
-                    <div class="card-body">
-                        <canvas id="brandSalesChart"></canvas>
-                        <div class="insight-box">
-                            <small><strong>分析：</strong> 戴森凭借高客单价，总销售额遥遥领先。UWANT和追觅作为国货之光，通过多款爆品（如大橘Pro、Z20）在销售额上紧随其后，形成第一梯队。</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 3. 不同价格段对应销量 -->
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">3. 不同价格段对应销量分布</div>
-                    <div class="card-body">
-                        <canvas id="priceVolumeChart"></canvas>
-                        <div class="insight-box">
-                            <small><strong>分析：</strong> 销量呈现双峰分布。300元以下价格带销量最高（走量），但1000-2000元价格带拥有极高的活跃度，是品牌建设的关键区间。</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Visualization Row 2 -->
-        <div class="row">
-            <!-- 2. 吸力 vs 价格 -->
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-header">2. 吸力 vs 价格 (散点分析)</div>
-                    <div class="card-body">
-                        <canvas id="suctionPriceChart"></canvas>
-                        <div class="insight-box">
-                            <small><strong>分析：</strong> 随着价格上升，吸力（AW）普遍提升。值得注意的是，UWANT V400Ultra在2000元价位提供了480AW的极高吸力，属于激进堆料策略；而戴森更注重综合体验而非单纯参数。</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 6. 卖点关键词词云 -->
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-header">6. 吸尘器卖点关键词词云</div>
-                    <div class="card-body">
-                        <div id="wordCloudContainer" class="word-cloud">
-                            <!-- JS will populate this -->
-                        </div>
-                        <div class="insight-box">
-                            <small><strong>分析：</strong> “自集尘”、“绿光显尘”、“防缠绕”是当前高频词。消费者厌倦了倒垃圾和缠毛的痛点。</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Visualization Row 3 -->
-        <div class="row">
-            <!-- 4. 消费者偏好的核心配置 -->
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">4. 消费者偏好的核心配置 (热度)</div>
-                    <div class="card-body">
-                        <canvas id="featuresChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 5. 竞品详细数据分析 -->
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">5. 竞品详细数据分析 (Top 5 爆款)</div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover table-sm align-middle">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>品牌/型号</th>
-                                        <th>价格</th>
-                                        <th>销量</th>
-                                        <th>核心卖点</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="competitorTableBody">
-                                    <!-- JS populated -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Strategy Section for 小狗 -->
-        <div class="strategy-section">
-            <h2 class="strategy-title">🚀 小狗品牌入局吸尘器市场战略建议</h2>
+        <!-- 关键指标 -->
+        <section id="metrics" class="mb-5">
+            <h2 class="section-title">关键指标</h2>
             <div class="row">
-                <div class="col-md-4">
-                    <h5 class="text-primary">1. 目标价格段定位</h5>
-                    <p><strong>建议区间：1299元 - 1599元</strong></p>
-                    <ul>
-                        <li><strong>避开红海：</strong> 300元以下利润太低，且被美的、康佳等巨头通过供应链优势垄断。</li>
-                        <li><strong>避开高地：</strong> 3000元以上是戴森的品牌护城河，难以撼动。</li>
-                        <li><strong>主攻甜蜜点：</strong> 数据显示UWANT(940元/1459元)和追觅(1999元)在此区间销量巨大。小狗应利用品牌历史优势，切入<strong>1500元</strong>这一“轻奢旗舰”空白点，提供越级配置。</li>
-                    </ul>
+                <div class="col-md-3">
+                    <div class="card metric-card">
+                        <div class="metric-value">528</div>
+                        <div class="metric-label">总提问数</div>
+                    </div>
                 </div>
-                <div class="col-md-4">
-                    <h5 class="text-primary">2. 核心配置与卖点 (MVP配置)</h5>
-                    <p><strong>策略：痛点直击 + 差异化</strong></p>
-                    <ul>
-                        <li><strong>标配功能（入场券）：</strong>
-                            <br>• <span class="badge bg-secondary">自集尘基站</span>：这是目前中高端爆品的核心，必须具备。
-                            <br>• <span class="badge bg-secondary">绿光显尘</span>：UWANT/追觅/石头都在推，不能缺。
-                        </li>
-                        <li><strong>差异化卖点（杀手锏）：</strong>
-                            <br>• <span class="badge bg-success">极致轻量化</span>：竞品主机多在1.7kg-2.2kg。小狗若能做到<strong>1.4kg</strong>且不牺牲吸力，将是巨大的优势（尤其对女性用户）。
-                            <br>• <span class="badge bg-success">智能变频</span>：针对地毯/地板自动调节，强调“智能”。
-                        </li>
-                    </ul>
+                <div class="col-md-3">
+                    <div class="card metric-card">
+                        <div class="metric-value">42%</div>
+                        <div class="metric-label">宠物相关提问</div>
+                    </div>
                 </div>
-                <div class="col-md-4">
-                    <h5 class="text-primary">3. 营销与竞争策略</h5>
-                    <ul>
-                        <li><strong>对标竞品：</strong> 直接对标UWANT大橘Pro（940元）和追觅V15S（1818元）。话术：“比大橘更强的吸力，比V15S更低的价格，比戴森更轻的机身”。</li>
-                        <li><strong>吸力指标：</strong> 建议标定 <strong>200AW - 250AW</strong>。这个区间足以应对家庭清洁，且成本可控，无需盲目追求480AW的极限参数。</li>
-                        <li><strong>售后策略：</strong> 延续小狗“中央维修”的传统口碑，强调“电机终身保修”或“只换不修”，消除用户对电子集尘基站耐用性的顾虑。</li>
-                    </ul>
+                <div class="col-md-3">
+                    <div class="card metric-card">
+                        <div class="metric-value">No.1</div>
+                        <div class="metric-label">主要竞品：戴森</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card metric-card">
+                        <div class="metric-value">High</div>
+                        <div class="metric-label">续航焦虑指数</div>
+                    </div>
                 </div>
             </div>
-        </div>
+        </section>
 
-    </div>
+        <!-- 数据可视化 -->
+        <section id="charts" class="mb-5">
+            <h2 class="section-title">数据可视化分析</h2>
+            <div class="row">
+                <!-- 图表1：用户关注点分布 -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">用户关注话题分布</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="topicChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 图表2：竞品对比提及率 -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">竞品对比提及频率</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="competitorChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <!-- 图表3：功能痛点分析 -->
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">具体功能痛点与疑虑分析</div>
+                        <div class="card-body">
+                            <div class="chart-container" style="height: 300px;">
+                                <canvas id="painPointChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-    <!-- Footer -->
-    <footer class="text-center py-4 text-muted mt-4">
-        <small>© 2023 数据分析部 | 内部机密报告</small>
-    </footer>
-
-    <!-- Analysis Script -->
-    <script>
-        // Raw Data Processing
-        const rawData = [
-            { rank: 8, brand: "爱图腾", model: "M8Pro2代", price: 234, sales: "8万+", salesVal: 80000, revenue: 1872, suction: "22000Pa", features: "车载,大吸力,多场景" },
-            { rank: 7, brand: "UWANT", model: "V400Pro增强版", price: 1459.45, sales: "2万+", salesVal: 20000, revenue: 2689.4, suction: "280AW", features: "自集尘,绿光显尘,防缠绕" },
-            { rank: 6, brand: "追觅", model: "Z20 Station", price: 1999, sales: "6000+", salesVal: 6000, revenue: 1502.64, suction: "230AW", features: "自集尘,绿光显尘,割毛齿刃" },
-            { rank: 5, brand: "UWANT", model: "大橘Pro", price: 940, sales: "4万+", salesVal: 40000, revenue: 3235.2, suction: "170AW", features: "自集尘,绿光显尘,轻量化" },
-            { rank: 4, brand: "UWANT", model: "V400Ultra", price: 1990.7, sales: "7000+", salesVal: 7000, revenue: 1393.49, suction: "480AW", features: "0缠绕,绿光显尘,自集尘" },
-            { rank: 9, brand: "徕本", model: "LT-135", price: 89, sales: "4万+", salesVal: 40000, revenue: 352, suction: "45000Pa", features: "车载,轻量,多配件" },
-            { rank: 2, brand: "戴森", model: "V10 Optic", price: 3951.65, sales: "600+", salesVal: 600, revenue: 237.1, suction: "170AW", features: "基站,光学探测,轻量" },
-            { rank: 14, brand: "爱图腾", model: "L8", price: 149, sales: "1万+", salesVal: 10000, revenue: 149, suction: "22000Pa", features: "车载,大吸力" },
-            { rank: 10, brand: "石头", model: "H50 Ultra", price: 1979, sales: "1万+", salesVal: 10000, revenue: 1349, suction: "310AW", features: "自集尘,绿光显尘,0缠毛" },
-            { rank: 15, brand: "美的", model: "SC861A", price: 119, sales: "10万+", salesVal: 100000, revenue: 1190, suction: "15000Pa", features: "有线,大吸力,便宜" },
-            { rank: 13, brand: "小米", model: "E204", price: 268, sales: "1万+", salesVal: 10000, revenue: 268.31, suction: "22000Pa", features: "轻量,随手吸" },
-            { rank: 11, brand: "康佳", model: "KXCQ-2623-T", price: 159, sales: "10万+", salesVal: 100000, revenue: 1840, suction: "15000Pa", features: "扫吸拖,便宜" },
-            { rank: 12, brand: "追觅", model: "V15S", price: 1818.15, sales: "3000+", salesVal: 3000, revenue: 545.45, suction: "200AW", features: "绿光显尘,除螨" },
-            { rank: 3, brand: "戴森", model: "V8 Cyclone", price: 2379.15, sales: "1万+", salesVal: 10000, revenue: 2379.15, suction: "150AW", features: "除螨,HEPA" },
-            { rank: 1, brand: "戴森", model: "V12 Detect", price: 3569.15, sales: "2万+", salesVal: 20000, revenue: 7138.3, suction: "140AW", features: "激光探测,轻量,防缠绕" }
-        ];
-
-        // 1. Brand Sales Ranking
-        function getBrandSales() {
-            const brands = {};
-            rawData.forEach(item => {
-                if (!brands[item.brand]) { brands[item.brand] = 0; }
-                brands[item.brand] += item.revenue;
-            });
-            // Sort
-            return Object.entries(brands).sort((a, b) => b[1] - a[1]).slice(0, 8);
-        }
-
-        // 3. Price Range vs Volume
-        function getPriceDistribution() {
-            const ranges = { "<300": 0, "300-1000": 0, "1000-2000": 0, "2000-3000": 0, ">3000": 0 };
-            rawData.forEach(item => {
-                if (item.price < 300) ranges["<300"] += item.salesVal;
-                else if (item.price < 1000) ranges["300-1000"] += item.salesVal;
-                else if (item.price < 2000) ranges["1000-2000"] += item.salesVal;
-                else if (item.price < 3000) ranges["2000-3000"] += item.salesVal;
-                else ranges[">3000"] += item.salesVal;
-            });
-            return ranges;
-        }
-
-        // 2. Suction vs Price
-        function getSuctionData() {
-            return rawData.map(item => {
-                let val = 0;
-                let unit = '';
-                if(item.suction.includes('AW')) {
-                    val = parseFloat(item.suction);
-                    unit = 'AW';
-                } else if (item.suction.includes('Pa')) {
-                    val = parseFloat(item.suction) / 1000; // Scale down Pa to fit chart roughly
-                    unit = 'kPa';
-                }
-                return { x: item.price, y: val, brand: item.brand, model: item.model, unit: unit };
-            });
-        }
-
-        // 4. Feature Frequency
-        function getFeatureFrequency() {
-            const features = {};
-            rawData.forEach(item => {
-                const parts = item.features.split(',');
-                parts.forEach(p => {
-                    const key = p.trim();
-                    features[key] = (features[key] || 0) + 1;
-                });
-            });
-            return Object.entries(features).sort((a, b) => b[1] - a[1]);
-        }
-
-        // --- Chart Configurations ---
-
-        // Common Colors
-        const colors = {
-            '戴森': '#E74C3C',
-            'UWANT': '#3498DB',
-            '追觅': '#2ECC71',
-            '石头': '#9B59B6',
-            '美的': '#F1C40F',
-            '小狗': '#E67E22', // For strategy
-            'default': '#95A5A6'
-        };
-
-        // Chart 1: Brand Sales
-        const ctx1 = document.getElementById('brandSalesChart').getContext('2d');
-        new Chart(ctx1, {
-            type: 'bar',
-            data: {
-                labels: getBrandSales().map(i => i[0]),
-                datasets: [{
-                    label: '总销售额 (万元)',
-                    data: getBrandSales().map(i => i[1]),
-                    backgroundColor: getBrandSales().map(i => colors[i[0]] || colors.default),
-                    borderRadius: 5
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: true } }
-            }
-        });
-
-        // Chart 3: Price Volume
-        const ctx3 = document.getElementById('priceVolumeChart').getContext('2d');
-        const priceData = getPriceDistribution();
-        new Chart(ctx3, {
-            type: 'bar',
-            data: {
-                labels: Object.keys(priceData),
-                datasets: [{
-                    label: '区间总销量 (件)',
-                    data: Object.values(priceData),
-                    backgroundColor: '#34495E',
-                    borderRadius: 5
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { display: false } }
-            }
-        });
-
-        // Chart 2: Suction vs Price (Scatter)
-        const ctx2 = document.getElementById('suctionPriceChart').getContext('2d');
-        new Chart(ctx2, {
-            type: 'scatter',
-            data: {
-                datasets: [{
-                    label: '产品分布',
-                    data: getSuctionData(),
-                    backgroundColor: rawData.map(i => colors[i.brand] || colors.default),
-                    pointRadius: 8,
-                    pointHoverRadius: 12
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                const raw = context.raw;
-                                return `${raw.brand} ${raw.model}: 价格${raw.x}元, 吸力${raw.y}${raw.unit}`;
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    x: { title: { display: true, text: '价格 (元)' } },
-                    y: { title: { display: true, text: '吸力 (数值)' }, beginAtZero: true }
-                }
-            }
-        });
-
-        // Chart 4: Features
-        const ctx4 = document.getElementById('featuresChart').getContext('2d');
-        const featureData = getFeatureFrequency().slice(0, 6);
-        new Chart(ctx4, {
-            type: 'bar',
-            indexAxis: 'y',
-            data: {
-                data: featureData.map(i => i[1]),
-                labels: featureData.map(i => i[0]),
-                datasets: [{
-                    label: '出现频次',
-                    data: featureData.map(i => i[1]),
-                    backgroundColor: '#16A085',
-                    borderRadius: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { display: false } }
-            }
-        });
-
-        // Table 5: Competitor Data
-        const topProducts = [...rawData].sort((a, b) => b.salesVal - a.salesVal).slice(0, 5);
-        const tbody = document.getElementById('competitorTableBody');
-        topProducts.forEach(p => {
-            const row = `<tr>
-                <td><strong>${p.brand}</strong><br><small class="text-muted">${p.model}</small></td>
-                <td>¥${p.price}</td>
-                <td>${p.sales}</td>
-                <td><span class="badge bg-light text-dark border">${p.features.split(',')[0]}</span> <span class="badge bg-light text-dark border">${p.features.split(',')[1] || ''}</span></td>
-            </tr>`;
-            tbody.innerHTML += row;
-        });
-
-        // 6. Word Cloud Simulation
-        const cloudContainer = document.getElementById('wordCloudContainer');
-        const allFeatures = getFeatureFrequency();
-        const maxCount = allFeatures[0][1];
-        
-        allFeatures.forEach(([text, count]) => {
-            const span = document.createElement('span');
-            span.textContent = text;
-            span.className = 'cloud-item';
+        <!-- 详细数据分析 -->
+        <section id="analysis" class="mb-5">
+            <h2 class="section-title">详细数据分析</h2>
             
-            // Calculate size based on frequency
-            const size = 12 + (count / maxCount) * 24; // 12px to 36px
-            span.style.fontSize = `${size}px`;
-            
-            // Color based on random or specific logic
-            const opacity = 0.6 + (count / maxCount) * 0.4;
-            span.style.color = `rgba(44, 62, 80, ${opacity})`;
-            span.style.fontWeight = count > 2 ? 'bold' : 'normal';
-            
-            cloudContainer.appendChild(span);
-        });
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header">🐾 宠物家庭的特殊需求</div>
+                        <div class="card-body">
+                            <p>数据中大量提及“猫毛”、“狗毛”、“猫砂”。用户不仅关心能否吸干净，更关心后续处理：</p>
+                            <ul>
+                                <li><strong>缠绕问题：</strong> 长发和宠物毛缠绕滚刷是最大痛点。用户反复询问“防缠绕”、“0缠绕”是否真实有效。</li>
+                                <li><strong>过敏与健康：</strong> 部分用户提到鼻炎患者，关注除螨效果和绿光显尘功能。</li>
+                                <li><strong>猫砂处理：</strong> 特别询问猫砂（尤其是豆腐猫砂、矿砂）是否能被吸起且不堵塞。</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header">🔋 续航与性能权衡</div>
+                        <div class="card-body">
+                            <p>用户对“自动集尘基站”和“吸力”有较高期待，但同时对电池寿命表示担忧：</p>
+                            <ul>
+                                <li><strong>强档续航：</strong> 多个提问直接询问“开最大档能用多久”，普遍担忧强吸力模式下电量衰减过快。</li>
+                                <li><strong>房屋面积：</strong> 90平-140平是主流户型，用户关心“能否一次充满电吸完全屋”。</li>
+                                <li><strong>自动集尘：</strong> 对基站集尘是否干净、是否会有残留、尘袋发臭问题有较多细节询问。</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-    </script>
-</body>
-</html>
-```
-
-### 报告设计思路与核心发现：
-
-1.  **品牌格局（销售额排名）**：
-    *   **戴森**：依然处于霸主地位，通过V12和V8等高客单价产品占据了最大的销售额份额。
-    *   **UWANT & 追觅**：作为国货新势力，表现极其亮眼。特别是UWANT，通过“大橘Pro”和“V400系列”的多价位覆盖，销售额已逼近戴森。
-    *   **传统品牌**：美的、康佳在低价位段销量巨大，但总销售额受限于单价。
-
-2.  **价格与销量分析**：
-    *   **<300元**：这是“走量”区间，主要由有线吸尘器和低端车载吸尘器占据，适合通过规模效应获利，但不利于品牌建设。
-    *   **1000-2000元**：这是**“黄金竞争区”**。消费者愿意为更好的体验付费，但尚未达到戴森的溢价高度。这里是UWANT、追觅、石头厮杀的主战场。
-
-3.  **技术趋势（吸力与卖点）**：
-    *   **吸力内卷**：UWANT V400Ultra打出了480AW的惊人参数，但在2000元价位，200-250AW其实已足够满足家用。
-    *   **核心痛点**：词云和配置分析显示，“**自集尘**”和“**绿光显尘**”已成为中高端产品的**入场券**。消费者极度厌恶倒灰尘（自集尘解决）和看不见灰尘（绿光解决）。
-    *   **毛发问题**：防缠绕、割毛齿刃也是高频词，说明养宠家庭是重要客群。
-
-### 对“小狗品牌”的入局建议（基于数据）：
-
-*   **定价策略**：建议定价 **1299元 - 1599元**。
-    *   *理由*：避开300元以下的价格战红海，同时避开3000元以上戴森的品牌壁垒。UWANT的大橘Pro（940元）证明了这个区间有巨大的市场容量，小狗可以利用品牌历史积淀，做一款“品质旗舰版”。
-*   **产品配置**：
-    *   **必须有**：自集尘基站（免维护）、绿光显尘技术。
-    *   **差异化竞争点**：**极致轻量化**。目前竞品带基站的产品主机重量多在1.7kg-2.2kg。如果小狗能推出一款主机仅1.4kg左右且带自集尘的产品，对女性用户将是巨大的吸引力。
-    *   **吸力**：标定 **200AW-250AW** 即可，无需盲目追求480AW，将成本投入到电机寿命和降噪上。
-*   **营销话术**：
-    *   “比戴森轻一半，吸力一样大。”
-    *   “自动集尘，60天不用倒垃圾。”
-    *   延续小狗的“中央维修”服务口碑，强调售后无忧。
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">⚔️ 品牌竞争格局分析</div>
+                        <div class="card-body">
+                            <p>在所有提问中，<strong>戴森</strong>被提及超过40次，<strong>斐纳</strong>被提及超过35次。这表明该产品处于“中高端平替”的市场位置。</p>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>对比维度</th>
+                                            <th>用户关注点</th>
+                                            <th>典型提问示例</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>vs 戴森</td>
+                                            <td>吸力、手感、品牌溢价</td>
+                                            <td>"和戴森比哪个好用？"、"吸力跟戴森对比如何"</td>
+                                        </tr>
+                                        <tr>
+                                            <td>vs 斐纳</td>
+                                            <td>性价比、功能配置</td>
+                                            <td>"跟斐纳比哪个好用？"、"能达到斐纳的效果吗"</
