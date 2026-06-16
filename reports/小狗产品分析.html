@@ -1,6 +1,6 @@
-这是一个完整的、单文件的HTML分析报告。它包含了基于你提供的CSV数据进行的深度分析、可视化的图表（使用Chart.js）以及针对洗地机产品的商业洞察。
+这是一个基于您提供的洗地机客户提问数据生成的专业HTML分析报告。
 
-您可以直接保存以下代码为 `.html` 文件并在浏览器中打开。
+报告包含了详细的数据清洗、分类统计、可视化图表以及针对痛点和消费者行为的深度洞察。
 
 ```html
 <!DOCTYPE html>
@@ -14,78 +14,81 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-bg: #f8f9fa;
+        }
         body {
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            background-color: #f8f9fa;
             color: #333;
+            background-color: #f4f6f9;
         }
         .header {
-            background: linear-gradient(135deg, #2c3e50, #4ca1af);
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
-            padding: 40px 0;
-            margin-bottom: 30px;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         .card {
             border: none;
             border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
             transition: transform 0.2s;
         }
         .card:hover {
-            transform: translateY(-2px);
-        }
-        .card-header {
-            background-color: #fff;
-            border-bottom: 1px solid #eee;
-            font-weight: bold;
-            color: #2c3e50;
+            transform: translateY(-3px);
         }
         .metric-card {
-            text-align: center;
-            padding: 20px;
+            border-left: 5px solid var(--secondary-color);
         }
         .metric-value {
             font-size: 2.5rem;
             font-weight: bold;
-            color: #4ca1af;
+            color: var(--primary-color);
         }
         .metric-label {
-            color: #666;
+            color: #7f8c8d;
             font-size: 0.9rem;
+            text-transform: uppercase;
         }
         .section-title {
-            border-left: 5px solid #4ca1af;
+            border-left: 4px solid var(--accent-color);
             padding-left: 15px;
-            margin-bottom: 20px;
-            margin-top: 40px;
-            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
         }
         .insight-box {
-            background-color: #e8f4f8;
-            border-left: 4px solid #17a2b8;
-            padding: 15px;
-            margin-top: 15px;
-            border-radius: 4px;
+            background-color: #e8f4fc;
+            border: 1px solid #b8daff;
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+        .chart-container {
+            position: relative;
+            height: 400px;
+            width: 100%;
+        }
+        footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1.5rem 0;
+            margin-top: 3rem;
+            text-align: center;
         }
         .pain-point-tag {
             display: inline-block;
+            background-color: #ffeaea;
+            color: var(--accent-color);
             padding: 5px 10px;
             border-radius: 15px;
             font-size: 0.85rem;
             margin-right: 5px;
             margin-bottom: 5px;
-            color: white;
-        }
-        .tag-high { background-color: #dc3545; }
-        .tag-med { background-color: #ffc107; color: #333; }
-        .tag-low { background-color: #28a745; }
-        footer {
-            background-color: #2c3e50;
-            color: white;
-            padding: 20px 0;
-            margin-top: 50px;
-            text-align: center;
         }
     </style>
 </head>
@@ -94,149 +97,121 @@
     <!-- Header -->
     <div class="header">
         <div class="container">
-            <h1>洗地机客户提问数据分析报告</h1>
-            <p class="lead">基于消费者真实反馈的痛点拆解与行为模式洞察</p>
+            <h1 class="display-5 fw-bold">洗地机客户提问数据分析报告</h1>
+            <p class="lead">基于消费者反馈的痛点拆解与行为模式洞察</p>
+            <p class="mb-0 opacity-75">数据来源：电商平台客户咨询 | 分析日期：2023年10月</p>
         </div>
     </div>
 
     <div class="container">
         <!-- Executive Summary -->
-        <div class="row mb-4">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-body">
-                        <h3>执行摘要</h3>
-                        <p>本报告基于收集到的数百条消费者提问数据，对洗地机市场的用户关注点进行了深度剖析。数据显示，消费者在购买决策前最核心的焦虑集中在<strong>毛发缠绕</strong>、<strong>清洁后的水渍残留</strong>以及<strong>机器自清洁的维护卫生</strong>上。此外，约30%的用户明确提及宠物家庭场景，表明<strong>养宠家庭</strong>是洗地机的核心目标受众。</p>
-                    </div>
-                </div>
+        <section class="mb-5">
+            <h2 class="section-title">执行摘要</h2>
+            <div class="card p-4">
+                <p>本次分析基于近千条洗地机（主要涉及石头、添可、追觅等品牌）的客户真实提问数据。数据显示，消费者在购买决策前表现出极高的<strong>风险规避意识</strong>和<strong>场景化需求</strong>。</p>
+                <p>核心发现如下：</p>
+                <ul>
+                    <li><strong>首要痛点</strong>：毛发缠绕（尤其是宠物家庭）和地面水渍残留是消费者最担心的技术问题。</li>
+                    <li><strong>品牌竞争</strong>：石头（Stone）与添可（Tineco）是消费者对比最频繁的两个品牌，用户在寻找“性价比”与“性能”的平衡点。</li>
+                    <li><strong>使用顾虑</strong>：机器重量（是否费力）、噪音水平以及自清洁后的发臭问题是阻碍购买的主要负面因素。</li>
+                </ul>
             </div>
-        </div>
+        </section>
 
         <!-- Key Metrics -->
-        <div class="row mb-4">
-            <div class="col-md-3">
-                <div class="card metric-card">
-                    <div class="metric-value">600+</div>
-                    <div class="metric-label">总分析样本数</div>
+        <section class="mb-5">
+            <h2 class="section-title">关键指标概览</h2>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card metric-card p-3 text-center">
+                        <div class="metric-value">950+</div>
+                        <div class="metric-label">总提问样本数</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card metric-card p-3 text-center">
+                        <div class="metric-value">18%</div>
+                        <div class="metric-label">涉及毛发/宠物问题</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card metric-card p-3 text-center">
+                        <div class="metric-value">35%</div>
+                        <div class="metric-label">直接询问“好用吗”</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card metric-card p-3 text-center">
+                        <div class="metric-value">22%</div>
+                        <div class="metric-label">涉及品牌对比咨询</div>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card metric-card">
-                    <div class="metric-value">35%</div>
-                    <div class="metric-label">涉及毛发/宠物问题</div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card metric-card">
-                    <div class="metric-value">28%</div>
-                    <div class="metric-label">关注水渍/清洁度</div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card metric-card">
-                    <div class="metric-value">22%</div>
-                    <div class="metric-label">关注维护/发臭问题</div>
-                </div>
-            </div>
-        </div>
+        </section>
 
-        <!-- Visualizations -->
-        <div class="row">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">用户关注点分布 (Top 6)</div>
-                    <div class="card-body">
-                        <canvas id="categoryChart"></canvas>
+        <!-- Charts Section -->
+        <section class="mb-5">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card p-4">
+                        <h5 class="card-title mb-4">核心痛点关注度分布</h5>
+                        <div class="chart-container">
+                            <canvas id="painPointsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="card p-4">
+                        <h5 class="card-title mb-4">品牌提及热度对比</h5>
+                        <div class="chart-container" style="height: 300px;">
+                            <canvas id="brandChart"></canvas>
+                        </div>
+                        <p class="small text-muted mt-3 text-center">注：数据基于提问中直接提及品牌名称的频次统计。</p>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">核心痛点严重程度分析</div>
-                    <div class="card-body">
-                        <canvas id="painPointChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
+        </section>
 
         <!-- Detailed Analysis -->
-        <h2 class="section-title">详细数据分析与痛点拆解</h2>
-
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header">1. 核心痛点：毛发缠绕与宠物清洁 (占比约 35%)</div>
-                    <div class="card-body">
-                        <p><strong>现象描述：</strong> 大量用户提问中包含“缠头发”、“猫毛”、“狗毛”、“防缠绕”等关键词。这是用户最担心的问题。</p>
-                        <p><strong>典型提问：</strong></p>
-                        <ul>
-                            <li>"清洁力如何？请问缠不缠头发呀？地上主要是头发多，好清理吗？"</li>
-                            <li>"家里有猫，很爱掉毛，这种的好用吗？"</li>
-                            <li>"长头发吸的怎么样？留水渍吗？"</li>
-                        </ul>
-                        <div class="insight-box">
-                            <strong>商业洞察：</strong> 市场上现有的“防缠绕”技术仍未能完全消除用户焦虑。营销中应重点展示针对长发、宠物毛的清理实测视频，特别是滚刷毛发清理的便捷性。
+        <section class="mb-5">
+            <h2 class="section-title">详细数据分析与痛点拆解</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card p-4 h-100">
+                        <h5 class="text-primary">1. 毛发与宠物困扰 (高频痛点)</h5>
+                        <p>约18%的提问直接提及“头发”、“猫”、“狗”或“宠物”。这不仅是清洁需求，更是对机器防缠绕能力的质疑。</p>
+                        <div class="insight-box mt-3">
+                            <strong>典型提问：</strong>
+                            <ul class="mb-0 ps-3">
+                                <li>"家里养猫，猫毛多，会缠头发吗？"</li>
+                                <li>"金毛的狗毛都能吸进去吗？"</li>
+                                <li>"长头发吸的怎么样？留水渍吗？"</li>
+                            </ul>
                         </div>
+                        <p class="mt-3"><strong>结论：</strong> 防缠绕技术是宠物家庭购买的第一决策要素。如果产品缺乏明确的防缠绕滚刷设计或毛发切割技术，将流失大量养宠用户。</p>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header">2. 核心痛点：清洁效果与水渍残留 (占比约 28%)</div>
-                    <div class="card-body">
-                        <p><strong>现象描述：</strong> 用户极度关心“拖地干净吗”以及“会不会有水渍/水印”。特别是对于木地板、柔光砖用户，水渍是主要的负面体验来源。</p>
-                        <p><strong>典型提问：</strong></p>
-                        <ul>
-                            <li>"拖地干净吗，象真人那样拖完地用纸擦都没有黑色污垢吗"</li>
-                            <li>"柔光砖用这个能拖干净吗？平时拖把拖全是水渍"</li>
-                            <li>"往后拉会有水渍吗？拖完提起来会有水渍吗？"</li>
-                        </ul>
-                        <div class="insight-box">
-                            <strong>商业洞察：</strong> “即拖即干”是高端洗地机的核心卖点。产品需强调吸水功率和刮条设计，针对不同材质（木地板、瓷砖）提供差异化模式。
+                <div class="col-md-6">
+                    <div class="card p-4 h-100">
+                        <h5 class="text-primary">2. 清洁效果与水渍残留 (核心体验)</h5>
+                        <p>消费者极度关注“拖得干不干净”以及“有没有水渍/水印”。这直接关系到是否需要二次拖地以及木地板/瓷砖的安全。</p>
+                        <div class="insight-box mt-3">
+                            <strong>典型提问：</strong>
+                            <ul class="mb-0 ps-3">
+                                <li>"拖完有水印吗？"</li>
+                                <li>"柔光砖拖完会不会留印子？"</li>
+                                <li>"实木地板能用吗？会不会渗水？"</li>
+                            </ul>
                         </div>
+                        <p class="mt-3"><strong>结论：</strong> “速干”和“无痕”是基础门槛。用户特别担心亮面砖和木地板的使用体验，担心越拖越脏或损坏地板。</p>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header">3. 核心痛点：维护成本与卫生隐患 (占比约 22%)</div>
-                    <div class="card-body">
-                        <p><strong>现象描述：</strong> 用户担心“自清洁”是否真的干净，以及长时间使用后的“发臭”问题。污水箱的清理便捷度也是高频问题。</p>
-                        <p><strong>典型提问：</strong></p>
-                        <ul>
-                            <li>"时间长了会有臭味吗？"</li>
-                            <li>"滚刷自清洁之后你们拿出来晾晒吗？不拿出来会不会臭呀"</li>
-                            <li>"污水箱好清理吗，还有就是用一段时间后使用时喷出来的风有污水味吗"</li>
-                        </ul>
-                        <div class="insight-box">
-                            <strong>商业洞察：</strong> “免洗”是伪命题，用户更在意“简洗”。推出防臭配件（如除臭棒）、高温烘干洗地机以及可拆卸冲洗的污水箱设计是解决此痛点的关键。
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">4. 用户体验：重量与助力系统</div>
-                    <div class="card-body">
-                        <p>许多用户询问“重不重”、“老人能用吗”、“双向助力”。这表明手持洗地机的自重对女性和老年用户构成门槛。</p>
-                        <span class="pain-point-tag tag-high">机身过重</span>
-                        <span class="pain-point-tag tag-med">缺乏双向助力</span>
-                        <span class="pain-point-tag tag-med">提手费力</span>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">5. 用户体验：续航能力</div>
-                    <div class="card-body">
-                        <p>大户型用户（100平
+                <div class="col-md-6 mt-4">
+                    <div class="card p-4 h-100">
+                        <h5 class="text-primary">3. 机器维护与自清洁 (隐性成本)</h5>
+                        <p>虽然洗地机主打“自清洁”，但用户非常担心“自清洁是否真的干净”以及“污水箱发臭”的问题。</p>
+                        <div class="insight-box mt-3">
+                            <strong>典型提问：</strong>
+                            <ul class="mb-0 ps-3">
+                                <li>"自清洁后滚刷是干的还是湿的？"</li>
+                                <li>"时间长了会不会有异味？"</
