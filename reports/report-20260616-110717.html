@@ -1,0 +1,616 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>客户信用与授信风险分析报告 - 珠海市华普食品机械制造有限公司</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+        .report-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 10px 10px;
+        }
+        .nav-tabs .nav-link {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        .nav-tabs .nav-link.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        .card {
+            border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            font-weight: 600;
+        }
+        .kpi-card {
+            text-align: center;
+            padding: 1.5rem;
+            border-left: 5px solid var(--secondary-color);
+        }
+        .kpi-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        .kpi-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .risk-high { color: var(--accent-color); font-weight: bold; }
+        .risk-medium { color: var(--warning-color); font-weight: bold; }
+        .risk-low { color: var(--success-color); font-weight: bold; }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 2rem;
+        }
+        .insight-box {
+            background-color: #e8f4fc;
+            border-left: 5px solid var(--secondary-color);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+        }
+        .recommendation-box {
+            background-color: #f0f7e6;
+            border-left: 5px solid var(--success-color);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+        }
+        .footer {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 1.5rem 0;
+            margin-top: 3rem;
+            text-align: center;
+        }
+        .section-title {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--light-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- 报告头部 -->
+    <header class="report-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="display-5 fw-bold">客户信用与授信风险分析报告</h1>
+                    <p class="lead">珠海市华普食品机械制造有限公司</p>
+                    <p class="mb-0">分析主题：每月月底结清上月货款 + 20万授信额度申请</p>
+                    <p class="mb-0">报告生成时间：2026年06月16日</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <div class="bg-white text-dark p-3 rounded d-inline-block">
+                        <small class="d-block">报告编号</small>
+                        <strong>CR-20260616-ZHHP</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 导航 -->
+    <div class="container mb-4">
+        <ul class="nav nav-tabs" id="reportTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="summary-tab" data-bs-toggle="tab" data-bs-target="#summary" type="button" role="tab">执行摘要</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="metrics-tab" data-bs-toggle="tab" data-bs-target="#metrics" type="button" role="tab">关键指标</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="analysis-tab" data-bs-toggle="tab" data-bs-target="#analysis" type="button" role="tab">详细分析</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="trends-tab" data-bs-toggle="tab" data-bs-target="#trends" type="button" role="tab">趋势分析</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="conclusion-tab" data-bs-toggle="tab" data-bs-target="#conclusion" type="button" role="tab">建议与结论</button>
+            </li>
+        </ul>
+    </div>
+
+    <!-- 报告内容 -->
+    <div class="container">
+        <div class="tab-content" id="reportTabsContent">
+            
+            <!-- 执行摘要 Tab -->
+            <div class="tab-pane fade show active" id="summary" role="tabpanel">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">执行摘要</div>
+                            <div class="card-body">
+                                <p>本报告基于珠海市华普食品机械制造有限公司（以下简称“华普机械”）的公开信用信息，对其申请“每月月底结清上月货款”的结算方式及20万元授信额度的请求进行综合风险评估。</p>
+                                <div class="insight-box">
+                                    <h5>核心洞察</h5>
+                                    <ul>
+                                        <li><strong>企业基本面稳健</strong>：成立于1999年，存续超27年，注册资本128万实缴，为小型制造企业，股东结构稳定，<span class="risk-low">无重大违法失信记录</span>。</li>
+                                        <li><strong>司法诉讼存在风险信号</strong>：历史上有3起司法案件，其中1起为<span class="risk-high">买卖合同纠纷被告</span>（2021年），1起为<span class="risk-medium">大额应收账款执行案原告</span>（涉及304.87万元，2018年），表明其经营中曾出现货款回收问题。</li>
+                                        <li><strong">财务透明度低</strong>：近年年报选择不公示关键财务数据（资产、营收、利润），无法直接评估其盈利能力和偿债能力。</li>
+                                        <li><strong>经营稳定性尚可</strong>：2025年税务信用评级为A级，参保人数稳定（24人），有有效排污许可证，<span class="risk-low">无当前经营异常、行政处罚或股权冻结</span>。</li>
+                                    </ul>
+                                </div>
+                                <p><strong>初步风险评估</strong>：综合来看，华普机械是一家经营多年的实体制造企业，基础信用尚可，但历史司法记录显示其存在一定的交易对手信用风险及自身货款管理风险。对于20万元的授信请求，需结合其历史回款表现及当前经营状况审慎决策。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 关键指标 Tab -->
+            <div class="tab-pane fade" id="metrics" role="tabpanel">
+                <h3 class="section-title">关键信用指标概览</h3>
+                <div class="row">
+                    <div class="col-md-3 col-6">
+                        <div class="card kpi-card">
+                            <div class="kpi-value">27年+</div>
+                            <div class="kpi-label">经营年限</div>
+                            <small>1999年成立</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="card kpi-card">
+                            <div class="kpi-value">128万</div>
+                            <div class="kpi-label">实缴资本</div>
+                            <small>注册资本已实缴</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="card kpi-card">
+                            <div class="kpi-value risk-low">A级</div>
+                            <div class="kpi-label">税务信用</div>
+                            <small>2025年度</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="card kpi-card">
+                            <div class="kpi-value risk-high">3起</div>
+                            <div class="kpi-label">历史司法案件</div>
+                            <small>需关注</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-3 col-6">
+                        <div class="card kpi-card">
+                            <div class="kpi-value">24人</div>
+                            <div class="kpi-label">参保人数</div>
+                            <small>2025年报</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="card kpi-card">
+                            <div class="kpi-value risk-medium">1次</div>
+                            <div class="kpi-label">历史经营异常</div>
+                            <small>2023年已移出</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="card kpi-card">
+                            <div class="kpi-value">0项</div>
+                            <div class="kpi-label">当前经营风险</div>
+                            <small>无处罚、失信等</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="card kpi-card">
+                            <div class="kpi-value">3项</div>
+                            <div class="kpi-label">有效专利</div>
+                            <small>均已终止</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 风险评级图 -->
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">综合风险评级</div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="riskRadarChart"></canvas>
+                                </div>
+                                <p class="text-center"><span class="risk-medium">中等风险</span> - 建议有条件授信</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">风险点分布</div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="riskPieChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 详细分析 Tab -->
+            <div class="tab-pane fade" id="analysis" role="tabpanel">
+                <h3 class="section-title">多维度详细分析</h3>
+                
+                <!-- 法律与诉讼分析 -->
+                <div class="card">
+                    <div class="card-header">法律诉讼与司法风险分析</div>
+                    <div class="card-body">
+                        <p><strong>案件数量</strong>：共3起司法案件，最新一起为2021年。</p>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>年份</th>
+                                        <th>案件身份</th>
+                                        <th>案由</th>
+                                        <th>金额/关键点</th>
+                                        <th>风险等级</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>2021</td>
+                                        <td>被告</td>
+                                        <td>买卖合同纠纷</td>
+                                        <td>不详</td>
+                                        <td><span class="risk-high">高</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>2018</td>
+                                        <td>原告（申请执行）</td>
+                                        <td>买卖合同纠纷</td>
+                                        <td>3,048,717元</td>
+                                        <td><span class="risk-medium">中</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>2008</td>
+                                        <td>原告</td>
+                                        <td>不详</td>
+                                        <td>不详</td>
+                                        <td><span class="risk-low">低</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="insight-box">
+                            <h5>分析洞察：</h5>
+                            <ul>
+                                <li><strong>作为被告（2021年）</strong>：表明华普机械可能存在未能及时支付供应商货款的情况，这与其申请的“月底结清”付款方式直接相关，<span class="risk-high">是评估其付款信用的重要负面信号</span>。</li>
+                                <li><strong>作为大额债权原告（2018年）</strong>：说明其曾面临客户（济源市飞龙食品有限公司）大额违约，导致其需要诉讼并申请强制执行。这反映了其所在产业链或客户群可能存在信用风险，同时也可能对其自身现金流造成过压力。</li>
+                                <li><strong>无当前被执行、失信或限高</strong>：这是一个积极信号，表明历史案件未导致其被列入严重失信名单，目前司法状态正常。</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 经营与财务分析 -->
+                <div class="card">
+                    <div class="card-header">经营与财务稳定性分析</div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>优势指标：</h5>
+                                <ul>
+                                    <li><span class="risk-low">长期存续</span>：27年经营历史，显示较强的生存韧性。</li>
+                                    <li><span class="risk-low">资本实缴</span>：128万注册资本已全部实缴，股东承诺到位。</li>
+                                    <li><span class="risk-low">税务合规</span>：2025年纳税信用评级A级，是优良信用的核心标志。</li>
+                                    <li><span class="risk-low">社保缴纳稳定</span>：参保人数从23人（2024）微增至24人（2025），人员稳定。</li>
+                                    <li><span class="risk-low">无当前行政处罚</span>：在环保、市场监督等方面无当前处罚记录。</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>风险与关注点：</h5>
+                                <ul>
+                                    <li><span class="risk-medium">财务信息不透明</span>：2024、2025年年报均选择不公示资产、营收、利润、纳税总额等关键数据。这为评估其真实盈利能力和偿还20万授信的能力带来障碍。</li>
+                                    <li><span class="risk-medium">历史经营异常</span>：2023年曾因未按时公示年报被列入经营异常名录，虽已移出，但反映内部管理可能曾有疏漏。</li>
+                                    <li><span class="risk-low">业务规模较小</span>：属于小型企业（S），人员小于50人，业务规模和抗风险能力有限。</li>
+                                    <li><span class="risk-low">知识产权已失效</span>：3项专利均因未缴年费而终止，可能反映其对研发投入的持续性不足。</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <!-- 社保人数变化图 -->
+                        <div class="chart-container">
+                            <canvas id="socialInsuranceChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 股东与治理分析 -->
+                <div class="card">
+                    <div class="card-header">股东、治理与关联方分析</div>
+                    <div class="card-body">
+                        <p><strong>股权结构</strong>：股权相对集中，最大股东郑小敏持股50%，为实际控制人。法定代表人邓锦文持股20%。2026年初有股东变更（许玉萍、苏振波、汪志萍进入），但控股股东未变。</p>
+                        <p><strong>法定代表人关联企业</strong>：邓锦文还担任另外两家珠海机械类公司的董事/监事/股东（珠海佰利机械设备有限公司、珠海维特立机械设备有限公司）。需关注是否存在关联交易或资金占用风险。</p>
+                        <div class="insight-box">
+                            <h5>对授信评估的影响：</h5>
+                            <p>集中的股权结构有利于决策，但也意味着公司信用与实控人个人信用绑定较深。法定代表人涉足多家同业公司，需在授信协议中明确禁止贷款资金流向关联方或用于非约定用途。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 趋势分析 Tab -->
+            <div class="tab-pane fade" id="trends" role="tabpanel">
+                <h3 class="section-title">历史变化与趋势分析</h3>
+                <div class="card">
+                    <div class="card-header">变更记录趋势分析</div>
+                    <div class="card-body">
+                        <p>公司历史上共有20项工商变更记录，近年变更频繁（2025、2026年均有）。主要涉及：</p>
+                        <ul>
+                            <li><strong>经营范围扩大（2025年）</strong>：从食品机械制造销售扩展到更广泛的机械设备销售、租赁、维修及商务服务，显示业务多元化尝试。</li>
+                            <li><strong>股东变更（2026年）</strong>：3位新股东进入，2位老股东退出，但持股比例变化不大（总计约8%的股权变动）。这可能涉及小范围的股权转让或激励。</li>
+                            <li><strong>法定代表人及高管职位调整（2019、2025年）</strong>：在邓锦文和黄丹青之间调整，目前邓锦文为执行董事兼经理，黄丹青为监事，治理结构清晰。</li>
+                        </ul>
+                        <div class="insight-box">
+                            <p><strong>趋势判断</strong>：频繁的变更（尤其是近两年）可能表明公司处于业务调整或股权结构调整期。在评估其信用稳定性时，需要关注这些变化是否已结束，以及是否对经营基本面产生负面影响。目前看，核心控制权（郑小敏）和主营业务未发生根本性改变。</p>
+                        </div>
+                        <!-- 变更记录时间趋势图 -->
+                        <div class="chart-container">
+                            <canvas id="changeHistoryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 建议与结论 Tab -->
+            <div class="tab-pane fade" id="conclusion" role="tabpanel">
+                <h3 class="section-title">风险评估结论与授信建议</h3>
+                
+                <div class="card">
+                    <div class="card-header">最终风险评估</div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-8">
+                                <h5>总体信用评价：<span class="risk-medium">中等信用风险</span></h5>
+                                <p>华普机械是一家有长期经营历史的实体制造企业，基础法律状态和税务合规性良好。然而，其历史司法诉讼（特别是作为买卖合同纠纷的被告）直接暴露了其在货款支付方面的信用瑕疵，且财务不透明增加了评估难度。</p>
+                                <p><strong>关于“每月月底结清上月货款”的结算方式</strong>：其2021年作为被告的记录，<span class="risk-high">强烈提示我们应警惕其延期支付或违约的风险</span>。此结算方式相当于给予了其平均30-45天的账期，与20万授信额度叠加，敞口较大。</p>
+                                <p><strong>关于20万元授信额度</strong>：相对于其128万的注册资本和可能的小规模营收，20万元额度需谨慎评估。</p>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <div style="font-size: 5rem; color: var(--warning-color);">⚠️</div>
+                                <h4>风险等级</h4>
+                                <h2 class="risk-medium">中等</h2>
+                                <p>（5级中的第3级）</p>
+                            </div>
+                        </div>
+
+                        <div class="recommendation-box">
+                            <h5>授信与风控建议</h5>
+                            <ol>
+                                <li><strong>建议采取“有条件批准”</strong>：不建议直接给予“月底结清+20万额度”的宽松条件。</li>
+                                <li><strong>调整结算方式</strong>：
+                                    <ul>
+                                        <li><strong>方案A（推荐）</strong>：将结算周期缩短，例如“<span class="risk-low">货到后15天内支付</span>”，或“<span class="risk-low">次月15日前结清上月货款</span>”，以减少我方资金占用时间。</li>
+                                        <li><strong>方案B</strong>：初期采用“<span class="risk-low">预付部分+货到付款</span>”的模式，待合作稳定（如3-6个月回款正常）后再协商延长账期。</li>
+                                    </ul>
+                                </li>
+                                <li><strong>降低或分阶段授予信用额度</strong>：
+                                    <ul>
+                                        <li>初始授信额度建议降至 <span class="risk-low">5万至10万元</span>。</li>
+                                        <li>设置 <span class="risk-low">3-6个月的观察期</span>，若合作期间回款及时无误，再考虑提升至20万元。</li>
+                                    </ul>
+                                </li>
+                                <li><strong>强化风控措施</strong>：
+                                    <ul>
+                                        <li>要求其提供最近一期的财务报表（即便未公示），或由实际控制人提供个人连带责任担保。</li>
+                                        <li>在合同中明确约定，若发生一起逾期付款，即取消信用额度并转为预付款或现款现货模式。</li>
+                                        <li>定期（每季度）监控其公开司法信息、经营状态变化。</li>
+                                    </ul>
+                                </li>
+                                <li><strong>业务员沟通要点</strong>：向业务员解释，基于公开的司法风险记录，风控部门必须采取审慎原则。可以将此作为谈判筹码，争取更有利的付款条件或价格折扣。</li>
+                            </ol>
+                        </div>
+
+                        <div class="alert alert-warning mt-3">
+                            <h5>决策要点总结</h5>
+                            <p><strong>批准</strong>：可以建立合作关系，但必须附加严格的付款条款和较低的初始信用额度。<br>
+                            <strong>拒绝</strong>：如果公司风险容忍度极低，或无法接受任何账期，则可拒绝当前申请，提议更安全的交易方式。<br>
+                            <strong>核心</strong>：<span class="risk-high">历史被告记录是核心风险点</span>，必须通过合同条款和额度控制来对冲此风险。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <p class="mb-0">本报告基于公开信息生成，仅供参考，不构成投资或信贷决策的唯一依据。</p>
+            <p class="mb-0">华普机械信用与授信风险分析报告 © 2026</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- 图表JavaScript代码 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. 风险雷达图
+            const riskRadarCtx = document.getElementById('riskRadarChart').getContext('2d');
+            new Chart(riskRadarCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['经营历史', '司法风险', '财务透明度', '合规记录', '股权稳定性', '偿债能力（间接）'],
+                    datasets: [{
+                        label: '华普机械评分',
+                        data: [85, 35, 30, 80, 70, 50], // 分数越低风险越高
+                        backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                        borderColor: 'rgba(52, 152, 219, 1)',
+                        pointBackgroundColor: 'rgba(52, 152, 219, 1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(52, 152, 219, 1)'
+                    }]
+                },
+                options: {
+                    scales: {
+                        r: {
+                            angleLines: { display: true },
+                            suggestedMin: 0,
+                            suggestedMax: 100,
+                            ticks: { display: false }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+
+            // 2. 风险点分布饼图
+            const riskPieCtx = document.getElementById('riskPieChart').getContext('2d');
+            new Chart(riskPieCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['历史司法风险', '财务不透明', '小规模经营', '历史管理疏漏', '其他低风险项'],
+                    datasets: [{
+                        data: [40, 30, 15, 10, 5],
+                        backgroundColor: [
+                            '#e74c3c', // 红
+                            '#f39c12', // 橙
+                            '#f1c40f', // 黄
+                            '#95a5a6', // 灰
+                            '#2ecc71'  // 绿
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+
+            // 3. 社保人数变化图
+            const socialInsuranceCtx = document.getElementById('socialInsuranceChart').getContext('2d');
+            new Chart(socialInsuranceCtx, {
+                type: 'line',
+                data: {
+                    labels: ['2022', '2023', '2024', '2025'],
+                    datasets: [{
+                        label: '参保人数',
+                        data: [null, null, 23, 24], // 假设数据
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            title: {
+                                display: true,
+                                text: '人数'
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `参保人数: ${context.raw} 人`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 4. 变更记录时间趋势图
+            const changeHistoryCtx = document.getElementById('changeHistoryChart').getContext('2d');
+            // 模拟按年份统计的变更次数
+            const changeYears = ['2009', '2014', '2019', '2020-2023', '2024', '2025', '2026'];
+            const changeCounts = [2, 2, 5, 1, 1, 3, 3]; // 根据报告内容估算
+            new Chart(changeHistoryCtx, {
+                type: 'bar',
+                data: {
+                    labels: changeYears,
+                    datasets: [{
+                        label: '工商变更次数',
+                        data: changeCounts,
+                        backgroundColor: 'rgba(155, 89, 182, 0.7)',
+                        borderColor: 'rgba(155, 89, 182, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '变更次数'
+                            },
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                afterLabel: function(context) {
+                                    const year = changeYears[context.dataIndex];
+                                    if (year === '2025' || year === '2026') {
+                                        return '近期变更频繁，需关注';
+                                    }
+                                    return '';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+```
