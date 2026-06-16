@@ -1,0 +1,251 @@
+# 示例科技有限公司资产负债表分析报告 (2024年度)
+
+## 执行摘要
+本报告基于示例科技有限公司2024年12月31日与年初的资产负债表数据进行对比分析。总体来看，公司资产规模稳健增长，财务状况保持健康。总资产同比增长16.78%，所有者权益增长超过负债增长，表明公司内生增长动力良好。然而，应收账款与存货的增幅值得关注，需审视其周转效率。
+
+## 关键指标总览
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>示例科技有限公司 - 2024年度资产负债表分析报告</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --text-color: #333;
+            --border-color: #bdc3c7;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #f9f9f9;
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+        }
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        .nav-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .nav-btn {
+            padding: 0.7rem 1.5rem;
+            background-color: var(--light-color);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--primary-color);
+            transition: all 0.3s ease;
+        }
+        .nav-btn:hover, .nav-btn.active {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        section {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: none;
+        }
+        section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+        h3 {
+            color: var(--secondary-color);
+            margin: 1.5rem 0 1rem 0;
+        }
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .kpi-card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 5px solid var(--secondary-color);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.05);
+        }
+        .kpi-card.warning {
+            border-left-color: var(--accent-color);
+        }
+        .kpi-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 0.5rem 0;
+        }
+        .kpi-label {
+            font-size: 0.9rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .kpi-change {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        .positive {
+            color: #27ae60;
+        }
+        .negative {
+            color: var(--accent-color);
+        }
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 2rem 0;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .data-table th {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: left;
+            padding: 1rem;
+            font-weight: 600;
+        }
+        .data-table td {
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .data-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        .data-table tr:hover {
+            background-color: #e8f4fc;
+        }
+        .insight-box {
+            background-color: #e8f4fc;
+            border-left: 4px solid var(--secondary-color);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .warning-box {
+            background-color: #fdeaea;
+            border-left: 4px solid var(--accent-color);
+        }
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding: 1.5rem;
+            color: #666;
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border-color);
+        }
+        @media (max-width: 768px) {
+            .kpi-grid {
+                grid-template-columns: 1fr;
+            }
+            .chart-container {
+                height: 300px;
+            }
+            body {
+                padding: 10px;
+            }
+            section, header {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>示例科技有限公司</h1>
+        <p class="subtitle">2024年度资产负债表分析报告</p>
+        <p class="subtitle">报告日期：2024年12月31日 | 单位：万元</p>
+    </header>
+
+    <div class="nav-container">
+        <button class="nav-btn active" data-target="summary">执行摘要</button>
+        <button class="nav-btn" data-target="overview">关键指标</button>
+        <button class="nav-btn" data-target="assets">资产分析</button>
+        <button class="nav-btn" data-target="liabilities">负债分析</button>
+        <button class="nav-btn" data-target="trends">趋势与建议</button>
+    </div>
+
+    <!-- 执行摘要 -->
+    <section id="summary" class="active">
+        <h2>执行摘要</h2>
+        <p>本报告基于示例科技有限公司2024年12月31日与年初的资产负债表数据进行对比分析。总体来看，公司资产规模稳健增长，财务状况保持健康。</p>
+        
+        <div class="insight-box">
+            <h3>核心发现</h3>
+            <ul>
+                <li><strong>资产稳健扩张</strong>：总资产达到35,500万元，同比增长16.78%，增长主要来源于流动资产。</li>
+                <li><strong>财务结构优化</strong>：所有者权益增速(22.15%)超过负债增速(14.63%)，资产负债率从49.01%微降至48.11%，财务杠杆略有下降。</li>
+                <li><strong>流动性保持充足</strong>：流动比率从2.30提升至2.28，速动比率从1.76微降至1.77，短期偿债能力稳定。</li>
+                <li><strong>需关注领域</strong>：应收账款与存货增长较快，增幅分别为21.43%和15.56%，需关注其周转效率与变现能力。</li>
+            </ul>
+        </div>
+        
+        <p>本报告后续章节将对资产、负债及所有者权益的结构、变动及关键比率进行详细分析，并提供管理建议。</p>
+    </section>
+
+    <!-- 关键指标 -->
+    <section id="overview">
+        <h2>关键财务指标总览</h2>
+        <p>以下关键指标反映了公司2024年度的整体财务状况与变动情况。</p>
+        
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-label">总资产</div>
+                <div class="kpi-value">35,500</div>
+                <div class="kpi-change">较
