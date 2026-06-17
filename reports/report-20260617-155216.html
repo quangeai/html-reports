@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>科室手卫生数据统计可视化</title>
+    <!-- 引入ECharts官方在线CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", sans-serif;
+        }
+        body {
+            background-color: #f5f7fa;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .chart-box {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .chart-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        #barChart, #pieChart {
+            width: 100%;
+            height: 400px;
+        }
+        .summary {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            line-height: 1.6;
+            color: #34495e;
+        }
+        .summary h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .suggestion-item {
+            margin-top: 8px;
+        }
+        .missing-nurse {
+            color: #e74c3c;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 护士综合得分排名柱状图 -->
+        <div class="chart-box">
+            <h2 class="chart-title">护士手卫生综合得分排名</h2>
+            <div id="barChart"></div>
+        </div>
+
+        <!-- 低分问题分布饼图 -->
+        <div class="chart-box">
+            <h2 class="chart-title">低分反馈问题分布</h2>
+            <div id="pieChart"></div>
+        </div>
+
+        <!-- 汇总与整改建议 -->
+        <div class="summary">
+            <h3>数据汇总与整改建议</h3>
+            <p><strong>科室综合平均分：</strong>86.2分</p>
+            <p><strong>最高分护士：</strong>李护士（95.2分）</p>
+            <p><strong>最低分护士：</strong>王护士（72.8分）</p>
+            <div class="missing-nurse">未匹配到对应数据的护士：无</div>
+            <h4>低分问题整改建议：</h4>
+            <div class="suggestion-item">
+                <p><strong>未按规范洗手（频次：5）：</strong>组织全员重新学习七步洗手法规范，增加现场督查频次，拍摄规范操作视频供护士随时观看。</p>
+            </div>
+            <div class="suggestion-item">
+                <p><strong>接触患者前后未洗手（频次：4）：</strong>制作手卫生时机提示卡放置在病房显眼位置，每日早会强调手卫生重要性。</p>
+            </div>
+            <div class="suggestion-item">
+                <p><strong>洗手后未擦干（频次：3）：</strong>在洗手区域配备足量擦手纸，张贴醒目标语提醒，督查时重点关注洗手后步骤。</p>
+            </div>
+            <div class="suggestion-item">
+                <p><strong>洗手时间不足（频次：2）：</strong>在洗手池旁设置计时器，培训护士掌握正确洗手时长，定期抽查。</p>
+            </div>
+            <p style="margin-top: 15px; color: #95a5a6; font-size: 14px;">注：当前为示例数据，请替换为真实患者与院感督查打分数据后重新生成。</p>
+        </div>
+    </div>
+
+    <script>
+        // 示例数据：患者打分与院感督查打分合并后的数据
+        const nurseData = [
+            { name: "张护士", patientScore: 90, hospitalScore: 97, comprehensiveScore: (90*0.4 + 97*0.6).toFixed(1) },
+            { name: "李护士", patientScore: 92, hospitalScore: 96, comprehensiveScore: (92*0.4 + 96*0.6).toFixed(1) },
+            { name: "王护士", patientScore: 68, hospitalScore: 75, comprehensiveScore: (68*0.4 + 75*0.6).toFixed(1) },
+            { name: "刘护士", patientScore: 85, hospitalScore: 88, comprehensiveScore: (85*0.4 + 88*0.6).toFixed(1) },
+            { name: "赵护士", patientScore: 88, hospitalScore: 90, comprehensiveScore: (88*0.4 + 90*0.6).toFixed(1) },
+            { name: "陈护士", patientScore: 82, hospitalScore: 86, comprehensiveScore: (82*0.4 + 86*0.6).toFixed(1) }
+        ];
+
+        // 示例低分问题数据
+        const problemData = [
+            { name: "未按规范洗手", value: 5 },
+            { name: "接触患者前后未洗手", value: 4 },
+            { name: "洗手后未擦干", value: 3 },
+            { name: "洗手时间不足", value: 2 }
+        ];
+
+        // 初始化综合得分柱状图
+        const barChart = echarts.init(document.getElementById('barChart'));
+        const barOption = {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                data: nurseData.map(item => item.name),
+                axisLabel: {
+                    interval: 0,
+                    rotate: 30
+                }
+            },
+            yAxis: {
+                type: 'value',
+                min: 60,
+                max: 100,
+                axisLabel: {
+                    formatter: '{value}分'
+                }
+            },
+            series: [
+                {
+                    name: '综合得分',
+                    type: 'bar',
+                    data: nurseData.map(item => parseFloat(item.comprehensiveScore)),
+                    itemStyle: {
+                        color: '#5470c6'
+                    },
+                    label: {
+                        show: true,
+                        position: 'top',
+                        formatter: '{c}分'
+                    }
+                }
+            ]
+        };
+        barChart.setOption(barOption);
+
+        // 初始化问题分布饼图
+        const pieChart = echarts.init(document.getElementById('pieChart'));
+        const pieOption = {
+            tooltip: {
+                trigger: 'item',
+                formatter: '{b}: {c}次 ({d}%)'
+            },
+            legend: {
+                orient: 'vertical',
+                left: 'left'
+            },
+            series: [
+                {
+                    name: '问题频次',
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    avoidLabelOverlap: false,
+                    itemStyle: {
+                        borderRadius: 10,
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    },
+                    label: {
+                        show: true,
+                        formatter: '{b}: {d}%'
+                    },
+                    data: problemData
+                }
+            ]
+        };
+        pieChart.setOption(pieOption);
+
+        // 适配窗口大小变化
+        window.addEventListener('resize', () => {
+            barChart.resize();
+            pieChart.resize();
+        });
+    </script>
+</body>
+</html>
