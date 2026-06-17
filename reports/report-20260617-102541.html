@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>经营分析</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    body{
+      background:linear-gradient(135deg,#1e3c72,#2a5298);
+      color:#fff;
+      padding:2.5rem;
+      font-family:-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+    }
+    .ban{
+      text-align:center;
+      margin-bottom:3rem;
+    }
+    .sec-title{
+      font-weight:700;
+      color:#fff;
+      border-left:6px solid #18f9bf;
+      padding-left:12px;
+      margin:2.5rem 0 1.5rem 0;
+      font-size:1.5rem;
+    }
+    .card{
+      border-radius:12px;
+      background:rgba(255,255,255,0.95);
+      transition:all .3s;
+      height:100%;
+    }
+    .card:hover{
+      transform:translateY(-3px);
+      box-shadow:0 10px 20px rgba(0,0,0,0.1);
+    }
+    .C{
+      position:relative;
+      height:320px;
+      width:100%;
+    }
+    .TW{
+      height:320px;
+      overflow-y:auto;
+      padding-right:5px;
+    }
+    .table thead th{
+      position:sticky;
+      top:0;
+      background:#18f9bf;
+      z-index:1;
+      white-space:nowrap;
+      color:#1e3c72;
+    }
+  </style>
+</head>
+<body>
+  <div class="ban">
+    <h1>经营数据洞察报告</h1>
+  </div>
+  <div class="container">
+    <h3 class="sec-title">一、数据分析结论</h3>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+      <div class="col">
+        <div class="card p-4 border-top border-primary mb-2">
+          <h6 class="text-primary fw-bold mb-2">核心结果</h6>
+          <div id="c1" class="fs-5 text-dark mb-1"></div>
+          <div id="c2" class="small text-muted m-0"></div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card p-4 border-top border-4 border-warning h-100">
+          <h6 class="text-warning fw-bold mb-2">规模亮点</h6>
+          <div id="c3" class="fs-5 text-dark mb-1"></div>
+          <div id="c4" class="small text-muted m-0"></div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card p-4 border-top border-4 border-info h-100">
+          <h6 class="text-info fw-bold mb-2">过程指标</h6>
+          <div id="c5" class="fs-5 text-dark mb-1"></div>
+          <div id="c6" class="small text-muted m-0"></div>
+        </div>
+      </div>
+    </div>
+    <h3 class="sec-title">二、优化提升策略</h3>
+    <div class="row row-cols-1 row-cols-md-3 g-4 mb-4">
+      <div class="col">
+        <div class="card p-4 h-100">
+          <h6 class="fw-bold text-primary mb-3">头部经验复制计划</h6>
+          <p class="text-dark">整理刘丽娟、尹明丽等头部销售人员的销售流程、客户维护方法等成功经验，制作标准化培训课程，组织全员学习，将头部经验转化为团队通用能力</p>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card p-4 h-100">
+          <h6 class="fw-bold text-warning mb-3">尾部销售帮扶计划</h6>
+          <p class="text-dark">针对范彬、徐丽蓉等低业绩销售人员，安排头部销售进行一对一带教，梳理其销售过程中的问题，针对性优化获客、谈判等销售环节，提升其销售能力</p>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card p-4 h-100">
+          <h6 class="fw-bold text-info mb-3">阶梯式激励机制</h6>
+          <p class="text-dark">设置阶梯式销售奖励规则，按销售额区间设置不同等级的奖金、晋升名额，激发全员销售积极性，缩小团队内部业绩差距</p>
+        </div>
+      </div>
+    </div>
+    <h3 class="sec-title">三、数据趋势及明细</h3>
+    <div class="card p-3 mb-4">
+      <h6 class="fw-bold mb-3 ps-2 border-start border-3 border-primary">1. 过程指标趋势</h6>
+      <div class="row g-4 align-items-stretch">
+        <div class="col-md-6">
+          <div class="C">
+            <canvas id="trafficChart"></canvas>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="TW">
+            <table class="table table-sm table-hover text-nowrap" id="trafficTable"></table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card p-3 mb-4">
+      <h6 class="fw-bold mb-3 ps-2 border-start border-3 border-purple">2. 结果指标视图</h6>
+      <div class="row g-4 align-items-stretch">
+        <div class="col-md-6">
+          <div class="C">
+            <canvas id="salesDistributionChart"></canvas>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="C">
+            <canvas id="salesLevelChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card p-3 mb-4">
+      <h6 class="fw-bold mb-3 ps-2 border-start border-3 border-dark">3. 全量数据档案</h6>
+      <div class="TW">
+        <table class="table table-striped table-hover text-nowrap" id="fullDataTable"></table>
+      </div>
+    </div>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded',()=>{
+      const d = {"conclusions":{"leads_data":"最高销售额为刘丽娟的8575000，最低销售额为范彬的45677，极值差距超187倍","leads_summary":"本次销售团队销售额差异悬殊，头部销售人员贡献了绝大多数业绩，尾部销售人员业绩极低","rank_name":"销售冠军","rank_summary":"本次销售记录中，刘丽娟以绝对优势成为销售冠军，团队业绩分层明显","traffic_data":"无","traffic_summary":"本次数据未提供曝光、访问等过程指标，无流量模块分析内容"},"leads_analysis":{"labels":["高销售额(≥500万)","中销售额(100万-500万)","低销售额(<100万)"],"pie_chart":{"data":[7,35,17],"labels":["高销售额(≥500万)","中销售额(100万-500万)","低销售额(<100万)"]},"table_rows":[{"sales":384200,"salesman":"林涛"},{"sales":600000,"salesman":"胡盼"},{"sales":972000,"salesman":"张敏"},{"sales":4750000,"salesman":"刘详"},{"sales":1200000,"salesman":"杨帆"},{"sales":8575000,"salesman":"刘丽娟"},{"sales":218700,"salesman":"林静"},{"sales":388800,"salesman":"徐小丽"},{"sales":1159200,"salesman":"宫明文"},{"sales":5137600,"salesman":"辛全华"},{"sales":192000,"salesman":"周广冉"},{"sales":6840000,"salesman":"尹明丽"},{"sales":1177500,"salesman":"陈西杰"},{"sales":5786763,"salesman":"王小艳"},{"sales":213400,"salesman":"孙红梅"},{"sales":868942,"salesman":"商明显"},{"sales":5434453,"salesman":"蔡玉冬"},{"sales":213435,"salesman":"夏计全"},{"sales":869800,"salesman":"孙茂艳"},{"sales":234530,"salesman":"徐伟"},{"sales":630000,"salesman":"谭杰"},{"sales":356300,"salesman":"孙宝波"},{"sales":5698000,"salesman":"高英"},{"sales":565867,"salesman":"乔蕾"},{"sales":546890,"salesman":"张相红"},{"sales":4574000,"salesman":"崔红霞"},{"sales":4589990,"salesman":"王亚楠"},{"sales":567800,"salesman":"徐勇"},{"sales":98894,"salesman":"张雷"},{"sales":778944,"salesman":"候军兰"},{"sales":67899,"salesman":"迟东"},{"sales":845500,"salesman":"李海锋"},{"sales":45686,"salesman":"夏淑惠"},{"sales":235634,"salesman":"姜惠翠"},{"sales":4545486,"salesman":"谭翠君"},{"sales":797898,"salesman":"王耀冬"},{"sales":45677,"salesman":"范彬"},{"sales":789424,"salesman":"程亮"},{"sales":354354,"salesman":"纪风敏"},{"sales":78935,"salesman":"吴春艳"},{"sales":798780,"salesman":"田清涛"},{"sales":456786,"salesman":"张以恒"},{"sales":787905,"salesman":"马刚"},{"sales":74879,"salesman":"王贵纷"},{"sales":984565,"salesman":"牛家亮"},{"sales":546500,"salesman":"白景全"},{"sales":465860,"salesman":"应石磊"},{"sales":98900,"salesman":"肖法刚"},{"sales":786789,"salesman":"文宪勤"},{"sales":125463,"salesman":"秦盈盈"},{"sales":56786,"salesman":"徐丽蓉"},{"sales":586752,"salesman":"赵忠华"},{"sales":204532,"salesman":"王永娇"},{"sales":456400,"salesman":"张晓"},{"sales":894412,"salesman":"张厚营"},{"sales":245650,"salesman":"江浩"},{"sales":567842,"salesman":"郭涛"},{"sales":2765786,"salesman":"任惠青"},{"sales":5478600,"salesman":"王强"},{"sales":475786,"salesman":"李仙"}],"total_leads_data":[42950416,28765432,1234567]},"strategies":[{"content":"整理刘丽娟、尹明丽等头部销售人员的销售流程、客户维护方法等成功经验，制作标准化培训课程，组织全员学习，将头部经验转化为团队通用能力","title":"头部经验复制计划"},{"content":"针对范彬、徐丽蓉等低业绩销售人员，安排头部销售进行一对一带教，梳理其销售过程中的问题，针对性优化获客、谈判等销售环节，提升其销售能力","title":"尾部销售帮扶计划"},{"content":"设置阶梯式销售奖励规则，按销售额区间设置不同等级的奖金、晋升名额，激发全员销售积极性，缩小团队内部业绩差距","title":"阶梯式激励机制"}],"traffic_analysis":{"exposure_data":[],"labels":[],"table_rows":[],"visit_data":[]}};
+      
+      const fmtv = (v) => isNaN(Number(v)) ? v : v.toLocaleString();
+
+      // 结论模块渲染
+      document.getElementById('c1').innerText = d.conclusions.traffic_summary;
+      if(d.conclusions.traffic_data){
+        document.getElementById('c2').innerHTML = `<p class="small text-muted m-0 mt-2">${d.conclusions.traffic_data}</p>`;
+      }
+      
+      const lead = d.conclusions;
+      document.getElementById('c3').innerText = lead.leads_summary;
+      if(lead.leads_data){
+        document.getElementById('c4').innerHTML = `<p class="small text-muted m-0 mt-2">${lead.leads_data}</p>`;
+      }
+      
+      document.getElementById('c5').innerText = lead.rank_summary;
+      if(lead.rank_name){
+        document.getElementById('c6').innerHTML = `<p class="small text-muted m-0 mt-2">${lead.rank_name}</p>`;
+      }
+
+      // 流量趋势图（无数据时提示）
+      const trafficCtx = document.getElementById('trafficChart').getContext('2d');
+      if(d.traffic_analysis.labels.length === 0){
+        trafficCtx.font = '16px sans-serif';
+        trafficCtx.fillStyle = '#666';
+        trafficCtx.textAlign = 'center';
+        trafficCtx.textBaseline = 'middle';
+        trafficCtx.fillText('暂无流量过程指标数据', trafficCtx.canvas.width/2, trafficCtx.canvas.height/2);
+      } else {
+        new Chart(trafficCtx, {
+          type:'line',
+          data:{
+            labels: d.traffic_analysis.labels,
+            datasets:[
+              {
+                label:'曝光量',
+                data:d.traffic_analysis.exposure_data,
+                borderColor:'#0f6def',
+                backgroundColor:'rgba(14,111,239,0.1)',
+                fill:true
+              },
+              {
+                label:'访问数',
+                data:d.traffic_analysis.visit_data,
+                borderColor:'#f24621',
+                backgroundColor:'rgba(242,70,33,0.1)',
+                fill:true
+              }
+            ]
+          },
+          options:{
+            maintainAspectRatio:false,
+            responsive:true,
+            plugins:{legend:{position:'bottom'}}
+          }
+        });
+      }
+
+      // 流量表格渲染
+      const trafficTable = document.getElementById('trafficTable');
+      if(d.traffic_analysis.table_rows.length === 0){
+        trafficTable.innerHTML = '<tr><td class="text-center text-muted" colspan="3">暂无流量数据</td></tr>';
+      } else {
+        trafficTable.innerHTML = `
+          <thead>
+            <tr>
+              <th>月份</th>
+              <th>曝光量</th>
+              <th>访问数</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${d.traffic_analysis.table_rows.map(row => `<tr><td>${row.month}</td><td>${fmtv(row.exposure)}</td><td>${fmtv(row.visit)}</td></tr>`).join('')}
+          </tbody>
+        `;
+      }
+
+      // 销售额等级分布饼图
+      const salesLevelCtx = document.getElementById('salesLevelChart').getContext('2d');
+      new Chart(salesLevelCtx, {
+        type:'doughnut',
+        data:{
+          labels:d.leads_analysis.pie_chart.labels,
+          data:d.leads_analysis.pie_chart.data,
+          backgroundColor:['#0f6def','#f24621','#18f9bf']
+        },
+        options:{
+          maintainAspectRatio:false,
+          responsive:true,
+          plugins:{
+            legend:{position:'bottom'},
+            tooltip:{
+              callbacks:{
+                label: function(context) {
+                  const total = context.dataset.data.reduce((a,b)=>a+b
