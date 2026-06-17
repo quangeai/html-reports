@@ -1,0 +1,253 @@
+# 九田家春节门店经营数据分析报告
+
+我将根据提供的九田家门店数据，创建一个专业、美观的HTML分析报告，包含数据可视化和商业洞察。
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>九田家春节门店经营数据分析报告</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        
+        .report-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 10px 10px;
+        }
+        
+        .section-title {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+        
+        .kpi-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            height: 100%;
+            transition: transform 0.3s ease;
+        }
+        
+        .kpi-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .kpi-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+        
+        .kpi-positive {
+            color: var(--success-color);
+        }
+        
+        .kpi-negative {
+            color: var(--accent-color);
+        }
+        
+        .kpi-neutral {
+            color: var(--secondary-color);
+        }
+        
+        .chart-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .insight-card {
+            background-color: #f8f9fa;
+            border-left: 5px solid var(--secondary-color);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .insight-card.warning {
+            border-left-color: var(--warning-color);
+            background-color: #fff9e6;
+        }
+        
+        .insight-card.success {
+            border-left-color: var(--success-color);
+            background-color: #e8f7ef;
+        }
+        
+        .city-badge {
+            background-color: var(--light-color);
+            color: var(--primary-color);
+            padding: 5px 10px;
+            border-radius: 20px;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            display: inline-block;
+            font-size: 0.85rem;
+        }
+        
+        .footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            text-align: center;
+        }
+        
+        .nav-tabs .nav-link.active {
+            background-color: var(--secondary-color);
+            color: white;
+            border-color: var(--secondary-color);
+        }
+        
+        @media (max-width: 768px) {
+            .kpi-value {
+                font-size: 1.8rem;
+            }
+            
+            .report-header h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top" style="background-color: var(--primary-color);">
+        <div class="container">
+            <a class="navbar-brand" href="#">九田家经营分析</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#executive-summary">执行摘要</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#key-metrics">关键指标</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#detailed-analysis">详细分析</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#trend-analysis">趋势分析</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#conclusion">结论建议</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="report-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="display-5 fw-bold">九田家春节门店经营数据分析报告</h1>
+                    <p class="lead">基于2025年与2026年春节期间的114家门店经营数据对比分析</p>
+                    <p class="mb-0">报告生成日期: <span id="current-date"></span></p>
+                </div>
+                <div class="col-md-4 text-center">
+                    <div class="bg-white text-dark rounded p-3 d-inline-block">
+                        <h5 class="mb-1">数据覆盖</h5>
+                        <p class="mb-0 fw-bold">114家门店 · 26个省份</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Executive Summary -->
+        <section id="executive-summary" class="mb-5">
+            <h2 class="section-title">执行摘要</h2>
+            <div class="row">
+                <div class="col-md-8">
+                    <p>本报告分析了九田家114家门店在2025年与2026年春节期间的经营表现。数据显示，尽管整体门店纯收同比下降19.5%，但线上业务表现强劲，线上纯收同比增长2.3%，线上占比从48.8%提升至62.0%。</p>
+                    <p>关键发现包括：</p>
+                    <ul>
+                        <li><strong>线上业务成为增长引擎</strong>：线上纯收增长2.3%，线上占比提升13.2个百分点</li>
+                        <li><strong>门店效率下降</strong>：桌均消费从321.6元下降至261.9元，降幅18.6%</li>
+                        <li><strong>渠道结构变化</strong>：抖音渠道增长迅猛，美团渠道收入下降</li>
+                        <li><strong>区域表现分化</strong>：部分城市门店表现优异，部分门店面临较大挑战</li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <div class="kpi-card">
+                        <h5>整体表现</h5>
+                        <div class="kpi-value kpi-negative">-19.5%</div>
+                        <p>门店纯收同比变化</p>
+                        <div class="kpi-value kpi-positive">+2.3%</div>
+                        <p>线上纯收同比变化</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Key Metrics -->
+        <section id="key-metrics" class="mb-5">
+            <h2 class="section-title">关键指标展示</h2>
+            <div class="row">
+                <div class="col-md-3 col-sm-6">
+                    <div class="kpi-card">
+                        <h6>门店纯收总额</h6>
+                        <div class="kpi-value">121.9万</div>
+                        <p>2026年春节日均(元)</p>
+                        <div class="d-flex justify-content-between">
+                            <span class="kpi-negative">-19.5%</span>
+                            <span>151.4万(2025年)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="kpi-card">
+                        <h6>线上纯收总额</h6>
+                        <div class="kpi-value">528.8万</div>
+                        <p>2026年春节(元)</p>
+                        <div class="d-flex justify-content-between">
+                            <span class="kpi-positive">+2.3%</span>
+                            <span>517.0万(2025年)</span>
+                        </div>
+                    </div>
+                </div>
