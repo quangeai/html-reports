@@ -1,0 +1,163 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>泌尿外科手卫生统计分析</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        body {
+            background-color: #f5f8fa;
+            padding: 20px;
+        }
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            margin: 20px auto;
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .summary {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            line-height: 1.8;
+        }
+        .summary h3 {
+            color: #13c2c2;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+        }
+        .suggestion-item {
+            margin: 10px 0;
+            padding-left: 10px;
+            border-left: 3px solid #13c2c2;
+        }
+    </style>
+</head>
+<body>
+    <div class="chart-container" id="barChart"></div>
+    <div class="chart-container" id="pieChart"></div>
+    <div class="summary">
+        <h3>科室手卫生整体统计与整改建议</h3>
+        <p><strong>今日总评价数量：</strong>4份</p>
+        <p><strong>科室整体平均分：</strong>3.5分</p>
+        <p><strong>最高分护士：</strong>小妮、小晓（3.75分）</p>
+        <p><strong>最低分护士：</strong>小红（3.125分）</p>
+        <h4>高频问题整改建议：</h4>
+        <div class="suggestion-item">
+            <p><strong>打针后手卫生不到位（4次）：</strong>要求护士在注射操作后立即按七步洗手法规范洗手，配备便捷手消装置，操作后同步记录手卫生执行情况。</p>
+        </div>
+        <div class="suggestion-item">
+            <p><strong>换尿袋后手卫生不到位（3次）：</strong>强化侵入性操作后手卫生意识，操作后必须进行手消毒，护士长加强现场督导。</p>
+        </div>
+        <div class="suggestion-item">
+            <p><strong>换药后手卫生不到位（2次）：</strong>规范换药后清洁流程，使用一次性手消凝胶，定期考核手卫生操作规范。</p>
+        </div>
+        <div class="suggestion-item">
+            <p><strong>铺床后手卫生不到位（2次）：</strong>将铺床后手卫生纳入基础护理操作考核，提醒护士接触床单元后及时清洁双手。</p>
+        </div>
+        <div class="suggestion-item">
+            <p><strong>换药前/换尿袋前/铺床前手卫生不到位（各1次）：</strong>加强操作前手卫生宣教，制作操作流程提示卡张贴在操作区域。</p>
+        </div>
+    </div>
+
+    <script>
+        // 初始化柱状图：护士平均分排名
+        var barChart = echarts.init(document.getElementById('barChart'));
+        var barOption = {
+            title: {
+                text: '护士手卫生平均分排名',
+                left: 'center',
+                textStyle: { color: '#333', fontSize: 18 }
+            },
+            tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+            grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+            xAxis: {
+                type: 'category',
+                data: ['小妮', '小晓', '小李', '小红'],
+                axisLabel: { fontSize: 12 }
+            },
+            yAxis: {
+                type: 'value',
+                min: 3,
+                max: 4,
+                axisLabel: { formatter: '{value}分' }
+            },
+            series: [{
+                name: '平均分',
+                type: 'bar',
+                data: [3.75, 3.75, 3.375, 3.125],
+                itemStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                        { offset: 0, color: '#87e8de' },
+                        { offset: 1, color: '#13c2c2' }
+                    ])
+                },
+                label: {
+                    show: true,
+                    position: 'top',
+                    formatter: '{c}分'
+                }
+            }]
+        };
+        barChart.setOption(barOption);
+
+        // 初始化饼图：低分问题分布
+        var pieChart = echarts.init(document.getElementById('pieChart'));
+        var pieOption = {
+            title: {
+                text: '手卫生低分问题分布',
+                left: 'center',
+                textStyle: { color: '#333', fontSize: 18 }
+            },
+            tooltip: { trigger: 'item', formatter: '{b}: {c}次 ({d}%)' },
+            legend: { orient: 'vertical', left: 'left' },
+            series: [{
+                name: '问题频次',
+                type: 'pie',
+                radius: ['40%', '70%'],
+                avoidLabelOverlap: false,
+                itemStyle: {
+                    borderRadius: 10,
+                    borderColor: '#fff',
+                    borderWidth: 2
+                },
+                label: { show: false, position: 'center' },
+                emphasis: { label: { show: true, fontSize: 16, fontWeight: 'bold' } },
+                labelLine: { show: false },
+                data: [
+                    { value: 4, name: '打针后手卫生不到位' },
+                    { value: 3, name: '换尿袋后手卫生不到位' },
+                    { value: 2, name: '换药后手卫生不到位' },
+                    { value: 2, name: '铺床后手卫生不到位' },
+                    { value: 1, name: '换药前手卫生不到位' },
+                    { value: 1, name: '换尿袋前手卫生不到位' },
+                    { value: 1, name: '铺床前手卫生不到位' }
+                ],
+                color: ['#87e8de', '#5cdbd3', '#36cfc9', '#13c2c2', '#08979c', '#006d75', '#00474f']
+            }]
+        };
+        pieChart.setOption(pieOption);
+
+        // 适配窗口大小变化
+        window.addEventListener('resize', function() {
+            barChart.resize();
+            pieChart.resize();
+        });
+    </script>
+</body>
+</html>
+```
