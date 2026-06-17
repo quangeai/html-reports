@@ -1,0 +1,313 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>经营数据可视化报告</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "PingFang SC", "Microsoft Yahei", sans-serif;
+        }
+        body {
+            background-color: #F5F7FA;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 24px;
+            font-size: 28px;
+        }
+        .core-indicators {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            position: relative;
+            flex-wrap: wrap;
+        }
+        .indicator-card {
+            flex: 1;
+            min-width: 200px;
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+        }
+        .indicator-line {
+            width: 4px;
+            height: 40px;
+            border-radius: 2px;
+            margin-right: 16px;
+        }
+        .indicator-content .label {
+            color: #999;
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+        .indicator-content .value {
+            color: #333;
+            font-size: 22px;
+            font-weight: 600;
+        }
+        .order-note {
+            position: absolute;
+            top: -10px;
+            right: 0;
+            background: #fff;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #666;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .charts-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+        }
+        .chart-card {
+            width: calc(50% - 12px);
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            height: 400px;
+        }
+        @media (max-width: 768px) {
+            .chart-card {
+                width: 100%;
+            }
+            .order-note {
+                position: static;
+                margin-bottom: 16px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>经营数据可视化报告</h1>
+        <div class="core-indicators">
+            <div class="order-note">共28笔订单（排除2笔异常）</div>
+            <div class="indicator-card">
+                <div class="indicator-line" style="background-color: #4A90E9;"></div>
+                <div class="indicator-content">
+                    <div class="label">总营收</div>
+                    <div class="value">¥84,520.00</div>
+                </div>
+            </div>
+            <div class="indicator-card">
+                <div class="indicator-line" style="background-color: #9B9B9B;"></div>
+                <div class="indicator-content">
+                    <div class="label">总成本</div>
+                    <div class="value">¥60,120.22</div>
+                </div>
+            </div>
+            <div class="indicator-card">
+                <div class="indicator-line" style="background-color: #7ED321;"></div>
+                <div class="indicator-content">
+                    <div class="label">总毛利</div>
+                    <div class="value">¥24,399.78</div>
+                </div>
+            </div>
+            <div class="indicator-card">
+                <div class="indicator-line" style="background-color: #F5A623;"></div>
+                <div class="indicator-content">
+                    <div class="label">平均毛利率</div>
+                    <div class="value">28.9%</div>
+                </div>
+            </div>
+        </div>
+        <div class="charts-grid">
+            <div class="chart-card" id="monthTrend"></div>
+            <div class="chart-card" id="deptPerformance"></div>
+            <div class="chart-card" id="categoryProfit"></div>
+            <div class="chart-card" id="customerType"></div>
+            <div class="chart-card" id="paymentStatus"></div>
+            <div class="chart-card" id="customerRank"></div>
+        </div>
+    </div>
+    <script>
+        const numberFormat = (val) => {
+            return '¥' + new Intl.NumberFormat('zh-CN').format(val);
+        };
+
+        // 月度趋势
+        const monthTrend = echarts.init(document.getElementById('monthTrend'));
+        monthTrend.setOption({
+            title: {text: '月度营收成本趋势', left: 'center', textStyle: {fontSize: 16}},
+            tooltip: {trigger: 'axis', formatter: (params) => {
+                let html = params[0].axisValue + '<br>';
+                params.forEach(item => {
+                    html += `${item.marker}${item.seriesName}: ${numberFormat(item.value)}<br>`;
+                });
+                return html;
+            }},
+            xAxis: {type: 'category', data: ['1月', '2月', '3月']},
+            yAxis: {type: 'value', axisLabel: {formatter: '¥{value}'}},
+            series: [
+                {
+                    name: '营收',
+                    type: 'line',
+                    data: [34326.14, 25688.65, 24505.21],
+                    lineStyle: {color: '#4A90E9', width: 3},
+                    itemStyle: {color: '#4A90E9'},
+                    areaStyle: {color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{offset: 0, color: 'rgba(74,144,233,0.3)'}, {offset: 1, color: 'rgba(74,144,233,0.05)'}])}
+                },
+                {
+                    name: '成本',
+                    type: 'line',
+                    data: [24366.61, 18350.41, 17403.20],
+                    lineStyle: {color: '#9B9B9B', width: 2, type: 'dashed'},
+                    itemStyle: {color: '#9B9B9B'}
+                }
+            ]
+        });
+
+        // 部门业绩
+        const deptPerformance = echarts.init(document.getElementById('deptPerformance'));
+        deptPerformance.setOption({
+            title: {text: '部门营收对比', left: 'center', textStyle: {fontSize: 16}},
+            tooltip: {trigger: 'axis', formatter: '{b}<br/>营收: {c}'},
+            xAxis: {type: 'category', data: ['华东区', '西南区', '华南区', '华北区']},
+            yAxis: {type: 'value', axisLabel: {formatter: '¥{value}'}},
+            series: [{
+                type: 'bar',
+                data: [
+                    {value: 34238.90, itemStyle: {color: '#4A90E9'}},
+                    {value: 18420.70, itemStyle: {color: '#F5A623'}},
+                    {value: 18039.04, itemStyle: {color: '#7ED321'}},
+                    {value: 9538.36, itemStyle: {color: '#BD10E0'}}
+                ],
+                label: {show: true, position: 'top', formatter: (params) => numberFormat(params.value)}
+            }]
+        });
+
+        // 品类毛利
+        const categoryProfit = echarts.init(document.getElementById('categoryProfit'));
+        categoryProfit.setOption({
+            title: {text: '产品类别毛利占比', left: 'center', textStyle: {fontSize: 16}},
+            tooltip: {formatter: '{b}: {c} ({d}%)'},
+            legend: {bottom: 10},
+            series: [{
+                type: 'pie',
+                radius: ['40%', '70%'],
+                center: ['50%', '45%'],
+                data: [
+                    {name: '日用品', value: 7556.06},
+                    {name: '生鲜', value: 7427.80},
+                    {name: '休闲食品', value: 6721.05},
+                    {name: '饮料', value: 1404.87}
+                ],
+                label: {formatter: '{b}: {d}%'},
+                emphasis: {label: {show: true, fontSize: 16, fontWeight: 'bold'}},
+                graphic: {
+                    type: 'text',
+                    left: 'center',
+                    top: '42%',
+                    style: {text: '毛利占比', fontSize: 16, fontWeight: 'bold', textAlign: 'center'}
+                }
+            }]
+        });
+
+        // 客户类型
+        const customerType = echarts.init(document.getElementById('customerType'));
+        customerType.setOption({
+            title: {text: '客户类型营收分布', left: 'center', textStyle: {fontSize: 16}},
+            tooltip: {formatter: '{b}: {c} ({d}%)'},
+            legend: {bottom: 10},
+            series: [{
+                type: 'pie',
+                radius: ['40%', '70%'],
+                center: ['50%', '45%'],
+                data: [
+                    {name: '大客户', value: 35903.25},
+                    {name: '新客户', value: 25820.89},
+                    {name: '中小客户', value: 22795.86}
+                ],
+                label: {formatter: '{b}: {d}%'},
+                emphasis: {label: {show: true, fontSize: 16, fontWeight: 'bold'}},
+                graphic: {
+                    type: 'text',
+                    left: 'center',
+                    top: '42%',
+                    style: {text: '营收分布', fontSize: 16, fontWeight: 'bold', textAlign: 'center'}
+                }
+            }]
+        });
+
+        // 回款情况
+        const paymentStatus = echarts.init(document.getElementById('paymentStatus'));
+        paymentStatus.setOption({
+            title: {text: '回款状态统计', left: 'center', textStyle: {fontSize: 16}},
+            tooltip: {trigger: 'axis', axisPointer: {type: 'cross'}},
+            xAxis: {type: 'category', data: ['已回款', '部分回款', '未回款']},
+            yAxis: [
+                {type: 'value', name: '订单数', min: 0, axisLabel: {formatter: '{value}笔'}},
+                {type: 'value', name: '金额', min: 0, axisLabel: {formatter: '¥{value}'}}
+            ],
+            series: [
+                {
+                    name: '订单数',
+                    type: 'bar',
+                    yAxisIndex: 0,
+                    data: [23, 3, 3],
+                    itemStyle: {color: '#4A90E9'},
+                    label: {show: true, position: 'top', formatter: '{c}笔'}
+                },
+                {
+                    name: '回款金额',
+                    type: 'line',
+                    yAxisIndex: 1,
+                    data: [78520.00, 4507.00, 1493.00],
+                    itemStyle: {color: '#F5A623'},
+                    lineStyle: {width: 3},
+                    label: {show: true, position: 'right', formatter: (params) => numberFormat(params.value)}
+                }
+            ]
+        });
+
+        // 客户排名
+        const customerRank = echarts.init(document.getElementById('customerRank'));
+        customerRank.setOption({
+            title: {text: 'Top10客户营收排名', left: 'center', textStyle: {fontSize: 16}},
+            tooltip: {trigger: 'axis', formatter: '{b}: {c}'},
+            grid: {left: '30%', right: '10%', bottom: '3%', containLabel: true},
+            xAxis: {type: 'value', axisLabel: {formatter: '¥{value}'}},
+            yAxis: {
+                type: 'category',
+                data: ['麦德龙', '家乐福', '世纪联华', '盒马鲜生', '大润发', '沃尔玛', '华润万家', '物美超市', '物美超市', '永辉超市'].reverse(),
+                axisLabel: {width: 80, overflow: 'truncate'}
+            },
+            series: [{
+                type: 'bar',
+                data: [18262.49, 16147.65, 13346.95, 8747.67, 7852.89, 7451.85, 6752.62, 2860.86, 2860.86, 2704.40].reverse(),
+                itemStyle: {color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [{offset: 0, color: '#4A90E9'}, {offset: 1, color: 'rgba(74,144,233,0.3)'}])},
+                label: {show: true, position: 'right', formatter: (params) => numberFormat(params.value)}
+            }]
+        });
+
+        window.addEventListener('resize', () => {
+            monthTrend.resize();
+            deptPerformance.resize();
+            categoryProfit.resize();
+            customerType.resize();
+            paymentStatus.resize();
+            customerRank.resize();
+        });
+    </script>
+</body>
+</html>
+```
