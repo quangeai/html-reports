@@ -1,0 +1,449 @@
+下面是完整的韩语单词消消乐离线HTML游戏网页，已包含你提供的单词，满足所有设计和游戏要求：
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>韩语单词消消乐</title>
+    <style>
+        /* 全局样式 */
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #fff9e6; /* 淡黄色背景 */
+            font-family: 'Noto Sans KR', sans-serif; /* 韩语字体 */
+            overflow-x: hidden;
+        }
+
+        /* 标题 */
+        h1 {
+            text-align: center;
+            font-size: 3rem;
+            color: #333;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* 输入区域 */
+        .input-section {
+            max-width: 800px;
+            margin: 0 auto 40px;
+            text-align: center;
+        }
+
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 15px;
+            font-size: 1.2rem;
+            border: 2px solid #e0d0a8;
+            border-radius: 10px;
+            resize: vertical;
+            background-color: #fff;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            background-color: #f0c868;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 5px rgba(0,0,0,0.2);
+        }
+
+        button:hover {
+            background-color: #e9b746;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 8px rgba(0,0,0,0.25);
+        }
+
+        /* 游戏区域 */
+        .game-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 25px;
+            padding: 20px;
+        }
+
+        /* 泡泡样式 */
+        .bubble {
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: inset -10px -10px 15px rgba(255,255,255,0.5),
+                        inset 10px 10px 15px rgba(0,0,0,0.1),
+                        0 10px 20px rgba(0,0,0,0.15);
+            user-select: none;
+            position: relative;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .bubble:hover {
+            transform: scale(1.05);
+            box-shadow: inset -10px -10px 15px rgba(255,255,255,0.5),
+                        inset 10px 10px 15px rgba(0,0,0,0.1),
+                        0 15px 30px rgba(0,0,0,0.2);
+        }
+
+        .bubble.highlight {
+            transform: scale(1.1);
+            box-shadow: inset -10px -10px 15px rgba(255,255,255,0.5),
+                        inset 10px 10px 15px rgba(0,0,0,0.1),
+                        0 15px 30px rgba(255,165,0,0.4),
+                        0 0 20px rgba(255,165,0,0.3);
+            border: 3px solid #ff9800;
+        }
+
+        /* 成功提示 */
+        .success-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            font-weight: bold;
+            color: #4caf50;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 1000;
+            animation: fadeInScale 0.5s ease;
+            background-color: rgba(255,255,255,0.9);
+            padding: 30px 60px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.5);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        /* 烟花Canvas */
+        #fireworks {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+            display: none;
+        }
+    </style>
+    <!-- 引入韩语字体（离线使用可替换为本地字体） -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <h1>单词消消乐</h1>
+
+    <div class="input-section">
+        <textarea id="wordInput" placeholder="请输入单词及释义，每行格式为：韩语：释义&#10;例如：&#10;탁자：桌子&#10;책：书">탁자：桌子</textarea>
+        <button onclick="startGame()">开始游戏</button>
+    </div>
+
+    <div class="game-container" id="gameContainer"></div>
+
+    <div class="success-message" id="successMessage">恭喜挑战成功！</div>
+    <canvas id="fireworks"></canvas>
+
+    <script>
+        let selectedBubble = null;
+        let wordPairs = [];
+        let bubbles = [];
+        let fireworksCanvas = document.getElementById('fireworks');
+        let ctx = fireworksCanvas.getContext('2d');
+
+        // 设置Canvas大小
+        function resizeCanvas() {
+            fireworksCanvas.width = window.innerWidth;
+            fireworksCanvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // 解析输入的单词对
+        function parseWordInput(input) {
+            const lines = input.trim().split('
+');
+            const pairs = [];
+            lines.forEach(line => {
+                const parts = line.split('：'); // 中文冒号分隔
+                if (parts.length === 2) {
+                    const korean = parts[0].trim();
+                    const chinese = parts[1].trim();
+                    if (korean && chinese) {
+                        pairs.push({ korean, chinese });
+                    }
+                }
+            });
+            return pairs;
+        }
+
+        // 生成随机浅色
+        function getRandomPastelColor() {
+            const colors = [
+                '#ffeaa7', '#fab1a0', '#fd79a8', '#a29bfe', '#74b9ff',
+                '#00cec9', '#55efc4', '#ffeaa7', '#fdcb6e', '#e17055'
+            ];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        // 创建泡泡元素
+        function createBubble(text, pairId) {
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            bubble.textContent = text;
+            bubble.style.backgroundColor = getRandomPastelColor();
+            bubble.dataset.pairId = pairId;
+            bubble.dataset.text = text;
+            
+            bubble.addEventListener('click', () => handleBubbleClick(bubble));
+            
+            return bubble;
+        }
+
+        // 处理泡泡点击
+        function handleBubbleClick(bubble) {
+            if (selectedBubble) {
+                // 同一个泡泡点击，取消高亮
+                if (selectedBubble === bubble) {
+                    selectedBubble.classList.remove('highlight');
+                    selectedBubble = null;
+                    return;
+                }
+
+                // 检查是否配对
+                const pair1 = wordPairs.find(p => p.korean === selectedBubble.dataset.text || p.chinese === selectedBubble.dataset.text);
+                const pair2 = wordPairs.find(p => p.korean === bubble.dataset.text || p.chinese === bubble.dataset.text);
+
+                if (pair1 === pair2) {
+                    // 配对成功，移除泡泡
+                    selectedBubble.style.transition = 'all 0.5s ease';
+                    bubble.style.transition = 'all 0.5s ease';
+                    selectedBubble.style.transform = 'scale(0)';
+                    bubble.style.transform = 'scale(0)';
+                    
+                    setTimeout(() => {
+                        selectedBubble.remove();
+                        bubble.remove();
+                        bubbles = bubbles.filter(b => b !== selectedBubble && b !== bubble);
+                        
+                        // 检查是否全部消失
+                        if (bubbles.length === 0) {
+                            showSuccessMessage();
+                        }
+                    }, 500);
+                } else {
+                    // 配对失败，取消高亮
+                    selectedBubble.classList.remove('highlight');
+                }
+                selectedBubble = null;
+            } else {
+                // 第一个泡泡点击，高亮
+                selectedBubble = bubble;
+                bubble.classList.add('highlight');
+            }
+        }
+
+        // 开始游戏
+        function startGame() {
+            // 清空游戏区
+            const gameContainer = document.getElementById('gameContainer');
+            gameContainer.innerHTML = '';
+            selectedBubble = null;
+            bubbles = [];
+            
+            // 解析输入
+            const input = document.getElementById('wordInput').value;
+            wordPairs = parseWordInput(input);
+            
+            if (wordPairs.length === 0) {
+                alert('请输入有效的单词及释义！');
+                return;
+            }
+            
+            // 生成所有泡泡
+            const allItems = [];
+            wordPairs.forEach((pair, index) => {
+                allItems.push({ text: pair.korean, pairId: index });
+                allItems.push({ text: pair.chinese, pairId: index });
+            });
+            
+            // 随机打乱顺序
+            allItems.sort(() => Math.random() - 0.5);
+            
+            // 添加到游戏区
+            allItems.forEach(item => {
+                const bubble = createBubble(item.text, item.pairId);
+                gameContainer.appendChild(bubble);
+                bubbles.push(bubble);
+            });
+            
+            // 隐藏成功提示和烟花
+            document.getElementById('successMessage').style.display = 'none';
+            fireworksCanvas.style.display = 'none';
+        }
+
+        // 显示成功提示和烟花
+        function showSuccessMessage() {
+            const successMsg = document.getElementById('successMessage');
+            successMsg.style.display = 'block';
+            
+            // 显示烟花
+            fireworksCanvas.style.display = 'block';
+            launchFireworks();
+        }
+
+        // 烟花效果
+        function launchFireworks() {
+            const fireworks = [];
+            const particles = [];
+            
+            function Firework(x, y) {
+                this.x = x;
+                this.y = y;
+                this.speedY = -Math.random() * 3 - 2;
+                this.speedX = (Math.random() - 0.5) * 4;
+                this.radius = 2;
+                this.color = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                this.exploded = false;
+            }
+            
+            Firework.prototype.update = function() {
+                this.y += this.speedY;
+                this.x += this.speedX;
+                this.speedY += 0.05;
+                this.radius = Math.min(this.radius + 0.05, 3);
+                
+                if (this.speedY >= 0) {
+                    this.exploded = true;
+                    // 生成粒子
+                    for (let i = 0; i < 100; i++) {
+                        particles.push(new Particle(this.x, this.y, this.color));
+                    }
+                }
+            }
+            
+            Firework.prototype.draw = function() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+            
+            function Particle(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.speedY = (Math.random() - 0.5) * 6;
+                this.speedX = (Math.random() - 0.5) * 6;
+                this.radius = Math.random() * 2 + 1;
+                this.color = color;
+                this.alpha = 1;
+                this.decay = Math.random() * 0.01 + 0.005;
+            }
+            
+            Particle.prototype.update = function() {
+                this.y += this.speedY;
+                this.x += this.speedX;
+                this.speedY += 0.05;
+                this.alpha -= this.decay;
+                this.radius *= 0.99;
+            }
+            
+            Particle.prototype.draw = function() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.restore();
+            }
+            
+            function animate() {
+                ctx.fillStyle = 'rgba(255, 249, 230, 0.2)'; // 背景色半透明，实现拖尾效果
+                ctx.fillRect(0, 0, fireworksCanvas.width, fireworksCanvas.height);
+                
+                // 随机生成烟花
+                if (Math.random() < 0.05) {
+                    fireworks.push(new Firework(Math.random() * fireworksCanvas.width, fireworksCanvas.height));
+                }
+                
+                // 更新和绘制烟花
+                for (let i = fireworks.length - 1; i >= 0; i--) {
+                    const firework = fireworks[i];
+                    firework.update();
+                    firework.draw();
+                    
+                    if (firework.exploded) {
+                        fireworks.splice(i, 1);
+                    }
+                }
+                
+                // 更新和绘制粒子
+                for (let i = particles.length - 1; i >= 0; i--) {
+                    const particle = particles[i];
+                    particle.update();
+                    particle.draw();
+                    
+                    if (particle.alpha <= 0) {
+                        particles.splice(i, 1);
+                    }
+                }
+                
+                requestAnimationFrame(animate);
+            }
+            
+            animate();
+        }
+
+        // 页面加载完成后自动开始游戏
+        window.addEventListener('load', startGame);
+    </script>
+</body>
+</html>
+```
+
+### 使用说明：
+1. **离线使用**：将此代码保存为HTML文件，直接用浏览器打开即可离线运行
+2. **添加单词**：在输入框中按`韩语：释义`格式添加更多单词，每行一个
+3. **游戏玩法**：
+   - 点击任意泡泡会高亮显示
+   - 点击配对的韩语单词和中文释义，正确则两个泡泡消失
+   - 错误则取消高亮，可重新选择
+   - 所有泡泡配对完成后会显示成功提示和烟花动画
+
+### 特性说明：
+- 3D立体泡泡效果，采用浅色随机配色
+- 大号加粗字体，确保清晰可读
+- 泡泡间有足够间距，布局美观
+- 点击反馈明显，高亮效果突出
+- 成功后的烟花动画增强成就感
+- 支持响应式布局，适配不同屏幕尺寸
+
+你可以直接使用这个文件，也可以根据需要修改颜色、字体大小等样式参数。如果需要离线使用韩语字体，可以下载Noto Sans KR字体文件并替换CDN链接为本地路径。
