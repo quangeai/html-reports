@@ -1,0 +1,194 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>泌尿外科手卫生数据统计</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        body {
+            background-color: #f5f7fa;
+            padding: 20px;
+        }
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            margin-bottom: 30px;
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .summary {
+            background-color: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            line-height: 1.8;
+        }
+        .summary h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        .suggestion-item {
+            margin: 10px 0;
+            padding-left: 10px;
+            border-left: 3px solid #3498db;
+        }
+    </style>
+</head>
+<body>
+    <div class="chart-container" id="barChart"></div>
+    <div class="chart-container" id="pieChart"></div>
+    <div class="summary">
+        <h3>科室手卫生数据汇总</h3>
+        <p><strong>科室平均分：</strong>3.5分</p>
+        <p><strong>最高分护士：</strong>小妮、小晓（3.75分）</p>
+        <p><strong>最低分护士：</strong>小红（3.125分）</p>
+        <h3>低分问题整改建议</h3>
+        <div class="suggestion-item">
+            <p><strong>打针后手卫生不规范（4次）：</strong>加强护士打针后手部消毒流程监督，每日随机抽查，规范七步洗手法执行标准</p>
+        </div>
+        <div class="suggestion-item">
+            <p><strong>换尿袋后手卫生不规范（3次）：</strong>组织换尿袋操作后手卫生专项培训，在操作区域张贴醒目标识提醒</p>
+        </div>
+        <div class="suggestion-item">
+            <p><strong>换药后手卫生不规范（2次）：</strong>安排专人跟踪换药后手卫生执行情况，对未按要求执行的护士进行一对一指导</p>
+        </div>
+        <div class="suggestion-item">
+            <p><strong>铺床后手卫生不规范（2次）：</strong>优化铺床后操作流程，增加手卫生环节的检查节点</p>
+        </div>
+        <div class="suggestion-item">
+            <p><strong>换药前手卫生不规范（1次）：</strong>提醒护士换药前严格执行手卫生，将手卫生作为换药操作的前置必查项</p>
+        </div>
+        <div class="suggestion-item">
+            <p><strong>换尿袋前手卫生不规范（1次）：</strong>在换尿袋操作盘旁放置快速手消液，强化操作前手卫生意识</p>
+        </div>
+        <div class="suggestion-item">
+            <p><strong>铺床前手卫生不规范（1次）：</strong>组织铺床操作前手卫生的再培训，确保所有护士掌握规范要求</p>
+        </div>
+    </div>
+
+    <script>
+        // 初始化护士平均分柱状图
+        var barChart = echarts.init(document.getElementById('barChart'));
+        var barOption = {
+            title: {
+                text: '护士手卫生平均分排名',
+                left: 'center',
+                textStyle: { color: '#2c3e50' }
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: { type: 'shadow' }
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                data: ['小红', '小李', '小妮', '小晓'],
+                axisLabel: { fontSize: 12 }
+            },
+            yAxis: {
+                type: 'value',
+                min: 3,
+                max: 4,
+                axisLabel: { fontSize: 12, formatter: '{value} 分' }
+            },
+            series: [
+                {
+                    name: '平均分',
+                    type: 'bar',
+                    data: [3.125, 3.375, 3.75, 3.75],
+                    itemStyle: {
+                        color: '#3498db'
+                    },
+                    label: {
+                        show: true,
+                        position: 'top',
+                        formatter: '{value} 分'
+                    }
+                }
+            ]
+        };
+        barChart.setOption(barOption);
+
+        // 初始化低分问题分布饼图
+        var pieChart = echarts.init(document.getElementById('pieChart'));
+        var pieOption = {
+            title: {
+                text: '低分反馈问题分布',
+                left: 'center',
+                textStyle: { color: '#2c3e50' }
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter: '{b}: {c} 次 ({d}%)'
+            },
+            legend: {
+                orient: 'vertical',
+                left: 'left',
+                textStyle: { fontSize: 12 }
+            },
+            series: [
+                {
+                    name: '低分问题',
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    avoidLabelOverlap: false,
+                    itemStyle: {
+                        borderRadius: 10,
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    },
+                    label: {
+                        show: false,
+                        position: 'center'
+                    },
+                    emphasis: {
+                        label: {
+                            show: true,
+                            fontSize: 16,
+                            fontWeight: 'bold'
+                        }
+                    },
+                    labelLine: {
+                        show: false
+                    },
+                    data: [
+                        { value: 4, name: '打针后手卫生不规范' },
+                        { value: 3, name: '换尿袋后手卫生不规范' },
+                        { value: 2, name: '换药后手卫生不规范' },
+                        { value: 2, name: '铺床后手卫生不规范' },
+                        { value: 1, name: '换药前手卫生不规范' },
+                        { value: 1, name: '换尿袋前手卫生不规范' },
+                        { value: 1, name: '铺床前手卫生不规范' }
+                    ],
+                    color: ['#3498db', '#e74c3c', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c', '#34495e']
+                }
+            ]
+        };
+        pieChart.setOption(pieOption);
+
+        // 响应式适配
+        window.addEventListener('resize', function() {
+            barChart.resize();
+            pieChart.resize();
+        });
+    </script>
+</body>
+</html>
+```
