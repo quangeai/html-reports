@@ -1,0 +1,398 @@
+以下是一个完全离线的英文单词消消乐游戏网页，包含您需要的所有功能：
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>单词消消乐</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: '微软雅黑', sans-serif;
+        }
+        body {
+            background-color: #fff9e6; /* 淡黄色背景 */
+            padding: 20px;
+            min-height: 100vh;
+        }
+        h1 {
+            text-align: center;
+            font-size: 3.5rem;
+            color: #d4a76a;
+            margin-bottom: 30px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.15);
+        }
+        .input-section {
+            max-width: 800px;
+            margin: 0 auto 30px;
+            padding: 25px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+        .input-section .hint {
+            font-size: 1rem;
+            color: #555;
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+        }
+        .input-section textarea {
+            width: 100%;
+            height: 180px;
+            padding: 18px;
+            font-size: 1.3rem;
+            border: 2px solid #e0d0b0;
+            border-radius: 8px;
+            resize: vertical;
+            margin-bottom: 18px;
+            line-height: 1.6;
+        }
+        .input-section button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            font-size: 1.3rem;
+            background-color: #d4a76a;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .input-section button:hover {
+            background-color: #c29658;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .game-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            justify-content: center;
+            padding: 20px;
+        }
+        .bubble {
+            width: 170px;
+            height: 170px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 -8px 15px rgba(255,255,255,0.6),
+                        0 8px 12px rgba(0,0,0,0.15);
+            position: relative;
+            user-select: none;
+            padding: 15px;
+        }
+        .bubble:hover {
+            transform: translateY(-6px);
+            box-shadow: inset 0 -8px 15px rgba(255,255,255,0.6),
+                        0 12px 18px rgba(0,0,0,0.2);
+        }
+        .bubble.selected {
+            border: 5px solid #ff6b6b;
+            transform: scale(1.15);
+            box-shadow: inset 0 -8px 15px rgba(255,255,255,0.6),
+                        0 12px 20px rgba(255,107,107,0.35);
+        }
+        .bubble.fade-out {
+            opacity: 0;
+            transform: scale(0.4);
+            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        .success-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: #28a745;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.25);
+            display: none;
+            z-index: 100;
+            background-color: rgba(255,255,255,0.9);
+            padding: 30px 60px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+        #fireworks {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 99;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>单词消消乐</h1>
+    
+    <div class="input-section">
+        <div class="hint">📝 输入格式：每行输入一个单词和释义，用英文逗号分隔<br>例如：table,桌子 | apple,苹果 | cat,猫</div>
+        <textarea id="wordInput" placeholder="请输入单词和释义，每行一条..."></textarea>
+        <button id="startBtn">开始游戏</button>
+    </div>
+
+    <div class="game-container" id="gameContainer"></div>
+
+    <div class="success-message" id="successMsg">🎉 恭喜挑战成功！</div>
+    <canvas id="fireworks"></canvas>
+
+    <script>
+        let selectedBubbles = [];
+        let wordPairs = [];
+        let totalPairs = 0;
+        let matchedPairs = 0;
+
+        // 生成浅色随机颜色
+        function getLightColor() {
+            const hue = Math.floor(Math.random() * 360);
+            return `hsl(${hue}, 55%, 82%)`;
+        }
+
+        // 解析用户输入的单词和释义
+        function parseInput(input) {
+            const lines = input.trim().split('
+');
+            const pairs = [];
+            const seenWords = new Set();
+            
+            lines.forEach(line => {
+                const parts = line.trim().split(',');
+                if (parts.length === 2) {
+                    const word = parts[0].trim();
+                    const meaning = parts[1].trim();
+                    if (word && meaning && !seenWords.has(word)) {
+                        pairs.push({ word, meaning });
+                        seenWords.add(word);
+                    }
+                }
+            });
+            return pairs;
+        }
+
+        // 创建泡泡元素
+        function createBubble(content, pairId, type) {
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            bubble.style.backgroundColor = getLightColor();
+            bubble.textContent = content;
+            bubble.dataset.pairId = pairId;
+            bubble.dataset.type = type; // 'word' or 'meaning'
+            
+            bubble.addEventListener('click', () => handleBubbleClick(bubble));
+            
+            return bubble;
+        }
+
+        // 处理泡泡点击
+        function handleBubbleClick(bubble) {
+            // 如果已经选中两个，先取消之前的选中
+            if (selectedBubbles.length === 2) {
+                selectedBubbles.forEach(b => b.classList.remove('selected'));
+                selectedBubbles = [];
+            }
+
+            // 如果点击的是已经选中的，取消选中
+            if (selectedBubbles.includes(bubble)) {
+                bubble.classList.remove('selected');
+                selectedBubbles = selectedBubbles.filter(b => b !== bubble);
+                return;
+            }
+
+            // 添加选中状态
+            bubble.classList.add('selected');
+            selectedBubbles.push(bubble);
+
+            // 如果选中了两个，判断是否匹配
+            if (selectedBubbles.length === 2) {
+                const b1 = selectedBubbles[0];
+                const b2 = selectedBubbles[1];
+
+                // 检查是否是同一配对，且类型不同（单词和释义）
+                if (b1.dataset.pairId === b2.dataset.pairId && b1.dataset.type !== b2.dataset.type) {
+                    // 匹配成功，泡泡消失
+                    setTimeout(() => {
+                        b1.classList.add('fade-out');
+                        b2.classList.add('fade-out');
+                        setTimeout(() => {
+                            b1.remove();
+                            b2.remove();
+                            matchedPairs++;
+                            // 检查是否全部匹配完成
+                            if (matchedPairs === totalPairs) {
+                                showSuccess();
+                            }
+                        }, 600);
+                    }, 300);
+                } else {
+                    // 匹配失败，取消选中
+                    setTimeout(() => {
+                        b1.classList.remove('selected');
+                        b2.classList.remove('selected');
+                        selectedBubbles = [];
+                    }, 600);
+                }
+            }
+        }
+
+        // 显示成功消息和烟花
+        function showSuccess() {
+            document.getElementById('successMsg').style.display = 'block';
+            document.getElementById('fireworks').style.display = 'block';
+            initFireworks();
+        }
+
+        // 初始化烟花效果
+        function initFireworks() {
+            const canvas = document.getElementById('fireworks');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            // 烟花粒子类
+            class Particle {
+                constructor(x, y, color) {
+                    this.x = x;
+                    this.y = y;
+                    this.speed = Math.random() * 6 + 3;
+                    this.angle = Math.random() * Math.PI * 2;
+                    this.gravity = 0.25;
+                    this.vx = Math.cos(this.angle) * this.speed;
+                    this.vy = Math.sin(this.angle) * this.speed;
+                    this.alpha = 1;
+                    this.decay = Math.random() * 0.015 + 0.005;
+                    this.color = color;
+                    this.size = Math.random() * 3 + 1;
+                }
+
+                update() {
+                    this.vy += this.gravity;
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    this.alpha -= this.decay;
+                    this.size *= 0.99;
+                }
+
+                draw() {
+                    ctx.save();
+                    ctx.globalAlpha = this.alpha;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color;
+                    ctx.fill();
+                    ctx.restore();
+                }
+            }
+
+            let particles = [];
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7', '#dfe6e9', '#ff8c94', '#a8e6cf'];
+
+            function createFirework() {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height / 2 + canvas.height / 2;
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                for (let i = 0; i < 120; i++) {
+                    particles.push(new Particle(x, y, color));
+                }
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles = particles.filter(p => p.alpha > 0);
+                particles.forEach(p => {
+                    p.update();
+                    p.draw();
+                });
+                if (Math.random() < 0.15) {
+                    createFirework();
+                }
+                requestAnimationFrame(animate);
+            }
+
+            animate();
+
+            // 窗口大小变化时调整画布
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+        }
+
+        // 开始游戏
+        document.getElementById('startBtn').addEventListener('click', () => {
+            const input = document.getElementById('wordInput').value;
+            wordPairs = parseInput(input);
+            if (wordPairs.length === 0) {
+                alert('请输入有效的单词和释义对！格式：单词,释义');
+                return;
+            }
+
+            // 清空游戏容器
+            const gameContainer = document.getElementById('gameContainer');
+            gameContainer.innerHTML = '';
+            selectedBubbles = [];
+            totalPairs = wordPairs.length;
+            matchedPairs = 0;
+            document.getElementById('successMsg').style.display = 'none';
+            document.getElementById('fireworks').style.display = 'none';
+
+            // 创建所有泡泡并打乱顺序
+            const bubbles = [];
+            wordPairs.forEach((pair, index) => {
+                bubbles.push(createBubble(pair.word, index, 'word'));
+                bubbles.push(createBubble(pair.meaning, index, 'meaning'));
+            });
+
+            // 打乱泡泡顺序
+            bubbles.sort(() => Math.random() - 0.5);
+
+            // 添加到游戏容器
+            bubbles.forEach(bubble => gameContainer.appendChild(bubble));
+        });
+    </script>
+</body>
+</html>
+```
+
+### 游戏特点：
+1. **离线使用**：所有代码都在一个HTML文件中，无需任何外部资源，下载后直接打开即可使用
+2. **视觉设计**：
+   - 淡黄色背景，温暖舒适
+   - 3D立体泡泡效果，带有内阴影和外阴影，hover时有上浮效果
+   - 浅色随机颜色泡泡，保持视觉柔和
+   - 大字体加粗显示内容，清晰易读
+3. **游戏功能**：
+   - 用户可自定义输入单词和释义对，自动去重
+   - 点击泡泡会高亮显示，选中两个后判断是否匹配
+   - 匹配正确的泡泡会平滑消失，错误则取消选中状态
+   - 全部匹配完成后显示恭喜消息和动态烟花效果
+4. **交互体验**：
+   - 输入区域有清晰的格式提示
+   - 按钮有hover效果，交互反馈明显
+   - 泡泡消失和选中状态都有平滑动画
+
+使用方法：
+1. 将代码复制到文本编辑器，保存为`word-match-game.html`
+2. 打开文件，在输入框中按格式输入单词和释义
+3. 点击"开始游戏"按钮即可开始游戏
+4. 点击匹配的单词和释义泡泡，全部消除后即可获得胜利！
