@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>护士绩效综合分析</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", sans-serif;
+        }
+        body {
+            background-color: #f0f8ff;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+        }
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .chart-item {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .chart-item h2 {
+            color: #3498db;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        .chart {
+            width: 100%;
+            height: 350px;
+        }
+        .no-match {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+        .no-match h2 {
+            color: #e74c3c;
+            margin-bottom: 10px;
+        }
+        .no-match p {
+            color: #7f8c8d;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>护士绩效综合分析系统</h1>
+        <div class="charts-grid">
+            <div class="chart-item">
+                <h2>护士综合得分排名柱状图</h2>
+                <div id="comprehensiveRank" class="chart"></div>
+            </div>
+            <div class="chart-item">
+                <h2>患者打分对比柱状图</h2>
+                <div id="patientScore" class="chart"></div>
+            </div>
+            <div class="chart-item">
+                <h2>院感督查打分对比柱状图</h2>
+                <div id="infectionScore" class="chart"></div>
+            </div>
+            <div class="chart-item">
+                <h2>患者+院感问题双饼图</h2>
+                <div id="problemPie" class="chart"></div>
+            </div>
+        </div>
+        <div class="no-match" id="noMatchSection">
+            <h2>无匹配护士名单</h2>
+            <p id="noMatchContent">暂无无匹配护士</p>
+        </div>
+    </div>
+
+    <script>
+        // 请替换为实际的all_table_date数组
+        // 格式示例：
+        // const all_table_date = [
+        //     // 患者打分表：[{护士姓名: '张三', 患者打分: 95, 患者问题: '服务态度好'}, ...]
+        //     [
+        //         {护士姓名: '李护士', 患者打分: 92, 患者问题: '沟通及时'},
+        //         {护士姓名: '王护士', 患者打分: 88, 患者问题: '操作熟练'},
+        //         {护士姓名: '张护士', 患者打分: 95, 患者问题: '耐心细致'},
+        //         {护士姓名: '刘护士', 患者打分: 85, 患者问题: '响应迅速'}
+        //     ],
+        //     // 医疗打分表：[{护士姓名: '张三', 医疗打分: 90, 院感问题: '消毒规范'}, ...]
+        //     [
+        //         {护士姓名: '李护士', 医疗打分: 90, 院感问题: '消毒到位'},
+        //         {护士姓名: '王护士', 医疗打分: 92, 院感问题: '防护规范'},
+        //         {护士姓名: '张护士', 医疗打分: 88, 院感问题: '物品摆放整齐'},
+        //         {护士姓名: '赵护士', 医疗打分: 94, 院感问题: '手卫生达标'}
+        //     ]
+        // ];
+        const all_table_date = [
+            [],
+            []
+        ];
+
+        // 1. 拆分并合并数据
+        const patientTable = all_table_date[0] || [];
+        const medicalTable = all_table_date[1] || [];
+
+        const patientMap = new Map();
+        patientTable.forEach(item => patientMap.set(item['护士姓名'], item));
+
+        const medicalMap = new Map();
+        medicalTable.forEach(item => medicalMap.set(item['护士姓名'], item));
+
+        const mergedData = [];
+        const noMatchPatients = [];
+        const noMatchMedical = [];
+
+        // 匹配患者表与医疗表
+        patientMap.forEach((patientItem, name) => {
+            if (medicalMap.has(name)) {
+                const medicalItem = medicalMap.get(name);
+                const comprehensiveScore = patientItem['患者打分'] * 0.64 + medicalItem['医疗打分'] * 0.6;
+                mergedData.push({
+                    护士姓名: name,
+                    患者打分: patientItem['患者打分'],
+                    医疗打分: medicalItem['医疗打分'],
+                    综合得分: parseFloat(comprehensiveScore.toFixed(2)),
+                    患者问题: patientItem['患者问题'] || '',
+                    院感问题: medicalItem['院感问题'] || ''
+                });
+                medicalMap.delete(name);
+            } else {
+                noMatchPatients.push(name);
+            }
+        });
+
+        // 收集医疗表中未匹配的护士
+        medicalMap.forEach((_, name) => noMatchMedical.push(name));
+
+        // 按综合得分降序排序
+        mergedData.sort((a, b) => b.综合得分 - a.综合得分);
+
+        // 更新无匹配内容
+        const noMatchContent = document.getElementById('noMatchContent');
+        let noMatchText = '';
+        if (noMatchPatients.length > 0) {
+            noMatchText += `患者打分表中无匹配医疗打分的护士：${noMatchPatients.join('、')}<br>`;
+        }
+        if (noMatchMedical.length > 0) {
+            noMatchText += `医疗打分表中无匹配患者打分的护士：${noMatchMedical.join('、')}`;
+        }
+        noMatchContent.innerHTML = noMatchText || '暂无无匹配护士';
+
+        // 2. 初始化图表
+        // ① 护士综合得分排名柱状图
+        const comprehensiveChart = echarts.init(document.getElementById('comprehensiveRank'));
+        comprehensiveChart.setOption({
+            tooltip: {trigger: 'axis', axisPointer: {type: 'shadow'}},
+            grid: {left: '3%', right: '4%', bottom: '3%', containLabel: true},
+            xAxis: {
+                type: 'category',
+                data: mergedData.map(item => item['护士姓名']),
+                axisLabel: {rotate: 30}
+            },
+            yAxis: {type: 'value', name: '综合得分'},
+            series: [{
+                name: '综合得分',
+                type: 'bar',
+                data: mergedData.map(item => item['综合得分']),
+                itemStyle: {color: '#3498db'},
+                label: {show: true, position: 'top'}
+            }]
+        });
+
+        // ② 患者打分对比柱状图
+        const patientChart = echarts.init(document.getElementById('patientScore'));
+        patientChart.setOption({
+            tooltip: {trigger: 'axis', axisPointer: {type: 'shadow'}},
+            grid: {left: '3%', right: '4%', bottom: '3%', containLabel: true},
+            xAxis: {
+                type: 'category',
+                data: mergedData.map(item => item['护士姓名']),
+                axisLabel: {rotate: 30}
+            },
+            yAxis: {type: 'value', name: '患者打分'},
+            series: [{
+                name: '患者打分',
+                type: 'bar',
+                data: mergedData.map(item => item['患者打分']),
+                itemStyle: {color: '#2ecc71'},
+                label: {show: true, position: 'top'}
+            }]
+        });
+
+        // ③ 院感督查打分对比柱状图
+        const infectionChart = echarts.init(document.getElementById('infectionScore'));
+        infectionChart.setOption({
+            tooltip: {trigger: 'axis', axisPointer: {type: 'shadow'}},
+            grid: {left: '3%', right: '4%', bottom: '3%', containLabel: true},
+            xAxis: {
+                type: 'category',
+                data: mergedData.map(item => item['护士姓名']),
+                axisLabel: {rotate: 30}
+            },
+            yAxis: {type: 'value', name: '院感督查打分'},
+            series: [{
+                name: '医疗打分',
+                type: 'bar',
+                data: mergedData.map(item => item['医疗打分']),
+                itemStyle: {color: '#e67e22'},
+                label: {show: true, position: 'top'}
+            }]
+        });
+
+        // ④ 患者+院感问题双饼图
+        const problemChart = echarts.init(document.getElementById('problemPie'));
+        // 统计患者问题
+        const patientProblemMap = new Map();
+        mergedData.forEach(item => {
+            if (item['患者问题']) patientProblemMap.set(item['患者问题'], (patientProblemMap.get(item['患者问题']) || 0) + 1);
+        });
+        // 统计院感问题
+        const infectionProblemMap = new Map();
+        mergedData.forEach(item => {
+            if (item['院感问题']) infectionProblemMap.set(item['院感问题'], (infectionProblemMap.get(item['院感问题']) || 0) + 1);
+        });
+
+        problemChart.setOption({
+            tooltip: {trigger: 'item'},
+            legend: {top: '5%', left: 'center'},
+            series: [
+                {
+                    name: '患者问题',
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    center: ['25%', '60%'],
+                    itemStyle: {borderRadius: 10, borderColor: '#fff', borderWidth: 2},
+                    label: {show: false},
+                    emphasis: {label: {show: true, fontSize: 16, fontWeight: 'bold'}},
+                    data: Array.from(patientProblemMap, ([n, v]) => ({name: n, value: v}))
+                },
+                {
+                    name: '院感问题',
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    center: ['75%', '60%'],
+                    itemStyle: {borderRadius: 10, borderColor: '#fff', borderWidth: 2},
+                    label: {show: false},
+                    emphasis: {label: {show: true, fontSize: 16, fontWeight: 'bold'}},
+                    data: Array.from(infectionProblemMap, ([n, v]) => ({name: n, value: v}))
+                }
+            ]
+        });
+
+        // 响应式调整
+        window.addEventListener('resize', () => {
+            comprehensiveChart.resize();
+            patientChart.resize();
+            infectionChart.resize();
+            problemChart.resize();
+        });
+    </script>
+</body>
+</html>
