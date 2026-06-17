@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手卫生评分统计可视化</title>
+    <!-- 引入ECharts官方在线CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            background-color: #f0f8ff;
+            margin: 20px;
+            color: #333;
+        }
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            margin: 20px 0;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 10px;
+        }
+        .summary {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .summary h3 {
+            color: #2c6e91;
+            margin-top: 0;
+        }
+        .suggestion-item {
+            margin: 10px 0;
+            padding-left: 10px;
+            border-left: 3px solid #4682b4;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center; color: #2c6e91;">科室手卫生评分统计</h1>
+
+    <!-- 护士平均分排名柱状图 -->
+    <div class="chart-container" id="barChart"></div>
+
+    <!-- 低分问题分布饼图 -->
+    <div class="chart-container" id="pieChart"></div>
+
+    <!-- 汇总与整改建议 -->
+    <div class="summary">
+        <h3>整体数据汇总</h3>
+        <p>科室平均分：<strong>90.0分</strong></p>
+        <p>最高分护士：<strong>王护士（95分）</strong></p>
+        <p>最低分护士：<strong>李护士（85分）</strong></p>
+
+        <h3>低分问题整改建议</h3>
+        <div class="suggestion-item">
+            <p><strong>未按七步洗手法操作（5次）</strong>：组织全员重新学习七步洗手法标准流程，现场实操考核，确保每位护士掌握正确步骤。</p>
+        </div>
+        <div class="suggestion-item">
+            <p><strong>接触患者前未洗手（4次）</strong>：在病房门口、治疗车旁设置醒目标识提醒，护士长加强日常督查频次，发现问题及时纠正。</p>
+        </div>
+        <div class="suggestion-item">
+            <p><strong>洗手后未擦干（3次）</strong>：在洗手池旁配备充足的干手纸或感应干手器，提醒护士洗手后彻底擦干双手，避免交叉感染。</p>
+        </div>
+        <div class="suggestion-item">
+            <p><strong>洗手时间不足（2次）</strong>：在洗手池旁张贴洗手时长提示（不少于15秒），可采用计时方式辅助护士把控洗手时间。</p>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        // 初始化柱状图
+        var barChart = echarts.init(document.getElementById('barChart'));
+        var barOption = {
+            title: {
+                text: '护士平均分排名',
+                left: 'center',
+                textStyle: {color: '#2c6e91'}
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {type: 'shadow'}
+            },
+            xAxis: {
+                type: 'category',
+                data: ['张护士', '李护士', '王护士', '赵护士'],
+                axisLabel: {interval: 0, rotate: 15}
+            },
+            yAxis: {
+                type: 'value',
+                min: 80,
+                max: 100,
+                axisLabel: {formatter: '{value} 分'}
+            },
+            series: [
+                {
+                    name: '平均分',
+                    type: 'bar',
+                    data: [92, 85, 95, 88],
+                    itemStyle: {color: '#4682b4'}
+                }
+            ]
+        };
+        barChart.setOption(barOption);
+
+        // 初始化饼图
+        var pieChart = echarts.init(document.getElementById('pieChart'));
+        var pieOption = {
+            title: {
+                text: '低分问题分布',
+                left: 'center',
+                textStyle: {color: '#2c6e91'}
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter: '{b}: {c} 次 ({d}%)'
+            },
+            legend: {
+                orient: 'vertical',
+                left: 'left'
+            },
+            series: [
+                {
+                    name: '问题频次',
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    avoidLabelOverlap: false,
+                    itemStyle: {
+                        borderRadius: 10,
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    },
+                    label: {
+                        show: false,
+                        position: 'center'
+                    },
+                    emphasis: {
+                        label: {
+                            show: true,
+                            fontSize: 16,
+                            fontWeight: 'bold'
+                        }
+                    },
+                    labelLine: {show: false},
+                    data: [
+                        {value: 5, name: '未按七步洗手法操作'},
+                        {value: 4, name: '接触患者前未洗手'},
+                        {value: 3, name: '洗手后未擦干'},
+                        {value: 2, name: '洗手时间不足'}
+                    ],
+                    color: ['#87ceeb', '#98fb98', '#f0e68c', '#dda0dd']
+                }
+            ]
+        };
+        pieChart.setOption(pieOption);
+
+        // 适配窗口大小变化
+        window.addEventListener('resize', function() {
+            barChart.resize();
+            pieChart.resize();
+        });
+    </script>
+</body>
+</html>
