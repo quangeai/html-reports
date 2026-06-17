@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>泌尿外科手卫生数据统计</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            background-color: #f0f8ff;
+            margin: 20px;
+            padding: 0;
+        }
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            margin-bottom: 30px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        .summary {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            line-height: 1.6;
+        }
+        h2 {
+            color: #2c3e50;
+            text-align: center;
+            margin-top: 0;
+        }
+        .suggestion-item {
+            margin-bottom: 10px;
+        }
+        .suggestion-title {
+            font-weight: bold;
+            color: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <h2>泌尿外科手卫生数据统计分析</h2>
+    <div class="chart-container" id="barChart"></div>
+    <div class="chart-container" id="pieChart"></div>
+    <div class="summary">
+        <h3>数据汇总与整改建议</h3>
+        <p><strong>科室平均分：</strong>3.47分</p>
+        <p><strong>最高分护士：</strong>小晓（3.75分）</p>
+        <p><strong>最低分护士：</strong>小红（3.125分）</p>
+        <h4>低分问题整改建议：</h4>
+        <div class="suggestion-item">
+            <span class="suggestion-title">打针后未规范手卫生（4次）：</span>加强操作后即时手卫生培训，在操作区域设置醒目的洗手提示卡，安排专人不定期抽查执行情况。
+        </div>
+        <div class="suggestion-item">
+            <span class="suggestion-title">换尿袋后未规范手卫生（3次）：</span>针对侵入性操作后手卫生制定专项操作指引，组织全员学习并考核，将其纳入日常质控重点检查项目。
+        </div>
+        <div class="suggestion-item">
+            <span class="suggestion-title">换药后未规范手卫生（2次）：</span>强化换药后手部清洁流程监督，增加现场考核频次，对未规范执行者进行一对一指导。
+        </div>
+        <div class="suggestion-item">
+            <span class="suggestion-title">铺床后未规范手卫生（2次）：</span>落实铺床后手卫生检查机制，将其纳入护士绩效考核指标，定期开展操作规范复盘会。
+        </div>
+        <div class="suggestion-item">
+            <span class="suggestion-title">换药前未规范手卫生（1次）：</span>重点关注换药前手卫生执行情况，纳入日常质控检查清单，对相关护士进行针对性提醒。
+        </div>
+        <div class="suggestion-item">
+            <span class="suggestion-title">换尿袋前未规范手卫生（1次）：</span>加强换尿袋前手卫生宣教，确保护士明确操作前手部消毒的标准流程，定期抽查执行效果。
+        </div>
+        <div class="suggestion-item">
+            <span class="suggestion-title">铺床前未规范手卫生（1次）：</span>明确铺床前手卫生要求，组织全员重新学习操作规范，强化无菌操作意识。
+        </div>
+    </div>
+    <script>
+        // 初始化柱状图：护士平均分排名
+        var barChart = echarts.init(document.getElementById('barChart'));
+        var barOption = {
+            title: {
+                text: '护士手卫生平均分排名',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            xAxis: {
+                type: 'category',
+                data: ['小红', '小李', '小妮', '小晓'],
+                axisLabel: {
+                    fontSize: 12
+                }
+            },
+            yAxis: {
+                type: 'value',
+                min: 3,
+                max: 4,
+                interval: 0.25,
+                axisLabel: {
+                    formatter: '{value} 分'
+                }
+            },
+            series: [
+                {
+                    name: '平均分',
+                    type: 'bar',
+                    data: [3.125, 3.375, 3.625, 3.75],
+                    itemStyle: {
+                        color: '#3498db'
+                    },
+                    label: {
+                        show: true,
+                        position: 'top',
+                        formatter: '{value} 分'
+                    }
+                }
+            ],
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            }
+        };
+        barChart.setOption(barOption);
+
+        // 初始化饼图：低分问题分布
+        var pieChart = echarts.init(document.getElementById('pieChart'));
+        var pieOption = {
+            title: {
+                text: '低分反馈问题分布',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter: '{b}: {c} 次 ({d}%)'
+            },
+            legend: {
+                orient: 'vertical',
+                left: 'left',
+                textStyle: {
+                    fontSize: 12
+                }
+            },
+            series: [
+                {
+                    name: '问题频次',
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    avoidLabelOverlap: false,
+                    itemStyle: {
+                        borderRadius: 10,
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    },
+                    label: {
+                        show: false,
+                        position: 'center'
+                    },
+                    emphasis: {
+                        label: {
+                            show: true,
+                            fontSize: 16,
+                            fontWeight: 'bold'
+                        }
+                    },
+                    labelLine: {
+                        show: false
+                    },
+                    data: [
+                        {value: 4, name: '打针后'},
+                        {value: 3, name: '换尿袋后'},
+                        {value: 2, name: '换药后'},
+                        {value: 2, name: '铺床后'},
+                        {value: 1, name: '换药前'},
+                        {value: 1, name: '换尿袋前'},
+                        {value: 1, name: '铺床前'}
+                    ]
+                }
+            ]
+        };
+        pieChart.setOption(pieOption);
+
+        // 响应式适配
+        window.addEventListener('resize', function() {
+            barChart.resize();
+            pieChart.resize();
+        });
+    </script>
+</body>
+</html>
