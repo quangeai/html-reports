@@ -3,440 +3,301 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>财务数据分析报告 - 2021年度</title>
+    <title>主营业务收入成本分析与重大错报风险评估报告</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
     <style>
-        body { font-family: 'Microsoft YaHei', 'Segoe UI', Tahoma, sans-serif; background-color: #f8f9fa; }
-        .report-header { background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%); color: white; padding: 2rem 0; margin-bottom: 2rem; }
-        .card { box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 2rem; border: none; }
-        .card-header { background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); color: white; font-weight: 600; }
-        .metric-card { text-align: center; padding: 1.5rem; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 1rem; }
-        .metric-value { font-size: 2rem; font-weight: bold; color: #2980b9; }
-        .metric-label { color: #666; font-size: 0.9rem; }
-        .insight-box { background-color: #e8f4f8; border-left: 4px solid #3498db; padding: 1rem; margin: 1rem 0; }
-        .danger-insight { background-color: #fdecea; border-left-color: #e74c3c; }
-        .success-insight { background-color: #eafaf1; border-left-color: #27ae60; }
+        body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .report-header { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; padding: 2rem 0; margin-bottom: 2rem; }
+        .card { border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 2rem; transition: transform 0.2s; }
+        .card:hover { transform: translateY(-2px); }
+        .card-header { background-color: #2a5298; color: white; font-weight: 600; }
+        .metric-card { text-align: center; padding: 1.5rem; color: white; border-radius: 8px; }
+        .metric-value { font-size: 2rem; font-weight: bold; margin-bottom: 0.5rem; }
+        .metric-label { font-size: 1rem; opacity: 0.9; }
+        .risk-high { background-color: #dc3545; }
+        .risk-medium { background-color: #fd7e14; }
+        .risk-low { background-color: #28a745; }
+        .analysis-section { line-height: 1.8; }
     </style>
 </head>
 <body>
     <div class="report-header">
         <div class="container">
-            <h1 class="display-4">2021年度财务数据分析报告</h1>
-            <p class="lead">基于月度财务数据的收入成本结构分析</p>
+            <h1 class="display-4">主营业务审计分析报告</h1>
+            <p class="lead">2021年度财务数据重大错报风险评估</p>
         </div>
     </div>
 
     <div class="container">
-        <!-- 执行摘要 -->
-        <section class="card">
+        <!-- 关键指标卡片 -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="metric-card risk-low">
+                    <div class="metric-value">652.12M</div>
+                    <div class="metric-label">全年主营业务收入</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card risk-low">
+                    <div class="metric-value">344.23M</div>
+                    <div class="metric-label">全年主营业务成本</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card risk-medium">
+                    <div class="metric-value">42.06%</div>
+                    <div class="metric-label">平均毛利率</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card risk-high">
+                    <div class="metric-value">30.8%</div>
+                    <div class="metric-label">平均销售费率</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 收入成本趋势分析 -->
+        <div class="card">
             <div class="card-header">
-                <h2>执行摘要</h2>
+                月度主营业务收入与成本趋势
             </div>
             <div class="card-body">
-                <p>本报告对2021年度12个月的主营业务财务数据进行了全面分析，主要发现如下：</p>
+                <canvas id="revenueCostChart" height="100"></canvas>
+            </div>
+        </div>
+
+        <!-- 毛利率与费率趋势 -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        月度毛利率变化趋势
+                    </div>
+                    <div class="card-body">
+                        <canvas id="grossMarginChart" height="150"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        月度销售费率变化趋势
+                    </div>
+                    <div class="card-body">
+                        <canvas id="salesRateChart" height="150"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 税率分布 -->
+        <div class="card">
+            <div class="card-header">
+                月度销项税率变化
+            </div>
+            <div class="card-body">
+                <canvas id="taxRateChart" height="100"></canvas>
+            </div>
+        </div>
+
+        <!-- 审计师分析意见 -->
+        <div class="card analysis-section">
+            <div class="card-header">
+                审计师职业判断与分析意见
+            </div>
+            <div class="card-body">
+                <h4>一、主营业务重大错报风险评估</h4>
+                <p><strong>高风险判断：</strong>从数据可以看出，12月份主营业务收入异常偏高，达到2.48亿元，占全年收入的38%，远超其他月份平均水平（约3.67千万）。这种年末异常收入增长存在较高的虚构收入、提前确认收入的重大错报风险。同时销售费率在10月份高达68.8%，2月份达到56.15%，波动异常，存在费用确认时点不正确的风险。</p>
+                <hr>
+                <h4>二、认定层次重大错报风险判断</h4>
                 <ul>
-                    <li>全年累计主营业务收入约<strong>6.12亿元</strong>，呈现前11个月平稳，12月激增的特点</li>
-                    <li>整体毛利率为<strong>46.7%</strong>，盈利能力处于较好水平</li>
-                    <li>12月数据异常突出，收入占全年比重达到40.5%，需要重点关注</li>
-                    <li>销售费用波动较大，部分月份销售费率过高，挤压利润空间</li>
-                    <li>销项税率呈现全年下降趋势，12月降至最低水平</li>
+                    <li><strong>发生认定：</strong>12月收入异常大幅增长，毛利率达到59.46%，远高于全年平均42.06%水平，存在管理层为了完成业绩目标虚构销售交易的风险，重大错报风险高。</li>
+                    <li><strong>完整性认定：</strong>12月份销售费率仅为2.63%，远低于全年平均30.8%，存在销售费用未完整计入当期的风险，可能存在费用延后确认，高估当期利润。</li>
+                    <li><strong>准确性认定：</strong>销项税率从1月份的12.8%持续下降到12月份的6.66%，下降幅度接近50%，存在税金计算不准确，或者收入分类不准确的风险，重大错报风险高。</li>
+                    <li><strong>截止认定：</strong>各月毛利率波动极大，从最低25.9%到最高59.46%，销售费率波动从2.63%到68.8%，存在收入和费用确认跨期的重大错报风险。</li>
+                    <li><strong>计价和分摊：</strong>主营业务成本与收入变动不匹配，例如12月份收入是11月的5.5倍，成本仅为4.4倍，存在成本结转不正确，高估毛利的风险。</li>
                 </ul>
-            </div>
-        </section>
+                <hr>
+                <h4>三、细节测试程序计划</h4>
+                <h5>（一）测试性质</h5>
+                <p>1. 对12月份的全部大额销售合同进行检查，核对发运凭证、客户签收记录、销售发票，检查收入是否符合确认条件，是否存在虚构销售。</p>
+                <p>2. 对12月末的应收账款进行全面函证，对未回函客户执行替代测试，检查期后收款情况，核实销售真实性。</p>
+                <p>3. 对12月份的成本结转进行重新计算，核对成本结转方法是否与前期一致，是否存在人为调节成本的情况。</p>
+                <p>4. 对销售费用波动异常月份（2月、10月、12月）进行明细测试，检查费用发生的真实性和归属期间是否正确。</p>
+                <p>5. 检查销项税率下降原因，核对销项税额计算过程，检查不同税率业务分类是否正确，是否存在低税率错用的情况。</p>
 
-        <!-- 关键指标 -->
-        <section>
-            <h2 class="mb-3">关键指标概览</h2>
-            <div class="row">
-                <div class="col-md-3">
-                    <div class="metric-card">
-                        <div class="metric-value">6.12亿</div>
-                        <div class="metric-label">全年主营业务收入</div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="metric-card">
-                        <div class="metric-value">3.14亿</div>
-                        <div class="metric-label">全年主营业务成本</div>
-                    </div>
-                </div>
-            </div>
-            <div class="row mt-2">
-                <div class="col-md-3">
-                    <div class="metric-card">
-                        <div class="metric-value">46.7%</div>
-                        <div class="metric-label">整体毛利率</div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="metric-card">
-                        <div class="metric-value">1.33亿</div>
-                        <div class="metric-label">全年销售费用</div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="metric-card">
-                        <div class="metric-value">21.7%</div>
-                        <div class="metric-label">整体销售费率</div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="metric-card">
-                        <div class="metric-value">6631万</div>
-                        <div class="metric-label">全年应交税费</div>
-                    </div>
-                </div>
-            </div>
-        </section>
+                <h5>（二）测试范围</h5>
+                <p>1. 12月份所有金额超过100万元的销售交易100%测试。</p>
+                <p>2. 毛利率偏离平均水平10%以上的月份，选取样本比例不低于70%。</p>
+                <p>3. 销售费率偏离平均值超过20%的月份，全部大额费用项目测试。</p>
+                <p>4. 全年销项税率变动趋势分析，对税率变动幅度超过5%的月份重点检查。</p>
 
-        <!-- 月度收入趋势 -->
-        <section class="card mt-4">
-            <div class="card-header">
-                <h2>月度主营业务收入趋势</h2>
+                <h5>（三）时间安排</h5>
+                <p>1. 风险评估与计划：1周</p>
+                <p>2. 12月份收入与成本细节测试：2周</p>
+                <p>3. 销售费用与税金测试：1周</p>
+                <p>4. 函证与替代程序：2周（含回函期）</p>
+                <p>5. 审计结论与报告：1周</p>
             </div>
-            <div class="card-body">
-                <canvas id="revenueChart" height="100"></canvas>
-                <div class="insight-box mt-3">
-                    <h5>洞察分析：</h5>
-                    <p>前11个月主营业务收入基本稳定在3100万-4500万区间，但12月突然激增至2.48亿元，是月均水平的约6倍。这种异常增长可能来源于：</p>
-                    <ul>
-                        <li>年底集中结算确认收入</li>
-                        <li>年底大额订单交付</li>
-                        <li>会计核算调整</li>
-                    </ul>
-                </div>
-            </div>
-        </section>
-
-        <!-- 成本结构对比 -->
-        <section class="card">
-            <div class="card-header">
-                <h2>月度收入与成本对比</h2>
-            </div>
-            <div class="card-body">
-                <canvas id="costChart" height="100"></canvas>
-                <div class="insight-box mt-3">
-                    <h5>洞察分析：</h5>
-                    <p>12月不仅收入激增，成本也同步上升，但毛利率达到全年最高的59.5%，说明高收入带来了更好的规模效应和盈利能力。</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- 毛利率和销售费率趋势 -->
-        <section class="card">
-            <div class="card-header">
-                <h2>盈利效率指标趋势</h2>
-            </div>
-            <div class="card-body">
-                <canvas id="marginChart" height="100"></canvas>
-                <div class="insight-box danger-insight mt-3">
-                    <h5>关键发现：</h5>
-                    <p>销售费率波动极大，10月高达<strong>68.8%</strong>，2月也达到<strong>56.2%</strong>，意味着超过一半的收入都被销售费用消耗，严重侵蚀利润。需要对这两个月的销售费用结构进行专项审查。</p>
-                </div>
-                <div class="insight-box success-insight mt-2">
-                    <h5>积极信号：</h5>
-                    <p>毛利率整体呈现上升趋势，从年初的34%逐步提升，年底达到59.5%，说明公司产品盈利能力在逐步改善。</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- 税率变化趋势 -->
-        <section class="card">
-            <div class="card-header">
-                <h2>销项税率月度变化</h2>
-            </div>
-            <div class="card-body">
-                <canvas id="taxChart" height="80"></canvas>
-                <div class="insight-box mt-3">
-                    <h5>趋势分析：</h5>
-                    <p>销项税率呈现清晰的逐月下降趋势，从年初的12.8%降至年底的6.7%。这可能是由于：</p>
-                    <ul>
-                        <li>低税率产品占比提升</li>
-                        <li>税收政策调整影响</li>
-                        <li>12月特殊业务适用更低税率</li>
-                    </ul>
-                </div>
-            </div>
-        </section>
-
-        <!-- 销售费用占比分析 -->
-        <section class="card">
-            <div class="card-header">
-                <h2>各月销售费用占比分布</h2>
-            </div>
-            <div class="card-body">
-                <canvas id="salesFeeChart" height="120"></canvas>
-            </div>
-        </section>
-
-        <!-- 建议和结论 -->
-        <section class="card mb-5">
-            <div class="card-header">
-                <h2>分析结论与建议</h2>
-            </div>
-            <div class="card-body">
-                <h4>主要结论</h4>
-                <ol>
-                    <li><strong>收入结构异常：</strong>12月收入占比过高，需要确认是否为正常业务现象，评估对年度业绩的影响</li>
-                    <li><strong>销售费用管控不足：</strong>多个月份销售费率过高，尤其是2月和10月，需要加强成本控制</li>
-                    <li><strong>盈利能力改善：</strong>毛利率全年提升，12月达到近60%，显示出良好的盈利潜力</li>
-                    <li><strong>税率下降：</strong>销项税率持续下降，需要分析原因，评估对公司利润的长期影响</li>
-                </ol>
-
-                <h4 class="mt-4">行动建议</h4>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="insight-box danger-insight">
-                            <h5>优先处理事项：</h5>
-                            <ul>
-                                <li>审查2月和10月销售费用异常偏高的原因</li>
-                                <li>核实12月大额收入的真实性和可持续性</li>
-                                <li>建立销售费用预算管控机制</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="insight-box success-insight">
-                            <h5>战略方向：</h5>
-                            <ul>
-                                <li>复制12月高毛利率业务模式</li>
-                                <li>扩大低税率高毛利产品占比</li>
-                                <li>优化销售投入产出比</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="alert alert-info mt-4" role="alert">
-                    <strong>数据说明：</strong>本分析基于提供的12个月财务数据，所有指标计算均基于原始数据直接汇总和统计。
-                </div>
-            </div>
-        </section>
+        </div>
     </div>
+
+    <footer class="bg-light py-3 mt-5">
+        <div class="container text-center text-muted">
+            <p>© 2024 注册会计师审计分析报告</p>
+        </div>
+    </footer>
 
     <script>
         // 原始数据
         const months = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
-        const revenue = [34080167.71, 32541398.47, 35950064.51, 36527914.57, 35157955.45, 31275322.51, 35372214.46, 42754411.2, 37729063.55, 35151462.76, 44728191.17, 248001555.8].map(x => (x / 10000000).toFixed(2)); // 转换为亿元
-        const cost = [22417604.33, 22180118.39, 24011743.29, 20312465.39, 18631322.02, 23166517.76, 25629187.27, 23716207.03, 21369248.66, 19373606.72, 22981609.78, 100531416].map(x => (x / 10000000).toFixed(2));
-        const grossMargin = [0.34221, 0.318403, 0.332081, 0.443919, 0.470068, 0.259272, 0.275443, 0.445292, 0.433613, 0.448853, 0.486194, 0.594634].map(x => (x * 100).toFixed(1));
-        const salesFeeRate = [0.388162, 0.561544, 0.246723, 0.141538, 0.129419, 0.296903, 0.469825, 0.189304, 0.281933, 0.687962, 0.237322, 0.026305].map(x => (x * 100).toFixed(1));
-        const outputTaxRate = [0.127952, 0.132145, 0.12139, 0.114543, 0.108758, 0.146446, 0.112801, 0.120302, 0.102219, 0.102869, 0.084617, 0.066573].map(x => (x * 100).toFixed(2));
-        const salesFee = [13228612.42, 18273420.56, 8869704.48, 5170095.28, 4550094.76, 9285749.58, 16618740.04, 8093589.60, 10637081.64, 24182883.46, 10614965.90, 6523636.28].map(x => (x / 1000000).toFixed(2)); // 百万元
+        const revenue = [34080167.71, 32541398.47, 35950064.51, 36527914.57, 35157955.45, 31275322.51, 35372214.46, 42754411.2, 37729063.55, 35151462.76, 44728191.17, 248001555.8];
+        const cost = [22417604.33, 22180118.39, 24011743.29, 20312465.39, 18631322.02, 23166517.76, 25629187.27, 23716207.03, 21369248.66, 19373606.72, 22981609.78, 100531416];
+        const grossMargin = [0.34221, 0.318403, 0.332081, 0.443919, 0.470068, 0.259272, 0.275443, 0.445292, 0.433613, 0.448853, 0.486194, 0.594634];
+        const salesRate = [0.388162, 0.561544, 0.246723, 0.141538, 0.129419, 0.296903, 0.469825, 0.189304, 0.281933, 0.687962, 0.237322, 0.026305];
+        const taxRate = [0.127952, 0.132145, 0.12139, 0.114543, 0.108758, 0.146446, 0.112801, 0.120302, 0.102219, 0.102869, 0.084617, 0.066573];
 
-        // 收入趋势图
-        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
-        new Chart(revenueCtx, {
+        // 格式化数值为百万
+        const revenueMillions = revenue.map(v => v / 1000000);
+        const costMillions = cost.map(v => v / 1000000);
+        const grossMarginPercent = grossMargin.map(v => v * 100);
+        const salesRatePercent = salesRate.map(v => v * 100);
+        const taxRatePercent = taxRate.map(v => v * 100);
+
+        // 收入成本趋势图
+        const ctx1 = document.getElementById('revenueCostChart').getContext('2d');
+        new Chart(ctx1, {
             type: 'bar',
             data: {
                 labels: months,
+                datasets: [
+                    {
+                        label: '主营业务收入（百万元）',
+                        data: revenueMillions,
+                        backgroundColor: 'rgba(42, 82, 152, 0.8)',
+                        borderColor: 'rgba(42, 82, 152, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: '主营业务成本（百万元）',
+                        data: costMillions,
+                        backgroundColor: 'rgba(220, 53, 69, 0.7)',
+                        borderColor: 'rgba(220, 53, 69, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: false
+                    },
+                    legend: {
+                        position: 'top',
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '金额（百万元）'
+                        }
+                    }
+                }
+            }
+        });
+
+        // 毛利率趋势图
+        const ctx2 = document.getElementById('grossMarginChart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'line',
+            data: {
+                labels: months,
                 datasets: [{
-                    label: '主营业务收入（亿元）',
-                    data: revenue,
-                    backgroundColor: 'rgba(52, 152, 219, 0.8)',
-                    borderColor: 'rgba(41, 128, 185, 1)',
-                    borderWidth: 1
+                    label: '毛利率（%）',
+                    data: grossMarginPercent,
+                    borderColor: 'rgba(40, 167, 69, 1)',
+                    backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.3
                 }]
             },
             options: {
                 responsive: true,
-                plugins: {
-                    title: {
-                        display: true,
-                        text: '2021年月度主营业务收入'
-                    },
-                    legend: {
-                        display: true
-                    }
-                },
                 scales: {
                     y: {
-                        beginAtZero: true,
                         title: {
                             display: true,
-                            text: '金额（亿元）'
+                            text: '毛利率（%）'
                         }
                     }
                 }
             }
         });
 
-        // 收入成本对比图
-        const costCtx = document.getElementById('costChart').getContext('2d');
-        new Chart(costCtx, {
-            type: 'bar',
-            data: {
-                labels: months,
-                datasets: [
-                    {
-                        label: '主营业务收入（亿元）',
-                        data: revenue,
-                        backgroundColor: 'rgba(52, 152, 219, 0.7)',
-                        borderColor: 'rgba(41, 128, 185, 1)',
-                        borderWidth: 1
-                    },
-                    {
-                        label: '主营业务成本（亿元）',
-                        data: cost,
-                        backgroundColor: 'rgba(231, 76, 60, 0.7)',
-                        borderColor: 'rgba(192, 57, 43, 1)',
-                        borderWidth: 1
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    title: {
-                        display: true,
-                        text: '月度收入与成本对比'
-                    },
-                    legend: {
-                        display: true
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: '金额（亿元）'
-                        }
-                    }
-                }
-            }
-        });
-
-        // 毛利率和销售费率趋势
-        const marginCtx = document.getElementById('marginChart').getContext('2d');
-        new Chart(marginCtx, {
+        // 销售费率趋势图
+        const ctx3 = document.getElementById('salesRateChart').getContext('2d');
+        new Chart(ctx3, {
             type: 'line',
             data: {
                 labels: months,
-                datasets: [
-                    {
-                        label: '毛利率（%）',
-                        data: grossMargin,
-                        borderColor: 'rgba(46, 204, 113, 1)',
-                        backgroundColor: 'rgba(46, 204, 113, 0.1)',
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.3
-                    },
-                    {
-                        label: '销售费率（%）',
-                        data: salesFeeRate,
-                        borderColor: 'rgba(231, 76, 60, 1)',
-                        backgroundColor: 'rgba(231, 76, 60, 0.1)',
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.3
-                    }
-                ]
+                datasets: [{
+                    label: '销售费率（%）',
+                    data: salesRatePercent,
+                    borderColor: 'rgba(253, 126, 20, 1)',
+                    backgroundColor: 'rgba(253, 126, 20, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.3
+                }]
             },
             options: {
                 responsive: true,
-                plugins: {
-                    title: {
-                        display: true,
-                        text: '毛利率与销售费率月度变化'
-                    },
-                    legend: {
-                        display: true
-                    }
-                },
                 scales: {
                     y: {
-                        beginAtZero: true,
                         title: {
                             display: true,
-                            text: '百分比（%）'
-                        },
-                        max: 75
+                            text: '销售费率（%）'
+                        }
                     }
                 }
             }
         });
 
-        // 销项税率趋势
-        const taxCtx = document.getElementById('taxChart').getContext('2d');
-        new Chart(taxCtx, {
+        // 销项税率趋势图
+        const ctx4 = document.getElementById('taxRateChart').getContext('2d');
+        new Chart(ctx4, {
             type: 'line',
             data: {
                 labels: months,
                 datasets: [{
                     label: '销项税率（%）',
-                    data: outputTaxRate,
-                    borderColor: 'rgba(155, 89, 182, 1)',
-                    backgroundColor: 'rgba(155, 89, 182, 0.2)',
+                    data: taxRatePercent,
+                    borderColor: 'rgba(111, 66, 193, 1)',
+                    backgroundColor: 'rgba(111, 66, 193, 0.1)',
                     borderWidth: 3,
                     fill: true,
-                    tension: 0.4
+                    tension: 0.2
                 }]
             },
             options: {
                 responsive: true,
-                plugins: {
-                    title: {
-                        display: true,
-                        text: '销项税率月度变化趋势'
-                    }
-                },
                 scales: {
                     y: {
-                        beginAtZero: false,
                         title: {
                             display: true,
-                            text: '税率（%）'
+                            text: '销项税率（%）'
                         }
                     }
                 }
             }
         });
-
-        // 销售费用占比饼图
-        const salesFeeCtx = document.getElementById('salesFeeChart').getContext('2d');
-        const backgroundColors = [
-            'rgba(52, 152, 219, 0.7)',
-            'rgba(46, 204, 113, 0.7)',
-            'rgba(155, 89, 182, 0.7)',
-            'rgba(241, 196, 15, 0.7)',
-            'rgba(230, 126, 34, 0.7)',
-            'rgba(231, 76, 60, 0.7)',
-            'rgba(149, 165, 166, 0.7)',
-            'rgba(26, 188, 156, 0.7)',
-            'rgba(41, 128, 185, 0.7)',
-            'rgba(192, 57, 43, 0.7)',
-            'rgba(142, 68, 173, 0.7)',
-            'rgba(22, 160, 133, 0.7)'
-        ];
-        new Chart(salesFeeCtx, {
-            type: 'doughnut',
-            data: {
-                labels: months,
-                datasets: [{
-                    label: '销售费用（百万元）',
-                    data: salesFee,
-                    backgroundColor: backgroundColors,
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    title: {
-                        display: true,
-                        text: '各月销售费用分布（单位：百万元）'
-                    },
-                    legend: {
-                        position: 'right'
-                    }
-                }
-            }
-        });
     </script>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
