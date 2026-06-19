@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>泌尿外科手卫生数据统计</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8f5;
+            margin: 20px;
+            color: #333;
+        }
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            margin: 20px 0;
+            background-color: white;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .summary {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #2c7a7b;
+            text-align: center;
+        }
+        .suggestion-item {
+            margin: 10px 0;
+            padding-left: 10px;
+            border-left: 3px solid #38b2ac;
+        }
+    </style>
+</head>
+<body>
+    <h1>泌尿外科手卫生数据统计分析</h1>
+
+    <div class="chart-container" id="scoreBarChart"></div>
+    <div class="chart-container" id="problemPieChart"></div>
+
+    <div class="summary">
+        <h2>数据汇总与整改建议</h2>
+        <p><strong>科室平均分：</strong>患者平均分3.5分，院感平均分2.5分，综合平均分2.9分</p>
+        <p><strong>最高分护士：</strong>患者分（小妮、小晓，3.75分），院感分（小妮、小红，3分），综合分（小妮，3.3分）</p>
+        <p><strong>最低分护士：</strong>患者分（小红，3.125分），院感分（小晓、小李，2分），综合分（小李，2.55分）</p>
+        <h3>低分问题整改建议</h3>
+        <div class="suggestion-item">
+            <p><strong>接触患者相关场景未采取手卫生（6次）：</strong>明确手卫生五大指征，定期组织培训考核，护士长每日随机督查，对未落实人员及时提醒纠正。</p>
+        </div>
+        <div class="suggestion-item">
+            <p><strong>操作后手卫生不达标（5次）：</strong>在各操作区域设置醒目的手卫生提醒标识，护士完成操作后立即按规范进行手卫生，将操作后手卫生纳入日常考核。</p>
+        </div>
+        <div class="suggestion-item">
+            <p><strong>手消毒操作不规范（3次）：</strong>开展手消毒规范演练，播放标准操作视频，确保护士掌握揉搓时间≥15秒、七步洗手法完整流程，定期抽查操作规范度。</p>
+        </div>
+        <div class="suggestion-item">
+            <p><strong>操作前手卫生不达标（2次）：</strong>强调操作前手卫生的必要性，将其纳入各项操作的前置流程，操作前由搭档或自我核查手卫生落实情况。</p>
+        </div>
+        <div class="suggestion-item">
+            <p><strong>清洁/无菌操作前未手卫生（1次）：</strong>将清洁/无菌操作前手卫生列为核心考核指标，开展专项督查，确保无菌操作的规范性。</p>
+        </div>
+    </div>
+
+    <script>
+        // 初始化得分对比柱状图
+        var scoreChart = echarts.init(document.getElementById('scoreBarChart'));
+        var scoreOption = {
+            title: {
+                text: '护士手卫生得分对比',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            legend: {
+                data: ['患者平均分', '院感平均分(5分制)', '综合得分'],
+                bottom: 10
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '15%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                data: ['小妮', '小晓', '小李', '小红']
+            },
+            yAxis: {
+                type: 'value',
+                min: 0,
+                max: 4,
+                interval: 0.5
+            },
+            series: [
+                {
+                    name: '患者平均分',
+                    type: 'bar',
+                    data: [3.75, 3.75, 3.375, 3.125],
+                    itemStyle: { color: '#38b2ac' }
+                },
+                {
+                    name: '院感平均分(5分制)',
+                    type: 'bar',
+                    data: [3, 2, 2, 3],
+                    itemStyle: { color: '#f6ad55' }
+                },
+                {
+                    name: '综合得分',
+                    type: 'bar',
+                    data: [3.3, 2.7, 2.55, 3.05],
+                    itemStyle: { color: '#fc8181' }
+                }
+            ]
+        };
+        scoreChart.setOption(scoreOption);
+
+        // 初始化问题分布饼图
+        var problemChart = echarts.init(document.getElementById('problemPieChart'));
+        var problemOption = {
+            title: {
+                text: '低分反馈问题分布',
+                left: 'center'
+            },
+            tooltip: { trigger: 'item' },
+            legend: { orient: 'vertical', left: 'left' },
+            series: [
+                {
+                    name: '问题频次',
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    avoidLabelOverlap: false,
+                    itemStyle: {
+                        borderRadius: 10,
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    },
+                    label: { show: false, position: 'center' },
+                    emphasis: {
+                        label: { show: true, fontSize: 16, fontWeight: 'bold' }
+                    },
+                    labelLine: { show: false },
+                    data: [
+                        { value: 6, name: '接触患者相关场景未采取手卫生' },
+                        { value: 5, name: '操作后手卫生不达标' },
+                        { value: 3, name: '手消毒操作不规范' },
+                        { value: 2, name: '操作前手卫生不达标' },
+                        { value: 1, name: '清洁/无菌操作前未手卫生' }
+                    ]
+                }
+            ]
+        };
+        problemChart.setOption(problemOption);
+
+        // 响应式适配
+        window.addEventListener('resize', function() {
+            scoreChart.resize();
+            problemChart.resize();
+        });
+    </script>
+</body>
+</html>
