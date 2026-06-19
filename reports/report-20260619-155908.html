@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>科室手卫生数据统计</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            margin: 20px 0;
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .summary {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .suggestion-item {
+            margin: 10px 0;
+            padding-left: 15px;
+            border-left: 3px solid #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <h1>肿瘤科手卫生数据统计分析</h1>
+
+    <div class="chart-container">
+        <h2>护士平均分排名</h2>
+        <div id="barChart" style="width: 100%; height: 350px;"></div>
+    </div>
+
+    <div class="chart-container">
+        <h2>低分反馈问题分布</h2>
+        <div id="pieChart" style="width: 100%; height: 350px;"></div>
+    </div>
+
+    <div class="summary">
+        <h2>数据汇总与整改建议</h2>
+        <p><strong>科室平均分：</strong>患者分平均分 3.1，医疗分平均分 12.5，综合分平均分 10.0</p>
+        <p><strong>最高分护士：</strong>小白（综合分10.2）；患者分最高分：小黑（4.4）；医疗分最高分：小白、小黄（15）</p>
+        <p><strong>最低分护士：</strong>小红、小蓝（医疗分10）；患者分最低分：小黄（2）</p>
+        <h3>整改建议：</h3>
+        <div class="suggestion-item">
+            <p><strong>接触患者相关场景未执行手卫生（6次）：</strong>组织全体护士重新学习手卫生规范中各场景的执行要求，重点强化接触患者前、接触患者周边环境后、清洁/无菌操作前、暴露患者体液风险后的手卫生操作流程，增加现场督查频次。</p>
+        </div>
+        <div class="suggestion-item">
+            <p><strong>手消毒不规范/步骤不全/时间不足（3次）：</strong>开展手消毒操作专项培训，演示标准揉搓动作及15秒以上的揉搓时长，制作操作流程图张贴在科室显眼位置，定期抽查护士操作情况。</p>
+        </div>
+        <div class="suggestion-item">
+            <p><strong>铺床后未洗手（1次）：</strong>提醒铺床操作后的护士及时执行手卫生，在铺床区域设置醒目标识，将铺床后手卫生纳入日常督查项目。</p>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        // 初始化柱状图
+        var barChart = echarts.init(document.getElementById('barChart'));
+        var barOption = {
+            title: { text: '' },
+            tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+            legend: { data: ['患者分', '医疗分', '综合分'], bottom: 10 },
+            grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true },
+            xAxis: {
+                type: 'category',
+                data: ['小明', '小黄', '小黑', '小白', '小红', '小蓝']
+            },
+            yAxis: { type: 'value' },
+            series: [
+                {
+                    name: '患者分',
+                    type: 'bar',
+                    data: [3, 2, 4.4, 3, '无', '无'],
+                    label: { show: true, position: 'top' }
+                },
+                {
+                    name: '医疗分',
+                    type: 'bar',
+                    data: ['无', 15, '无', 15, 10, 10],
+                    label: { show: true, position: 'top' }
+                },
+                {
+                    name: '综合分',
+                    type: 'bar',
+                    data: ['无', 9.8, '无', 10.2, '无', '无'],
+                    label: { show: true, position: 'top' }
+                }
+            ]
+        };
+        barChart.setOption(barOption);
+
+        // 初始化饼图
+        var pieChart = echarts.init(document.getElementById('pieChart'));
+        var pieOption = {
+            title: { text: '' },
+            tooltip: { trigger: 'item' },
+            legend: { orient: 'vertical', left: 'left' },
+            series: [
+                {
+                    name: '问题频次',
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    avoidLabelOverlap: false,
+                    itemStyle: {
+                        borderRadius: 10,
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    },
+                    label: { show: true, formatter: '{b}: {c}次' },
+                    data: [
+                        { value: 6, name: '接触患者相关场景未执行手卫生' },
+                        { value: 3, name: '手消毒不规范/步骤不全/时间不足' },
+                        { value: 1, name: '铺床后未洗手' }
+                    ]
+                }
+            ]
+        };
+        pieChart.setOption(pieOption);
+
+        // 响应式适配
+        window.addEventListener('resize', function() {
+            barChart.resize();
+            pieChart.resize();
+        });
+    </script>
+</body>
+</html>
