@@ -1,0 +1,239 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>青团销售数据分析报告</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --success-color: #27ae60;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 20px 20px;
+        }
+        .section-title {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s;
+            margin-bottom: 20px;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .kpi-card {
+            text-align: center;
+            padding: 20px;
+        }
+        .kpi-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+        }
+        .kpi-label {
+            font-size: 1rem;
+            color: #666;
+            margin-top: 10px;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 30px;
+        }
+        .insight-box {
+            background-color: #e8f4fc;
+            border-left: 5px solid var(--secondary-color);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+        }
+        .conclusion-box {
+            background-color: #e8f6ef;
+            border-left: 5px solid var(--success-color);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+        }
+        footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px 0;
+            margin-top: 40px;
+            text-align: center;
+        }
+        .nav-link {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        .nav-link:hover {
+            color: var(--secondary-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="#">青团销售分析</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#executive">执行摘要</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#kpis">关键指标</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#analysis">详细分析</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#trends">趋势分析</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#conclusions">结论建议</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 标题区域 -->
+    <header class="hero-section">
+        <div class="container">
+            <h1 class="display-4">青团销售数据分析报告</h1>
+            <p class="lead">基于各部门青团购买数据的全面分析与洞察</p>
+            <p class="mb-0">报告生成日期: <span id="current-date"></span></p>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- 执行摘要 -->
+        <section id="executive" class="mb-5">
+            <h2 class="section-title">执行摘要</h2>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <p>本报告分析了各部门对五种不同口味青团的购买情况。数据显示，本次青团销售总额为<strong>860元</strong>，共售出<strong>18个</strong>青团，涉及5个不同部门/人员。</p>
+                            <p><strong>主要发现：</strong></p>
+                            <ul>
+                                <li><strong>咸蛋黄口味</strong>最受欢迎，占总销量的33.3%</li>
+                                <li><strong>征科处</strong>是最大购买部门，贡献了38.4%的销售额</li>
+                                <li>人均购买金额存在显著差异，从95元到330元不等</li>
+                                <li>豆沙口味在部分部门中表现突出，但整体销量居中</li>
+                            </ul>
+                            <div class="insight-box">
+                                <strong>核心洞察：</strong> 咸蛋黄口味青团具有明显的市场优势，可作为主打产品进一步推广。征科处表现出较强的购买力，值得重点关注和维护。
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 关键指标 -->
+        <section id="kpis" class="mb-5">
+            <h2 class="section-title">关键绩效指标</h2>
+            <div class="row">
+                <div class="col-md-3 col-sm-6">
+                    <div class="card kpi-card">
+                        <div class="kpi-value">860</div>
+                        <div class="kpi-label">总销售额(元)</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="card kpi-card">
+                        <div class="kpi-value">18</div>
+                        <div class="kpi-label">总销量(个)</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="card kpi-card">
+                        <div class="kpi-value">47.8</div>
+                        <div class="kpi-label">平均单价(元)</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="card kpi-card">
+                        <div class="kpi-value">5</div>
+                        <div class="kpi-label">购买部门数</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 详细数据分析 -->
+        <section id="analysis" class="mb-5">
+            <h2 class="section-title">详细数据分析</h2>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">各口味青团销量分布</h5>
+                            <div class="chart-container">
+                                <canvas id="flavorChart"></canvas>
+                            </div>
+                            <div class="insight-box">
+                                <strong>分析：</strong> 咸蛋黄口味以6个销量位居第一，占总销量的33.3%。豆沙(4个)和春三鲜(3个)分别位列第二、第三。荠菜肉和马兰头销量相对较低。
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">各部门销售额贡献</h5>
+                            <div class="chart-container">
+                                <canvas id="departmentChart"></canvas>
+                            </div>
+                            <div class="insight-box">
+                                <strong>分析：</strong> 征科处以330元销售额(占38.4%)成为最大贡献部门。信息中心(235元，27.3%)和付(200元，23.3%)分别位列第二、第三。郁的购买额最低。
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">各部门购买明细</h5>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>部门/人员</
