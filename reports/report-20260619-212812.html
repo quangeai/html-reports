@@ -1,0 +1,110 @@
+# 订单数据基础概览分析报告  
+**生成时间：2026-06-19 21:27:10**  
+
+## 一、摘要  
+本次分析基于20条订单数据，客户类型列存在2个缺失值（占比10%）；销售数量均值3.15，销售额均值431.49元，4月销售额达3598元为峰值（主要来自蓝牙耳机）。建议补充客户类型缺失数据，重点推广数码品类，降低退货率。  
+
+## 二、数据概览  
+- **列名**：订单ID、订单日期、销售区域、产品品类、产品名称、客户类型、支付方式、销售数量、单价、单位成本、销售额、总成本、毛利润、订单状态  
+- **数据行数**：20条  
+- **缺失值统计**：客户类型列缺失2条（占比10%），其余列无缺失  
+
+## 三、预处理说明  
+客户类型列缺失2条数据（OD004、OD011），因用户未指定处理方式，暂保留原始数据用于分析。  
+
+## 四、分析结果  
+
+### 1. 描述性统计表格  
+| 指标       | 销售数量 | 单价（元） | 单位成本（元） | 销售额（元） | 总成本（元） | 毛利润（元） |  
+|------------|----------|------------|----------------|--------------|--------------|--------------|  
+| 均值       | 3.15     | 386.35     | 121.65         | 431.49       | 151.95       | 279.54       |  
+| 中位数     | 2.5      | 72.00      | 23.00          | 258.00       | 80.00        | 177.50       |  
+| 标准差     | 2.81     | 837.42     | 228.31         | 820.76       | 228.18       | 592.58       |  
+
+### 2. 月度销售额趋势图  
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>月度销售额趋势图</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-container { width: 80%; margin: 20px auto; }
+        .btn-container { text-align: center; margin: 10px; }
+        button { padding: 8px 16px; margin: 0 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="chart-container">
+        <canvas id="salesTrendChart"></canvas>
+    </div>
+    <div class="btn-container">
+        <button id="exportPng">导出PNG</button>
+        <button id="exportCsv">导出数据</button>
+    </div>
+
+    <script>
+        // 月度销售额数据
+        const monthlyData = {
+            labels: ['1月', '2月', '3月', '4月', '5月', '6月', '7月'],
+            datasets: [{
+                label: '月度总销售额（元）',
+                data: [475.8, 1423, 1204, 3598, 618, 652, 659],
+                borderColor: '#4285F4',
+                backgroundColor: 'rgba(66, 133, 244, 0.1)',
+                borderWidth: 2,
+                pointRadius: 4,
+                pointBackgroundColor: '#4285F4'
+            }]
+        };
+
+        // 初始化图表
+        const ctx = document.getElementById('salesTrendChart').getContext('2d');
+        const salesChart = new Chart(ctx, {
+            type: 'line',
+            data: monthlyData,
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true, title: { display: true, text: '销售额（元）' } },
+                    x: { title: { display: true, text: '月份' } }
+                },
+                plugins: {
+                    title: { display: true, text: '2024年1-7月销售额趋势', font: { size: 16 } },
+                    legend: { display: false }
+                }
+            }
+        });
+
+        // 导出PNG
+        document.getElementById('exportPng').addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.download = '月度销售额趋势图.png';
+            link.href = salesChart.toBase64Image();
+            link.click();
+        });
+
+        // 导出CSV
+        document.getElementById('exportCsv').addEventListener('click', () => {
+            const csvContent = "月份,销售额（元）
+" + monthlyData.labels.map((label, i) => `${label},${monthlyData.datasets[0].data[i]}`).join('
+');
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const link = document.createElement('a');
+            link.download = '月度销售额数据.csv';
+            link.href = URL.createObjectURL(blob);
+            link.click();
+        });
+    </script>
+</body>
+</html>
+```  
+**图表说明**：4月销售额显著高于其他月份，主要由OD010订单（蓝牙耳机，2990元）驱动；1-3月销售额稳步上升，5月后趋于平稳。  
+
+## 五、结论建议  
+1. **数据质量优化**：补充客户类型缺失数据（OD004、OD011），提升数据完整性；  
+2. **品类推广**：重点推广数码品类（如蓝牙耳机、机械键盘），其毛利润较高；  
+3. **退货管理**：分析退货订单（OD007、OD013、OD020）原因，降低退货率；  
+4. **区域拓展**：华东区域订单占比最高（6/20），可进一步挖掘其他区域潜力。  
+
+以上报告基于提供的20条订单数据，若需深入分析（如客户类型对比、支付方式偏好等），可补充更多数据或明确需求。
