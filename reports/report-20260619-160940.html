@@ -1,0 +1,261 @@
+# 青团销售数据分析报告
+
+我将根据您提供的青团销售数据，创建一个专业、美观的交互式HTML分析报告。
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>青团销售数据分析报告</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- 自定义样式 -->
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --secondary-color: #2196F3;
+            --accent-color: #FF9800;
+            --light-bg: #f8f9fa;
+            --dark-bg: #343a40;
+            --text-color: #333;
+            --light-text: #6c757d;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        .report-header {
+            background: linear-gradient(135deg, var(--primary-color), #2E7D32);
+            color: white;
+            padding: 2.5rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .report-title {
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .report-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .section-title {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+            height: 100%;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            border-radius: 10px 10px 0 0 !important;
+            padding: 1rem 1.25rem;
+        }
+        
+        .kpi-card {
+            text-align: center;
+            padding: 1.5rem;
+        }
+        
+        .kpi-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 0.5rem 0;
+        }
+        
+        .kpi-label {
+            font-size: 1rem;
+            color: var(--light-text);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .insight-box {
+            background-color: #E8F5E9;
+            border-left: 4px solid var(--primary-color);
+            padding: 1.25rem;
+            margin: 1.5rem 0;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .recommendation-box {
+            background-color: #E3F2FD;
+            border-left: 4px solid var(--secondary-color);
+            padding: 1.25rem;
+            margin: 1.5rem 0;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .data-table {
+            width: 100%;
+            margin: 1.5rem 0;
+            border-collapse: collapse;
+        }
+        
+        .data-table th {
+            background-color: var(--light-bg);
+            color: var(--text-color);
+            font-weight: 600;
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 2px solid #dee2e6;
+        }
+        
+        .data-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .data-table tr:hover {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+        
+        .footer {
+            background-color: var(--dark-bg);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            text-align: center;
+        }
+        
+        .nav-tabs .nav-link {
+            color: var(--light-text);
+            font-weight: 500;
+        }
+        
+        .nav-tabs .nav-link.active {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--primary-color);
+        }
+        
+        @media (max-width: 768px) {
+            .report-title {
+                font-size: 2rem;
+            }
+            
+            .kpi-value {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 报告头部 -->
+    <header class="report-header">
+        <div class="container">
+            <h1 class="report-title">青团销售数据分析报告</h1>
+            <p class="report-subtitle">基于各部门青团采购数据的深度分析与洞察</p>
+            <p class="mb-0">生成日期: <span id="current-date"></span></p>
+        </div>
+    </header>
+    
+    <main class="container">
+        <!-- 执行摘要 -->
+        <section id="executive-summary" class="mb-5">
+            <h2 class="section-title">执行摘要</h2>
+            <div class="row">
+                <div class="col-lg-8">
+                    <p>本报告基于各部门青团采购数据，分析了5种不同口味青团的销售情况。数据显示本次青团销售总额为<strong>860元</strong>，共售出<strong>18个</strong>青团，涉及4个采购部门。</p>
+                    <div class="insight-box">
+                        <h5>核心洞察：</h5>
+                        <ul class="mb-0">
+                            <li><strong>咸蛋黄口味最受欢迎</strong>，占总销量的33.3%，销售额贡献显著</li>
+                            <li><strong>征科处是最大采购部门</strong>，采购金额占总额的38.4%</li>
+                            <li><strong>人均消费差异明显</strong>，征科处人均消费最高，信息中心覆盖口味最全</li>
+                            <li>荠菜肉口味相对不受欢迎，仅有两个部门采购</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-header">报告要点</div>
+                        <div class="card-body">
+                            <ul>
+                                <li>分析周期：单次采购活动</li>
+                                <li>数据范围：4个部门，5种口味</li>
+                                <li>总销售额：860元</li>
+                                <li>总销售量：18个</li>
+                                <li>平均单价：47.8元/个</li>
+                                <li>最受欢迎口味：咸蛋黄</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 关键指标 -->
+        <section id="key-metrics" class="mb-5">
+            <h2 class="section-title">关键指标</h2>
+            <div class="row">
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="card kpi-card">
+                        <div class="kpi-value">¥860</div>
+                        <div class="kpi-label">总销售额</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="card kpi-card">
+                        <div class="kpi-value">18</div>
+                        <div class="kpi-label">总销售量</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="card kpi-card">
+                        <div class="kpi-value">¥47.8</div>
+                        <div class="kpi-label">平均单价</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="card kpi-card">
+                        <div class="kpi-value">5</div>
+                        <div class="kpi-label">产品种类</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 导航标签 -->
+        <ul class="nav nav-tabs mb-4" id="analysisTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="sales-tab" data-bs-toggle="tab" data-bs-target="#sales" type="button" role="tab">销售额分析</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="flavor-tab" data-bs-toggle="tab" data-bs-target="#flavor" type="button" role="tab">口味偏好</
