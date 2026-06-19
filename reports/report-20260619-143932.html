@@ -1,0 +1,204 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>肿瘤科手卫生数据统计分析</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        body {
+            background-color: #f5f8fa;
+            padding: 20px;
+        }
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            margin: 20px 0;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        .summary {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 25px;
+            line-height: 1.8;
+        }
+        .summary h3 {
+            color: #1f77b4;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        .summary p {
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .suggestions {
+            margin-top: 20px;
+        }
+        .suggestions ul {
+            list-style-position: inside;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <h2 style="text-align:center; color:#1f77b4; margin-bottom:20px">肿瘤科手卫生数据统计可视化</h2>
+
+    <div class="chart-container" id="patientScoreChart"></div>
+    <div class="chart-container" id="infectionScoreChart"></div>
+    <div class="chart-container" id="compositeScoreChart"></div>
+    <div class="chart-container" id="problemChart"></div>
+
+    <div class="summary">
+        <h3>数据汇总与整改建议</h3>
+        <p><strong>科室平均分：</strong>患者打分平均分12.5分，院感督查平均分15.5分，综合得分平均分13.5分</p>
+        <p><strong>得分极值：</strong>
+            患者打分最高分：小白、小黄（15分），最低分：小红、小蓝（10分）；
+            院感督查最高分：小黑（22分），最低分：小黄（10分）；
+            综合得分最高分：小白（15分），最低分：小黄（12分）
+        </p>
+        <div class="suggestions">
+            <p><strong>低分问题整改建议：</strong></p>
+            <ul>
+                <li>接触患者后未执行手卫生：加强护士对“接触患者后”手卫生时刻的记忆，落实手卫生规范</li>
+                <li>暴露患者体液风险后未采取措施：组织培训暴露体液风险后的应急手卫生流程，强化风险意识</li>
+                <li>接触患者周边环境后未执行：明确接触患者周边环境属于手卫生触发时刻，增加督查频次</li>
+                <li>清洁/无菌操作前未执行：强调清洁/无菌操作前手卫生的必要性，纳入操作考核</li>
+                <li>接触患者前未执行：规范接诊流程，将接触患者前手卫生作为必查项</li>
+                <li>卫生手消毒不规范：现场演示正确的手消毒方法，开展实操考核</li>
+                <li>揉搓时间小于15秒：制作揉搓时间提示卡，放置在护理站醒目位置</li>
+                <li>卫生手消毒步骤不完整：梳理标准手消毒步骤，组织全员学习并考核</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // 初始化患者打分柱状图
+        const patientChart = echarts.init(document.getElementById('patientScoreChart'));
+        const patientOption = {
+            title: { text: '患者手卫生打分情况', left: 'center' },
+            tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+            xAxis: {
+                type: 'category',
+                data: ['小白', '小红', '小蓝', '小黄', '小明', '小黑'],
+                axisLabel: { rotate: 30 }
+            },
+            yAxis: { type: 'value', name: '得分' },
+            series: [{
+                name: '患者打分',
+                type: 'bar',
+                data: [15, 10, 10, 15, 0, 0],
+                label: { show: true },
+                itemStyle: { color: '#1f77b4' },
+                tooltip: {
+                    formatter: function(params) {
+                        return params.name + '<br/>患者打分：' + (params.value === 0 ? '无' : params.value);
+                    }
+                }
+            }]
+        };
+        patientChart.setOption(patientOption);
+
+        // 初始化院感督查打分柱状图
+        const infectionChart = echarts.init(document.getElementById('infectionScoreChart'));
+        const infectionOption = {
+            title: { text: '院感督查手卫生打分情况', left: 'center' },
+            tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+            xAxis: {
+                type: 'category',
+                data: ['小白', '小红', '小蓝', '小黄', '小明', '小黑'],
+                axisLabel: { rotate: 30 }
+            },
+            yAxis: { type: 'value', name: '得分' },
+            series: [{
+                name: '院感打分',
+                type: 'bar',
+                data: [15, 0, 0, 10, 15, 22],
+                label: { show: true },
+                itemStyle: { color: '#2ca02c' },
+                tooltip: {
+                    formatter: function(params) {
+                        return params.name + '<br/>院感打分：' + (params.value === 0 ? '无' : params.value);
+                    }
+                }
+            }]
+        };
+        infectionChart.setOption(infectionOption);
+
+        // 初始化综合得分柱状图
+        const compositeChart = echarts.init(document.getElementById('compositeScoreChart'));
+        const compositeOption = {
+            title: { text: '手卫生综合得分情况', left: 'center' },
+            tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+            xAxis: {
+                type: 'category',
+                data: ['小白', '小黄', '小红', '小蓝', '小明', '小黑'],
+                axisLabel: { rotate: 30 }
+            },
+            yAxis: { type: 'value', name: '综合得分' },
+            series: [{
+                name: '综合得分',
+                type: 'bar',
+                data: [15, 12, 0, 0, 0, 0],
+                label: { show: true },
+                itemStyle: { color: '#ff7f0e' },
+                tooltip: {
+                    formatter: function(params) {
+                        return params.name + '<br/>综合得分：' + (params.value === 0 ? '无' : params.value);
+                    }
+                }
+            }]
+        };
+        compositeChart.setOption(compositeOption);
+
+        // 初始化问题分布饼图
+        const problemChart = echarts.init(document.getElementById('problemChart'));
+        const problemOption = {
+            title: { text: '手卫生低分问题分布', left: 'center' },
+            tooltip: { trigger: 'item' },
+            legend: { orient: 'vertical', left: 'left' },
+            series: [{
+                name: '问题频次',
+                type: 'pie',
+                radius: ['40%', '70%'],
+                avoidLabelOverlap: false,
+                itemStyle: { borderRadius: 10, borderColor: '#fff', borderWidth: 2 },
+                label: { show: false, position: 'center' },
+                emphasis: { label: { show: true, fontSize: 16, fontWeight: 'bold' } },
+                labelLine: { show: false },
+                data: [
+                    { value: 2, name: '接触患者后未执行手卫生' },
+                    { value: 2, name: '暴露患者体液风险后未采取措施' },
+                    { value: 1, name: '接触患者周边环境后未执行' },
+                    { value: 1, name: '清洁/无菌操作前未执行' },
+                    { value: 1, name: '接触患者前未执行' },
+                    { value: 1, name: '卫生手消毒不规范' },
+                    { value: 1, name: '揉搓时间小于15秒' },
+                    { value: 1, name: '卫生手消毒步骤不完整' }
+                ]
+            }]
+        };
+        problemChart.setOption(problemOption);
+
+        // 响应式适配
+        window.addEventListener('resize', function() {
+            patientChart.resize();
+            infectionChart.resize();
+            compositeChart.resize();
+            problemChart.resize();
+        });
+    </script>
+</body>
+</html>
+```
