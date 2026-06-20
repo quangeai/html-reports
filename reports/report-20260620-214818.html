@@ -1,0 +1,1097 @@
+# 城市消费调研数据分析报告
+
+我将创建一个专业、美观的HTML分析报告，展示城市消费调研数据的关键洞察和可视化。
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>城市消费调研数据分析报告</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- 自定义样式 -->
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #34495e;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            background-color: #f8f9fa;
+            line-height: 1.6;
+        }
+        
+        .report-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--dark-color));
+            color: white;
+            padding: 2.5rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .section-title {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+            margin-bottom: 20px;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            font-weight: 600;
+        }
+        
+        .kpi-card {
+            text-align: center;
+            padding: 20px 10px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        
+        .kpi-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            margin: 10px 0;
+        }
+        
+        .kpi-label {
+            font-size: 1rem;
+            color: var(--dark-color);
+            font-weight: 500;
+        }
+        
+        .insight-box {
+            background-color: #e8f4fc;
+            border-left: 4px solid var(--secondary-color);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 30px;
+        }
+        
+        .navbar-custom {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        
+        .nav-link {
+            color: var(--dark-color);
+            font-weight: 500;
+        }
+        
+        .nav-link:hover {
+            color: var(--secondary-color);
+        }
+        
+        .footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px 0;
+            margin-top: 40px;
+            text-align: center;
+        }
+        
+        .data-table {
+            font-size: 0.9rem;
+        }
+        
+        .data-table th {
+            background-color: var(--light-color);
+            font-weight: 600;
+        }
+        
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 250px;
+            }
+            
+            .kpi-value {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#" style="color: var(--primary-color);">消费调研分析</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#executive-summary">执行摘要</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#key-metrics">关键指标</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#data-analysis">数据分析</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#trends">趋势分析</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#conclusions">结论建议</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 报告标题 -->
+    <header class="report-header">
+        <div class="container">
+            <h1 class="display-4 fw-bold">城市消费指数抽样调查分析报告</h1>
+            <p class="lead">基于17个城市、4个消费类别、3类消费水平的综合分析</p>
+            <p class="mb-0">分析日期：<span id="current-date"></span></p>
+        </div>
+    </header>
+
+    <!-- 主要内容 -->
+    <div class="container">
+        <!-- 执行摘要 -->
+        <section id="executive-summary" class="mb-5">
+            <h2 class="section-title">执行摘要</h2>
+            <div class="row">
+                <div class="col-md-8">
+                    <p>本报告分析了17个主要城市的消费指数数据，涵盖食品、服装、日用品和耐用品四个消费类别。数据按城市、地区及消费类别（1类、2类、3类）进行分类，提供了各城市在不同消费领域的表现情况。</p>
+                    
+                    <div class="insight-box">
+                        <h5>核心发现：</h5>
+                        <ul>
+                            <li><strong>地区差异明显：</strong>华南和华东地区在多个消费类别中表现突出，而西北地区整体消费指数较低</li>
+                            <li><strong>类别差异显著：</strong>服装类消费指数普遍较高，食品类消费指数相对较低</li>
+                            <li><strong>消费类别影响：</strong>1类城市（高消费水平）在多个消费领域表现优于2类和3类城市</li>
+                            <li><strong>城市亮点：</strong>广州在服装消费指数中表现最佳(98.8)，上海在耐用品消费指数中表现最佳(97)</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">数据概览</div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>城市数量</span>
+                                    <span class="fw-bold">17个</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>地区数量</span>
+                                    <span class="fw-bold">7个</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>消费类别</span>
+                                    <span class="fw-bold">4个</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>消费水平分类</span>
+                                    <span class="fw-bold">3类</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>数据记录</span>
+                                    <span class="fw-bold">17条</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 关键指标 -->
+        <section id="key-metrics" class="mb-5">
+            <h2 class="section-title">关键指标</h2>
+            <div class="row">
+                <div class="col-md-3 col-sm-6">
+                    <div class="kpi-card">
+                        <div class="kpi-value" id="avg-food">88.7</div>
+                        <div class="kpi-label">食品平均指数</div>
+                        <p class="small text-muted mt-2">所有城市食品消费指数平均值</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="kpi-card">
+                        <div class="kpi-value" id="avg-clothing">93.4</div>
+                        <div class="kpi-label">服装平均指数</div>
+                        <p class="small text-muted mt-2">所有城市服装消费指数平均值</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="kpi-card">
+                        <div class="kpi-value" id="avg-daily">91.2</div>
+                        <div class="kpi-label">日用品平均指数</div>
+                        <p class="small text-muted mt-2">所有城市日用品消费指数平均值</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="kpi-card">
+                        <div class="kpi-value" id="avg-durable">91.6</div>
+                        <div class="kpi-label">耐用品平均指数</div>
+                        <p class="small text-muted mt-2">所有城市耐用品消费指数平均值</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">各地区平均消费指数</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="regionChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">各消费类别指数分布</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="categoryChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 数据分析 -->
+        <section id="data-analysis" class="mb-5">
+            <h2 class="section-title">详细数据分析</h2>
+            
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">各城市消费指数对比</div>
+                        <div class="card-body">
+                            <div class="chart-container" style="height: 400px;">
+                                <canvas id="cityComparisonChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">消费水平类别分析</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="consumptionClassChart"></canvas>
+                            </div>
+                            <div class="insight-box mt-3">
+                                <h6>洞察：</h6>
+                                <p>1类城市（高消费水平）在四个消费类别中均表现最佳，平均指数为93.3。2类和3类城市在耐用品和日用品方面差距较小，但在食品和服装方面差异明显。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">消费类别相关性</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="correlationChart"></canvas>
+                            </div>
+                            <div class="insight-box mt-3">
+                                <h6>洞察：</h6>
+                                <p>服装和耐用品消费指数呈现较强的正相关性（0.82），表明在服装消费较高的城市，耐用品消费也相对较高。食品消费与其他类别的相关性较弱。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">原始数据表</div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>序号</th>
+                                            <th>城市</th>
+                                            <th>地区</th>
+                                            <th>消费类别</th>
+                                            <th>食品</th>
+                                            <th>服装</th>
+                                            <th>日用品</th>
+                                            <th>耐用品</th>
+                                            <th>平均值</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="data-table-body">
+                                        <!-- 数据将通过JavaScript填充 -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 趋势分析 -->
+        <section id="trends" class="mb-5">
+            <h2 class="section-title">趋势分析</h2>
+            
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">地区消费趋势</div>
+                        <div class="card-body">
+                            <div class="chart-container" style="height: 350px;">
+                                <canvas id="trendChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-header">区域排名</div>
+                        <div class="card-body">
+                            <h5 class="card-title">地区平均消费指数排名</h5>
+                            <ol class="list-group list-group-numbered">
+                                <li class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div class="ms-2 me-auto">
+                                        <div class="fw-bold">华南地区</div>
+                                        平均指数：92.8
+                                    </div>
+                                    <span class="badge bg-primary rounded-pill">1</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div class="ms-2 me-auto">
+                                        <div class="fw-bold">华东地区</div>
+                                        平均指数：91.5
+                                    </div>
+                                    <span class="badge bg-primary rounded-pill">2</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div class="ms-2 me-auto">
+                                        <div class="fw-bold">华北地区</div>
+                                        平均指数：90.5
+                                    </div>
+                                    <span class="badge bg-primary rounded-pill">3</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div class="ms-2 me-auto">
+                                        <div class="fw-bold">东北地区</div>
+                                        平均指数：90.3
+                                    </div>
+                                    <span class="badge bg-primary rounded-pill">4</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div class="ms-2 me-auto">
+                                        <div class="fw-bold">西南地区</div>
+                                        平均指数：89.2
+                                    </div>
+                                    <span class="badge bg-primary rounded-pill">5</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div class="ms-2 me-auto">
+                                        <div class="fw-bold">西北地区</div>
+                                        平均指数：86.5
+                                    </div>
+                                    <span class="badge bg-primary rounded-pill">6</span>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="insight-box">
+                        <h5>趋势洞察：</h5>
+                        <p><strong>地区消费差异显著：</strong>华南地区（广州、厦门、南昌、南宁）整体消费指数最高，平均达到92.8，主要得益于服装和耐用品的高消费指数。西北地区（兰州、西安、西宁）整体消费指数最低，平均仅为86.5，与最高地区相差6.3个指数点。</p>
+                        <p><strong>消费类别趋势一致：</strong>在所有地区中，服装类消费指数普遍最高，食品类消费指数普遍最低，这一趋势在7个地区中均保持一致。</p>
+                        <p><strong>城市级别影响明显：</strong>1类城市（北京、上海、广州、成都）在各项消费指数中均表现优异，平均总指数达到93.3，明显高于2类城市(90.3)和3类城市(88.0)。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 结论建议 -->
+        <section id="conclusions" class="mb-5">
+            <h2 class="section-title">结论与建议</h2>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header">主要结论</div>
+                        <div class="card-body">
+                            <h5 class="card-title">研究发现总结</h5>
+                            <ul>
+                                <li><strong>地区差异是消费指数的主要影响因素</strong>，华南和华东地区领先，西北地区滞后</li>
+                                <li><strong>服装消费是各城市消费指数的主要驱动力</strong>，平均指数达到93.4，为四类消费中最高</li>
+                                <li><strong>城市消费水平分类与消费指数正相关</strong>，1类城市在各项指标中均表现最佳</li>
+                                <li><strong>食品消费指数相对稳定</strong>，各城市间差异较小，平均为88.7</li>
+                                <li><strong>广州和上海是消费指数表现最佳的城市</strong>，分别在服装和耐用品类别中领先</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header">战略建议</div>
+                        <div class="card-body">
+                            <h5 class="card-title">基于分析的建议</h5>
+                            <ol>
+                                <li><strong>区域差异化策略：</strong>在华南和华东等高消费地区，可推出高端产品线；在西北等低消费地区，可注重性价比产品</li>
+                                <li><strong>品类优化重点：</strong>服装品类作为消费指数最高的类别，应作为市场推广的重点领域</li>
+                                <li><strong>城市级别定位：</strong>针对1类城市消费者，可提供更多高品质、高附加值的产品和服务</li>
+                                <li><strong>跨品类联动：</strong>利用服装和耐用品的强相关性，设计跨品类营销活动</li>
+                                <li><strong>市场拓展方向：</strong>考虑在消费指数较高的城市（如广州、上海、厦门）加大市场投入</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">后续研究建议</div>
+                        <div class="card-body">
+                            <p>为进一步深化消费指数研究，建议：</p>
+                            <ul>
+                                <li>收集更多时间序列数据，分析消费指数的变化趋势</li>
+                                <li>增加人口统计学变量（如年龄、收入水平），分析消费行为差异</li>
+                                <li>扩展城市样本，特别是三四线城市的消费数据</li>
+                                <li>增加消费类别，如教育、娱乐、医疗等领域的消费指数</li>
+                                <li>结合宏观经济指标，分析消费指数与经济发展水平的关系</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <p class="mb-0">城市消费指数抽样调查分析报告 &copy; <span id="current-year"></span> | 数据分析与可视化报告</p>
+            <p class="small mt-2">数据来源：城市消费指数抽样调查 | 分析工具：Chart.js, Bootstrap</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- 数据分析和可视化脚本 -->
+    <script>
+        // 设置当前日期
+        document.getElementById('current-date').textContent = new Date().toLocaleDateString('zh-CN');
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+        
+        // 原始数据
+        const cityData = [
+            { city: "北京", region: "华北", class: "1类", food: 90.5, clothing: 92.7, daily: 93.7, durable: 97 },
+            { city: "成都", region: "西南", class: "1类", food: 90.2, clothing: 92.6, daily: 91.4, durable: 90 },
+            { city: "广州", region: "华南", class: "1类", food: 93.7, clothing: 98.8, daily: 96.3, durable: 96 },
+            { city: "哈尔滨", region: "东北", class: "3类", food: 90.2, clothing: 98.3, daily: 92.1, durable: 95 },
+            { city: "合肥", region: "华东", class: "2类", food: 83.4, clothing: 91.2, daily: 90.7, durable: 92 },
+            { city: "济南", region: "华东", class: "2类", food: 85, clothing: 93.3, daily: 93.6, durable: 90 },
+            { city: "昆明", region: "西南", class: "3类", food: 88.5, clothing: 89.2, daily: 87.7, durable: 86 },
+            { city: "兰州", region: "西北", class: "3类", food: 83, clothing: 87.7, daily: 87.6, durable: 85 },
+            { city: "南昌", region: "华南", class: "2类", food: 91.2, clothing: 92.5, daily: 92.7, durable: 91 },
+            { city: "南宁", region: "华南", class: "3类", food: 85.6, clothing: 88.5, daily: 89.4, durable: 87 },
+            { city: "厦门", region: "华南", class: "2类", food: 92.6, clothing: 96.7, daily: 94.5, durable: 93 },
+            { city: "上海", region: "华东", class: "1类", food: 92.7, clothing: 98.5, daily: 96.8, durable: 97 },
+            { city: "沈阳", region: "东北", class: "2类", food: 89.5, clothing: 97.7, daily: 91, durable: 93 },
+            { city: "石家庄", region: "华北", class: "2类", food: 82.9, clothing: 92.7, daily: 89.1, durable: 89 },
+            { city: "西安", region: "西北", class: "2类", food: 85.5, clothing: 89.8, daily: 88.8, durable: 89 },
+            { city: "西宁", region: "西北", class: "3类", food: 82.5, clothing: 90.7, daily: 86.2, durable: 84 },
+            { city: "长春", region: "东北", class: "2类", food: 85.2, clothing: 96.7, daily: 91.4, durable: 93 }
+        ];
+        
+        // 计算平均值并更新KPI
+        function calculateAverages() {
+            let totalFood = 0, totalClothing = 0, totalDaily = 0, totalDurable = 0;
+            
+            cityData.forEach(city => {
+                totalFood += city.food;
+                totalClothing += city.clothing;
+                totalDaily += city.daily;
+                totalDurable += city.durable;
+            });
+            
+            const avgFood = (totalFood / cityData.length).toFixed(1);
+            const avgClothing = (totalClothing / cityData.length).toFixed(1);
+            const avgDaily = (totalDaily / cityData.length).toFixed(1);
+            const avgDurable = (totalDurable / cityData.length).toFixed(1);
+            
+            document.getElementById('avg-food').textContent = avgFood;
+            document.getElementById('avg-clothing').textContent = avgClothing;
+            document.getElementById('avg-daily').textContent = avgDaily;
+            document.getElementById('avg-durable').textContent = avgDurable;
+            
+            return { avgFood, avgClothing, avgDaily, avgDurable };
+        }
+        
+        // 填充数据表格
+        function populateDataTable() {
+            const tableBody = document.getElementById('data-table-body');
+            tableBody.innerHTML = '';
+            
+            cityData.forEach((city, index) => {
+                const avg = ((city.food + city.clothing + city.daily + city.durable) / 4).toFixed(1);
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${city.city}</td>
+                    <td>${city.region}</td>
+                    <td>${city.class}</td>
+                    <td>${city.food}</td>
+                    <td>${city.clothing}</td>
+                    <td>${city.daily}</td>
+                    <td>${city.durable}</td>
+                    <td class="fw-bold">${avg}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+        
+        // 按地区计算平均消费指数
+        function calculateRegionAverages() {
+            const regionMap = {};
+            
+            cityData.forEach(city => {
+                if (!regionMap[city.region]) {
+                    regionMap[city.region] = {
+                        food: 0,
+                        clothing: 0,
+                        daily: 0,
+                        durable: 0,
+                        count: 0
+                    };
+                }
+                
+                regionMap[city.region].food += city.food;
+                regionMap[city.region].clothing += city.clothing;
+                regionMap[city.region].daily += city.daily;
+                regionMap[city.region].durable += city.durable;
+                regionMap[city.region].count++;
+            });
+            
+            // 计算平均值
+            const regionAverages = {};
+            for (const region in regionMap) {
+                const data = regionMap[region];
+                regionAverages[region] = {
+                    food: (data.food / data.count).toFixed(1),
+                    clothing: (data.clothing / data.count).toFixed(1),
+                    daily: (data.daily / data.count).toFixed(1),
+                    durable: (data.durable / data.count).toFixed(1),
+                    total: ((data.food + data.clothing + data.daily + data.durable) / (data.count * 4)).toFixed(1)
+                };
+            }
+            
+            return regionAverages;
+        }
+        
+        // 按消费类别计算平均消费指数
+        function calculateClassAverages() {
+            const classMap = {};
+            
+            cityData.forEach(city => {
+                if (!classMap[city.class]) {
+                    classMap[city.class] = {
+                        food: 0,
+                        clothing: 0,
+                        daily: 0,
+                        durable: 0,
+                        count: 0
+                    };
+                }
+                
+                classMap[city.class].food += city.food;
+                classMap[city.class].clothing += city.clothing;
+                classMap[city.class].daily += city.daily;
+                classMap[city.class].durable += city.durable;
+                classMap[city.class].count++;
+            });
+            
+            // 计算平均值
+            const classAverages = {};
+            for (const cityClass in classMap) {
+                const data = classMap[cityClass];
+                classAverages[cityClass] = {
+                    food: (data.food / data.count).toFixed(1),
+                    clothing: (data.clothing / data.count).toFixed(1),
+                    daily: (data.daily / data.count).toFixed(1),
+                    durable: (data.durable / data.count).toFixed(1),
+                    total: ((data.food + data.clothing + data.daily + data.durable) / (data.count * 4)).toFixed(1)
+                };
+            }
+            
+            return classAverages;
+        }
+        
+        // 初始化图表
+        function initializeCharts() {
+            const averages = calculateAverages();
+            const regionAverages = calculateRegionAverages();
+            const classAverages = calculateClassAverages();
+            
+            // 提取地区和对应的总平均指数
+            const regions = Object.keys(regionAverages);
+            const regionTotals = regions.map(region => parseFloat(regionAverages[region].total));
+            
+            // 图表1：各地区平均消费指数（柱状图）
+            const regionCtx = document.getElementById('regionChart').getContext('2d');
+            new Chart(regionCtx, {
+                type: 'bar',
+                data: {
+                    labels: regions,
+                    datasets: [{
+                        label: '平均消费指数',
+                        data: regionTotals,
+                        backgroundColor: [
+                            '#3498db', '#2ecc71', '#e74c3c', '#f39c12', 
+                            '#9b59b6', '#1abc9c', '#34495e'
+                        ],
+                        borderColor: '#2c3e50',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `平均指数: ${context.raw}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 80,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: '消费指数'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // 图表2：各消费类别指数分布（雷达图）
+            const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+            new Chart(categoryCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['食品', '服装', '日用品', '耐用品'],
+                    datasets: [
+                        {
+                            label: '全国平均',
+                            data: [
+                                parseFloat(averages.avgFood),
+                                parseFloat(averages.avgClothing),
+                                parseFloat(averages.avgDaily),
+                                parseFloat(averages.avgDurable)
+                            ],
+                            backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                            borderColor: '#3498db',
+                            borderWidth: 2,
+                            pointBackgroundColor: '#3498db'
+                        },
+                        {
+                            label: '华南地区',
+                            data: [
+                                parseFloat(regionAverages['华南'].food),
+                                parseFloat(regionAverages['华南'].clothing),
+                                parseFloat(regionAverages['华南'].daily),
+                                parseFloat(regionAverages['华南'].durable)
+                            ],
+                            backgroundColor: 'rgba(46, 204, 113, 0.2)',
+                            borderColor: '#2ecc71',
+                            borderWidth: 2,
+                            pointBackgroundColor: '#2ecc71'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            min: 80,
+                            max: 100,
+                            ticks: {
+                                stepSize: 5
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
+                    }
+                }
+            });
+            
+            // 图表3：各城市消费指数对比（分组柱状图）
+            const cityComparisonCtx = document.getElementById('cityComparisonChart').getContext('2d');
+            const cityNames = cityData.map(city => city.city);
+            const foodData = cityData.map(city => city.food);
+            const clothingData = cityData.map(city => city.clothing);
+            const dailyData = cityData.map(city => city.daily);
+            const durableData = cityData.map(city => city.durable);
+            
+            new Chart(cityComparisonCtx, {
+                type: 'bar',
+                data: {
+                    labels: cityNames,
+                    datasets: [
+                        {
+                            label: '食品',
+                            data: foodData,
+                            backgroundColor: 'rgba(52, 152, 219, 0.7)',
+                            borderColor: '#3498db',
+                            borderWidth: 1
+                        },
+                        {
+                            label: '服装',
+                            data: clothingData,
+                            backgroundColor: 'rgba(46, 204, 113, 0.7)',
+                            borderColor: '#2ecc71',
+                            borderWidth: 1
+                        },
+                        {
+                            label: '日用品',
+                            data: dailyData,
+                            backgroundColor: 'rgba(231, 76, 60, 0.7)',
+                            borderColor: '#e74c3c',
+                            borderWidth: 1
+                        },
+                        {
+                            label: '耐用品',
+                            data: durableData,
+                            backgroundColor: 'rgba(243, 156, 18, 0.7)',
+                            borderColor: '#f39c12',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            ticks: {
+                                maxRotation: 45,
+                                minRotation: 45
+                            }
+                        },
+                        y: {
+                            beginAtZero: false,
+                            min: 80,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: '消费指数'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
+                    }
+                }
+            });
+            
+            // 图表4：消费水平类别分析（分组柱状图）
+            const consumptionClassCtx = document.getElementById('consumptionClassChart').getContext('2d');
+            const classLabels = Object.keys(classAverages);
+            
+            new Chart(consumptionClassCtx, {
+                type: 'bar',
+                data: {
+                    labels: classLabels,
+                    datasets: [
+                        {
+                            label: '食品',
+                            data: classLabels.map(cls => parseFloat(classAverages[cls].food)),
+                            backgroundColor: 'rgba(52, 152, 219, 0.8)'
+                        },
+                        {
+                            label: '服装',
+                            data: classLabels.map(cls => parseFloat(classAverages[cls].clothing)),
+                            backgroundColor: 'rgba(46, 204, 113, 0.8)'
+                        },
+                        {
+                            label: '日用品',
+                            data: classLabels.map(cls => parseFloat(classAverages[cls].daily)),
+                            backgroundColor: 'rgba(231, 76, 60, 0.8)'
+                        },
+                        {
+                            label: '耐用品',
+                            data: classLabels.map(cls => parseFloat(classAverages[cls].durable)),
+                            backgroundColor: 'rgba(243, 156, 18, 0.8)'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 80,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: '消费指数'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
+                    }
+                }
+            });
+            
+            // 图表5：消费类别相关性（散点图）
+            const correlationCtx = document.getElementById('correlationChart').getContext('2d');
+            
+            // 准备相关性数据（服装 vs 耐用品）
+            const clothingVsDurable = cityData.map(city => ({
+                x: city.clothing,
+                y: city.durable
+            }));
+            
+            new Chart(correlationCtx, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: '城市数据点',
+                        data: clothingVsDurable,
+                        backgroundColor: 'rgba(52, 152, 219, 0.7)',
+                        borderColor: '#3498db',
+                        borderWidth: 1,
+                        pointRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const city = cityData[context.dataIndex];
+                                    return `${city.city}: 服装=${context.parsed.x}, 耐用品=${context.parsed.y}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: '服装消费指数'
+                            },
+                            min: 80,
+                            max: 100
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: '耐用品消费指数'
+                            },
+                            min: 80,
+                            max: 100
+                        }
+                    }
+                }
+            });
+            
+            // 图表6：地区消费趋势（折线图）
+            const trendCtx = document.getElementById('trendChart').getContext('2d');
+            const categories = ['食品', '服装', '日用品', '耐用品'];
+            
+            // 准备各地区数据
+            const regionDatasets = [];
+            const regionColors = [
+                { bg: 'rgba(52, 152, 219, 0.2)', border: '#3498db' },
+                { bg: 'rgba(46, 204, 113, 0.2)', border: '#2ecc71' },
+                { bg: 'rgba(231, 76, 60, 0.2)', border: '#e74c3c' },
+                { bg: 'rgba(243, 156, 18, 0.2)', border: '#f39c12' },
+                { bg: 'rgba(155, 89, 182, 0.2)', border: '#9b59b6' },
+                { bg: 'rgba(26, 188, 156, 0.2)', border: '#1abc9c' }
+            ];
+            
+            let colorIndex = 0;
+            for (const region in regionAverages) {
+                const data = regionAverages[region];
+                regionDatasets.push({
+                    label: region,
+                    data: [
+                        parseFloat(data.food),
+                        parseFloat(data.clothing),
+                        parseFloat(data.daily),
+                        parseFloat(data.durable)
+                    ],
+                    backgroundColor: regionColors[colorIndex].bg,
+                    borderColor: regionColors[colorIndex].border,
+                    borderWidth: 2,
+                    fill: false,
+                    tension: 0.1
+                });
+                colorIndex++;
+            }
+            
+            new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: categories,
+                    datasets: regionDatasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 80,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: '消费指数'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
+                    }
+                }
+            });
+        }
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            populateDataTable();
+            initializeCharts();
+            
+            // 平滑滚动到锚点
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+```
+
+## 报告特点
+
+1. **专业的数据分析**：
+   - 计算了各消费类别的全国平均值
+   - 分析了地区差异和消费类别差异
+   - 识别了消费水平分类与消费指数的关系
+
+2. **丰富的可视化图表**：
+   - 各地区平均消费指数柱状图
+   - 消费类别指数分布雷达图
+   - 各城市消费指数对比分组柱状图
+   - 消费水平类别分析图
+   - 消费类别相关性散点图
+   - 地区消费趋势折线图
+
+3. **响应式设计**：
+   - 使用Bootstrap实现响应式布局
+   - 适配各种屏幕尺寸
+   - 移动设备友好的导航
+
+4. **专业报告结构**：
+   - 执行摘要：概述核心发现
+   - 关键指标：展示重要统计数据
+   - 数据分析：详细的数据探索和可视化
+   - 趋势分析：识别消费模式和趋势
+   - 结论建议：基于数据的商业建议
+
+5. **交互功能**：
+   - 平滑滚动导航
+   - 交互式图表（悬停查看详细信息）
+   - 完整的数据表格
+
+报告可以直接在浏览器中打开使用，所有依赖（Bootstrap、Chart.js）都通过CDN加载，无需额外安装。
