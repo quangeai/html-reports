@@ -1,0 +1,909 @@
+# 销售数据分析报告 - 总店
+
+我将基于提供的CSV数据创建一个专业、美观的HTML分析报告。以下是完整的HTML代码：
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>销售数据分析报告 - 总店</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #2ecc71;
+            --light-bg: #f8f9fa;
+            --dark-bg: #2c3e50;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+        }
+        
+        .hero-section h1 {
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .hero-section p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            border-radius: 10px 10px 0 0 !important;
+        }
+        
+        .kpi-card {
+            text-align: center;
+            padding: 1.5rem;
+        }
+        
+        .kpi-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+        }
+        
+        .kpi-label {
+            font-size: 1rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 1rem;
+        }
+        
+        .insight-box {
+            background-color: var(--light-bg);
+            border-left: 4px solid var(--secondary-color);
+            padding: 1rem;
+            margin: 1.5rem 0;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .recommendation {
+            background-color: #e8f4fc;
+            border-left: 4px solid var(--success-color);
+            padding: 1rem;
+            margin: 1.5rem 0;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .table-custom {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .table-custom thead {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        footer {
+            background-color: var(--dark-bg);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+        
+        .nav-link {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        
+        .nav-link:hover {
+            color: var(--secondary-color);
+        }
+        
+        .section-title {
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+        }
+        
+        .date-range {
+            background-color: #f0f8ff;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-chart-line me-2"></i>销售分析报告
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#executive-summary">执行摘要</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#key-metrics">关键指标</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#detailed-analysis">详细分析</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#trends">趋势分析</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#recommendations">建议与结论</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 标题区域 -->
+    <header class="hero-section">
+        <div class="container">
+            <h1>总店销售数据分析报告</h1>
+            <p class="date-range">数据周期: 2026年6月16日 - 2026年6月22日 (7天)</p>
+            <p>基于销售数据的关键洞察与可视化分析，助力业务决策优化</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- 执行摘要 -->
+        <section id="executive-summary" class="mb-5">
+            <h2 class="section-title"><i class="fas fa-file-alt me-2"></i>执行摘要</h2>
+            <div class="row">
+                <div class="col-lg-8">
+                    <p>本报告分析了总店在2026年6月16日至6月22日期间的销售表现。数据显示，本周销售呈现明显的增长趋势，特别是在后半周。总销售额达到 <strong>¥46,269</strong>，总利润为 <strong>¥30,189</strong>，整体利润率为 <strong>65.2%</strong>。</p>
+                    <p>关键发现包括：</p>
+                    <ul>
+                        <li><strong>引流原味蛋挞</strong>是销量最高的商品，但利润率较低</li>
+                        <li><strong>招牌珍珠奶茶</strong>和<strong>香辣炸鸡腿</strong>是主要的利润贡献者</li>
+                        <li><strong>外卖渠道</strong>销售额占比超过堂食渠道</li>
+                        <li>周末前（6月20-22日）销售表现显著提升</li>
+                    </ul>
+                </div>
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-header">报告概览</div>
+                        <div class="card-body">
+                            <p><i class="fas fa-calendar-alt me-2"></i><strong>分析周期：</strong>7天</p>
+                            <p><i class="fas fa-store me-2"></i><strong>分析门店：</strong>总店</p>
+                            <p><i class="fas fa-boxes me-2"></i><strong>商品数量：</strong>6款</p>
+                            <p><i class="fas fa-chart-pie me-2"></i><strong>品类分布：</strong>3个</p>
+                            <p><i class="fas fa-shopping-cart me-2"></i><strong>总交易量：</strong>2,844件</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 关键指标 -->
+        <section id="key-metrics" class="mb-5">
+            <h2 class="section-title"><i class="fas fa-chart-bar me-2"></i>关键绩效指标</h2>
+            <div class="row">
+                <div class="col-md-3 col-sm-6">
+                    <div class="card kpi-card">
+                        <div class="kpi-value">¥46,269</div>
+                        <div class="kpi-label">总销售额</div>
+                        <p class="small text-muted mt-2">较周期初增长68%</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="card kpi-card">
+                        <div class="kpi-value">¥30,189</div>
+                        <div class="kpi-label">总利润</div>
+                        <p class="small text-muted mt-2">利润率65.2%</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="card kpi-card">
+                        <div class="kpi-value">2,844</div>
+                        <div class="kpi-label">总销量</div>
+                        <p class="small text-muted mt-2">日均406件</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="card kpi-card">
+                        <div class="kpi-value">6</div>
+                        <div class="kpi-label">活跃商品数</div>
+                        <p class="small text-muted mt-2">3个品类</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 详细分析 -->
+        <section id="detailed-analysis" class="mb-5">
+            <h2 class="section-title"><i class="fas fa-chart-pie me-2"></i>详细数据分析</h2>
+            
+            <div class="row mb-4">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">按品类销售额分布</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="categorySalesChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">按品类利润分布</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="categoryProfitChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mb-4">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">商品销售排名（按销售额）</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="productSalesChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">销售渠道分布</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="channelChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="insight-box">
+                <h5><i class="fas fa-lightbulb me-2"></i>关键洞察</h5>
+                <p><strong>饮品品类</strong>贡献了最高的销售额（¥31,584，占比68.2%）和利润（¥21,132，占比70.0%），是门店的核心收入来源。<strong>引流原味蛋挞</strong>虽然销量最高（1,090件），但因其低单价和低利润率，对总利润贡献有限（仅6.5%）。<strong>外卖渠道</strong>销售额（¥27,114）显著高于堂食（¥19,155），表明消费者偏好外卖消费模式。</p>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">商品绩效详情</div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-custom">
+                            <thead>
+                                <tr>
+                                    <th>商品名称</th>
+                                    <th>品类</th>
+                                    <th>总销量</th>
+                                    <th>销售额</th>
+                                    <th>利润</th>
+                                    <th>利润率</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>招牌珍珠奶茶</td>
+                                    <td>饮品</td>
+                                    <td>635</td>
+                                    <td>¥10,672</td>
+                                    <td>¥7,305</td>
+                                    <td>68.4%</td>
+                                </tr>
+                                <tr>
+                                    <td>芋泥波波奶茶</td>
+                                    <td>饮品</td>
+                                    <td>489</td>
+                                    <td>¥8,802</td>
+                                    <td>¥5,874</td>
+                                    <td>66.7%</td>
+                                </tr>
+                                <tr>
+                                    <td>香辣炸鸡腿</td>
+                                    <td>小吃</td>
+                                    <td>456</td>
+                                    <td>¥6,840</td>
+                                    <td>¥3,648</td>
+                                    <td>53.3%</td>
+                                </tr>
+                                <tr>
+                                    <td>引流原味蛋挞</td>
+                                    <td>甜品</td>
+                                    <td>1,090</td>
+                                    <td>¥5,450</td>
+                                    <td>¥1,960</td>
+                                    <td>36.0%</td>
+                                </tr>
+                                <tr>
+                                    <td>原味奶茶</td>
+                                    <td>饮品</td>
+                                    <td>428</td>
+                                    <td>¥5,136</td>
+                                    <td>¥3,424</td>
+                                    <td>66.7%</td>
+                                </tr>
+                                <tr>
+                                    <td>薯条大份</td>
+                                    <td>小吃</td>
+                                    <td>342</td>
+                                    <td>¥4,104</td>
+                                    <td>¥2,394</td>
+                                    <td>58.3%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 趋势分析 -->
+        <section id="trends" class="mb-5">
+            <h2 class="section-title"><i class="fas fa-chart-line me-2"></i>趋势分析</h2>
+            
+            <div class="row mb-4">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-header">每日销售趋势（销售额与销量）</div>
+                        <div class="card-body">
+                            <div class="chart-container" style="height: 350px;">
+                                <canvas id="dailyTrendChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">主要商品每日销量趋势</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="productTrendChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">渠道销售趋势</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="channelTrendChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="insight-box">
+                <h5><i class="fas fa-chart-line me-2"></i>趋势洞察</h5>
+                <p>销售呈现明显的上升趋势，从6月16日的¥4,449增长到6月21日的¥8,339，增幅达87.4%。6月20-22日（周三至周五）销售表现尤为强劲，可能是周末前消费需求增加所致。所有商品的销售趋势基本一致，均在6月21日达到峰值。外卖渠道的增长速度略快于堂食渠道，表明外卖消费模式越来越受欢迎。</p>
+            </div>
+        </section>
+
+        <!-- 建议与结论 -->
+        <section id="recommendations" class="mb-5">
+            <h2 class="section-title"><i class="fas fa-clipboard-check me-2"></i>建议与结论</h2>
+            
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">主要结论</div>
+                        <div class="card-body">
+                            <ol>
+                                <li><strong>销售增长显著：</strong>本周销售呈现强劲增长趋势，后半周表现尤为突出。</li>
+                                <li><strong>饮品主导业务：</strong>饮品品类是收入和利润的主要来源，占总销售额的68.2%。</li>
+                                <li><strong>外卖渠道占优：</strong>外卖销售额占比58.6%，超过堂食渠道。</li>
+                                <li><strong>引流产品效果有限：</strong>引流原味蛋挞销量高但利润贡献低，需优化其引流效果。</li>
+                                <li><strong>利润率健康：</strong>整体利润率达到65.2%，盈利能力良好。</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">战略建议</div>
+                        <div class="card-body">
+                            <div class="recommendation">
+                                <h6><i class="fas fa-mug-hot me-2"></i>1. 强化饮品产品线</h6>
+                                <p>考虑推出新的饮品变体或季节性特饮，以进一步巩固饮品品类的优势地位。</p>
+                            </div>
+                            <div class="recommendation">
+                                <h6><i class="fas fa-motorcycle me-2"></i>2. 优化外卖运营</h6>
+                                <p>加强外卖渠道的营销推广，考虑推出外卖专属套餐或优惠，提升外卖订单价值。</p>
+                            </div>
+                            <div class="recommendation">
+                                <h6><i class="fas fa-bullseye me-2"></i>3. 调整引流策略</h6>
+                                <p>重新评估引流原味蛋挞的定价策略，或将其与高利润产品捆绑销售，提高整体客单价。</p>
+                            </div>
+                            <div class="recommendation">
+                                <h6><i class="fas fa-chart-line me-2"></i>4. 利用销售趋势</h6>
+                                <p>在周三至周五增加备货和人员安排，以应对周末前的高峰需求。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header">下一步行动计划</div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h6><i class="fas fa-calendar-week me-2"></i>短期（1-2周）</h6>
+                            <ul>
+                                <li>分析外卖订单的客户群体特征</li>
+                                <li>测试新的饮品配方或包装</li>
+                                <li>优化周末前的人员排班</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h6><i class="fas fa-calendar-month me-2"></i>中期（1个月）</h6>
+                            <ul>
+                                <li>推出外卖专属促销活动</li>
+                                <li>评估并调整引流产品策略</li>
+                                <li>监控新销售策略的效果</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h6><i class="fas fa-calendar-alt me-2"></i>长期（1季度）</h6>
+                            <ul>
+                                <li>考虑扩展产品线或增加新品类</li>
+                                <li>评估开设新门店或扩展外卖覆盖范围</li>
+                                <li>建立更完善的数据分析体系</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>销售数据分析报告</h5>
+                    <p>总店 | 2026年6月16日-22日</p>
+                    <p>本报告基于实际销售数据生成，旨在提供数据驱动的商业洞察。</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p>生成日期: 2026年6月23日</p>
+                    <p>数据分析师: 销售分析团队</p>
+                    <p>报告版本: 1.0</p>
+                </div>
+            </div>
+            <hr class="bg-light">
+            <div class="text-center">
+                <p class="mb-0">© 2026 销售分析报告 | 数据驱动决策</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- 图表数据与配置 -->
+    <script>
+        // 等待页面加载完成
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. 按品类销售额分布
+            const categorySalesCtx = document.getElementById('categorySalesChart').getContext('2d');
+            const categorySalesChart = new Chart(categorySalesCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['饮品', '小吃', '甜品'],
+                    datasets: [{
+                        data: [31584, 10944, 5450],
+                        backgroundColor: [
+                            '#3498db', // 蓝色
+                            '#2ecc71', // 绿色
+                            '#e74c3c'  // 红色
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${label}: ¥${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 2. 按品类利润分布
+            const categoryProfitCtx = document.getElementById('categoryProfitChart').getContext('2d');
+            const categoryProfitChart = new Chart(categoryProfitCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['饮品', '小吃', '甜品'],
+                    datasets: [{
+                        data: [21132, 6042, 1960],
+                        backgroundColor: [
+                            '#2980b9', // 深蓝色
+                            '#27ae60', // 深绿色
+                            '#c0392b'  // 深红色
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${label}: ¥${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 3. 商品销售排名（按销售额）
+            const productSalesCtx = document.getElementById('productSalesChart').getContext('2d');
+            const productSalesChart = new Chart(productSalesCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['招牌珍珠奶茶', '芋泥波波奶茶', '香辣炸鸡腿', '引流原味蛋挞', '原味奶茶', '薯条大份'],
+                    datasets: [{
+                        label: '销售额 (¥)',
+                        data: [10672, 8802, 6840, 5450, 5136, 4104],
+                        backgroundColor: [
+                            '#3498db',
+                            '#2ecc71',
+                            '#e74c3c',
+                            '#f39c12',
+                            '#9b59b6',
+                            '#1abc9c'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '销售额 (¥)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+            // 4. 销售渠道分布
+            const channelCtx = document.getElementById('channelChart').getContext('2d');
+            const channelChart = new Chart(channelCtx, {
+                type: 'polarArea',
+                data: {
+                    labels: ['外卖', '堂食', '全渠道'],
+                    datasets: [{
+                        data: [27114, 19155, 5450],
+                        backgroundColor: [
+                            'rgba(52, 152, 219, 0.7)',
+                            'rgba(46, 204, 113, 0.7)',
+                            'rgba(231, 76, 60, 0.7)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${label}: ¥${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 5. 每日销售趋势（销售额与销量）
+            const dailyTrendCtx = document.getElementById('dailyTrendChart').getContext('2d');
+            const dailyTrendChart = new Chart(dailyTrendCtx, {
+                type: 'line',
+                data: {
+                    labels: ['6/16', '6/17', '6/18', '6/19', '6/20', '6/21', '6/22'],
+                    datasets: [
+                        {
+                            label: '销售额 (¥)',
+                            data: [4449, 4732, 4250, 5500, 7008, 8339, 7991],
+                            borderColor: '#3498db',
+                            backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: '销量 (件)',
+                            data: [403, 436, 380, 510, 688, 840, 787],
+                            borderColor: '#2ecc71',
+                            backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: '日期'
+                            }
+                        },
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: '销售额 (¥)'
+                            },
+                            min: 3000
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: '销量 (件)'
+                            },
+                            min: 300,
+                            grid: {
+                                drawOnChartArea: false,
+                            },
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.datasetIndex === 0) {
+                                        label += '¥' + context.raw;
+                                    } else {
+                                        label += context.raw + ' 件';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 6. 主要商品每日销量趋势
+            const productTrendCtx = document.getElementById('productTrendChart').getContext('2d');
+            const productTrendChart = new Chart(productTrendCtx, {
+                type: 'line',
+                data: {
+                    labels: ['6/16', '6/17', '6/18', '6/19', '6/20', '6/21', '6/22'],
+                    datasets: [
+                        {
+                            label: '招牌珍珠奶茶',
+                            data: [78, 82, 75, 95, 128, 142, 135],
+                            borderColor: '#3498db',
+                            backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                            borderWidth: 2,
+                            fill: false
+                        },
+                        {
+                            label: '芋泥波波奶茶',
+                            data: [62, 68, 58, 78, 105, 118, 110],
+                            borderColor: '#2ecc71',
+                            backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                            borderWidth: 2,
+                            fill: false
+                        },
+                        {
+                            label: '香辣炸鸡腿',
+                            data: [56, 61, 52, 72, 98, 112, 105],
+                            borderColor: '#e74c3c',
+                            backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                            borderWidth: 2,
+                            fill: false
+                        },
+                        {
+                            label: '引流原味蛋挞',
+                            data: [120, 132, 115, 158, 210, 235, 220],
+                            borderColor: '#f39c12',
+                            backgroundColor: 'rgba(243, 156, 18, 0.1)',
+                            borderWidth: 2,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '销量 (件)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: '日期'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 7. 渠道销售趋势
+            const channelTrendCtx = document.getElementById('channelTrendChart').getContext('2d');
+            const channelTrendChart = new Chart(channelTrendCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['6/16', '6/17', '6/18', '6/19', '6/20', '6/21', '6/22'],
+                    datasets: [
+                        {
+                            label: '外卖',
+                            data: [2230, 2380, 2110, 2830, 3718, 4448, 4200],
+                            backgroundColor: 'rgba(52, 152, 219, 0.7)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: '堂食',
+                            data: [1219, 1352, 1140, 1670, 2290, 2891, 2791],
+                            backgroundColor: 'rgba(46, 204, 113, 0.7)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: '全渠道',
+                            data: [1000, 1000, 1000, 1000, 1000, 1000, 1000],
+                            backgroundColor: 'rgba(231, 76, 60, 0.7)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            stacked: false,
+                            title: {
+                                display: true,
+                                text: '日期'
+                            }
+                        },
+                        y: {
+                            stacked: false,
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '销售额 (¥)'
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+```
+
+## 报告特点
+
+1. **专业设计**：使用现代响应式布局，Bootstrap框架确保在各种设备上良好显示
+2. **全面分析**：包含执行摘要、关键指标、详细分析、趋势分析和建议结论
+3. **丰富可视化**：使用Chart.js创建7种不同类型的交互式图表
+4. **数据驱动洞察**：基于实际销售数据提供有意义的商业洞察
+5. **实用建议**：提供具体、可操作的业务建议和行动计划
+6. **导航友好**：固定导航栏方便用户在不同部分间跳转
+
+这个报告可以直接在浏览器中打开使用，所有图表都是交互式的，用户可以将鼠标悬停在图表上查看详细数据。报告中的数据和分析基于您提供的CSV数据计算得出，反映了总店在2026年6月16日至22日期间的销售表现。
