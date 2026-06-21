@@ -1,0 +1,354 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>数据可视化分析大屏</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Microsoft Yahei', sans-serif;
+}
+body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f172a 100%);
+  color: #fff;
+}
+/* 顶部标题栏 */
+.header {
+  height: 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  background: rgba(16, 22, 56, 0.7);
+  border-bottom: 1px solid rgba(102, 176, 255, 0.3);
+  box-shadow: 0 0 15px rgba(102, 176, 255, 0.2) inset;
+}
+.header .title {
+  font-size: 28px;
+  font-weight: bold;
+  background: linear-gradient(90deg, #66b0ff, #3cf0ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 10px rgba(102, 176, 255, 0.5);
+}
+.header .time {
+  font-size: 18px;
+  color: #a8c7fa;
+}
+/* KPI区域 */
+.kpi-wrap {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 20px;
+  height: 120px;
+}
+.kpi-card {
+  width: 24%;
+  background: linear-gradient(135deg, rgba(24, 33, 72, 0.8) 0%, rgba(16, 22, 56, 0.8) 100%);
+  border: 1px solid rgba(102, 176, 255, 0.2);
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(102, 176, 255, 0.15);
+  padding: 15px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  transition: all 0.3s ease;
+}
+.kpi-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0 20px rgba(102, 176, 255, 0.3);
+}
+.kpi-label {
+  font-size: 16px;
+  color: #a8c7fa;
+}
+.kpi-value {
+  font-size: 32px;
+  font-weight: bold;
+  background: linear-gradient(90deg, #3cf0ff, #72ffb3);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+/* 图表区域 */
+.chart-wrap {
+  padding: 0 20px 15px;
+  height: calc(100vh - 60px - 120px - 30px);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-content: space-between;
+}
+.chart-item {
+  width: 32.8%;
+  height: 49%;
+  background: rgba(16, 22, 56, 0.7);
+  border: 1px solid rgba(102, 176, 255, 0.2);
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(102, 176, 255, 0.1);
+  padding: 10px;
+}
+.chart-title {
+  font-size: 16px;
+  color: #a8c7fa;
+  height: 30px;
+  line-height: 30px;
+  padding-left: 10px;
+  border-left: 3px solid #66b0ff;
+}
+.chart-container {
+  width: 100%;
+  height: calc(100% - 30px);
+}
+/* 底部 */
+.footer {
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+  font-size: 12px;
+  color: rgba(255,255,255,0.4);
+  background: rgba(16, 22, 56, 0.7);
+  border-top: 1px solid rgba(102, 176, 255, 0.2);
+}
+</style>
+</head>
+<body>
+<!-- 顶部 -->
+<div class="header">
+  <div class="title">数据可视化分析大屏</div>
+  <div class="time" id="currentTime"></div>
+</div>
+<!-- KPI -->
+<div class="kpi-wrap">
+  <div class="kpi-card">
+    <div class="kpi-label">总访问量</div>
+    <div class="kpi-value" data-target="1289342">0</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">活跃用户</div>
+    <div class="kpi-value" data-target="392451">0</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">转化率</div>
+    <div class="kpi-value" data-target="24.6">0</div>%
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">成交额(万元)</div>
+    <div class="kpi-value" data-target="9872.5">0</div>
+  </div>
+</div>
+<!-- 图表区 -->
+<div class="chart-wrap">
+  <div class="chart-item">
+    <div class="chart-title">月度访问趋势</div>
+    <div class="chart-container" id="chart1"></div>
+  </div>
+  <div class="chart-item">
+    <div class="chart-title">用户地域分布</div>
+    <div class="chart-container" id="chart2"></div>
+  </div>
+  <div class="chart-item">
+    <div class="chart-title">渠道占比</div>
+    <div class="chart-container" id="chart3"></div>
+  </div>
+  <div class="chart-item">
+    <div class="chart-title">用户画像维度</div>
+    <div class="chart-container" id="chart4"></div>
+  </div>
+  <div class="chart-item">
+    <div class="chart-title">访问时长分布</div>
+    <div class="chart-container" id="chart5"></div>
+  </div>
+  <div class="chart-item">
+    <div class="chart-title">转化漏斗</div>
+    <div class="chart-container" id="chart6"></div>
+  </div>
+</div>
+<!-- 底部 -->
+<div class="footer">
+  数据来源：运营数据中心 | 最后更新时间：2024-05-20 10:30:00
+</div>
+<script>
+// 实时时间更新
+function updateTime() {
+  const now = new Date();
+  const timeStr = now.getFullYear() + '-' + 
+    String(now.getMonth()+1).padStart(2,'0') + '-' + 
+    String(now.getDate()).padStart(2,'0') + ' ' + 
+    String(now.getHours()).padStart(2,'0') + ':' + 
+    String(now.getMinutes()).padStart(2,'0') + ':' + 
+    String(now.getSeconds()).padStart(2,'0');
+  document.getElementById('currentTime').textContent = timeStr;
+}
+updateTime();
+setInterval(updateTime, 1000);
+
+// 数字计数动画
+function countUp(el, target, duration = 2000) {
+  const start = 0;
+  const startTime = performance.now();
+  const isDecimal = target.toString().indexOf('.') > -1;
+  function step(timestamp) {
+    const progress = Math.min((timestamp - startTime) / duration, 1);
+    let value = progress * (target - start) + start;
+    if (isDecimal) {
+      el.textContent = value.toFixed(1);
+    } else {
+      el.textContent = Math.floor(value).toLocaleString();
+    }
+    if (progress < 1) {
+      requestAnimationFrame(step);
+    }
+  }
+  requestAnimationFrame(step);
+}
+// 初始化KPI动画
+document.querySelectorAll('.kpi-value').forEach(el => {
+  const target = parseFloat(el.dataset.target);
+  countUp(el, target);
+});
+
+// 数据集
+const dataset1 = {
+  xAxis: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
+  value: [12000, 19000, 15000, 25000, 22000, 30000, 38000, 36000, 42000, 45000, 48000, 52000]
+};
+const dataset2 = {
+  city: ['北京','上海','广州','深圳','杭州','成都','其他'],
+  value: [25, 22, 15, 13, 10, 8, 7]
+};
+const dataset3 = [
+  {name: '搜索引擎', value: 35},
+  {name: '直接访问', value: 25},
+  {name: '社交媒体', value: 20},
+  {name: '外部链接', value: 15},
+  {name: '其他', value: 5}
+];
+const dataset4 = {
+  indicator: [
+    {name: '年龄', max: 100},
+    {name: '活跃度', max: 100},
+    {name: '消费能力', max: 100},
+    {name: '留存率', max: 100},
+    {name: '传播度', max: 100}
+  ],
+  value: [75, 82, 68, 70, 60]
+};
+const dataset5 = [
+  {name: '0-1分钟', value: 3200},
+  {name: '1-3分钟', value: 4500},
+  {name: '3-5分钟', value: 2800},
+  {name: '5-10分钟', value: 1800},
+  {name: '10分钟以上', value: 1200}
+];
+const dataset6 = [
+  {name: '访问', value: 10000},
+  {name: '注册', value: 6800},
+  {name: '下单', value: 3200},
+  {name: '支付', value: 2400},
+  {name: '复购', value: 1200}
+];
+
+// 初始化图表
+const chart1 = echarts.init(document.getElementById('chart1'));
+chart1.setOption({
+  color: ['#66b0ff'],
+  tooltip: {trigger: 'axis'},
+  grid: {left: '3%', right: '4%', bottom: '3%', containLabel: true},
+  xAxis: {
+    type: 'category',
+    data: dataset1.xAxis,
+    axisLine: {lineStyle: {color: 'rgba(255,255,255,0.3)'}},
+    axisLabel: {color: 'rgba(255,255,255,0.6)'}
+  },
+  yAxis: {
+    type: 'value',
+    axisLine: {lineStyle: {color: 'rgba(255,255,255,0.3)'}},
+    axisLabel: {color: 'rgba(255,255,255,0.6)'},
+    splitLine: {lineStyle: {color: 'rgba(255,255,255,0.1)'}}
+  },
+  series: [{
+    data: dataset1.value,
+    type: 'line',
+    smooth: true,
+    areaStyle: {
+      color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+        {offset: 0, color: 'rgba(102, 176, 255, 0.5)'},
+        {offset: 1, color: 'rgba(102, 176, 255, 0.05)'}
+      ])
+    }
+  }]
+});
+
+const chart2 = echarts.init(document.getElementById('chart2'));
+chart2.setOption({
+  color: ['#3cf0ff', '#66b0ff', '#72ffb3', '#ffd166', '#f07178', '#c792ea', '#82aaff'],
+  tooltip: {trigger: 'item'},
+  grid: {left: '3%', right: '4%', bottom: '3%', containLabel: true},
+  xAxis: {
+    type: 'category',
+    data: dataset2.city,
+    axisLine: {lineStyle: {color: 'rgba(255,255,255,0.3)'}},
+    axisLabel: {color: 'rgba(255,255,255,0.6)', rotate: 30}
+  },
+  yAxis: {
+    type: 'value',
+    axisLine: {lineStyle: {color: 'rgba(255,255,255,0.3)'}},
+    axisLabel: {color: 'rgba(255,255,255,0.6)'},
+    splitLine: {lineStyle: {color: 'rgba(255,255,255,0.1)'}}
+  },
+  series: [{
+    data: dataset2.value,
+    type: 'bar',
+    itemStyle: {
+      borderRadius: 4
+    }
+  }]
+});
+
+const chart3 = echarts.init(document.getElementById('chart3'));
+chart3.setOption({
+  color: ['#3cf0ff', '#66b0ff', '#72ffb3', '#ffd166', '#f07178'],
+  tooltip: {trigger: 'item'},
+  legend: {
+    bottom: '0%',
+    textStyle: {color: 'rgba(255,255,255,0.6)'}
+  },
+  series: [{
+    name: '渠道占比',
+    type: 'pie',
+    radius: ['40%', '70%'],
+    avoidLabelOverlap: false,
+    itemStyle: {
+      borderRadius: 4,
+      borderColor: 'rgba(16, 22, 56, 0.7)',
+      borderWidth: 2
+    },
+    label: {
+      show: true,
+      color: 'rgba(255,255,255,0.8)'
+    },
+    emphasis: {
+      label: {show: true, fontSize: 16, fontWeight: 'bold'}
+    },
+    data: dataset3
+  }]
+});
+
+const chart4 = echarts.init(document.getElementById('chart4'));
+chart4.setOption({
+  color: ['#72ffb3'],
+  tooltip: {trigger: 'item'},
+  radar: {
+    indicator: dataset4.indicator,
+    axisName: {color: 'rgba(255,255,255,0.6)'},
+    splitLine: {lineStyle: {color: 'rgba(255,255,255,0.1)'}},
+    splitArea: {areaStyle: {color: 'rgba(255,255,255,0.02)'}},
+    axisLine: {lineStyle: {color: 'rgba(2
