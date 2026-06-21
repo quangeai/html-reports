@@ -1,0 +1,858 @@
+### 动物消消乐游戏设计说明
+
+根据需求，我设计了一款视觉精美、交互流畅的动物消消乐游戏。游戏采用可爱的动物图标作为消除元素，包含完整的游戏机制：得分系统、关卡进度、步数限制、特效动画等，符合现代游戏UI设计标准。
+
+游戏特点：
+- 清新可爱的视觉风格，明亮和谐的色彩搭配
+- 流畅的拖拽交换和消除动画效果
+- 完整的游戏状态管理（得分、关卡、剩余步数）
+- 响应式设计，适配不同屏幕尺寸
+- 丰富的交互反馈和特效
+
+以下是完整的游戏代码：
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>动物消消乐</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <!-- Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4F46E5',
+                        secondary: '#EC4899',
+                        accent: '#F59E0B',
+                        success: '#10B981',
+                        warning: '#F59E0B',
+                        danger: '#EF4444',
+                        neutral: '#1F2937',
+                        'neutral-light': '#F3F4F6'
+                    },
+                    fontFamily: {
+                        game: ['"Comic Sans MS"', 'cursive', 'sans-serif']
+                    },
+                    animation: {
+                        'bounce-slow': 'bounce 2s infinite',
+                        'fade-out': 'fadeOut 0.5s forwards',
+                        'scale-in': 'scaleIn 0.3s forwards',
+                        'wiggle': 'wiggle 0.5s ease-in-out'
+                    },
+                    keyframes: {
+                        fadeOut: {
+                            '0%': { opacity: '1', transform: 'scale(1)' },
+                            '50%': { opacity: '0.5', transform: 'scale(1.2)' },
+                            '100%': { opacity: '0', transform: 'scale(0)' }
+                        },
+                        scaleIn: {
+                            '0%': { transform: 'scale(0)' },
+                            '100%': { transform: 'scale(1)' }
+                        },
+                        wiggle: {
+                            '0%, 100%': { transform: 'rotate(-3deg)' },
+                            '50%': { transform: 'rotate(3deg)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            }
+            .tile-shadow {
+                box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.2), 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            }
+            .board-shadow {
+                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            }
+            .animal-tile {
+                transition: transform 0.2s ease, background-color 0.2s ease;
+            }
+            .animal-tile:hover {
+                transform: scale(1.05);
+            }
+            .animal-tile.dragging {
+                opacity: 0.7;
+                transform: scale(1.1);
+                z-index: 50;
+            }
+            .score-popup {
+                animation: scorePopup 1s forwards;
+                position: absolute;
+                font-weight: bold;
+                pointer-events: none;
+            }
+            @keyframes scorePopup {
+                0% { opacity: 0; transform: translateY(0); }
+                50% { opacity: 1; transform: translateY(-20px); }
+                100% { opacity: 0; transform: translateY(-40px); }
+            }
+            .progress-bar {
+                height: 12px;
+                border-radius: 6px;
+                background: rgba(255,255,255,0.2);
+                overflow: hidden;
+            }
+            .progress-bar-fill {
+                height: 100%;
+                background: linear-gradient(90deg, #10B981, #3B82F6);
+                transition: width 0.5s ease;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-indigo-500 to-purple-600 min-h-screen font-game text-white overflow-x-hidden">
+    <!-- 页面加载动画 -->
+    <div id="loading-screen" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-gradient-to-br from-indigo-600 to-purple-700">
+        <div class="text-[clamp(2rem,5vw,4rem)] font-bold text-white text-shadow mb-6 animate-bounce-slow">
+            动物消消乐
+        </div>
+        <div class="w-64 h-4 bg-white/20 rounded-full overflow-hidden">
+            <div id="loading-bar" class="h-full bg-gradient-to-r from-green-400 to-blue-500 w-0 transition-all duration-1000"></div>
+        </div>
+        <p class="mt-4 text-white/80">载入游戏中...</p>
+    </div>
+
+    <!-- 游戏主容器 -->
+    <div class="container mx-auto px-4 py-6 max-w-4xl">
+        <!-- 头部信息 -->
+        <header class="mb-6">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div>
+                    <h1 class="text-[clamp(1.8rem,4vw,3rem)] font-bold text-shadow text-center md:text-left">动物消消乐</h1>
+                    <p class="text-white/80 text-center md:text-left">匹配三个或更多相同动物来消除它们</p>
+                </div>
+                
+                <div class="flex gap-3">
+                    <button id="restart-btn" class="bg-accent hover:bg-accent/90 text-white font-bold py-2 px-4 rounded-lg transition-all transform hover:scale-105 active:scale-95 flex items-center gap-2 shadow-lg">
+                        <i class="fa fa-refresh"></i>
+                        <span>重新开始</span>
+                    </button>
+                    <button id="sound-toggle" class="bg-white/20 hover:bg-white/30 text-white font-bold py-2 px-4 rounded-lg transition-all transform hover:scale-105 active:scale-95 flex items-center shadow-lg">
+                        <i class="fa fa-volume-up"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- 游戏状态栏 -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 board-shadow">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-white/70 text-sm">分数</p>
+                        <p id="score" class="text-2xl font-bold">0</p>
+                    </div>
+                    <div class="w-12 h-12 bg-accent/20 rounded-full flex items-center justify-center text-accent">
+                        <i class="fa fa-star text-xl"></i>
+                    </div>
+                </div>
+                <div class="progress-bar mt-3">
+                    <div id="score-progress" class="progress-bar-fill" style="width: 0%"></div>
+                </div>
+            </div>
+            
+            <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 board-shadow">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-white/70 text-sm">关卡</p>
+                        <p id="level" class="text-2xl font-bold">1</p>
+                    </div>
+                    <div class="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center text-primary">
+                        <i class="fa fa-flag text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-3 text-sm text-white/70">
+                    下一关: <span id="next-level-score">1000</span> 分
+                </div>
+            </div>
+            
+            <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 board-shadow">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-white/70 text-sm">剩余步数</p>
+                        <p id="moves-left" class="text-2xl font-bold">30</p>
+                    </div>
+                    <div class="w-12 h-12 bg-secondary/20 rounded-full flex items-center justify-center text-secondary">
+                        <i class="fa fa-shoe-prints text-xl"></i>
+                    </div>
+                </div>
+                <div class="progress-bar mt-3">
+                    <div id="moves-progress" class="progress-bar-fill bg-gradient-to-r from-secondary to-accent" style="width: 100%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 游戏区域 -->
+        <div class="flex justify-center mb-8">
+            <div id="game-board" class="grid gap-1 p-3 bg-white/15 backdrop-blur-sm rounded-xl board-shadow select-none"></div>
+        </div>
+
+        <!-- 游戏提示 -->
+        <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 board-shadow mb-8">
+            <h3 class="font-bold text-lg mb-2 flex items-center gap-2">
+                <i class="fa fa-lightbulb-o text-accent"></i> 游戏提示
+            </h3>
+            <ul class="list-disc pl-5 space-y-1 text-white/80">
+                <li>交换相邻的两个动物，让三个或更多相同的动物连成一线</li>
+                <li>每次成功匹配会消耗1步，匹配失败不会消耗步数</li>
+                <li>一次消除更多动物可以获得额外分数奖励</li>
+                <li>达到目标分数即可进入下一关</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 游戏结束弹窗 -->
+    <div id="game-over-modal" class="fixed inset-0 z-40 flex items-center justify-center bg-black/60 backdrop-blur-sm hidden">
+        <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl transform transition-all">
+            <div class="text-center">
+                <div class="w-20 h-20 mx-auto bg-secondary/20 rounded-full flex items-center justify-center text-secondary mb-4">
+                    <i class="fa fa-trophy text-4xl"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-neutral mb-2" id="game-over-title">游戏结束</h2>
+                <p class="text-neutral/70 mb-6" id="game-over-message">你获得了不错的成绩！</p>
+                
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="bg-neutral-light rounded-xl p-4">
+                        <p class="text-neutral/70 text-sm">最终得分</p>
+                        <p id="final-score" class="text-2xl font-bold text-neutral">0</p>
+                    </div>
+                    <div class="bg-neutral-light rounded-xl p-4">
+                        <p class="text-neutral/70 text-sm">到达关卡</p>
+                        <p id="final-level" class="text-2xl font-bold text-neutral">1</p>
+                    </div>
+                </div>
+                
+                <button id="play-again-btn" class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 px-6 rounded-lg transition-all transform hover:scale-105 active:scale-95 shadow-lg">
+                    再玩一次
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 下一关弹窗 -->
+    <div id="next-level-modal" class="fixed inset-0 z-40 flex items-center justify-center bg-black/60 backdrop-blur-sm hidden">
+        <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl transform transition-all">
+            <div class="text-center">
+                <div class="w-20 h-20 mx-auto bg-success/20 rounded-full flex items-center justify-center text-success mb-4">
+                    <i class="fa fa-arrow-up text-4xl"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-neutral mb-2">恭喜！</h2>
+                <p class="text-neutral/70 mb-6" id="level-up-message">你已成功进入下一关</p>
+                
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="bg-neutral-light rounded-xl p-4">
+                        <p class="text-neutral/70 text-sm">新关卡</p>
+                        <p id="new-level" class="text-2xl font-bold text-neutral">2</p>
+                    </div>
+                    <div class="bg-neutral-light rounded-xl p-4">
+                        <p class="text-neutral/70 text-sm">目标分数</p>
+                        <p id="new-target-score" class="text-2xl font-bold text-neutral">2000</p>
+                    </div>
+                </div>
+                
+                <button id="continue-btn" class="w-full bg-success hover:bg-success/90 text-white font-bold py-3 px-6 rounded-lg transition-all transform hover:scale-105 active:scale-95 shadow-lg">
+                    继续游戏
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 游戏配置
+            const config = {
+                gridSize: 8,
+                tileSize: window.innerWidth < 640 ? 40 : 55,
+                animalTypes: ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼'],
+                initialMoves: 30,
+                baseScore: 10,
+                levelScoreMultiplier: 1000,
+                moveReductionPerLevel: 2,
+                minMoves: 15
+            };
+            
+            // 游戏状态
+            let gameState = {
+                score: 0,
+                level: 1,
+                movesLeft: config.initialMoves,
+                board: [],
+                selectedTile: null,
+                isAnimating: false,
+                soundEnabled: true,
+                gameOver: false
+            };
+            
+            // DOM 元素
+            const gameBoard = document.getElementById('game-board');
+            const scoreElement = document.getElementById('score');
+            const levelElement = document.getElementById('level');
+            const movesLeftElement = document.getElementById('moves-left');
+            const scoreProgress = document.getElementById('score-progress');
+            const movesProgress = document.getElementById('moves-progress');
+            const nextLevelScoreElement = document.getElementById('next-level-score');
+            const restartBtn = document.getElementById('restart-btn');
+            const soundToggle = document.getElementById('sound-toggle');
+            const gameOverModal = document.getElementById('game-over-modal');
+            const finalScoreElement = document.getElementById('final-score');
+            const finalLevelElement = document.getElementById('final-level');
+            const playAgainBtn = document.getElementById('play-again-btn');
+            const gameOverTitle = document.getElementById('game-over-title');
+            const gameOverMessage = document.getElementById('game-over-message');
+            const nextLevelModal = document.getElementById('next-level-modal');
+            const newLevelElement = document.getElementById('new-level');
+            const newTargetScoreElement = document.getElementById('new-target-score');
+            const levelUpMessage = document.getElementById('level-up-message');
+            const continueBtn = document.getElementById('continue-btn');
+            const loadingScreen = document.getElementById('loading-screen');
+            const loadingBar = document.getElementById('loading-bar');
+            
+            // 初始化加载进度条
+            let loadProgress = 0;
+            const loadingInterval = setInterval(() => {
+                loadProgress += Math.random() * 15;
+                if (loadProgress >= 100) {
+                    loadProgress = 100;
+                    clearInterval(loadingInterval);
+                    setTimeout(() => {
+                        loadingScreen.classList.add('animate-fade-out');
+                        setTimeout(() => {
+                            loadingScreen.style.display = 'none';
+                            initGame();
+                        }, 500);
+                    }, 500);
+                }
+                loadingBar.style.width = `${loadProgress}%`;
+            }, 200);
+            
+            // 初始化游戏
+            function initGame() {
+                gameState = {
+                    score: 0,
+                    level: 1,
+                    movesLeft: config.initialMoves,
+                    board: [],
+                    selectedTile: null,
+                    isAnimating: false,
+                    soundEnabled: gameState.soundEnabled,
+                    gameOver: false
+                };
+                
+                updateUI();
+                generateBoard();
+                renderBoard();
+            }
+            
+            // 生成游戏棋盘
+            function generateBoard() {
+                gameState.board = [];
+                for (let row = 0; row < config.gridSize; row++) {
+                    gameState.board[row] = [];
+                    for (let col = 0; col < config.gridSize; col++) {
+                        // 确保初始生成的棋盘没有可匹配的组合
+                        let animal;
+                        do {
+                            animal = config.animalTypes[Math.floor(Math.random() * config.animalTypes.length)];
+                        } while (
+                            // 检查水平方向是否已有两个相同
+                            (col >= 2 &&
+                                gameState.board[row][col-1] === animal &&
+                                gameState.board[row][col-2] === animal) ||
+                            // 检查垂直方向是否已有两个相同
+                            (row >= 2 &&
+                                gameState.board[row-1][col] === animal &&
+                                gameState.board[row-2][col] === animal)
+                        );
+                        gameState.board[row][col] = animal;
+                    }
+                }
+            }
+            
+            // 渲染游戏棋盘
+            function renderBoard() {
+                gameBoard.innerHTML = '';
+                gameBoard.style.gridTemplateColumns = `repeat(${config.gridSize}, ${config.tileSize}px)`;
+                gameBoard.style.gridTemplateRows = `repeat(${config.gridSize}, ${config.tileSize}px)`;
+                
+                for (let row = 0; row < config.gridSize; row++) {
+                    for (let col = 0; col < config.gridSize; col++) {
+                        const tile = document.createElement('div');
+                        tile.className = 'animal-tile tile-shadow rounded-lg flex items-center justify-center cursor-pointer animate-scale-in';
+                        tile.style.width = `${config.tileSize}px`;
+                        tile.style.height = `${config.tileSize}px`;
+                        tile.style.fontSize = `${config.tileSize * 0.6}px`;
+                        tile.dataset.row = row;
+                        tile.dataset.col = col;
+                        tile.textContent = gameState.board[row][col];
+                        
+                        // 添加背景色根据动物类型
+                        const animalIndex = config.animalTypes.indexOf(gameState.board[row][col]);
+                        const hues = [0, 30, 60, 120, 200, 240, 280, 320];
+                        tile.style.backgroundColor = `hsla(${hues[animalIndex]}, 70%, 50%, 0.3)`;
+                        
+                        // 触摸/鼠标事件
+                        tile.addEventListener('mousedown', startDrag);
+                        tile.addEventListener('touchstart', startDrag, { passive: true });
+                        
+                        gameBoard.appendChild(tile);
+                    }
+                }
+            }
+            
+            // 开始拖拽
+            function startDrag(e) {
+                if (gameState.isAnimating || gameState.gameOver) return;
+                
+                e.preventDefault();
+                const tile = e.currentTarget;
+                const row = parseInt(tile.dataset.row);
+                const col = parseInt(tile.dataset.col);
+                
+                if (!gameState.selectedTile) {
+                    // 选中第一个砖块
+                    gameState.selectedTile = { row, col, element: tile };
+                    tile.style.transform = 'scale(1.1)';
+                    tile.style.border = '2px solid white';
+                } else {
+                    // 选中第二个砖块，尝试交换
+                    const selectedRow = gameState.selectedTile.row;
+                    const selectedCol = gameState.selectedTile.col;
+                    
+                    // 检查是否相邻
+                    if (
+                        (Math.abs(row - selectedRow) === 1 && col === selectedCol) ||
+                        (Math.abs(col - selectedCol) === 1 && row === selectedRow)
+                    ) {
+                        // 相邻，尝试交换
+                        swapTiles(selectedRow, selectedCol, row, col);
+                    } else {
+                        // 不相邻，取消第一个选中，选中当前
+                        gameState.selectedTile.element.style.transform = '';
+                        gameState.selectedTile.element.style.border = '';
+                        gameState.selectedTile = { row, col, element: tile };
+                        tile.style.transform = 'scale(1.1)';
+                        tile.style.border = '2px solid white';
+                    }
+                }
+            }
+            
+            // 交换砖块
+            async function swapTiles(row1, col1, row2, col2) {
+                gameState.isAnimating = true;
+                
+                // 清除选中样式
+                gameState.selectedTile.element.style.transform = '';
+                gameState.selectedTile.element.style.border = '';
+                
+                // 交换数组中的值
+                const temp = gameState.board[row1][col1];
+                gameState.board[row1][col1] = gameState.board[row2][col2];
+                gameState.board[row2][col2] = temp;
+                
+                // 动画交换
+                const tile1 = document.querySelector(`[data-row="${row1}"][data-col="${col1}"]`);
+                const tile2 = document.querySelector(`[data-row="${row2}"][data-col="${col2}"]`);
+                
+                // 计算移动距离
+                const dx = (col2 - col1) * config.tileSize;
+                const dy = (row2 - row1) * config.tileSize;
+                
+                tile1.style.transition = 'transform 0.3s ease';
+                tile2.style.transition = 'transform 0.3s ease';
+                
+                tile1.style.transform = `translate(${dx}px, ${dy}px)`;
+                tile2.style.transform = `translate(${-dx}px, ${-dy}px)`;
+                
+                // 等待动画完成
+                await new Promise(resolve => setTimeout(resolve, 300));
+                
+                // 重置变换，重新渲染
+                tile1.style.transition = '';
+                tile2.style.transition = '';
+                tile1.style.transform = '';
+                tile2.style.transform = '';
+                
+                // 检查是否有匹配
+                const matches = findAllMatches();
+                
+                if (matches.length > 0) {
+                    // 有匹配，处理匹配
+                    gameState.movesLeft--;
+                    await processMatches();
+                } else {
+                    // 没有匹配，交换回去
+                    gameState.board[row2][col2] = gameState.board[row1][col1];
+                    gameState.board[row1][col1] = temp;
+                    
+                    // 动画交换回去
+                    tile1.style.transition = 'transform 0.3s ease';
+                    tile2.style.transition = 'transform 0.3s ease';
+                    
+                    tile1.style.transform = `translate(${dx}px, ${dy}px)`;
+                    tile2.style.transform = `translate(${-dx}px, ${-dy}px)`;
+                    
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                    
+                    tile1.style.transition = '';
+                    tile2.style.transition = '';
+                    tile1.style.transform = '';
+                    tile2.style.transform = '';
+                    
+                    // 抖动动画提示无法交换
+                    tile1.classList.add('animate-wiggle');
+                    tile2.classList.add('animate-wiggle');
+                    setTimeout(() => {
+                        tile1.classList.remove('animate-wiggle');
+                        tile2.classList.remove('animate-wiggle');
+                    }, 500);
+                }
+                
+                // 重置选中状态
+                gameState.selectedTile = null;
+                gameState.isAnimating = false;
+                
+                // 更新UI
+                updateUI();
+                
+                // 检查游戏是否结束
+                checkGameEnd();
+            }
+            
+            // 查找所有匹配
+            function findAllMatches() {
+                const matches = [];
+                const visited = Array(config.gridSize).fill().map(() => Array(config.gridSize).fill(false));
+                
+                // 水平匹配
+                for (let row = 0; row < config.gridSize; row++) {
+                    let count = 1;
+                    for (let col = 1; col < config.gridSize; col++) {
+                        if (gameState.board[row][col] === gameState.board[row][col-1]) {
+                            count++;
+                        } else {
+                            if (count >= 3) {
+                                for (let i = col - count; i < col; i++) {
+                                    if (!visited[row][i]) {
+                                        matches.push({ row, col: i });
+                                        visited[row][i] = true;
+                                    }
+                                }
+                            }
+                            count = 1;
+                        }
+                    }
+                    
+                    // 检查行末尾
+                    if (count >= 3) {
+                        for (let i = config.gridSize - count; i < config.gridSize; i++) {
+                            if (!visited[row][i]) {
+                                matches.push({ row, col: i });
+                                visited[row][i] = true;
+                            }
+                        }
+                    }
+                }
+                
+                // 垂直匹配
+                for (let col = 0; col < config.gridSize; col++) {
+                    let count = 1;
+                    for (let row = 1; row < config.gridSize; row++) {
+                        if (gameState.board[row][col] === gameState.board[row-1][col]) {
+                            count++;
+                        } else {
+                            if (count >= 3) {
+                                for (let i = row - count; i < row; i++) {
+                                    if (!visited[i][col]) {
+                                        matches.push({ row: i, col });
+                                        visited[i][col] = true;
+                                    }
+                                }
+                            }
+                            count = 1;
+                        }
+                    }
+                    
+                    // 检查列末尾
+                    if (count >= 3) {
+                        for (let i = config.gridSize - count; i < config.gridSize; i++) {
+                            if (!visited[i][col]) {
+                                matches.push({ row: i, col });
+                                visited[i][col] = true;
+                            }
+                        }
+                    }
+                }
+                
+                return matches;
+            }
+            
+            // 处理匹配
+            async function processMatches() {
+                let totalMatches = 0;
+                
+                while (true) {
+                    const matches = findAllMatches();
+                    if (matches.length === 0) break;
+                    
+                    totalMatches += matches.length;
+                    
+                    // 添加分数
+                    const scoreGained = matches.length * config.baseScore * gameState.level;
+                    gameState.score += scoreGained;
+                    
+                    // 显示分数动画
+                    showScorePopup(matches, scoreGained);
+                    
+                    // 标记匹配的砖块并播放消失动画
+                    for (const match of matches) {
+                        const tile = document.querySelector(`[data-row="${match.row}"][data-col="${match.col}"]`);
+                        tile.classList.add('animate-fade-out');
+                    }
+                    
+                    // 等待动画完成
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    
+                    // 移除匹配的砖块，让上面的砖块下落
+                    dropTiles();
+                    
+                    // 等待下落动画完成
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    
+                    // 填充新的砖块
+                    fillEmptyTiles();
+                    
+                    // 等待新砖块动画完成
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                    
+                    // 更新UI
+                    updateUI();
+                }
+                
+                return totalMatches;
+            }
+            
+            // 砖块下落
+            function dropTiles() {
+                for (let col = 0; col < config.gridSize; col++) {
+                    let writePos = config.gridSize - 1;
+                    
+                    // 从下往上找非空砖块
+                    for (let row = config.gridSize - 1; row >= 0; row--) {
+                        if (gameState.board[row][col] !== null) {
+                            if (row !== writePos) {
+                                // 移动砖块
+                                gameState.board[writePos][col] = gameState.board[row][col];
+                                gameState.board[row][col] = null;
+                                
+                                // 动画
+                                const tile = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+                                const distance = (writePos - row) * config.tileSize;
+                                tile.style.transition = `transform 0.5s ease`;
+                                tile.style.transform = `translateY(${distance}px)`;
+                                
+                                // 更新砖块的行列属性
+                                tile.dataset.row = writePos;
+                            }
+                            writePos--;
+                        }
+                    }
+                    
+                    // 标记空位置
+                    for (let row = writePos; row >= 0; row--) {
+                        gameState.board[row][col] = null;
+                    }
+                }
+            }
+            
+            // 填充空砖块
+            function fillEmptyTiles() {
+                for (let col = 0; col < config.gridSize; col++) {
+                    for (let row = 0; row < config.gridSize; row++) {
+                        if (gameState.board[row][col] === null) {
+                            // 生成新动物
+                            const animal = config.animalTypes[Math.floor(Math.random() * config.animalTypes.length)];
+                            gameState.board[row][col] = animal;
+                            
+                            // 找到对应的砖块元素
+                            const tile = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+                            
+                            // 重置变换
+                            tile.style.transition = '';
+                            tile.style.transform = '';
+                            tile.classList.remove('animate-fade-out');
+                            
+                            // 更新内容和样式
+                            tile.textContent = animal;
+                            const animalIndex = config.animalTypes.indexOf(animal);
+                            const hues = [0, 30, 60, 120, 200, 240, 280, 320];
+                            tile.style.backgroundColor = `hsla(${hues[animalIndex]}, 70%, 50%, 0.3)`;
+                            
+                            // 添加出现动画
+                            tile.classList.add('animate-scale-in');
+                            setTimeout(() => {
+                                tile.classList.remove('animate-scale-in');
+                            }, 300);
+                        }
+                    }
+                }
+            }
+            
+            // 显示分数弹出动画
+            function showScorePopup(matches, score) {
+                if (matches.length === 0) return;
+                
+                // 计算中心点
+                let centerX = 0, centerY = 0;
+                for (const match of matches) {
+                    const tile = document.querySelector(`[data-row="${match.row}"][data-col="${match.col}"]`);
+                    const rect = tile.getBoundingClientRect();
+                    centerX += rect.left + rect.width / 2;
+                    centerY += rect.top + rect.height / 2;
+                }
+                centerX /= matches.length;
+                centerY /= matches.length;
+                
+                // 创建分数弹出元素
+                const popup = document.createElement('div');
+                popup.className = 'score-popup text-shadow';
+                popup.textContent = `+${score}`;
+                popup.style.left = `${centerX}px`;
+                popup.style.top = `${centerY}px`;
+                popup.style.color = '#FFD700';
+                popup.style.fontSize = '20px';
+                document.body.appendChild(popup);
+                
+                // 移除元素
+                setTimeout(() => {
+                    popup.remove();
+                }, 1000);
+            }
+            
+            // 检查游戏是否结束
+            function checkGameEnd() {
+                // 检查是否达到下一关分数
+                const targetScore = gameState.level * config.levelScoreMultiplier;
+                if (gameState.score >= targetScore) {
+                    // 显示下一关弹窗
+                    gameState.isAnimating = true;
+                    newLevelElement.textContent = gameState.level + 1;
+                    newTargetScoreElement.textContent = (gameState.level + 1) * config.levelScoreMultiplier;
+                    levelUpMessage.textContent = `你已达到 ${targetScore} 分，成功进入下一关！`;
+                    nextLevelModal.classList.remove('hidden');
+                    return;
+                }
+                
+                // 检查是否还有步数
+                if (gameState.movesLeft <= 0) {
+                    gameState.gameOver = true;
+                    finalScoreElement.textContent = gameState.score;
+                    finalLevelElement.textContent = gameState.level;
+                    
+                    if (gameState.score >= gameState.level * config.levelScoreMultiplier * 0.7) {
+                        gameOverTitle.textContent = '恭喜！';
+                        gameOverMessage.textContent = `你获得了 ${gameState.score} 分，成绩不错！`;
+                    } else {
+                        gameOverTitle.textContent = '游戏结束';
+                        gameOverMessage.textContent = '再试一次，你可以做得更好！';
+                    }
+                    
+                    gameOverModal.classList.remove('hidden');
+                }
+            }
+            
+            // 进入下一关
+            function nextLevel() {
+                gameState.level++;
+                // 增加步数，但每关减少2步，最少15步
+                const movesForLevel = Math.max(config.initialMoves - (gameState.level - 1) * config.moveReductionPerLevel, config.minMoves);
+                gameState.movesLeft = movesForLevel;
+                nextLevelModal.classList.add('hidden');
+                gameState.isAnimating = false;
+                generateBoard();
+                renderBoard();
+                updateUI();
+            }
+            
+            // 更新UI
+            function updateUI() {
+                scoreElement.textContent = gameState.score;
+                levelElement.textContent = gameState.level;
+                movesLeftElement.textContent = gameState.movesLeft;
+                
+                // 计算进度条
+                const targetScore = gameState.level * config.levelScoreMultiplier;
+                const scorePercent = Math.min(100, (gameState.score / targetScore) * 100);
+                scoreProgress.style.width = `${scorePercent}%`;
+                
+                const initialMoves = Math.max(config.initialMoves - (gameState.level - 1) * config.moveReductionPerLevel, config.minMoves);
+                const movesPercent = Math.max(0, (gameState.movesLeft / initialMoves) * 100);
+                movesProgress.style.width = `${movesPercent}%`;
+                
+                nextLevelScoreElement.textContent = targetScore;
+            }
+            
+            // 事件监听
+            restartBtn.addEventListener('click', () => {
+                if (confirm('确定要重新开始游戏吗？当前进度将会丢失。')) {
+                    initGame();
+                }
+            });
+            
+            soundToggle.addEventListener('click', () => {
+                gameState.soundEnabled = !gameState.soundEnabled;
+                const icon = soundToggle.querySelector('i');
+                if (gameState.soundEnabled) {
+                    icon.classList.remove('fa-volume-off');
+                    icon.classList.add('fa-volume-up');
+                } else {
+                    icon.classList.remove('fa-volume-up');
+                    icon.classList.add('fa-volume-off');
+                }
+            });
+            
+            playAgainBtn.addEventListener('click', () => {
+                gameOverModal.classList.add('hidden');
+                initGame();
+            });
+            
+            continueBtn.addEventListener('click', nextLevel);
+            
+            // 窗口大小改变时重新渲染
+            window.addEventListener('resize', () => {
+                const newTileSize = window.innerWidth < 640 ? 40 : 55;
+                if (newTileSize !== config.tileSize) {
+                    config.tileSize = newTileSize;
+                    renderBoard();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+```
+
+游戏包含以下功能：
+1. 完整的消消乐核心玩法，包括交换、匹配、消除和砖块下落机制
+2. 分数系统和关卡进阶机制，每关难度适当提升
+3. 步数限制，增加游戏挑战性
+4. 丰富的动画效果，包括砖块交换、消除、得分弹出等
+5. 响应式设计，支持移动端和桌面端
+6. 游戏状态管理，包括开始、进行中、结束和下一关流程
+7. 美观的UI设计，采用渐变背景、毛玻璃效果和可爱的动物表情
+
+你可以直接将代码复制到HTML文件中运行，享受动物消消乐的乐趣！
