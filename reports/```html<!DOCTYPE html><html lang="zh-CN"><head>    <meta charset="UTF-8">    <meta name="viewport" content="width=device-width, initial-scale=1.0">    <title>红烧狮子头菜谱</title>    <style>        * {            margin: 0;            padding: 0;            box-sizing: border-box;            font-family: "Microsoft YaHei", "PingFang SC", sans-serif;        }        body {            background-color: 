@@ -1,0 +1,363 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>红烧狮子头菜谱</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+        }
+
+        body {
+            background-color: #f8f5f1;
+            color: #333;
+            line-height: 1.7;
+            padding: 20px;
+        }
+
+        .recipe-card {
+            max-width: 900px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 18px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(165, 42, 42, 0.08);
+            border-top: 8px solid #c62828;
+        }
+
+        .recipe-title {
+            text-align: center;
+            color: #b71c1c;
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 3px dashed #ffccbc;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .recipe-tagline {
+            text-align: center;
+            color: #e65100;
+            font-style: italic;
+            font-size: 1.1rem;
+            margin-bottom: 35px;
+        }
+
+        .section {
+            margin-bottom: 35px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            color: #388e3c;
+            font-size: 1.6rem;
+            margin-bottom: 20px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #a5d6a7;
+        }
+
+        .section-header::before {
+            margin-right: 12px;
+            font-size: 1.4rem;
+        }
+
+        .description {
+            font-size: 1.1rem;
+            color: #5d4037;
+            text-indent: 2em;
+            background-color: #fff8e1;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #ffb74d;
+        }
+
+        .ingredients-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 15px;
+        }
+
+        .ingredient-category {
+            margin-bottom: 25px;
+        }
+
+        .category-title {
+            color: #d84315;
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+            padding-left: 10px;
+            border-left: 4px solid #ff9800;
+        }
+
+        .ingredient-list {
+            list-style: none;
+        }
+
+        .ingredient-item {
+            background: #fbe9e7;
+            margin-bottom: 10px;
+            padding: 12px 18px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            transition: transform 0.2s;
+        }
+
+        .ingredient-item:hover {
+            transform: translateX(5px);
+            background-color: #ffccbc;
+        }
+
+        .ingredient-name {
+            font-weight: 600;
+            color: #bf360c;
+        }
+
+        .ingredient-qty {
+            color: #5d4037;
+        }
+
+        .nutrition-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+
+        .nutrition-table th,
+        .nutrition-table td {
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        .nutrition-table th {
+            background-color: #4caf50;
+            color: white;
+            font-weight: 600;
+        }
+
+        .nutrition-table tr:nth-child(even) {
+            background-color: #f1f8e9;
+        }
+
+        .nutrition-table tr:hover {
+            background-color: #e8f5e9;
+        }
+
+        .steps-list {
+            list-style: none;
+            counter-reset: step-counter;
+        }
+
+        .step-item {
+            counter-increment: step-counter;
+            background: #f3e5f5;
+            margin-bottom: 25px;
+            padding: 25px 25px 25px 80px;
+            border-radius: 12px;
+            position: relative;
+            border-left: 5px solid #7b1fa2;
+            box-shadow: 0 4px 8px rgba(123, 31, 162, 0.1);
+        }
+
+        .step-item::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #7b1fa2;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+
+        .step-highlight {
+            color: #d32f2f;
+            font-weight: 600;
+        }
+
+        .tip {
+            background-color: #e3f2fd;
+            border-left: 5px solid #2196f3;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95rem;
+            color: #1565c0;
+        }
+
+        @media (max-width: 768px) {
+            .recipe-card {
+                padding: 25px;
+            }
+            .recipe-title {
+                font-size: 2.2rem;
+            }
+            .ingredients-grid {
+                grid-template-columns: 1fr;
+            }
+            .step-item {
+                padding-left: 70px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="recipe-card">
+        <h1 class="recipe-title">红烧狮子头</h1>
+        <p class="recipe-tagline">经典淮扬名菜，宴客必备硬菜</p>
+
+        <div class="section">
+            <div class="section-header">📝 菜品描述</div>
+            <p class="description">咸鲜浓郁，外焦里嫩，经炸制锁香后慢炖入味。五花肉与藕丁的巧妙结合，带来丰富的口感层次，是经典的家常宴客硬菜，寓意团圆美满。</p>
+        </div>
+
+        <div class="section">
+            <div class="section-header">🛒 准备食材</div>
+            <div class="ingredients-grid">
+                <div class="ingredient-category">
+                    <h3 class="category-title">主料</h3>
+                    <ul class="ingredient-list">
+                        <li class="ingredient-item">
+                            <span class="ingredient-name">五花肉（三肥七瘦）</span>
+                            <span class="ingredient-qty">500克</span>
+                        </li>
+                        <li class="ingredient-item">
+                            <span class="ingredient-name">藕</span>
+                            <span class="ingredient-qty">1节（约150克）</span>
+                        </li>
+                        <li class="ingredient-item">
+                            <span class="ingredient-name">鸡蛋</span>
+                            <span class="ingredient-qty">1个</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="ingredient-category">
+                    <h3 class="category-title">辅料与调味</h3>
+                    <ul class="ingredient-list">
+                        <li class="ingredient-item">
+                            <span class="ingredient-name">葱姜蒜片</span>
+                            <span class="ingredient-qty">适量</span>
+                        </li>
+                        <li class="ingredient-item">
+                            <span class="ingredient-name">花椒</span>
+                            <span class="ingredient-qty">1小撮</span>
+                        </li>
+                        <li class="ingredient-item">
+                            <span class="ingredient-name">八角</span>
+                            <span class="ingredient-qty">2个</span>
+                        </li>
+                        <li class="ingredient-item">
+                            <span class="ingredient-name">香叶</span>
+                            <span class="ingredient-qty">3片</span>
+                        </li>
+                        <li class="ingredient-item">
+                            <span class="ingredient-name">蚝油</span>
+                            <span class="ingredient-qty">3勺</span>
+                        </li>
+                        <li class="ingredient-item">
+                            <span class="ingredient-name">味极鲜酱油</span>
+                            <span class="ingredient-qty">3勺</span>
+                        </li>
+                        <li class="ingredient-item">
+                            <span class="ingredient-name">料酒</span>
+                            <span class="ingredient-qty">2勺</span>
+                        </li>
+                        <li class="ingredient-item">
+                            <span class="ingredient-name">白胡椒粉</span>
+                            <span class="ingredient-qty">1勺</span>
+                        </li>
+                        <li class="ingredient-item">
+                            <span class="ingredient-name">冰糖</span>
+                            <span class="ingredient-qty">20克</span>
+                        </li>
+                        <li class="ingredient-item">
+                            <span class="ingredient-name">淀粉</span>
+                            <span class="ingredient-qty">2勺</span>
+                        </li>
+                        <li class="ingredient-item">
+                            <span class="ingredient-name">盐</span>
+                            <span class="ingredient-qty">适量</span>
+                        </li>
+                        <li class="ingredient-item">
+                            <span class="ingredient-name">醋</span>
+                            <span class="ingredient-qty">1勺</span>
+                        </li>
+                        <li class="ingredient-item">
+                            <span class="ingredient-name">小油菜（装饰）</span>
+                            <span class="ingredient-qty">2棵</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-header">🥗 营养信息（每份估算）</div>
+            <table class="nutrition-table">
+                <thead>
+                    <tr>
+                        <th>营养成分</th>
+                        <th>含量</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>蛋白质</td>
+                        <td>约35g</td>
+                    </tr>
+                    <tr>
+                        <td>脂肪</td>
+                        <td>约28g</td>
+                    </tr>
+                    <tr>
+                        <td>膳食纤维</td>
+                        <td>约3g</td>
+                    </tr>
+                    <tr>
+                        <td>矿物质</td>
+                        <td>补充铁、钙等</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <div class="section-header">👨🍳 制作步骤</div>
+            <ol class="steps-list">
+                <li class="step-item">
+                    <span class="step-highlight">预处理：</span>藕洗净切末，泡入清水防氧化；花椒加开水浸泡10分钟制成花椒水；葱姜蒜切片；五花肉剁成肉末，沥干藕末水分后与肉末混合。
+                </li>
+                <li class="step-item">
+                    <span class="step-highlight">调馅上劲：</span>肉末中加入鸡蛋、1勺料酒、1勺蚝油、1勺味极鲜酱油、白胡椒粉、适量盐，<b>少量多次</b>倒入花椒水，朝同一方向搅打至粘稠，再加淀粉继续搅打。将肉馅摔打10次后团成拳头大的丸子。
+                    <div class="tip">💡 关键：搅打和摔打是丸子Q弹不散的关键。</div>
+                </li>
+                <li class="step-item">
+                    <span class="step-highlight">炸制定型：</span>油温五成热（约150℃），将丸子顺锅边轻轻放入，<b>小火炸3分钟</b>至表面金黄定型，捞出控油。
+                </li>
+                <li class="step-item">
+                    <span class="step-highlight">慢炖入味：</span>锅留底油，爆香葱姜蒜、八角、香叶。加入2勺味极鲜酱油、2勺蚝油、冰糖，加热水没过丸子，<b>小火慢炖30分钟</b>。
+                </li>
+                <li class="step-item">
+                    <span class="step-highlight">收汁摆盘：</span>大火收汁，加1勺醋提香。汤汁浓稠后捞出丸子摆盘。小油菜加少许盐和食用油焯水，过冷水后围在盘边。剩余汤汁加少许水淀粉勾芡，淋在丸子上即可。
+                </li>
+            </ol>
+        </div>
+    </div>
+</body>
+</html>
+```
