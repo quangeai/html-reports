@@ -1,0 +1,153 @@
+您好！我是专注于网页游戏开发的前端工程师，很乐意帮你实现各类键盘操控类网页游戏（比如你提到的球球大作战类型游戏）。你可以告诉我具体的需求，比如：
+- 想做什么类型的游戏？
+- 需要哪些核心功能？
+- 有没有偏好的技术栈（原生JS/Canvas或者Phaser.js框架）？
+
+我先给你提供一个**零基础可直接运行的球球大作战极简Demo**，你可以直接复制到本地HTML文件打开体验，包含基础移动、吃食物、长大的核心玩法：
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>简易球球大作战</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { display: flex; justify-content: center; align-items: center; height: 100vh; background: #f0f0f0; }
+    canvas { border: 2px solid #333; background: #fff; }
+  </style>
+</head>
+<body>
+  <!-- 游戏画布 -->
+  <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+  <script>
+    // 1. 初始化画布
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // 2. 定义玩家对象
+    const player = {
+      x: canvas.width / 2,
+      y: canvas.height / 2,
+      radius: 20,
+      speed: 5,
+      score: 0
+    };
+
+    // 3. 定义食物数组
+    const foods = [];
+    const FOOD_COUNT = 50; // 食物总数
+    const FOOD_RADIUS = 5;
+
+    // 4. 键盘状态记录
+    const keys = {
+      ArrowUp: false,
+      ArrowDown: false,
+      ArrowLeft: false,
+      ArrowRight: false,
+      w: false,
+      a: false,
+      s: false,
+      d: false
+    };
+
+    // 5. 初始化生成食物
+    function initFoods() {
+      for (let i = 0; i < FOOD_COUNT; i++) {
+        foods.push({
+          x: Math.random() * (canvas.width - FOOD_RADIUS * 2) + FOOD_RADIUS,
+          y: Math.random() * (canvas.height - FOOD_RADIUS * 2) + FOOD_RADIUS,
+          color: `hsl(${Math.random() * 360}, 70%, 60%)` // 随机彩色食物
+        });
+      }
+    }
+
+    // 6. 键盘事件监听（支持方向键+WASD双操控）
+    document.addEventListener('keydown', (e) => {
+      if (keys.hasOwnProperty(e.key)) {
+        keys[e.key] = true;
+      }
+    });
+    document.addEventListener('keyup', (e) => {
+      if (keys.hasOwnProperty(e.key)) {
+        keys[e.key] = false;
+      }
+    });
+
+    // 7. 碰撞检测：判断玩家是否吃到食物
+    function checkCollision(food) {
+      const dx = player.x - food.x;
+      const dy = player.y - food.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      return distance < player.radius + FOOD_RADIUS;
+    }
+
+    // 8. 游戏主循环
+    function gameLoop() {
+      // 清空画布
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // 更新玩家位置
+      if (keys.ArrowUp || keys.w) player.y -= player.speed;
+      if (keys.ArrowDown || keys.s) player.y += player.speed;
+      if (keys.ArrowLeft || keys.a) player.x -= player.speed;
+      if (keys.ArrowRight || keys.d) player.x += player.speed;
+
+      // 边界检测：玩家不能跑出画布
+      player.x = Math.max(player.radius, Math.min(canvas.width - player.radius, player.x));
+      player.y = Math.max(player.radius, Math.min(canvas.height - player.radius, player.y));
+
+      // 绘制食物
+      foods.forEach((food, index) => {
+        if (checkCollision(food)) {
+          // 吃到食物：玩家变大、分数增加、移除当前食物、生成新食物
+          player.radius += 1;
+          player.score += 10;
+          foods.splice(index, 1);
+          foods.push({
+            x: Math.random() * (canvas.width - FOOD_RADIUS * 2) + FOOD_RADIUS,
+            y: Math.random() * (canvas.height - FOOD_RADIUS * 2) + FOOD_RADIUS,
+            color: `hsl(${Math.random() * 360}, 70%, 60%)`
+          });
+        } else {
+          // 没吃到就绘制食物
+          ctx.beginPath();
+          ctx.arc(food.x, food.y, FOOD_RADIUS, 0, Math.PI * 2);
+          ctx.fillStyle = food.color;
+          ctx.fill();
+        }
+      });
+
+      // 绘制玩家
+      ctx.beginPath();
+      ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
+      ctx.fillStyle = '#2196F3';
+      ctx.fill();
+      ctx.strokeStyle = '#1976D2';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      // 绘制分数
+      ctx.fillStyle = '#333';
+      ctx.font = '20px Arial';
+      ctx.fillText(`得分: ${player.score}`, 20, 30);
+
+      // 循环调用
+      requestAnimationFrame(gameLoop);
+    }
+
+    // 启动游戏
+    initFoods();
+    gameLoop();
+  </script>
+</body>
+</html>
+```
+
+这个Demo的玩法说明：
+1. 用方向键或者WASD控制蓝色小球移动
+2. 吃掉彩色小光点会变大、得分增加
+3. 小球不能跑出画布边界
+
+如果你需要扩展功能（比如添加AI敌人、联机功能、更大的地图、吐球/分裂机制），或者想学习其他类型的网页游戏开发，都可以告诉我具体需求~
