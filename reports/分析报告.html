@@ -1,13 +1,3 @@
-由于您提供的输入中包含占位符（如 `{{开始.dashboard_theme}}`），为了确保生成的代码是可运行且具有演示效果的，我将为您构建一个**完整的、单文件的HTML数据可视化大屏**。
-
-在这个实现中，我扮演数据分析助手的角色，为您：
-1.  **模拟数据**：生成了符合 `{{多数据集汇总.standard_datasets}}` 结构的模拟业务数据。
-2.  **自动分析**：编写了逻辑来计算KPI（技能2），模拟了 `{{智能数据分析.output}}` 的配置生成过程（技能3）。
-3.  **可视化实现**：使用 ECharts 库渲染图表，采用“科技蓝/暗黑”风格作为默认主题。
-4.  **结论输出**：在大屏底部增加了一个“智能分析结论”模块，模拟技能4的输出。
-
-您可以直接保存以下代码为 `.html` 文件并在浏览器中打开。
-
 ```html
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -18,412 +8,441 @@
     <!-- 引入 ECharts -->
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
     <style>
-        /* 全局样式重置与字体设置 */
+        :root {
+            --bg-color: #0b1120;
+            --card-bg: rgba(30, 41, 59, 0.6);
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --accent-cyan: #06b6d4;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --border-color: rgba(148, 163, 184, 0.2);
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+        }
+
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
         }
 
         body {
-            font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
-            background-color: #0b1120; /* 深色背景 */
-            color: #e0e6ed;
-            overflow: hidden; /* 防止出现滚动条 */
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            background-image: radial-gradient(circle at 50% 50%, #1e293b 0%, #0b1120 100%);
+            min-height: 100vh;
         }
 
-        /* 顶部标题栏 */
+        /* 布局容器 */
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-template-rows: auto auto auto auto;
+            gap: 20px;
+        }
+
+        /* 标题 */
         header {
-            height: 8vh;
-            background: linear-gradient(90deg, #101b2d 0%, #1c2e4a 50%, #101b2d 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-bottom: 2px solid #2c4c7c;
+            grid-column: span 12;
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 10px;
             position: relative;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
         }
 
         header h1 {
-            font-size: 1.8rem;
-            letter-spacing: 4px;
-            color: #00f2ff;
-            text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+            font-size: 2.5rem;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px var(--accent-blue);
+            background: linear-gradient(to right, var(--accent-cyan), var(--accent-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .header-deco {
-            position: absolute;
-            bottom: -2px;
-            width: 40%;
-            height: 2px;
-            background: #00f2ff;
+        /* 卡片通用样式 */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
         }
-        .header-deco.left { left: 0; }
-        .header-deco.right { right: 0; }
 
-        /* 主体布局 */
-        main {
-            flex: 1;
-            padding: 1vh 1vw;
+        .card-title {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+            .card-title::before {
+                content: '';
+                display: block;
+                width: 4px;
+                height: 16px;
+                background: var(--accent-cyan);
+                margin-right: 10px;
+                border-radius: 2px;
+            }
+
+        /* KPI 指标区域 */
+        .kpi-section {
+            grid-column: span 12;
             display: grid;
-            grid-template-columns: 28% 44% 28%;
-            grid-template-rows: 15% 50% 35%;
-            gap: 1rem;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
         }
 
-        /* 通用卡片样式 */
-        .panel {
-            background: rgba(16, 33, 59, 0.6);
-            border: 1px solid #1e3a6e;
-            border-radius: 4px;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            padding: 10px;
-            box-shadow: inset 0 0 15px rgba(0, 100, 255, 0.1);
-        }
-
-        /* 卡片角落装饰 */
-        .panel::before, .panel::after {
-            content: '';
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            border-color: #00f2ff;
-            border-style: solid;
-            transition: all 0.3s;
-        }
-        .panel::before { top: 0; left: 0; border-width: 2px 0 0 2px; }
-        .panel::after { bottom: 0; right: 0; border-width: 0 2px 2px 0; }
-
-        .panel-title {
-            font-size: 0.9rem;
-            color: #8faecf;
-            margin-bottom: 10px;
-            padding-left: 10px;
-            border-left: 3px solid #00f2ff;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        /* KPI 指标区域 (顶部横跨) */
-        .kpi-container {
-            grid-column: 1 / 4;
-            grid-row: 1 / 2;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            background: transparent;
-            border: none;
-            box-shadow: none;
-            padding: 0;
-        }
-        
         .kpi-card {
-            background: linear-gradient(180deg, rgba(20, 60, 100, 0.4) 0%, rgba(10, 30, 60, 0.4) 100%);
-            border: 1px solid #1e3a6e;
-            width: 23%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            border-radius: 4px;
-        }
-
-        .kpi-value {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #ffcc00;
-            font-family: 'Arial', sans-serif;
-            margin-bottom: 5px;
-        }
-        
-        .kpi-label {
-            font-size: 0.9rem;
-            color: #8faecf;
-        }
-
-        .kpi-trend {
-            font-size: 0.8rem;
-            margin-top: 5px;
-        }
-        .trend-up { color: #00ff00; }
-        .trend-down { color: #ff3333; }
-
-        /* 图表容器 */
-        .chart-box {
-            flex: 1;
-            width: 100%;
-            height: 100%;
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            position: relative;
             overflow: hidden;
         }
 
-        /* 底部结论区域 */
-        .conclusion-panel {
-            grid-column: 1 / 4;
-            grid-row: 3 / 4;
+        .kpi-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-blue), transparent);
+        }
+
+        .kpi-label {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .kpi-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .kpi-unit {
+            font-size: 0.9rem;
+            color: var(--accent-cyan);
+        }
+
+        .kpi-time {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-top: 10px;
+        }
+
+        /* 图表区域 */
+        .chart-container {
+            position: relative;
+            flex: 1;
+            min-height: 300px;
+            width: 100%;
+        }
+
+        .main-chart-row {
+            grid-column: span 12;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            height: 400px;
+        }
+
+        .sub-chart-row {
+            grid-column: span 12;
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 20px;
+            height: 400px;
+        }
+
+        /* 文本分析区域 */
+        .analysis-content {
             display: flex;
             flex-direction: column;
-        }
-        
-        .conclusion-content {
-            display: flex;
             gap: 20px;
             height: 100%;
+            overflow-y: auto;
         }
-        
-        .conclusion-item {
-            flex: 1;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 15px;
-            border-radius: 4px;
-            border-left: 4px solid #00f2ff;
-        }
-        
-        .conclusion-item h4 {
-            color: #00f2ff;
-            margin-bottom: 8px;
+
+        .analysis-block h3 {
             font-size: 1rem;
+            color: var(--accent-cyan);
+            margin-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 5px;
         }
-        
-        .conclusion-item p {
+
+        .analysis-list {
+            list-style: none;
+        }
+
+        .analysis-list li {
+            margin-bottom: 12px;
             font-size: 0.9rem;
             line-height: 1.5;
-            color: #ccc;
+            padding-left: 15px;
+            position: relative;
+            color: var(--text-secondary);
+        }
+
+        .analysis-list li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--accent-blue);
+        }
+
+        .alert-item {
+            color: #fca5a5 !important;
+        }
+        .alert-item::before {
+            color: var(--danger-color) !important;
+        }
+
+        .suggestion-item {
+            color: #d1d5db !important;
         }
 
         /* 响应式调整 */
         @media (max-width: 1024px) {
-            main {
-                grid-template-columns: 1fr 1fr;
-;
-                grid-template-rows: auto auto auto auto;
-                overflow-y: auto;
+            .kpi-section {
+                grid-template-columns: 1fr;
             }
-            .kpi-container { grid-column: 1 / 3; grid-row: 1; flex-wrap: wrap; }
-            .kpi-card { width: 48%; margin-bottom: 10px; }
-            .conclusion-panel { grid-column: 1 / 3; grid-row: 4; }
+            .main-chart-row, .sub-chart-row {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+            .chart-container {
+                min-height: 350px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="header-deco left"></div>
-        <h1>数据可视化分析大屏</h1>
-        <div class="header-deco right"></div>
-    </header>
+    <div class="container">
+        <!-- 头部 -->
+        <header>
+            <h1>数据可视化分析大屏</h1>
+        </header>
 
-    <main>
-        <!-- KPI 区域 -->
-        <div class="kpi-container" id="kpi-area">
-            <!-- JS动态填充 -->
-        </div>
-
-        <!-- 左侧图表 1: 销售占比 -->
-        <div class="panel" style="grid-row: 2;">
-            <div class="panel-title">销售渠道占比</div>
-            <div id="chart-pie" class="chart-box"></div>
-        </div>
-
-        <!-- 中间图表: 核心趋势 -->
-        <div class="panel" style="grid-row: 2;">
-            <div class="panel-title">月度销售额与流量趋势</div>
-            <div id="chart-line" class="chart-box"></div>
-        </div>
-
-        <!-- 右侧图表 1: 区域排名 -->
-        <div class="panel" style="grid-row: 2;">
-            <div class="panel-title">区域销售排名 (TOP 10)</div>
-            <div id="chart-bar" class="chart-box"></div>
-        </div>
-
-        <!-- 底部: 智能分析结论 -->
-        <div class="panel conclusion-panel">
-            <div class="panel-title">📊 智能分析结论与建议 (AI Output)</div>
-            <div class="conclusion-content" id="conclusion-area">
-                <!-- JS动态填充 -->
+        <!-- KPI 核心指标 -->
+        <div class="kpi-section">
+            <div class="kpi-card">
+                <div class="kpi-label">总销售额</div>
+                <div class="kpi-value">3040.5</div>
+                <div class="kpi-unit">万元</div>
+                <div class="kpi-time">2024年1-6月</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">总订单量</div>
+                <div class="kpi-value">283,947</div>
+                <div class="kpi-unit">单</div>
+                <div class="kpi-time">2024年1-6月</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">平均客单价</div>
+                <div class="kpi-value">107.1</div>
+                <div class="kpi-unit">元</div>
+                <div class="kpi-time">2024年1-6月</div>
             </div>
         </div>
-    </main>
 
-    <script>
-        /**
-         * 模拟数据源：对应 {{多数据集汇总.standard_datasets}}
-         * 在实际场景中，这里的数据应来自后端API或变量注入
-         */
-        const MOCK_DATA = {
-            sales: [
-                { month: '1月', value: 1200, traffic: 800 },
-                { month: '2月', value: 1320, traffic: 850 },
-                { month: '3月', value: 1010, traffic: 700 },
-                { month: '4月', value: 1340, traffic: 900 },
-                { month: '5月', value: 1600, traffic: 1100 },
-                { month: '6月', value: 1850, traffic: 1300 },
-                { month: '7月', value: 1700, traffic: 1200 },
-                { month: '8月', value: 2100, traffic: 1500 },
-                { month: '9月', value: 1950, traffic: 1400 },
-                { month: '10月', value: 2300, traffic: 1600 },
-                { month: '11月', value: 2600, traffic: 1900 },
-                { month: '12月', value: 2800, traffic: 2100 }
-            ],
-            channels: [
-                { name: '线上商城', value: 4500 },
-                { name: '线下门店', value: 3200 },
-                { name: '代理商', value: 2100 },
-                { name: '大客户', value: 1200 }
-            ],
-            regions: [
-                { name: '广东', value: 5200 },
-                { name: '江苏', value: 4800 },
-                { name: '浙江', value: 4100 },
-                { name: '山东', value: 3500 },
-                { name: '四川', value: 2900 },
-                { name: '河南', value: 2100 },
-                { name: '湖北', value: 1800 },
-                { name: '福建', value: 1500 }
-            ]
-        };
+        <!-- 趋势图 & 品类占比 -->
+        <div class="main-chart-row">
+            <div class="card">
+                <div class="card-title">2024年月度销售趋势</div>
+                <div id="trendChart" class="chart-container"></div>
+            </div>
+            <div class="card">
+                <div class="card-title">各品类销售额占比</div>
+                <div id="categoryChart" class="chart-container"></div>
+            </div>
+        </div>
 
-        // 主题配置：对应 {{开始.dashboard_theme}}
-        const THEME = {
-            color: ['#00f2ff', '#0066ff', '#ffcc00', '#ff3333'],
-            bgColor: '#0b1120'
-        };
-
-        // 初始化图表实例
-        const charts = {};
-
-        /**
-         * 技能 2: 统计分析与指标计算
-         * 计算KPI并渲染
-         */
-        function renderKPI() {
-            const totalSales = MOCK_DATA.sales.reduce((acc, cur) => acc + cur.value, 0);
-            const lastMonthSales = MOCK_DATA.sales[MOCK_DATA.sales.length - 1].value;
-            const prevMonthSales = MOCK_DATA.sales[MOCK_DATA.sales.length - 2].value;
-            const momGrowth = ((lastMonthSales - prevMonthSales) / prevMonthSales * 100).toFixed(1);
-            
-            const totalTraffic = MOCK_DATA.sales.reduce((acc, cur) => acc + cur.traffic, 0);
-            const conversionRate = ((totalSales / totalTraffic) * 100).toFixed(2);
-
-            const kpis = [
-                { label: '总销售额', value: totalSales.toLocaleString(), unit: '万元', trend: momGrowth, isUp: momGrowth > 0 },
-                { label: '总访问量', value: totalTraffic.toLocaleString(), unit: '人次', trend: '+12.5%', isUp: true },
-                { label: '整体转化率', value: conversionRate, unit: '%', trend: '-0.5%', isUp: false },
-                { label: '活跃区域数', value: '24', unit: '个', trend: '+2', isUp: true }
-            ];
-
-            const container = document.getElementById('kpi-area');
-            container.innerHTML = kpis.map(kpi => `
-                <div class="kpi-card">
-                    <div class="kpi-value">${kpi.value} <span style="font-size:1rem;color:#fff">${kpi.unit}</span></div>
-                    <div class="kpi-label">${kpi.label}</div>
-                    <div class="kpi-trend ${kpi.isUp ? 'trend-up' : 'trend-down'}">
-                        环比 ${kpi.trend} ${kpi.isUp ? '↑' : '↓'}
+        <!-- 地区对比 & 分析建议 -->
+        <div class="sub-chart-row">
+            <div class="card">
+                <div class="card-title">各地区销售额对比</div>
+                <div id="regionChart" class="chart-container"></div>
+            </div>
+            <div class="card">
+                <div class="card-title">智能分析洞察</div>
+                <div class="analysis-content">
+                    <div class="analysis-block">
+                        <h3>⚠️ 趋势异常与风险</h3>
+                        <ul class="analysis-list">
+                            <li class="alert-item"><strong>数据完整性严重缺失：</strong>2月缺华北，3月缺华南，4月-6月月均缺失2个区域数据，分析需谨慎。</li>
+                            <li class="alert-item"><strong>2月异常骤降：</strong>销售额环比下降31.4%（416.5万元），且缺失华北数据。</li>
+                            <li><strong>峰值表现：</strong>6月达到峰值579.9万元，较1月增长约50%。</li>
+                            <li><strong>区域失衡：</strong>华东贡献56%收入（1705万元），是西南地区的17倍。</li>
+                        </ul>
+                    </div>
+                    <div class="analysis-block">
+                        <h3>💡 业务行动建议</h3>
+                        <ul class="analysis-list">
+                            <li class="suggestion-item"><strong>策略复制：</strong>深入分析华东6月高增长（如618大促），向华北、华南复制推广。</li>
+                            <li class="suggestion-item"><strong>系统修复：</strong>紧急核查数据采集系统，修复各地区数据缺失问题。</li>
+                            <li class="suggestion-item"><strong>品类运营：</strong>电子产品贡献43%收入，建议制定专属会员复购激励政策。</li>
+                        </ul>
                     </div>
                 </div>
-            `).join('');
-        }
+            </div>
+        </div>
+    </div>
 
-        /**
-         * 技能 3: 数据可视化建议与实现
-         * 渲染各类图表
-         */
-        function initCharts() {
-            // 1. 饼图：销售渠道
-            const pieChart = echarts.init(document.getElementById('chart-pie'));
-            pieChart.setOption({
-                tooltip: { trigger: 'item' },
-                legend: { top: '5%', left: 'center', textStyle: { color: '#fff' } },
-                series: [{
-                    name: '销售渠道',
-                    type: 'pie',
-                    radius: ['40%', '70%'],
-                    avoidLabelOverlap: false,
-                    itemStyle: { borderRadius: 5, borderColor: '#0b1120', borderWidth: 2 },
-                    label: { show: false, position: 'center' },
-                    emphasis: { label: { show: true, fontSize: 16, fontWeight: 'bold', color: '#fff' } },
-                    data: MOCK_DATA.channels,
-                    color: THEME.color
-                }]
-            });
-            charts.pie = pieChart;
+    <script>
+        // 初始化 ECharts 实例
+        const trendChart = echarts.init(document.getElementById('trendChart'));
+        const categoryChart = echarts.init(document.getElementById('categoryChart'));
+        const regionChart = echarts.init(document.getElementById('regionChart'));
 
-            // 2. 折线图：趋势分析
-            const lineChart = echarts.init(document.getElementById('chart-line'));
-            const months = MOCK_DATA.sales.map(d => d.month);
-            const salesValues = MOCK_DATA.sales.map(d => d.value);
-            const trafficValues = MOCK_DATA.sales.map(d => d.traffic);
-            
-            lineChart.setOption({
-                tooltip: { trigger: 'axis' },
-                legend: { data: ['销售额', '访问量'], textStyle: { color: '#fff' }, top: 0 },
-                grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
-                xAxis: { 
-                    type: 'category', 
-                    boundaryGap: false, 
-                    data: months,
-                    axisLine: { lineStyle: { color: '#1e3a6e' } },
-                    axisLabel: { color: '#8faecf' }
+        // 通用图表配置
+        const commonOption = {
+            backgroundColor: 'transparent',
+            textStyle: { fontFamily: 'Inter, sans-serif' },
+            tooltip: {
+                trigger: 'axis',
+                backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                borderColor: '#334155',
+                textStyle: { color: '#f1f5f9' }
+            }
+        };
+
+        // 1. 折线图配置 (月度销售趋势)
+        // 模拟数据：根据JSON描述，2月低(416.5)，6月高(579.9)，1月约386
+        const trendOption = {
+            ...commonOption,
+            tooltip: {
+                trigger: 'axis',
+                formatter: '{b}月<br/>销售额：{c} 万元'
+            },
+            grid: { top: 30, right: 20, bottom: 30, left: 50, containLabel: true },
+            xAxis: {
+                type: 'category',
+                data: ['1月', '2月', '3月', '4月', '5月', '6月'],
+                axisLine: { lineStyle: { color: '#475569' } },
+                axisLabel: { color: '#94a3b8' }
+            },
+            yAxis: {
+                type: 'value',
+                name: '万元',
+                splitLine: { lineStyle: { color: 'rgba(71, 85, 105, 0.3)' } },
+                axisLabel: { color: '#94a3b8' }
+            },
+            series: [{
+                name: '销售额',
+                type: 'line',
+                smooth: true,
+                data: [386.6, 416.5, 480.2, 520.8, 556.5, 579.9],
+                itemStyle: { color: '#06b6d4' },
+                areaStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                        { offset: 0, color: 'rgba(6, 182, 212, 0.5)' },
+                        { offset: 1, color: 'rgba(6, 182, 212, 0.0)' }
+                    ])
                 },
-                yAxis: [
-                    { type: 'value', name: '销售额', splitLine: { lineStyle: { color: '#1e3a6e' } }, axisLabel: { color: '#8faecf' } },
-                    { type: 'value', name: '访问量', splitLine: { show: false }, axisLabel: { color: '#8faecf' } }
-                ],
-                series: [
-                    { name: '销售额', type: 'line', smooth: true, areaStyle: { opacity: 0.3 }, data: salesValues, itemStyle: { color: THEME.color[0] } },
-                    { name: '访问量', type: 'line', smooth: true, yAxisIndex: 1, data: trafficValues, itemStyle: { color: THEME.color[1] } }
+                markPoint: {
+                    data: [
+                        { type: 'max', name: 'Max', itemStyle: {colorcolor: '#ef4444'} },
+                        { type: 'min', name: 'Min' }
+                    ]
+                }
+            }]
+        };
+
+        // 2. 饼图配置 (品类占比)
+        // 模拟数据：电子产品43%，其余分配
+        const categoryOption = {
+            ...commonOption,
+            tooltip: { trigger: 'item' },
+            legend: { top: '5%', left: 'center', textStyle: { color: '#94a3b8' } },
+            series: [{
+                name: '销售额占比',
+                type: 'pie',
+                radius: ['40%', '70%'],
+                center: ['50%', '60%'],
+                avoidLabelOverlap: false,
+                itemStyle: {
+                    borderRadius: 5,
+                    borderColor: '#0b1120',
+                    borderWidth: 2
+                },
+                label: { show: false, position: 'center' },
+                emphasis: {
+                    label: { show: true, fontSize: 16, fontWeight: 'bold', color: '#fff' }
+                },
+                labelLine: { show: false },
+                data: [
+                    { value: 1307, name: '电子产品', itemStyle: { color: '#3b82f6' } },
+                    { value: 800, name: '服装', itemStyle: { color: '#8b5cf6' } },
+                    { value: 600, name: '家居', itemStyle: { color: '#06b6d4' } },
+                    { value: 333.5, name: '其他', itemStyle: { color: '#64748b' } }
                 ]
-            });
-            charts.line = lineChart;
+            }]
+        };
 
-            // 3. 柱状图：区域排名
-            const barChart = echarts.init(document.getElementById('chart-bar'));
-            const regionNames = MOCK_DATA.regions.map(d => d.name);
-            const regionValues = MOCK_DATA.regions.map(d => d.value);
+        // 3. 柱状图配置 (地区对比)
+        // 模拟数据：华东1705，西南~100，其余分配
+        const regionOption = {
+            ...commonOption,
+            tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+            grid: { top: 30, right: 20, bottom: 30, left: 50, containLabel: true },
+            xAxis: {
+                type: 'category',
+                data: ['华东', '华北', '华南', '西南'],
+                axisLine: { lineStyle: { color: '#475569' } },
+                axisLabel: { color: '#94a3b8' }
+            },
+            yAxis: {
+                type: 'value',
+                name: '万元',
+                splitLine: { lineStyle: { color: 'rgba(71, 85, 105, 0.3)' } },
+                axisLabel: { color: '#94a3b8' }
+            },
+            series: [{
+                name: '销售额',
+                type: 'bar',
+                barWidth: '40%',
+                data: [
+                    { value: 1705, itemStyle: { color: '#06b6d4' } },
+                    { value: 600, itemStyle: { color: '#3b82f6' } },
+                    { value: 635, itemStyle: { color: '#8b5cf6' } },
+                    { value: 100.5, itemStyle: { color: '#64748b' } }
+                ]
+            }]
+        };
 
-            barChart.setOption({
-                tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-                grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
-                xAxis: { 
-                    type: 'value', 
-                    splitLine: { lineStyle: { color: '#1e3a6e' } },
-                    axisLabel: { color: '#8faecf' } 
-                },
-                yAxis: { 
-                    type: 'category', 
-                    data: regionNames.reverse(),
-                    axisLine: { show: false },
-                    axisTick: { show: false },
-                    axisLabel: { color: '#fff' }
-                },
-                series: [{
-                    name: '销售额',
-                    type: 'bar',
-                    data: regionValues.reverse(),
-                    barWidth: '50%',
-                    itemStyle: {
-                        color: new echarts.graphic.LinearGradient(1, 0, 0, 0, [
-                            { offset: 0, color: '#0066ff' },
-                            { offset: 1, color: '#00f2ff' }
-                        ]),
-                        borderRadius: [0, 4, 4, 0]
-                    }
-                }]
-            });
-            charts.bar = barChart;
-        }
+        // 渲染图表
+        trendChart.setOption(trendOption);
+        categoryChart.setOption(categoryOption);
+        regionChart.setOption(regionOption);
 
-        /**
-         * 技能 4: 分析结论与建议输出
-         * 基于数据生成文本报告
-         */
-        function renderConclusions() {
-            // 简单逻辑判断生成结论
-            const lastMonth = MOCK_DATA.sales[MOCK_DATA.sales.length - 1];
-            const bestChannel = MOCK_DATA.channels.reduce((prev, current) => (prev.value > current.value) ? prev :
+        // 窗口大小改变时重绘
+        window.addEventListener('resize', () => {
+            trendChart.resize();
+            categoryChart.resize();
+            regionChart.resize();
+        });
+    </script>
+</body>
+</html>
+```
