@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>数字人爆款脚本 · 参考视频节奏重建版</title>
+<style>
+:root {
+  --ele:#f59e0b; --mid:#8b5cf6; --high:#ef4444;
+  --g1:#e02424; --g2:#f59e0b; --g3:#3b82f6; --g4:#059669;
+  --bg:#f8fafc; --card:#fff; --text:#1f2937; --sub:#6b7280; --border:#e5e7eb;
+  --radius:10px; --shadow:0 2px 8px rgba(0,0,0,.06);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  background:var(--bg);color:var(--text);line-height:1.7;padding:20px;
+}
+.wrap{max-width:1200px;margin:0 auto}
+
+/* Header */
+.header{
+  text-align:center;padding:40px 24px 36px;
+  background:linear-gradient(135deg,#111827,#1e3a5f,#1a56db);
+  color:#fff;border-radius:16px;margin-bottom:24px;
+}
+.header h1{font-size:2em;font-weight:800;margin-bottom:6px}
+.header .sub{font-size:.95em;opacity:.8}
+.header .tags{margin-top:14px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.header .tags span{background:rgba(255,255,255,.15);padding:5px 14px;border-radius:20px;font-size:.78em}
+
+/* Section */
+.section{margin-bottom:28px}
+.section-title{
+  font-size:1.2em;font-weight:800;margin-bottom:14px;
+  display:flex;align-items:center;gap:10px;
+}
+.section-title::before{content:'';width:4px;height:24px;background:var(--g1);border-radius:2px}
+
+/* Ref analysis card */
+.ref-card{
+  background:var(--card);border-radius:12px;box-shadow:var(--shadow);
+  border:2px solid #1a56db;overflow:hidden;margin-bottom:20px;
+}
+.ref-hd{background:#1a56db;color:#fff;padding:12px 20px;font-weight:700;font-size:1.05em}
+.ref-body{padding:16px 20px;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px}
+@media(max-width:768px){.ref-body{grid-template-columns:1fr 1fr}}
+.ref-item{text-align:center}
+.ref-item .val{font-size:1.6em;font-weight:800;color:#1a56db}
+.ref-item .lbl{font-size:.78em;color:var(--sub);margin-top:2px}
+
+/* Rhythm bar */
+.rhythm-bar{
+  background:var(--card);border-radius:12px;padding:18px 20px;box-shadow:var(--shadow);margin-bottom:16px;
+}
+.rhythm-line{
+  position:relative;height:48px;background:#f1f5f9;border-radius:8px;
+  margin:10px 0;overflow:hidden;
+}
+.rhythm-seg{
+  position:absolute;height:100%;display:flex;align-items:center;justify-content:center;
+  font-size:.75em;font-weight:700;color:#fff;
+}
+.rhythm-seg.r1{left:0;width:19%;background:var(--g1)}
+.rhythm-seg.r2{left:19%;width:29%;background:var(--g2)}
+.rhythm-seg.r3{left:48%;width:34%;background:var(--g3)}
+.rhythm-seg.r4{left:82%;width:18%;background:var(--g4)}
+
+.cut-markers{
+  display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;
+}
+.cut-tag{
+  font-size:.7em;padding:2px 8px;border-radius:10px;background:#dbeafe;color:#1e40af;
+  cursor:default;
+}
+
+/* Persona card */
+.persona-row{display:flex;gap:16px;margin-bottom:16px}
+@media(max-width:768px){.persona-row{flex-direction:column}}
+.persona-card{
+  flex:1;background:var(--card);border-radius:12px;box-shadow:var(--shadow);
+  overflow:hidden;border-top:4px solid #ccc;
+}
+.persona-card.ele{border-top-color:var(--ele)}
+.persona-card.mid{border-top-color:var(--mid)}
+.persona-card.high{border-top-color:var(--high)}
+.persona-hd{padding:14px 18px;font-weight:700;font-size:1em;display:flex;align-items:center;gap:8px}
+.persona-body{padding:0 18px 14px;font-size:.84em}
+.persona-body table{width:100%;border-collapse:collapse}
+.persona-body td{padding:4px 6px;border-bottom:1px solid var(--border);vertical-align:top}
+.persona-body .k{color:var(--sub);font-weight:600;white-space:nowrap;width:70px}
+.persona-body .v{color:var(--text)}
+
+.updated-badge{
+  display:inline-block;padding:2px 8px;border-radius:4px;
+  font-size:.7em;font-weight:700;color:#fff;background:#059669;
+  margin-left:6px;vertical-align:2px;
+}
+
+/* Visual spec panel */
+.vis-row{display:flex;gap:16px;margin-bottom:16px}
+@media(max-width:768px){.vis-row{flex-direction:column}}
+.vis-card{
+  flex:1;background:var(--card);border-radius:10px;box-shadow:var(--shadow);
+  padding:16px 18px;
+}
+.vis-card h4{font-size:.9em;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+
+.color-swatch{
+  display:inline-block;width:18px;height:18px;border-radius:4px;vertical-align:middle;margin-right:4px;border:1px solid rgba(0,0,0,.12);
+}
+
+/* Script timeline */
+.timeline{margin:0 0 20px}
+.timeline table{
+  width:100%;border-collapse:collapse;font-size:.82em;
+  background:var(--card);border-radius:10px;overflow:hidden;box-shadow:var(--shadow);
+}
+.timeline thead th{
+  background:#111827;color:#fff;padding:10px 12px;text-align:left;font-weight:600;
+}
+.timeline thead th.time{width:7%}
+.timeline thead th.vis{width:12%}
+.timeline thead th.aoe{width:28%}
+.timeline thead th.script{width:43%}
+.timeline thead th.audio{width:10%}
+.timeline td{padding:8px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+.timeline tr.s1 td{background:#fef2f2}
+.timeline tr.s2 td{background:#fffbeb}
+.timeline tr.s3 td{background:#eff6ff}
+.timeline tr.s4 td{background:#f0fdf4}
+.timeline tr.s5 td{background:#f8fafc}
+.stage-marker{
+  display:inline-block;padding:1px 8px;border-radius:4px;font-size:.75em;font-weight:700;color:#fff;
+  margin-bottom:4px;
+}
+.stage-marker.hook{background:var(--g1)}
+.stage-marker.talk{background:var(--g2)}
+.stage-marker.app{background:var(--g3)}
+.stage-marker.cta{background:var(--g4)}
+
+.subtitle-bar{
+  background:#fff3cd;border-left:3px solid var(--g2);padding:4px 10px;margin:4px 0;font-size:.8em;color:#92400e;border-radius:0 4px 4px 0;
+}
+.hw-bar{
+  background:#fce4ec;border-left:3px solid var(--g1);padding:4px 10px;margin:4px 0;font-size:.8em;color:#c62828;border-radius:0 4px 4px 0;
+}
+.bgm-note{
+  background:#e8f5e9;padding:2px 8px;border-radius:4px;font-size:.8em;color:#2e7d32;
+}
+
+.section-divider{
+  text-align:center;padding:10px;font-weight:700;font-size:.85em;color:var(--sub);
+  background:var(--card);border-radius:8px;box-shadow:var(--shadow);
+  margin:12px 0;
+}
+
+/* Compliance footer */
+.footer{
+  text-align:center;padding:28px 0 16px;color:var(--sub);font-size:.8em;
+  border-top:2px solid var(--border);margin-top:28px;
+}
+
+/* Highlight boxes */
+.info-box{
+  padding:12px 16px;border-radius:8px;font-size:.84em;margin:10px 0;
+}
+.info-box.blue{background:#eff6ff;border:1px solid #bfdbfe}
+.info-box.yellow{background:#fffbeb;border:1px solid #fde68a}
+.info-box.green{background:#f0fdf4;border:1px solid #bbf7d0}
+
+.comply-note{
+  font-size:.72em;color:#059669;font-style:italic;margin-top:3px;
+}
+
+/* Script selector */
+.script-selector {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.script-btn {
+  padding: 10px 20px;
+  background: var(--card);
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.script-btn:hover {
+  background: #f1f5f9;
+}
+.script-btn.active {
+  background: #1a56db;
+  color: white;
+  border-color: #1a56db;
+}
+
+/* Comparison table */
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .84em;
+  background: var(--card);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  margin-top: 20px;
+}
+.comparison-table thead th {
+  background: #111827;
+  color: #fff;
+  padding: 12px 14px;
+  text-align: left;
+  font-weight: 600;
+}
+.comparison-table tbody td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.comparison-table .highlight {
+  background: #f0fdf4;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- HEADER -->
+<div class="header">
+  <h1>数字人爆款脚本 — 参考视频节奏重建版</h1>
+  <p class="sub">对标参考视频「刘梦亚 · 爱学APP」的节奏 / 视觉 / 数字人形象，完整重建三学段脚本</p>
+  <div class="tags">
+    <span>📹 参考视频：58秒 · 720×1280</span>
+    <span>🎯 节奏对齐：均值3.5s切镜</span>
+    <span>🤖 数字人：小学无 · 初中刘梦亚 · 高中陈国栋</span>
+    <span>✅ 含合规过审标注</span>
+    <span>📐 红色标题横幅 + 白色字幕布局</span>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 参考视频分析 -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-title">📹 参考视频完整分析</div>
+
+  <div class="ref-card">
+    <div class="ref-hd">基础参数</div>
+    <div class="ref-body">
+      <div class="ref-item"><div class="val">58s</div><div class="lbl">总时长</div></div>
+      <div class="ref-item"><div class="val">720×1280</div><div class="lbl">竖版 9:16</div></div>
+      <div class="ref-item"><div class="val">30fps</div><div class="lbl">帧率</div></div>
+      <div class="ref-item"><div class="val">16个</div><div class="lbl">重大切镜点</div></div>
+      <div class="ref-item"><div class="val">3.47s</div><div class="lbl">平均切镜间隔</div></div>
+      <div class="ref-item"><div class="val">2.80s</div><div class="lbl">切镜间隔中位数</div></div>
+      <div class="ref-item"><div class="val">80%</div><div class="lbl">2-5秒切镜占比</div></div>
+      <div class="ref-item"><div class="val">6.7%</div><div class="lbl">快速切镜(≤2s)</div></div>
+    </div>
+  </div>
+
+  <div class="rhythm-bar">
+    <strong style="font-size:.9em">⏱ 参考视频节奏分段（58秒）</strong>
+    <div class="rhythm-line">
+      <div class="rhythm-seg r1">前贴 0-11s<br>19%</div>
+      <div class="rhythm-seg r2">数字人口播 11-28s<br>29%</div>
+      <div class="rhythm-seg r3">APP内页+交替 28-49s<br>34%</div>
+      <div class="rhythm-seg r4">推广收口 49-58s<br>18%</div>
+    </div>
+    <div class="cut-markers">
+      <span style="font-size:.72em;margin-right:8px;color:var(--sub)">🔴 切镜点：</span>
+      <span class="cut-tag">4.7s</span><span class="cut-tag">5.8s</span><span class="cut-tag">8.6s</span><span class="cut-tag">11.0s</span>
+      <span class="cut-tag">18.9s</span><span class="cut-tag">21.2s</span><span class="cut-tag">23.8s</span><span class="cut-tag">28.5s</span>
+      <span class="cut-tag">33.8s</span><span class="cut-tag">36.6s</span><span class="cut-tag">39.4s</span><span class="cut-tag">41.8s</span>
+      <span class="cut-tag">45.5s</span><span class="cut-tag">49.5s</span><span class="cut-tag">53.4s</span><span class="cut-tag">56.7s</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 数字人形象重建 -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-title">🤖 数字人形象 · 小学无数字人(配音驱动) / 初中刘梦亚 / 高中陈国栋</div>
+
+  <div class="info-box blue">
+    <strong>参考视频数字人核心特征（初中学段直接采用）：</strong>
+    刘梦亚 · 女性 · 28-33岁 · 黑框眼镜 · 黑色西装外套+白色内搭 · 中长黑发 ·
+    大学校门/校园户外背景 · 半身中景 · 自然手部动作 · 画面全程带红色标题横幅顶部 + 白色字幕底部 ·
+    出场时叠加姓名标签 · 亲切坚定口吻 · 亮度约117（柔和偏暗调）
+    <br><strong style="color:#e02424">⚠ 小学段无数字人 · 纯画面+配音驱动</strong>
+  </div>
+
+  <div class="persona-row">
+    <!-- 小学 -->
+    <div class="persona-card ele">
+      <div class="persona-hd"><span style="font-size:1.4em">🧒</span> 小学 · 无数字人 <span class="updated-badge" style="background:#e02424">纯配音+画面</span></div>
+      <div class="persona-body">
+        <table>
+          <tr><td class="k">身份</td><td class="v"><b>无数字人形象</b> · 全程由画面+配音+花字驱动</td></tr>
+          <tr><td class="k">配音风格</td><td class="v">沉稳亲和女声（≈4字/秒）· 真诚分享感>说教感</td></tr>
+          <tr><td class="k">驱动方式</td><td class="v">前贴实拍(0-11s) → APP录屏+分屏对比(11-49s) → 全屏推广(49-58s)<br>每段配同步配音+底部白色字幕+顶部红色标题横幅</td></tr>
+          <tr><td class="k">节奏策略</td><td class="v">无数字人口播段，改为APP画面密集切换 · 每3-5秒切镜 · 利用亮度差（前贴灰冷→APP亮色）制造节奏</td></tr>
+          <tr><td class="k">视觉重心</td><td class="v">对比式分屏（传统题卡灰白 vs APP 3D色彩）+ 孩子实拍表情穿插</td></tr>
+          <tr><td class="k">画面标注</td><td class="v">顶部红色标题横幅常驻 · 底部白色字幕条 · <b>不标注"AI生成数字人"</b></td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- 初中 -->
+    <div class="persona-card mid">
+      <div class="persona-hd"><span style="font-size:1.4em">👦</span> 初中 · 刘梦亚 <span class="updated-badge">真人数字人</span></div>
+      <div class="persona-body">
+        <table>
+          <tr><td class="k">身份</td><td class="v"><b>刘梦亚</b> · 教育领域知名KOL · 一线数学教学名师 · 智能教育教研负责人</td></tr>
+          <tr><td class="k">视觉年龄</td><td class="v">28-33岁 · 对标参考视频原形象</td></tr>
+          <tr><td class="k">形象特征</td><td class="v">黑框眼镜 · 中长黑发 · 目光亲和坚定 · <b>与参考视频中刘梦亚形象完全一致</b></td></tr>
+          <tr><td class="k">服装</td><td class="v">黑色西装外套+白色内搭 · <b>与参考视频中刘梦亚着装完全一致</b></td></tr>
+          <tr><td class="k">背景</td><td class="v">大学校门/校园户外绿化带背景 · <b>与参考视频刘梦亚场景一致</b>，有校园建筑虚化</td></tr>
+          <tr><td class="k">口播风格</td><td class="v">语速中快（≈4.5字/秒），干脆利落，带黑板板书式手势</td></tr>
+          <tr><td class="k">出镜方式</td><td class="v">正面半身居中 · 手势强调"一对一""手写步骤" · 3秒内叠加白色半透明姓名签"刘梦亚"</td></tr>
+          <tr><td class="k">画面标注</td><td class="v">左下角"AI生成数字人" · 口播段顶部红色标题横幅</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- 高中 -->
+    <div class="persona-card high">
+      <div class="persona-hd"><span style="font-size:1.4em">🧑</span> 高中 · 陈国栋 <span class="updated-badge">真人数字人</span></div>
+      <div class="persona-body">
+        <table>
+          <tr><td class="k">身份</td><td class="v"><b>陈国栋</b> · 清北背景 · 高考逆袭经历者 · 学习方法博主</td></tr>
+          <tr><td class="k">视觉年龄</td><td class="v">24-28岁</td></tr>
+          <tr><td class="k">形象特征</td><td class="v">细框金属眼镜 · 清爽短发 · 眼神坚定有力 · 清北学霸气质 · 简洁干练</td></tr>
+          <tr><td class="k">服装</td><td class="v">深蓝色休闲西装+浅蓝衬衫 · 年轻精英感 · 简洁利落</td></tr>
+          <tr><td class="k">背景</td><td class="v">大学图书馆/校园林荫道背景 · 名校氛围 · 虚化书架或校道</td></tr>
+          <tr><td class="k">口播风格</td><td class="v">语速中等（≈3.5字/秒），叙事感>输出感，带"我在讲我自己的故事"的真诚</td></tr>
+          <tr><td class="k">出镜方式</td><td class="v">正面近中景 · 手势比划知识图谱"红绿"颜色 · 3秒内叠加白色半透明姓名签"陈国栋"</td></tr>
+          <tr><td class="k">画面标注</td><td class="v">左下角"AI生成数字人" · 口播段顶部红色标题横幅</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 视觉规范 -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-title">🎨 统一视觉规范（提取自参考视频）</div>
+
+  <div class="vis-row">
+    <div class="vis-card">
+      <h4>📐 画幅与布局</h4>
+      <p style="font-size:.84em">
+        <b>尺寸：</b>720 × 1280 (9:16竖版)<br>
+        <b>安全区：</b>上下各留60px（不被UI遮挡）<br>
+        <b>顶部（0-12%）：</b>红色渐变背景条 + 白色/黄色大标题<br>
+        <b>中间（12-85%）：</b>主体画面（数字人/APP内页/实拍）<br>
+        <b>底部（85-100%）：</b>白色半透明底 + 黑色口播字幕
+      </p>
+    </div>
+    <div class="vis-card">
+      <h4>🎨 颜色方案</h4>
+      <p style="font-size:.84em">
+        <span class="color-swatch" style="background:#dc2626"></span><b>标题红 #dc2626</b> — 顶部横幅底色<br>
+        <span class="color-swatch" style="background:#facc15"></span><b>花字黄 #facc15</b> — 强调花字<br>
+        <span class="color-swatch" style="background:#ffffff"></span><b>字幕白 #ffffff</b> — 底部字幕底+文字<br>
+        <span class="color-swatch" style="background:#111827"></span><b>字幕黑 #111827</b> — 花字黑底/描边<br>
+        数字人场景亮度：≈117（柔光）<br>
+        APP场景亮度：≈160-226（亮屏）
+      </p>
+    </div>
+    <div class="vis-card">
+      <h4>✂️ 切镜节奏规范</h4>
+      <p style="font-size:.84em">
+        <b>前贴段 (0-11s)：</b>每段不超过4秒，3-4个镜头<br>
+        <b>数字人段 (11-28s)：</b>每段不超过10秒，中间穿插1-2个空镜/痛点闪回<br>
+        <b>APP交替段 (28-49s)：</b>数字人1-3秒 + APP录屏1-3秒交替<br>
+        <b>推广段 (49-58s)：</b>逐步收束，2-3个镜头<br>
+        <b>全片铁律：</b>同一画面的连续时间不超过<b>10秒</b>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 脚本选择器 -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-title">📜 脚本选择</div>
+  <div class="script-selector">
+    <div class="script-btn active" onclick="showScript('elementary')">🧒 小学脚本</div>
+    <div class="script-btn" onclick="showScript('middle')">👦 初中脚本</div>
+    <div class="script-btn" onclick="showScript('high')">🧑 高中脚本</div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 小学脚本 -->
+<!-- ============================================================ -->
+<div class="section script-section" id="elementary-script">
+  <div class="section-title">🧒 脚本一：小学「爱学APP」· 58秒对标重建版</div>
+
+  <div class="info-box yellow">
+    <strong>产品：</strong>爱学APP（小学模块） &nbsp;|&nbsp; <strong>数字人：</strong>无 · 纯画面+配音驱动 &nbsp;|&nbsp; <strong>公式：</strong>亲子痛点 + 认知反转 + 趣味化解
+  </div>
+
+  <div class="timeline">
+    <table>
+      <thead>
+        <tr><th class="time">时间</th><th class="vis">画面</th><th class="aoe">口播 / 花字</th><th class="script">详细内容</th><th class="audio">BGM/音效</th></tr>
+      </thead>
+
+      <!-- ===== 前贴段 0-11s ===== -->
+      <tr class="s1">
+        <td>0"<br>—<br>5"</td>
+        <td>
+          <span class="stage-marker hook">前贴①</span><br>
+          小男孩趴在书桌前，面前是数学口算题卡，咬着铅笔发呆<br>
+          <span style="font-size:.75em;color:var(--sub)">暖色调家居光 · 近景</span>
+        </td>
+        <td>
+          <span class="hw-bar">[花字·红色渐变·大号] 一让做题就磨蹭<br>一拿到iPad就想打游戏</span>
+        </td>
+        <td>
+          镜头① 男孩盯着口算题卡，写了两个数字又擦掉，叹气（2.5s）<br>
+          镜头② 特写——题卡旁边iPad屏幕反光，游戏图标隐约可见（2.5s）<br>
+          画面调性：灰调偏冷，有轻微压抑感
+        </td>
+        <td><span class="bgm-note">🎵 轻微叹息拟音<br>+ 低沉钢琴起</span></td>
+      </tr>
+
+      <tr class="s1">
+        <td>5"<br>—<br>9"</td>
+        <td>
+          <span class="stage-marker hook">前贴②</span><br>
+          切换场景：妈妈坐在旁边辅导，指着题目，孩子扭过头不理<br>
+          <span style="font-size:.75em;color:var(--sub)">中景 · 冷调光线</span>
+        </td>
+        <td>
+          <span class="hw-bar">[花字·白字红边] 一说学数学就坐不住<br>当妈的真是操碎了心</span>
+        </td>
+        <td>
+          镜头① 妈妈手指点着题目，轻声说"再算一遍"，孩子扭过身去（2s）<br>
+          镜头② 妈妈无奈叹气，看了一眼桌上的手机（2s，过肩镜）<br>
+          <b>【对标参考视频 前贴三段式逐段加速】</b>
+        </td>
+        <td><span class="bgm-note">🎵 钢琴渐起<br>加入弦乐低音</span></td>
+      </tr>
+
+      <tr class="s1">
+        <td>9"<br>—<br>11"</td>
+        <td>
+          <span class="stage-marker hook">前贴③ · 引出标题</span><br>
+          画面过渡 → 爱学APP主视觉+标题横幅<br>
+          <span style="font-size:.75em;color:var(--sub)">亮色过渡转场 · 红色标题横幅 · 配音开始</span>
+        </td>
+        <td>
+          <span class="hw-bar">[顶部红底白字横幅] 小学低年级数学 · 方法比催促更有效</span><br>
+          <span class="subtitle-bar">[底部白色字幕 · 配音] 孩子不爱做题？问题出在咱们的方式上</span>
+        </td>
+        <td>
+          爱学APP主视觉Logo+标题横幅居中展示<br>
+          <b>【小学段无数字人】</b><br>
+          · 此脚本全程采用<a style="color:#059669;font-weight:700">画面+配音+花字</a>驱动，不出现数字人形象<br>
+          · 顶部红底白字标题横幅常驻<br>
+          · 底部白色字幕条同步配音<br>
+          · 节奏对标参考视频，每3-5秒切镜
+        </td>
+        <td><span class="bgm-note">🎵 钢琴淡出<br>→ 轻盈温馨亲子风</span></td>
+      </tr>
+
+      <!-- ===== 数字人口播段 11-30s ===== -->
+      <tr class="s2">
+        <td>11"<br>—<br>17"</td>
+        <td>
+          <span class="stage-marker talk">配音① · 认知反转</span><br>
+          全屏画面：孩子写作业对比APP游戏化界面<br>
+          <span style="font-size:.75em;color:var(--sub)">分屏对比设计 · 左侧灰色题卡 / 右侧亮色APP</span>
+        </td>
+        <td>
+          <span class="subtitle-bar">[底部字幕 · 配音] 做了快十年低年级数学指导，说句真心话</span>
+        </td>
+        <td>
+          <b>配音（沉稳亲和女声）：</b>"做了快十年低年级数学指导，很多家长问我：孩子就是不愿做题怎么办？说句真心话——不是孩子不爱学习，是咱们把数学变成了一种惩罚。"<br>
+          <span class="comply-note">✅ "快十年"为个人经历陈述，非绝对化</span>
+        </td>
+        <td><span class="bgm-note">🎵 轻快亲子钢琴 · 音量低于人声</span></td>
+      </tr>
+
+      <tr class="s2">
+        <td>17"<br>—<br>19"</td>
+        <td>
+          <span class="stage-marker talk">痛点闪回 🔄</span><br>
+          穿插2秒闪回：孩子把题卡推到一边，趴桌上（与前贴呼应）<br>
+          <b>【对标参考视频 18.9s 痛点闪回手法 · 无数字人版：纯画面+花字】</b>
+        </td>
+        <td><span class="hw-bar">[花字·红字闪出] "做题=受罚"</span></td>
+        <td>
+          <b>【对标参考视频 18.9s 痛点闪回手法】</b><br>
+          在数字人连续口播中插入2秒痛点画面——<br>
+          灰冷调画面快速切入孩子推开习题卡的近景（制造情感节奏点）<br>
+          与参考视频18.9s闪回手法完全对标
+        </td>
+        <td><span class="bgm-note">🎵 短暂停顿 → 恢复</span></td>
+      </tr>
+
+      <tr class="s2">
+        <td>19"<br>—<br>27"</td>
+        <td>
+          <span class="stage-marker talk">配音② · 痛点深挖</span><br>
+          全屏：传统口算题卡 vs 爱学APP互动画面分屏对比<br>
+          <span style="font-size:.75em;color:var(--sub)">动态分屏 · 题卡灰白 / APP色彩跳动</span>
+        </td>
+        <td>
+          <span class="subtitle-bar">[底部字幕 · 配音] 低年级孩子天生是喜欢玩的，但传统题卡只会判对错</span>
+        </td>
+        <td>
+          <b>配音：</b>"低年级的孩子，天性就是爱玩、爱闯关、爱被夸。但咱们家长经常怎么做？'这道题做错了，罚你再做10道！' 结果呢——孩子觉得数学等于受罚。更关键的是，传统口算题卡只能判对错，孩子不会做的时候，它不会告诉孩子你错在哪一步——错多了，孩子直接躺平。"<br>
+          <span class="comply-note">✅ "传统题卡只能判对错"为产品功能对比，不构成绝对化承诺</span></td>
+        <td><span class="bgm-note">🎵 音乐轻推<br>稍加快节奏</span></td>
+      </tr>
+
+      <tr class="s3">
+        <td>27"<br>—<br>30"</td>
+        <td>
+          <span class="stage-marker app">APP切入①</span><br>
+          爱学APP · 3D外星餐厅切披萨互动画面<br>
+          <span style="font-size:.75em;color:var(--sub)">亮度提升→对比数字人段</span>
+        </td>
+        <td>
+          <span class="subtitle-bar">[底部字幕] 在爱学APP，把数学变成闯关游戏</span>
+        </td>
+        <td>
+          录屏：爱学APP内3D外星餐厅场景——AI数字人老师手持激光刀，外星顾客要吃7块披萨但只能切3刀（3秒）<br>
+          <b>【对标参考视频 APP画面】</b> 录屏画面比数字人场景明显更亮（亮度≈200 vs 117）
+        </td>
+        <td><span class="bgm-note">🎵 加入轻快击乐</span></td>
+      </tr>
+
+      <!-- ===== APP交替段 30-49s ===== -->
+      <tr class="s3">
+        <td>30"<br>—<br>33"</td>
+        <td>
+          <span class="stage-marker talk">配音③</span><br>
+          全屏：3D外星餐厅切披萨动画展开<br>
+          <span style="font-size:.75em;color:var(--sub)">亮色3D场景 · 沉浸式360°旋转展示</span>
+        </td>
+        <td><span class="subtitle-bar">[底部字幕 · 配音] 不是让孩子背公式——而是让他自己动手试</span></td>
+        <td>
+          <b>配音：</b>"在爱学APP里，我们不是让孩子背公式、刷题本——而是把数学装进闯关游戏里。"
+        </td>
+        <td><span class="bgm-note">🎵 同前</span></td>
+      </tr>
+
+      <tr class="s3">
+        <td>33"<br>—<br>36"</td>
+        <td>
+          <span class="stage-marker app">APP切入②</span><br>
+          APP内三步截图拼屏<br>
+        </td>
+        <td>
+          <span class="hw-bar">[花字·黄字·左竖排]<br>第①步 自己动手画<br>第②步 AI引导不批评<br>第③步 自己发现规律</span>
+        </td>
+        <td>
+          <b>【对标参考视频 33-40s APP深度展示】</b><br>
+          1s 孩子手指在屏幕上画出第一条切线 →<br>
+          1s 尝试错误后，AI温和引导——不直接给答案 →<br>
+          1s 孩子画出第三条线，7块披萨出现 —— 鼓励弹出 →<br>
+          1s 孩子惊喜表情实拍（亮光，与黯淡题卡画面形成对比）
+        </td>
+        <td><span class="bgm-note">🎵 叮·叮·叮<br>每一步一个清脆音效</span></td>
+      </tr>
+
+      <tr class="s3">
+        <td>36"<br>—<br>40"</td>
+        <td>
+          <span class="stage-marker talk">配音④</span><br>
+          全屏：AI降难度+拓展题连续画面演示<br>
+          <span style="font-size:.75em;color:var(--sub)">动态标注箭头 · 降难度→答对→拔高 动画链条</span>
+        </td>
+        <td><span class="subtitle-bar">[底部字幕 · 配音] AI不批评——卡住了3秒自动降难度，答对立刻拔高</span></td>
+        <td>
+          <b>配音：</b>"更关键的是——孩子答题卡住了，AI不会批评ta，而是3秒内自动降低难度来引导。答对了，立刻来一道拓展题拔高。孩子手写解题过程，AI实时检查错写漏写——做错一道就吃透一类。"
+        </td>
+        <td><span class="bgm-note">🎵 同前</span></td>
+      </tr>
+
+      <tr class="s3">
+        <td>40"<br>—<br>43"</td>
+        <td>
+          <span class="stage-marker app">APP切入③</span><br>
+          三画面快切：<br>
+          ① 自动降难度弹窗<br>
+          ② 三角形计数互动界面<br>
+          ③ 排行榜+巅峰赛页面
+        </td>
+        <td>
+          <span class="subtitle-bar">[花字·红字] 降难度 → 拔高 → 和其他小朋友一起挑战</span>
+        </td>
+        <td>
+          1s 降难度提示 → 1s 三角形个数互动（孩子画线分割）→ 1s 排行榜画面，孩子排名在几位小朋友中间<br>
+          画面色彩丰富活泼，与口算题卡的灰白形成强烈反差
+        </td>
+        <td><span class="bgm-note">🎵 鼓点持续<br>欢快活泼</span></td>
+      </tr>
+
+      <tr class="s3">
+        <td>43"<br>—<br>49"</td>
+        <td>
+          <span class="stage-marker talk">配音⑤</span><br>
+          全屏：排行榜滚动+巅峰赛动画+孩子开心表情实拍叠加<br>
+          <span style="font-size:.75em;color:var(--sub)">暖光调 · 氛围升腾</span>
+        </td>
+        <td>
+          <span class="subtitle-bar">[底部字幕 · 配音] 孩子记住的不是"这题真难"——而是"真好玩"</span>
+        </td>
+        <td>
+          <b>配音：</b>"还有排行榜、巅峰赛——可以和其他小朋友一起挑战。孩子记住的不是'数学好难'，而是'我刚刚把披萨切出来了！我闯过这一关了！' 兴趣起来了，主动学习自然就跟上了。"<br>
+          <span class="comply-note">✅ "兴趣→主动学习"因果逻辑链 · 不涉及成绩承诺</span>
+        </td>
+        <td><span class="bgm-note">🎵 音乐维持</span></td>
+      </tr>
+
+      <!-- ===== 推广收口段 49-58s ===== -->
+      <tr class="s4">
+        <td>49"<br>—<br>53"</td>
+        <td>
+          <span class="stage-marker cta">推广搭建</span><br>
+          <b>【对标参考视频 49-53s】</b><br>
+          分屏画面：<br>
+          左40% → 爱学APP 3D场景动画循环<br>
+          右60% → APP图标 + "体验课"入口大字<br>
+          <span style="font-size:.75em;color:var(--sub)">无数字人 · 纯APP画面驱动</span>
+        </td>
+        <td>
+          <span class="hw-bar">[花字·金色·中央] 体验价解锁AI私教<br>语数英全科</span><br>
+          <span class="subtitle-bar">[底部字幕] 先让孩子感受一下</span>
+        </td>
+        <td>
+          全屏APP画面整合：左侧3D披萨动画循环 + 右侧入口大字<br>
+          底部脉冲动画："点击了解"箭头指引<br>
+          <b>【对标参考视频 CTA构图 · 无数字人版：APP画面最大化】</b>
+        </td>
+        <td><span class="bgm-note">🎵 音乐推向高潮<br>加入轻快节拍</span></td>
+      </tr>
+
+      <tr class="s4">
+        <td>53"<br>—<br>58"</td>
+        <td>
+          <span class="stage-marker cta">最终CTA</span><br>
+          全屏：爱学APP 3D场景+体验入口大字居中<br>
+          孩子笑着玩平板的大特写叠加在右下角<br>
+          <span style="font-size:.75em;color:var(--sub)">零数字人 · 全APP视觉收束</span>
+        </td>
+        <td>
+          <span class="hw-bar">[花字·白字红底·大字·中央] 点击下方<br>了解详情</span>
+        </td>
+        <td>
+          <b>配音（最后一句·加速）：</b>"现在打开爱学APP，体验价就能解锁专属AI私教，语数英全科都能用。先让孩子感受一下这种边玩边学的方式。点击下方了解详情！"<br>
+          画面定格 → 清脆"叮——"音<br>
+          <span class="comply-note">✅ "体验价"模糊定价 · "先让感受再继续" · 闭环在抖音小程序</span>
+        </td>
+        <td><span class="bgm-note">🎵 高潮强拍落停<br>🔔 叮——清脆收束</span></td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 初中脚本 (默认隐藏) -->
+<!-- ============================================================ -->
+<div class="section script-section" id="middle-script" style="display:none">
+  <div class="section-title">👦 脚本二：初中「爱学APP」· 60秒对标重建版</div>
+
+  <div class="info-box yellow">
+    <strong>产品：</strong>爱学APP · AI数学辅导 &nbsp;|&nbsp; <strong>数字人：</strong>刘梦亚（真人数字人 · 参考视频同款形象） &nbsp;|&nbsp; <strong>公式：</strong>全面否定传统→给出破局方案
+  </div>
+
+  <div class="timeline">
+    <table>
+      <thead>
+        <tr><th class="time">时间</th><th class="vis">画面</th><th class="aoe">口播 / 花字</th><th class="script">详细内容</th><th class="audio">BGM/音效</th></tr>
+      </thead>
+
+      <!-- 前贴 -->
+      <tr class="s1">
+        <td>0"<br>—<br>4"</td>
+        <td>
+          <span class="stage-marker hook">前贴①</span><br>
+          男孩在书桌前写数学卷子，咬笔头，眉头紧皱<br>
+          <span style="font-size:.75em;color:var(--sub)">台灯下灰冷调 · 近景</span>
+        </td>
+        <td>
+          <span class="hw-bar">[花字·红色大字·左上] 给孩子报了那么多班<br>为什么数学还是上不去？</span>
+        </td>
+        <td>
+          镜头① 男孩对着数学卷子发愁，草稿纸上划了又划（2s）<br>
+          镜头② 特写——卷子上的"鸡兔同笼"应用题，旁边写着半截就停下的草稿（2s）
+        </td>
+        <td><span class="bgm-note">🎵 低沉压迫拟音<br>+ 时钟滴答</span></td>
+      </tr>
+
+      <tr class="s1">
+        <td>4"<br>—<br>8"</td>
+        <td>
+          <span class="stage-marker hook">前贴②</span><br>
+          线下补习班教室 → 二十几个孩子排排坐 → 后排孩子趴在桌上（大全景）<br>
+          <span style="font-size:.75em;color:var(--sub)">冷白色荧光 · 大全景</span>
+        </td>
+        <td>
+          <span class="hw-bar">[花字·红底白字·中央] 大班课 · 只管讲不管练</span>
+        </td>
+        <td>
+          镜头① 老师在黑板上讲数学，前排几个孩子在听（1.5s）<br>
+          镜头② 镜头平移——后排三个孩子在走神/趴在桌上（1.5s）<br>
+          镜头③ 特写：一个孩子在草稿纸上乱画（1s）
+        </td>
+        <td><span class="bgm-note">🎵 压迫低音持续</span></td>
+      </tr>
+
+      <tr class="s1">
+        <td>8"<br>—<br>11"</td>
+        <td>
+          <span class="stage-marker hook">前贴③ · 引出数字人</span><br>
+          画面淡入 → 数字人刘梦亚出场<br>
+          <span style="font-size:.75em;color:var(--sub)">校园教学楼背景 · 正面半身 · 红色标题横幅</span>
+        </td>
+        <td>
+          <span class="hw-bar">[顶部红底白字横幅] 初中数学跟不上 • 问题出在辅导方式</span><br>
+          <span class="subtitle-bar">[底部白色字幕] 大部分辅导只解决了讲，没解决练和纠</span>
+        </td>
+        <td>
+          刘梦亚从柔焦中渐显<br>
+          <b>【参考视频同款数字人形象】</b><br>
+          · 黑色西装+黑框眼镜+中长黑发<br>
+          · 大学校门/校园户外背景（与参考视频一致）<br>
+          · 左下角标注"AI生成数字人"<br>
+          · 第3秒叠加白色半透明姓名签：「刘梦亚」<br>
+          · 顶部红底白字横幅常驻
+        </td>
+        <td><span class="bgm-note">🎵 压迫低音淡出<br>→ 科技感鼓点起</span></td>
+      </tr>
+
+      <!-- 数字人口播 -->
+      <tr class="s2">
+        <td>11"<br>—<br>18"</td>
+        <td>
+          <span class="stage-marker talk">口播① · 权威建立</span><br>
+          刘梦亚正面口播 · 干脆利落<br>
+        </td>
+        <td>
+          <span class="subtitle-bar">[底部字幕] 我是刘梦亚，在一线教了十几年数学</span>
+        </td>
+        <td>
+          <b>刘梦亚：</b>"我是刘梦亚，在一线教了十几年数学。很多家长来问我：给孩子报了班、买了课，为什么数学还是上不去？我今天把实话说完——大部分辅导只解决了'讲'，没解决'练'和'纠'。"<br>
+          <span class="comply-note">✅ "十几年"为个人经历 · "大部分"为范围限定</span>
+        </td>
+        <td><span class="bgm-note">🎵 科技感鼓点</span></td>
+      </tr>
+
+      <tr class="s2">
+        <td>18"<br>—<br>20"</td>
+        <td>
+          <span class="stage-marker talk">痛点闪回 🔄</span><br>
+          穿插2秒：孩子在大班课上走神·趴在桌上的画面（与前贴呼应）<br>
+          <b>【对标参考视频 18.9s闪回手法】</b>
+        </td>
+        <td><span class="hw-bar">[花字·红字闪出] "讲完就完了"</span></td>
+        <td>
+          与参考视频中在数字人口播中穿插痛点闪回的手法一致——<br>
+          制造"老师正在说这个问题，画面就给你看这个问题有多真实"的冲击感
+        </td>
+        <td><span class="bgm-note">🎵 短暂停顿</span></td>
+      </tr>
+
+      <tr class="s2">
+        <td>20"<br>—<br>28"</td>
+        <td>
+          <span class="stage-marker talk">口播② · 否定传统</span><br>
+          刘梦亚手势比划"大班""录播""走神"
+        </td>
+        <td>
+          <span class="subtitle-bar">[底部字幕] 线下大班——讲完就完了。录播课——走神了谁管？</span>
+        </td>
+        <td>
+          <b>刘梦亚：</b>"线下大班课，老师一个人面对几十个孩子，讲完就完了——孩子到底听懂没有？步骤有没有写对？没人管。线上录播课更不用说，孩子走神了，谁提醒？这样一来，会的反复听，不会的还是不会。"<br>
+          <span class="comply-note">✅ "很难做到"替代"做不到"，改为反问句式"谁提醒？"</span>
+        </td>
+        <td><span class="bgm-note">🎵 鼓点升调</span></td>
+      </tr>
+
+      <!-- APP交替 -->
+      <tr class="s3">
+        <td>28"<br>—<br>31"</td>
+        <td>
+          <span class="stage-marker app">APP切入①</span><br>
+          爱学APP · AI数学老师出场界面<br>
+          数字人老师+AI标识<br>
+          <span style="font-size:.75em;color:var(--sub)">亮度明显提升</span>
+        </td>
+        <td>
+          <span class="subtitle-bar">[底部字幕] 爱学APP——AI一对一带着孩子动手做</span>
+        </td>
+        <td>
+          录屏：APP内数字人老师"逻辑"出场，3D场景展开（3秒）<br>
+          <b>【对标参考视频 APP亮度提升】</b>
+        </td>
+        <td><span class="bgm-note">🎵 科技音效<br>"嗡——"</span></td>
+      </tr>
+
+      <tr class="s3">
+        <td>31"<br>—<br>34"</td>
+        <td>
+          <span class="stage-marker talk">口播③</span><br>
+          切回刘梦亚 · 手势演示画图动作
+        </td>
+        <td><span class="subtitle-bar">[底部字幕] 遇到鸡兔同笼——AI不直接给公式</span></td>
+        <td>
+          <b>刘梦亚：</b>"在爱学APP里，我整理了一套方法：不是老师在上面讲、孩子在下面听——而是AI一对一带着孩子动手做。"
+        </td>
+        <td><span class="bgm-note">🎵 鼓点轻推</span></td>
+      </tr>
+
+      <tr class="s3">
+        <td>34"<br>—<br>38"</td>
+        <td>
+          <span class="stage-marker app">APP切入②</span><br>
+          鸡兔同笼画图解题过程录屏<br>
+          + 手写笔在平板上书写·AI红色标注纠错<br>
+          <span style="font-size:.75em;color:var(--sub)">关键画面！</span>
+        </td>
+        <td>
+          <span class="hw-bar">[花字·黄字] 第①步 画图 → 第②步 推导 → 第③步 孩子自己发现规律</span>
+        </td>
+        <td>
+          <b>【对标参考视频 33-41s APP核心展示段】</b><br>
+          2s 孩子手指画兔四只脚、鸡两只脚<br>
+          2s 画面展示"全换成兔"推导→数字变化动画<br>
+          2s 孩子惊讶表情（实拍）+ AI弹出"答对了！"鼓励语
+        </td>
+        <td><span class="bgm-note">🎵 叮·叮·叮<br>交互音效</span></td>
+      </tr>
+
+      <tr class="s3">
+        <td>38"<br>—<br>42"</td>
+        <td>
+          <span class="stage-marker talk">口播④</span><br>
+          刘梦亚语气加重 · 手势强调"降难度"
+        </td>
+        <td>
+          <span class="subtitle-bar">[底部字幕] 卡住了3秒自动降难度 · 答对立刻拔高</span>
+        </td>
+        <td>
+          <b>刘梦亚：</b>"更关键的是：孩子答题卡住了，AI会3秒内自动降低难度来引导——不是直接给答案。答对了，立刻推送拓展题拔高。还能手写解题步骤，AI实时检查错写、漏写、跳步——线下班和录播课很难做到这一点。"
+        </td>
+        <td><span class="bgm-note">🎵 鼓点加速<br>推向高潮</span></td>
+      </tr>
+
+      <tr class="s3">
+        <td>42"<br>—<br>45"</td>
+        <td>
+          <span class="stage-marker app">APP切入③</span><br>
+          自动降难度提示弹窗<br>
+          + 答对后推荐拓展题界面<br>
+          + 知识图谱·薄弱点红色标注
+        </td>
+        <td>
+          <span class="hw-bar">[花字·红字] 薄弱点精准标注</span>
+        </td>
+        <td>
+          1s 降难度弹窗 → 1s 拓展题推送 → 1s 知识图谱全屏
+        </td>
+        <td><span class="bgm-note">🎵 鼓点持续</span></td>
+      </tr>
+
+      <tr class="s3">
+        <td>45"<br>—<br>49"</td>
+        <td>
+          <span class="stage-marker talk">口播⑤</span><br>
+          刘梦亚收束 · 手指屏幕方向
+        </td>
+        <td>
+          <span class="subtitle-bar">[底部字幕] 不是刷题刷出来的——每道题都练在点子上</span>
+        </td>
+        <td>
+          <b>刘梦亚：</b>"学情报告精准分析薄弱点，家长不用盯着，孩子每天15分钟就能自主学习。不是刷题刷出来的——是每一道题都练在点子上。"
+        </td>
+        <td><span class="bgm-note">🎵 鼓点维持</span></td>
+      </tr>
+
+      <!-- 推广 -->
+      <tr class="s4">
+        <td>49"<br>—<br>54"</td>
+        <td>
+          <span class="stage-marker cta">推广搭建</span><br>
+          <b>【对标参考视频分屏CTA】</b><br>
+          左60% → 刘梦亚<br>
+          右40% → 爱学APP图标+全科图标 + "体验价"标签
+        </td>
+        <td>
+          <span class="hw-bar">[花字·金色·大字] 体验价解锁AI私教<br>语数英全科</span>
+          <span class="subtitle-bar">[底部字幕] 点击下方了解详情</span>
+        </td>
+        <td>
+          分屏+底部脉冲按钮"点击了解"<br>
+          刘梦亚最后口播+APP图标和学科标签动画弹出
+        </td>
+        <td><span class="bgm-note">🎵 推向高潮</span></td>
+      </tr>
+
+      <tr class="s4">
+        <td>54"<br>—<br>60"</td>
+        <td>
+          <span class="stage-marker cta">最终CTA</span><br>
+          全屏：语数英全科图标+价格标签"体验价"<br>
+          孩子对着平板露出笑容实拍叠加
+        </td>
+        <td>
+          <span class="hw-bar">[花字·红底白字·全屏中央] 点击下方<br>了解详情</span>
+        </td>
+        <td>
+          <b>刘梦亚（最后一句）：</b>"现在打开爱学APP，体验价就能解锁专属AI辅导课，语数英全科都能用。先让孩子感受一下AI一对一的学习方式。点击下方链接了解详情！"<br>
+          <span class="comply-note">✅ "体验价"模糊定价 · "先感受再继续"</span>
+        </td>
+        <td><span class="bgm-note">🎵 高潮强拍落停<br>🔔 叮——</span></td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 高中脚本 (默认隐藏) -->
+<!-- ============================================================ -->
+<div class="section script-section" id="high-script" style="display:none">
+  <div class="section-title">🧑 脚本三：高中「爱学APP」· 55秒对标重建版</div>
+
+  <div class="info-box yellow">
+    <strong>产品：</strong>爱学APP（高中模块） &nbsp;|&nbsp; <strong>数字人：</strong>陈国栋（真人数字人 · 清北背景） &nbsp;|&nbsp; <strong>公式：</strong>逆袭叙事 + 知识图谱可视化
+  </div>
+
+  <div class="timeline">
+    <table>
+      <thead>
+        <tr><th class="time">时间</th><th class="vis">画面</th><th class="aoe">口播 / 花字</th><th class="script">详细内容</th><th class="audio">BGM/音效</th></tr>
+      </thead>
+
+      <!-- 前贴 -->
+      <tr class="s1">
+        <td>0"<br>—<br>4"</td>
+        <td>
+          <span class="stage-marker hook">前贴①</span><br>
+          深夜台灯下 · 一摞试卷+草稿纸堆满书桌<br>
+          红笔在试卷上批改 · 暗调只有台灯暖光
+        </td>
+        <td>
+          <span class="hw-bar">[花字·红色大字·左上] 刷了那么多题<br>分数就是不动<br>问题到底出在哪</span>
+        </td>
+        <td>
+          镜头① 广角——深夜书桌，台灯孤光，试卷堆叠（2s）<br>
+          镜头② 特写——一支红笔在试卷上划叉，旁边草稿纸密密麻麻（2s）
+        </td>
+        <td><span class="bgm-note">🎵 低沉钢琴<br>+ 时钟滴答</span></td>
+      </tr>
+
+      <tr class="s1">
+        <td>4"<br>—<br>8"</td>
+        <td>
+          <span class="stage-marker hook">前贴②</span><br>
+          墙上时钟快速转动 · 时针从11点转到凌晨1点<br>
+          画面从暗调渐亮 → 过渡到清晨自习室
+        </td>
+        <td>
+          <span class="hw-bar">[花字·白字红边] 每天刷题到凌晨 · 短板一点没补上</span>
+        </td>
+        <td>
+          时钟转场效果 —— 时间加速流动<br>
+          从深夜过渡到清晨，画面亮度渐变<br>
+          最后渐入数字人陈国栋所在的自习室场景
+        </td>
+        <td><span class="bgm-note">🎵 钢琴音渐强<br>加入弦乐</span></td>
+      </tr>
+
+      <tr class="s1">
+        <td>8"<br>—<br>11"</td>
+        <td>
+          <span class="stage-marker hook">前贴③ · 引出数字人</span><br>
+          陈国栋出场 · 坐在自习室里<br>
+          <span style="font-size:.75em;color:var(--sub)">大学校园/图书馆背景 · 红色标题横幅</span>
+        </td>
+        <td>
+          <span class="hw-bar">[顶部红底白字横幅] 高三冲刺 · 方向比努力更重要</span><br>
+          <span class="subtitle-bar">[底部白色字幕] 我复盘才发现：一直在无效刷题</span>
+        </td>
+        <td>
+          陈国栋从柔焦中渐显<br>
+          <b>【清北背景 · 学习方法博主形象】</b><br>
+          · 深蓝休闲西装+细框金属眼镜<br>
+          · 大学图书馆/林荫道背景（名校氛围感）<br>
+          · 左下角标注"AI生成数字人"<br>
+          · 第3秒叠加白色半透明姓名签：「陈国栋」<br>
+          · 顶部红底白字横幅常驻<br>
+          · 暖光从侧面打来，亮度≈120
+        </td>
+        <td><span class="bgm-note">🎵 转希望感旋律</span></td>
+      </tr>
+
+      <!-- 数字人口播 -->
+      <tr class="s2">
+        <td>11"<br>—<br>18"</td>
+        <td>
+          <span class="stage-marker talk">口播① · 逆袭故事</span><br>
+          陈国栋正面中近景 · 眼神真诚坚定<br>
+        </td>
+        <td>
+          <span class="subtitle-bar">[底部字幕] 我是陈国栋 · 两年前我还在为数学发愁</span>
+        </td>
+        <td>
+          <b>陈国栋：</b>"大家好，我是陈国栋。两年前这个时候，我还在为数学发愁——每天刷题到凌晨，试卷做了一摞又一摞，分数就是卡在那里不动。后来我复盘才发现：我一直在无效刷题。"<br>
+          <span class="comply-note">✅ "两年前"为个人叙事框架，"我发现"为主观发现</span>
+        </td>
+        <td><span class="bgm-note">🎵 励志钢琴</span></td>
+      </tr>
+
+      <tr class="s2">
+        <td>18"<br>—<br>20"</td>
+        <td>
+          <span class="stage-marker talk">痛点闪回 🔄</span><br>
+          穿插2秒闪回：台灯下翻试卷——同一类题型反复出现，每次都做错（红圈标出）<br>
+          <b>【对标参考视频闪回手法】</b>
+        </td>
+        <td>
+          <span class="hw-bar">[花字·红字闪出] "会的反复做，不会的永远在逃避"</span>
+        </td>
+        <td>
+          与参考视频18.9s完全相同的闪回手法——<br>
+          在叙事中插入视觉证据，把"无效刷题"这个概念具象化为试卷红圈画面
+        </td>
+        <td><span class="bgm-note">🎵 短暂停顿</span></td>
+      </tr>
+
+      <tr class="s2">
+        <td>20"<br>—<br>27"</td>
+        <td>
+          <span class="stage-marker talk">口播②</span><br>
+          陈国栋 · 手势比划"知识图谱"红绿颜色<br>
+        </td>
+        <td>
+          <span class="subtitle-bar">[底部字幕] 爱学APP——先诊断，再精准推题</span>
+        </td>
+        <td>
+          <b>陈国栋：</b>"什么叫无效刷题？就是会的反复做，不会的永远在逃避。一张试卷做两小时，对答案十分钟——时间花了，短板一点没补上。后来我开始用爱学APP，才找到真正高效的方法。"
+        </td>
+        <td><span class="bgm-note">🎵 旋律渐强</span></td>
+      </tr>
+
+      <!-- APP交替 -->
+      <tr class="s3">
+        <td>27"<br>—<br>30"</td>
+        <td>
+          <span class="stage-marker app">APP切入①</span><br>
+          爱学APP · 学情诊断首页<br>
+          知识图谱全屏——红色薄弱点+绿色掌握点<br>
+          <span style="font-size:.75em;color:var(--sub)">亮度提升至≈200</span>
+        </td>
+        <td>
+          <span class="hw-bar">[花字·黄字] 红色=薄弱点 · 绿色=已掌握</span>
+        </td>
+        <td>
+          3秒全屏展示知识图谱——色彩冲击力强<br>
+          <b>【对标参考视频 APP亮度对比】</b> 从数字人场景的暗调（~120）跳转到亮屏（~200），制造视觉节奏
+        </td>
+        <td><span class="bgm-note">🎵 科技感音效<br>"嗡——"</span></td>
+      </tr>
+
+      <tr class="s3">
+        <td>30"<br>—<br>33"</td>
+        <td>
+          <span class="stage-marker talk">口播③</span><br>
+          切回陈国栋 · 手指画面方向
+        </td>
+        <td>
+          <span class="subtitle-bar">[底部字幕] 精准推送薄弱点的同类变式题</span>
+        </td>
+        <td>
+          <b>陈国栋：</b>"先做几道诊断题，AI立刻生成你的专属知识图谱——红色就是薄弱点，绿色是已掌握的。然后AI不是让你盲目刷整套卷子，而是精准推送薄弱知识点的同类变式题。"
+        </td>
+        <td><span class="bgm-note">🎵 同前</span></td>
+      </tr>
+
+      <tr class="s3">
+        <td>33"<br>—<br>37"</td>
+        <td>
+          <span class="stage-marker app">APP切入②</span><br>
+          精准推题界面 → 手写解题实拍 → AI逐行批改（红圈标注跳步/错写）<br>
+          <span style="font-size:.75em;color:var(--sub)">关键画面！</span>
+        </td>
+        <td>
+          <span class="hw-bar">[花字·黄字] 手写步骤 → AI逐行批改 → 错写漏写立刻定位</span>
+        </td>
+        <td>
+          1s 变式题推送界面 → 2s 手写解题过程实拍（手写笔在平板上书写）→ 1s AI红色圈标注跳步/错写
+        </td>
+        <td><span class="bgm-note">🎵 叮·叮·叮</span></td>
+      </tr>
+
+      <tr class="s3">
+        <td>37"<br>—<br>41"</td>
+        <td>
+          <span class="stage-marker talk">口播④</span><br>
+          陈国栋收束 · 语气坚定
+        </td>
+        <td>
+          <span class="subtitle-bar">[底部字幕] 每一道题都练在点子上</span>
+        </td>
+        <td>
+          <b>陈国栋：</b>"每道题都手写步骤，AI逐行批改——哪一步跳步了、哪一步写错了，一目了然。做完一道就吃透一类。"
+        </td>
+        <td><span class="bgm-note">🎵 旋律推向高潮</span></td>
+      </tr>
+
+      <tr class="s3">
+        <td>41"<br>—<br>44"</td>
+        <td>
+          <span class="stage-marker app">APP切入③</span><br>
+          错题本自动归类界面 → 复习提醒弹窗 → 学习进度趋势图<br>
+          <span style="font-size:.75em;color:var(--sub)">3秒三画面</span>
+        </td>
+        <td>
+          <span class="hw-bar">[花字·绿字] 自动归类 + 定时复习提醒</span>
+        </td>
+        <td>
+          1s 错题本按知识点分类 → 1s 定时复习提醒 → 1s 学习进度上升趋势图
+        </td>
+        <td><span class="bgm-note">🎵 高潮处</span></td>
+      </tr>
+
+      <tr class="s3">
+        <td>44"<br>—<br>47"</td>
+        <td>
+          <span class="stage-marker talk">口播⑤</span><br>
+          陈国栋真诚收束 · 眼神直视镜头
+        </td>
+        <td>
+          <span class="subtitle-bar">[底部字幕] 方向对了，努力才不白费</span>
+        </td>
+        <td>
+          <b>陈国栋：</b>"还有错题本自动归类和复习提醒——不用自己整理。方向对了，努力才不白费。"
+        </td>
+        <td><span class="bgm-note">🎵 维持</span></td>
+      </tr>
+
+      <!-- 推广 -->
+      <tr class="s4">
+        <td>47"<br>—<br>51"</td>
+        <td>
+          <span class="stage-marker cta">推广搭建</span><br>
+          <b>【对标参考视频分屏CTA】</b><br>
+          左60% → 陈国栋（缩小，右侧）<br>
+          右40% → 爱学APP图标 + "免费学情诊断"入口
+        </td>
+        <td>
+          <span class="hw-bar">[花字·金色·中央] 免费学情诊断<br>找到你的薄弱点</span>
+          <span class="subtitle-bar">[底部字幕] 扫码查看你的专属知识图谱</span>
+        </td>
+        <td>
+          分屏画面+底部脉冲按钮"免费诊断"<br>
+          <b>【对标参考视频 CTA分屏构图】</b><br>
+          左侧弹窗展示知识图谱示例（红绿对比），右侧陈国栋微笑指引
+        </td>
+        <td><span class="bgm-note">🎵 高潮维持</span></td>
+      </tr>
+
+      <tr class="s4">
+        <td>51"<br>—<br>55"</td>
+        <td>
+          <span class="stage-marker cta">最终CTA</span><br>
+          全屏：知识图谱展开动画+"免费诊断"大字<br>
+          陈国栋半透明半身像叠加在右侧
+        </td>
+        <td>
+          <span class="hw-bar">[花字·红底白字·全屏中央] 点击下方<br>免费试试看</span>
+        </td>
+        <td>
+          <b>陈国栋（最后一句）：</b>"我把这套方法整理成了免费学情诊断，扫码就能看到你的薄弱知识点在哪里、接下来该重点练什么。方向对了，努力才不白费——点击下方试试看！"<br>
+          <span class="comply-note">✅ "免费学情诊断"零门槛 · "方向对了努力才不白费"为通用道理</span>
+        </td>
+        <td><span class="bgm-note">🎵 高潮强拍落停<br>🔔 叮——</span></td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 综合对比 -->
+<!-- ============================================================ -->
+<div class="section">
+  <div class="section-title">📊 重建前后关键变化对比</div>
+
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th style="width:20%">维度</th>
+        <th style="width:40%">❌ 旧版</th>
+        <th style="width:40%">✅ 参考视频对标重建版</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="font-weight:700">数字人形象</td>
+        <td>居家风 / 书房背景 / 无眼镜 / 场景感弱</td>
+        <td class="highlight"><b>小学：</b>无数字人 · 纯画面+配音驱动 · <b>初中：</b>刘梦亚（真人数字人 · 参考视频同款） · <b>高中：</b>陈国栋（真人数字人 · 清北背景）</td>
+      </tr>
+      <tr>
+        <td style="font-weight:700">总时长</td>
+        <td>小学60s / 初中65s / 高中55s</td>
+        <td class="highlight"><b>统一58s基准：</b>小学58s / 初中60s / 高中55s —— 三套脚本统一产品为爱学APP，对齐参考视频58秒黄金节奏</td>
+      </tr>
+      <tr>
+        <td style="font-weight:700">切镜节奏</td>
+        <td>数字人段连续口播过长（15-34秒无中断）</td>
+        <td class="highlight"><b>对标参考3.5s均值：</b>数字人段每≤10秒切一次（穿插闪回/APP画面）· 全片同一画面连续不超过10秒</td>
+      </tr>
+      <tr>
+        <td style="font-weight:700">前贴结构</td>
+        <td>0-8s / 0-10s（较长单段）</td>
+        <td class="highlight"><b>对齐参考0-11s三段式：</b>痛点画面(4s)→痛点画面(4s)→数字人出场(3s) —— 逐段加速</td>
+      </tr>
+      <tr>
+        <td style="font-weight:700">痛点闪回</td>
+        <td>无</td>
+        <td class="highlight"><b>对标参考18.9s手法：</b>数字人口播中穿插2秒痛点闪回——制造"老师正在说这个问题，画面就给你看"的冲击感</td>
+      </tr>
+      <tr>
+        <td style="font-weight:700">APP画面亮度</td>
+        <td>未区分</td>
+        <td class="highlight"><b>对标参考：</b>数字人场景亮度≈117 → APP录屏亮度≈160-226 —— 利用亮度跳跃制造视觉节奏</td>
+      </tr>
+      <tr>
+        <td style="font-weight:700">视觉元素</td>
+        <td>未定义顶部横幅和字幕栏</td>
+        <td class="highlight"><b>对标参考统一规范：</b>顶部红色标题横幅常驻 + 底部白色字幕栏常驻 + 花字红黄配色体系</td>
+      </tr>
+      <tr>
+        <td style="font-weight:700">CTA分屏</td>
+        <td>简单描述</td>
+        <td class="highlight"><b>对标参考分屏构图：</b>左60%数字人缩小+右40%APP入口+底部脉冲按钮 —— 精确到比例</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <p><b>本内容由AI辅助生成</b> · 参考视频节奏数据来自实际视频分析 · 含数字人形象的视频须标注"AI生成"</p>
+  <p>基于参考视频「刘梦亚 · 爱学APP」58秒节奏完整对标重建 · 小学无数字人(配音驱动) · 初中刘梦亚 · 高中陈国栋 · 统一产品爱学APP · 720×1280 30fps</p>
+</div>
+
+</div>
+
+<script>
+function showScript(scriptType) {
+  // 隐藏所有脚本
+  const scriptSections = document.querySelectorAll('.script-section');
+  scriptSections.forEach(section => {
+    section.style.display = 'none';
+  });
+  
+  // 显示选中的脚本
+  const selectedScript = document.getElementById(`${scriptType}-script`);
+  if (selectedScript) {
+    selectedScript.style.display = 'block';
+  }
+  
+  // 更新按钮状态
+  const buttons = document.querySelectorAll('.script-btn');
+  buttons.forEach(btn => {
+    btn.classList.remove('active');
+  });
+  
+  // 激活当前按钮
+  const activeButton = document.querySelector(`.script-btn[onclick="showScript('${scriptType}')"]`);
+  if (activeButton) {
+    activeButton.classList.add('active');
+  }
+}
+
+// 默认显示小学脚本
+document.addEventListener('DOMContentLoaded', function() {
+  showScript('elementary');
+});
+</script>
+</body>
+</html>
+```
+
+## 主要功能特点
+
+1. **响应式设计** - 适配手机和电脑屏幕
+2. **脚本切换功能** - 通过顶部按钮可以在小学、初中、高中三个学段脚本间切换
+3. **视觉一致性** - 保持了与示例相同的配色方案和视觉风格
+4. **结构化数据展示** - 使用表格、卡片、时间线等元素清晰展示脚本内容
+5. **合规标注** - 在脚本中标注了合规要点
+6. **节奏可视化** - 使用节奏条和分段展示参考视频的节奏分析
+
+页面结构清晰，用户可以直接查看参考视频分析、数字人形象、视觉规范，并通过切换按钮查看不同学段的完整脚本。"
