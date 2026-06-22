@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>人力资源数据分析报告</title>
+    <style>
+        body {max-width:1200px;margin:0 auto;padding:24px;font-family:"Microsoft Yahei",sans-serif;font-size:16px;line-height:1.8;color:#333;background:#f8f9fa;}
+        .container {background:#fff;padding:30px;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,0.06);}
+        h1 {color:#2d52b8;border-bottom:2px solid #2d52b8;padding-bottom:10px;}
+        h2 {color:#3a63cc;margin-top:30px;}
+        .warn {background:#fff3cd;color:#856404;padding:12px;border-radius:6px;margin:16px 0;}
+        .metric {display:inline-block;background:#e8f0fe;padding:8px 16px;border-radius:8px;margin:6px 8px 6px 0;}
+        .chart-box {border:1px solid #e2e8f0;padding:16px;border-radius:8px;margin:20px 0;}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!DOCTYPE >
+< lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>员工人力资源数据分析报告</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft Yahei', sans-serif;
+        }
+        body {
+            background-color: #f5f8fa;
+            color: #333;
+            padding: 20px;
+        }
+        .page-title {
+            text-align: center;
+            color: #1f61ac;
+            font-size: 28px;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+        .section {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .section-title {
+            color: #1f61ac;
+            font-size: 22px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e8f0;
+        }
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .metric-card {
+            background-color: #e8f1f8;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+        .metric-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1f61ac;
+            margin-bottom: 8px;
+        }
+        .metric-label {
+            font-size: 14px;
+            color: #666;
+        }
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            margin-bottom: 20px;
+        }
+        .alert-box {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px;
+            margin: 15px 0;
+            border-radius: 4px;
+            color: #856404;
+            font-size: 14px;
+        }
+        .insight-section {
+            line-height: 1.6;
+        }
+        .insight-title {
+            font-size: 18px;
+            color: #1f61ac;
+            margin-bottom: 15px;
+        }
+        .suggestions-list {
+            list-style-type: disc;
+            padding-left: 20px;
+            margin-top: 15px;
+        }
+        .suggestions-list li {
+            margin-bottom: 10px;
+        }
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 300px;
+            }
+            .overview-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1 class="page-title">员工人力资源数据分析报告</h1>
+
+    <!-- 1.  -->
+    <div class="section">
+        <h2 class="section-title"></h2>
+        <div class="overview-grid">
+            <div class="metric-card">
+                <div class="metric-value">200</div>
+                <div class="metric-label">总员工人数</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">192</div>
+                <div class="metric-label">在职员工人数</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">8</div>
+                <div class="metric-label">离职员工人数</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">4%</div>
+                <div class="metric-label">综合离职率</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">¥13,756</div>
+                <div class="metric-label">全公司平均薪资</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2.  -->
+    <div class="section">
+        <h2 class="section-title"></h2>
+        <!-- 部门分布环形图 -->
+        <div class="chart-container" id="departmentChart"></div>
+        <!-- 年龄区间条形图 -->
+        <div class="chart-container" id="ageChart"></div>
+        <!-- 性别占比环形图 -->
+        <div class="chart-container" id="genderChart"></div>
+    </div>
+
+    <!-- 3. 薪酬分析板块 -->
+    <div class="section">
+        <h2 class="section-title">薪酬分析板块</h2>
+        <!-- 各部门平均薪资柱状图 -->
+        <div class="chart-container" id="deptSalaryChart"></div>
+        <!-- 薪资区间分布直方图 -->
+        <div class="chart-container" id="salaryRangeChart"></div>
+    </div>
+
+    <!-- 4. 离职异动板块 -->
+    <div class="section">
+        <h2 class="section-title">离职异动板块</h2>
+        <div class="alert-box">⚠️ 提示：在职员工无离职原因记录，以下统计仅针对已离职员工</div>
+        <!-- 各部门离职率柱状图 -->
+        <div class="chart-container" id="deptTurnoverChart"></div>
+        <!-- 离职原因占比饼图 -->
+        <div class="chart-container" id="resignReasonChart"></div>
+    </div>
+
+    <!-- 5. 板块 -->
+    <div class="section">
+        <h2 class="section-title">板块</h2>
+        <!-- 绩效等级分布柱状图 -->
+        <div class="chart-container" id="performanceChart"></div>
+    </div>
+
+    <!-- 6. 核心数据洞察与优化建议 -->
+    <div class="section insight-section">
+        <h2 class="section-title">核心数据洞察与HR优化建议</h2>
+        <div class="insight-title">核心数据洞察</div>
+        <p>1. 公司整体离职率为4%，处于较低水平，团队稳定性良好；</p>
+        <p>2. 研发部平均薪资最高（¥18,250），且离职率仅2.5%，薪酬竞争力较强；</p>
+        <p>3. 绩效等级D占比达28%，说明部分员工绩效表现有待提升；</p>
+        <p>4. 离职原因中「薪资待遇不符」占比最高（37.5%），反映薪酬体系在部分部门存在优化空间；</p>
+        <p>5. 26-30岁年龄段员工占比最高（27%），公司整体年轻化程度较高。</p>
+
+        <div class="insight-title">HR优化建议</div>
+        <ul class="suggestions-list">
+            <li>针对绩效等级D的员工开展一对一绩效辅导，制定个性化提升计划，帮助员工改进工作表现；</li>
+            <li>对市场部、销售部等离职原因集中在「薪资待遇不符」的部门开展薪酬调研，调整薪酬结构以匹配市场水平；</li>
+            <li>完善员工离职访谈机制，全面收集离职原因，为人力资源策略调整提供更精准依据；</li>
+            <li>针对因「通勤距离过长」离职的员工，评估推行弹性工作制或远程办公的可行性，降低此类离职风险；</li>
+            <li>定期开展员工满意度调查，及时发现团队管理中的问题，提升员工归属感与留存率。</li>
+        </ul>
+    </div>
+
+    <script>
+        // 部门分布环形图
+        var departmentChart = echarts.init(document.getElementById('departmentChart'));
+        var departmentOption = {
+            title: { text: '部门人员分布', left: 'center', textStyle: { fontSize: 16 } },
+            tooltip: { trigger: 'item' },
+            legend: { orient: 'vertical', left: 'left' },
+            series: [
+                {
+                    name: '员工人数',
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    avoidLabelOverlap: false,
+                    itemStyle: { borderRadius: 10, borderColor: '#fff', borderWidth: 2 },
+                    label: { show: false, position: 'center' },
+                    emphasis: { label: { show: true, fontSize: 18, fontWeight: 'bold' } },
+                    labelLine: { show: false },
+                    data: [
+                        { value: 35, name: '人事部' },
+                        { value: 30, name: '研发部' },
+                        { value: 25, name: '销售部' },
+                        { value: 28, name: '财务部' },
+                        { value: 32, name: '运营部' },
+                        { value: 50, name: '市场部' }
+                    ]
+                }
+            ]
+        };
+        departmentChart.setOption(departmentOption);
+
+        // 年龄区间条形图
+        var ageChart = echarts.init(document.getElementById('ageChart'));
+        var ageOption = {
+            title: { text: '员工年龄区间分布', left: 'center', textStyle: { fontSize: 16 } },
+            tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+            grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+            xAxis: { type: 'value', boundaryGap: [0, 0.01] },
+            yAxis: { type: 'category', data: ['20-25岁', '26-30岁', '31-35岁', '36-40岁', '41-45岁'] },
+            series: [
+                {
+                    name: '员工人数',
+                    type: 'bar',
+                    data: [42, 54, 38, 36, 30],
+                    itemStyle: { color: '#1f61ac' }
+                }
+            ]
+        };
+        ageChart.setOption(ageOption);
+
+        // 性别占比环形图
+        var genderChart = echarts.init(document.getElementById('genderChart'));
+        var genderOption = {
+            title: { text: '员工性别占比', left: 'center', textStyle: { fontSize: 16 } },
+            tooltip: { trigger: 'item' },
+            legend: { orient: 'vertical', left: 'left' },
+            series: [
+                {
+                    name: '性别',
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    itemStyle: { borderRadius: 10, borderColor: '#fff', borderWidth: 2 },
+                    data: [
+                        { value: 108, name: '男' },
+                        { value: 92, name: '女' }
+                    ]
+                }
+            ]
+        };
+        genderChart.setOption(genderOption);
+
+        // 各部门平均薪资柱状图
+        var deptSalaryChart = echarts.init(document.getElementById('deptSalaryChart'));
+        var deptSalaryOption = {
+            title: { text: '各部门平均薪资', left: 'center', textStyle: { fontSize: 16 } },
+            tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+            grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+            xAxis: { type: 'category', data: ['人事部', '研发部', '销售部', '财务部', '运营部', '市场部'] },
+            yAxis: { type: 'value', axisLabel: { formatter: '¥{value}' } },
+            series: [
+                {
+                    name: '平均薪资',
+                    type: 'bar',
+                    data: [10500, 18250, 14200, 14800, 10800, 13500],
+                    itemStyle: { color: '#3b8bcc' }
+                }
+            ]
+        };
+        deptSalaryChart.setOption(deptSalaryOption);
+
+        // 薪资区间分布直方图
+        var salaryRangeChart = echarts.init(document.getElementById('salaryRangeChart'));
+        var salaryRangeOption = {
+            title: { text: '薪资区间分布', left: 'center', textStyle: { fontSize: 16 } },
+            tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+            grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+            xAxis: { type: 'category', data: ['5k-10k', '10k-15k', '15k-20k', '20k以上'] },
+            yAxis: { type: 'value' },
+            series: [
+                {
+                    name: '员工人数',
+                    type: 'bar',
+                    data: [45, 85, 50, 20],
+                    itemStyle: { color: '#61a0a8' }
+                }
+            ]
+        };
+        salaryRangeChart.setOption(salaryRangeOption);
+
+        // 各部门离职率柱状图
+        var deptTurnoverChart = echarts.init(document.getElementById('deptTurnoverChart'));
+        var deptTurnoverOption = {
+            title: { text: '各部门离职率', left: 'center', textStyle: { fontSize: 16 } },
+            tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, formatter: '{b}: {c}%' },
+            grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+            xAxis: { type: 'category', data: ['人事部', '研发部', '销售部', '财务部', '运营部', '市场部'] },
+            yAxis: { type: 'value', axisLabel: { formatter: '{value}%' } },
+            series: [
+                {
+                    name: '离职率',
+                    type: 'bar',
+                    data: [5.7, 3.3, 0, 3.6, 0, 8],
+                    itemStyle: { color: '#d87c7c' }
+                }
+            ]
+        };
+        deptTurnoverChart.setOption(deptTurnoverOption);
+
+        // 离职原因占比饼图
+        var resignReasonChart = echarts.init(document.getElementById('resignReasonChart'));
+        var resignReasonOption = {
+            title: { text: '离职原因占比', left: 'center', textStyle: { fontSize: 16 } },
+            tooltip: { trigger: 'item' },
+            legend: { orient: 'vertical', left: 'left' },
+            series: [
+                {
+                    name: '离职原因',
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    itemStyle: { borderRadius: 10, borderColor: '#fff', borderWidth: 2 },
+                    data: [
+                        { value: 3, name: '薪资待遇不符' },
+                        { value: 2, name: '通勤距离过长' },
+                        { value: 1, name: '业绩不达标辞退' },
+                        { value: 1, name: '个人发展跳槽' },
+                        { value: 1, name: '其他' }
+                    ]
+                }
+            ]
+        };
+        resignReasonChart.setOption(resignReasonOption);
+
+        // 绩效等级分布柱状图
+        var performanceChart = echarts.init(document.getElementById('performanceChart'));
+        var performanceOption = {
+            title: { text: '绩效等级分布', left: 'center', textStyle: { fontSize: 16 } },
+            tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+            grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+            xAxis: { type: 'category', data: ['A', 'B', 'C', 'D'] },
+            yAxis: { type: 'value' },
+            series: [
+                {
+                    name: '员工人数',
+                    type: 'bar',
+                    data: [42, 68, 42, 56],
+                    itemStyle: { color: '#91cc75' }
+                }
+            ]
+        };
+        performanceChart.setOption(performanceOption);
+
+        // 响应式适配
+    </div>
+</body>
+</html>
