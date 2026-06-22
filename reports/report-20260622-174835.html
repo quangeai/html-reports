@@ -1,0 +1,269 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小红书图文笔记排版</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+        }
+
+        body {
+            background-color: #f9f9f9;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px 15px 80px;
+            max-width: 420px;
+            margin: 0 auto;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .card {
+            background-color: #fff;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+            padding: 28px 24px;
+            margin-bottom: 20px;
+            break-inside: avoid;
+            position: relative;
+            min-height: 200px;
+        }
+
+        h1 {
+            font-size: 26px;
+            font-weight: 700;
+            line-height: 1.4;
+            margin-bottom: 12px;
+            color: #1a1a1a;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .tag {
+            background-color: #f5f5f5;
+            color: #ff2442;
+            font-size: 13px;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 24px 0 16px;
+            color: #1a1a1a;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title::before {
+            content: "—";
+            color: #ff2442;
+            margin-right: 8px;
+            font-weight: 800;
+        }
+
+        .content-list {
+            list-style: none;
+        }
+
+        .content-list li {
+            margin-bottom: 16px;
+            padding-left: 24px;
+            position: relative;
+            font-size: 16px;
+            line-height: 1.7;
+            color: #444;
+        }
+
+        .content-list li::before {
+            content: "•";
+            color: #ff2442;
+            font-size: 20px;
+            position: absolute;
+            left: 0;
+            top: -2px;
+        }
+
+        .highlight {
+            color: #ff2442;
+            font-weight: 600;
+            background-color: rgba(255, 36, 66, 0.05);
+            padding: 0 4px;
+            border-radius: 3px;
+        }
+
+        .emoji {
+            font-size: 18px;
+            margin-right: 4px;
+            vertical-align: middle;
+        }
+
+        .interaction {
+            text-align: center;
+            padding: 20px 0 10px;
+            color: #888;
+            font-size: 14px;
+        }
+
+        .interaction strong {
+            color: #ff2442;
+        }
+
+        .download-section {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, #f9f9f9 80%, transparent);
+            padding: 20px 15px;
+            z-index: 100;
+            text-align: center;
+        }
+
+        .download-btn {
+            background-color: #ff2442;
+            color: white;
+            border: none;
+            border-radius: 24px;
+            padding: 14px 32px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(255, 36, 66, 0.2);
+            transition: all 0.2s ease;
+        }
+
+        .download-btn:hover {
+            background-color: #e61e3c;
+            transform: translateY(-1px);
+        }
+
+        .download-btn:active {
+            transform: translateY(0);
+        }
+
+        .page-indicator {
+            text-align: center;
+            font-size: 13px;
+            color: #aaa;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card-container">
+        <!-- 封面页 -->
+        <div class="card" id="card-1">
+            <h1>📰 暂无匹配主题相关新闻？别慌！</h1>
+            <p class="subtitle">可能是你发现了全新的信息蓝海，或是避开了人云亦红的同质化内容。</p>
+            <div class="tags">
+                <span class="tag">#信息差</span>
+                <span class="tag">#内容创作</span>
+                <span class="tag">#独家视角</span>
+            </div>
+        </div>
+
+        <!-- 内容页1 -->
+        <div class="card" id="card-2">
+            <div class="section-title">💡 这未必是坏事</div>
+            <ul class="content-list">
+                <li>当常规渠道<span class="highlight">“暂无新闻”</span>，往往意味着这片领域尚未被过度报道，信息竞争小。</li>
+                <li>它为你提供了从<span class="highlight">“0到1”构建内容</span>的绝佳机会，更容易建立认知壁垒。</li>
+                <li>提醒你需要转换信息源，或采用更<span class="highlight">深度、长尾</span>的关键词进行挖掘。</li>
+            </ul>
+        </div>
+
+        <!-- 内容页2 -->
+        <div class="card" id="card-3">
+            <div class="section-title">🔍 下一步行动指南</div>
+            <ul class="content-list">
+                <li><span class="highlight">拓宽信源</span>：尝试学术数据库、行业报告、海外媒体、小众论坛或一手访谈。</li>
+                <li><span class="highlight">拆解需求</span>：将大主题拆解为更具体、更落地的子话题进行搜索。</li>
+                <li><span class="highlight">反向验证</span>：搜索其对立面或相关话题，常能发现关联线索。</li>
+                <li><span class="highlight">设定提醒</span>：在资讯平台设置关键词提醒，静待新闻出现。</li>
+            </ul>
+        </div>
+
+        <!-- 内容页3 -->
+        <div class="card" id="card-4">
+            <div class="section-title">✨ 独家内容创作思路</div>
+            <ul class="content-list">
+                <li>从<span class="highlight">“暂无新闻”</span>这个现象本身切入，分析其背后的行业动态或用户心理。</li>
+                <li>整合该主题的<span class="highlight">背景知识、历史脉络与未来预测</span>，做一篇前瞻性梳理。</li>
+                <li>采访相关领域的<span class="highlight">从业者或爱好者</span>，获取一手观点和内部消息。</li>
+                <li>产出<span class="highlight">“为什么还没有新闻”</span>的分析报告，价值可能远超一篇普通资讯。</li>
+            </ul>
+        </div>
+
+        <!-- 结尾页 -->
+        <div class="card" id="card-5">
+            <div class="section-title">💎 核心总结</div>
+            <p style="margin-bottom: 20px; font-size: 16px; color: #444;">“暂无新闻”不是创作的终点，而是深度探索和建立独特性的起点。它考验的是信息挖掘能力和内容构建的耐心。</p>
+            <div class="interaction">
+                你觉得“暂无新闻”是机遇还是挑战？<br>
+                <strong>👇 评论区聊聊你的看法 👇</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="download-section">
+        <button class="download-btn" onclick="downloadAllCards()">📥 一键下载所有卡片</button>
+        <div class="page-indicator">共5页 · 适合分享至小红书</div>
+    </div>
+
+    <script>
+        function downloadAllCards() {
+            const cards = document.querySelectorAll('.card');
+            const totalCards = cards.length;
+            let downloaded = 0;
+
+            cards.forEach((card, index) => {
+                // 为每张卡片设置纯白背景，确保导出清晰
+                const originalBg = card.style.backgroundColor;
+                card.style.backgroundColor = '#ffffff';
+
+                html2canvas(card, {
+                    scale: 2,
+                    useCORS: true,
+                    backgroundColor: '#ffffff',
+                    logging: false
+                }).then(canvas => {
+                    // 恢复原始背景色
+                    card.style.backgroundColor = originalBg;
+
+                    const link = document.createElement('a');
+                    link.download = `小红书笔记-第${index + 1}页.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+
+                    downloaded++;
+                    if (downloaded === totalCards) {
+                        alert('所有卡片已下载完成！');
+                    }
+                }).
