@@ -1,0 +1,262 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>小红书图文笔记排版</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
+        }
+
+        body {
+            background-color: #f9f9f9;
+            color: #333;
+            line-height: 1.5;
+            padding: 16px 12px 80px;
+            max-width: 420px;
+            margin: 0 auto;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 28px 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            break-inside: avoid;
+            position: relative;
+        }
+
+        .card:last-of-type {
+            margin-bottom: 0;
+        }
+
+        .cover-title {
+            font-size: 28px;
+            font-weight: 700;
+            line-height: 1.35;
+            margin-bottom: 12px;
+            color: #1a1a1a;
+            text-align: center;
+        }
+
+        .cover-subtitle {
+            font-size: 16px;
+            color: #666;
+            text-align: center;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .tag {
+            background-color: #fff2f0;
+            color: #ff4d4f;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .page-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .page-title::before {
+            content: "—";
+            color: #ff7a45;
+            font-weight: 800;
+        }
+
+        .content-list {
+            list-style: none;
+        }
+
+        .content-item {
+            margin-bottom: 18px;
+            padding-left: 8px;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #444;
+        }
+
+        .content-item::before {
+            content: "•";
+            color: #ff7a45;
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+        }
+
+        .highlight {
+            color: #ff4d4f;
+            font-weight: 600;
+            background-color: transparent;
+        }
+
+        .emoji {
+            font-size: 1.1em;
+            margin-right: 4px;
+            vertical-align: -1px;
+        }
+
+        .ending {
+            text-align: center;
+            padding: 20px 0 10px;
+        }
+
+        .ending-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+
+        .ending-text {
+            font-size: 15px;
+            color: #666;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .interaction {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .interaction-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 13px;
+            color: #999;
+        }
+
+        .interaction-icon {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 6px;
+            background-color: #f0f0f0;
+            border-radius: 50%;
+        }
+
+        .download-section {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, #f9f9f9 80%, transparent);
+            padding: 20px 16px;
+            display: flex;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .download-btn {
+            background-color: #ff4d4f;
+            color: white;
+            border: none;
+            border-radius: 24px;
+            padding: 14px 36px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(255, 77, 79, 0.25);
+            transition: all 0.2s ease;
+        }
+
+        .download-btn:hover {
+            background-color: #ff7875;
+            transform: translateY(-1px);
+        }
+
+        .download-btn:active {
+            transform: translateY(0);
+        }
+
+        @media (max-width: 375px) {
+            .card {
+                padding: 24px 20px;
+            }
+            .cover-title {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 第1页：封面 -->
+    <div class="card" id="card-1">
+        <h1 class="cover-title">✨新手必看！小红书运营3大核心技巧</h1>
+        <p class="cover-subtitle">从0到万粉，我踩过的坑你别再踩了！</p>
+        <div class="tags">
+            <span class="tag">#小红书运营</span>
+            <span class="tag">#自媒体干货</span>
+            <span class="tag">#避坑指南</span>
+        </div>
+    </div>
+
+    <!-- 第2页：内容1 -->
+    <div class="card" id="card-2">
+        <h2 class="page-title">一、账号定位</h2>
+        <ul class="content-list">
+            <li class="content-item"><span class="emoji">🎯</span>明确<strong class="highlight">垂直领域</strong>，不要今天美妆明天美食</li>
+            <li class="content-item"><span class="emoji">👤</span>打造<strong class="highlight">人设IP</strong>，让粉丝记住你的个性与价值</li>
+            <li class="content-item"><span class="emoji">📊</span>分析<strong class="highlight">对标账号</strong>，学习爆款逻辑但绝不抄袭</li>
+            <li class="content-item"><span class="emoji">💡</span>找到<strong class="highlight">差异化优势</strong>，提供别人没有的视角或内容</li>
+        </ul>
+    </div>
+
+    <!-- 第3页：内容2 -->
+    <div class="card" id="card-3">
+        <h2 class="page-title">二、内容创作</h2>
+        <ul class="content-list">
+            <li class="content-item"><span class="emoji">📸</span>封面<strong class="highlight">吸睛法则</strong>：高清、色彩统一、大字标题</li>
+            <li class="content-item"><span class="emoji">✍️</span>文案<strong class="highlight">口语化</strong>，多用“你”而不是“用户”</li>
+            <li class="content-item"><span class="emoji">🔗</span>巧用<strong class="highlight">热门话题</strong>，但内容必须贴合自身定位</li>
+            <li class="content-item"><span class="emoji">⏰</span>保持<strong class="highlight">更新频率</strong>，每周3-5更更容易获得推荐</li>
+        </ul>
+    </div>
+
+    <!-- 第4页：内容3 -->
+    <div class="card" id="card-4">
+        <h2 class="page-title">三、数据优化</h2>
+        <ul class="content-list">
+            <li class="content-item"><span class="emoji">📈</span>关注<strong class="highlight">互动率</strong>而非单纯点赞数，评论>收藏>转发</li>
+            <li class="content-item"><span class="emoji">🕒</span>发布<strong class="highlight">黄金时间</strong>：早7-9点，午12-14点，晚19-22点</li>
+            <li class="content-item"><span class="emoji">🔄</span>及时<strong class="highlight">回复评论</strong>，提升账号活跃度与粉丝黏性</li>
+            <li class="content-item"><span class="emoji">🎁</span>适时<strong class="highlight">福利活动</strong>，增加粉丝参与感与分享欲</li>
+        </ul>
+    </div>
+
+    <!-- 第5页：结尾 -->
+    <div class="card" id="card-5">
+        <div class="ending">
+            <h3 class="ending-title">核心总结</h3>
+            <p class="ending-text">
+                定位清晰 + 内容优质 + 持续互动<br>
+                是小红书涨粉的<strong class="highlight">不变公式</strong>。<br>
+                别急，
