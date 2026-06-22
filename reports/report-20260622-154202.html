@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>XX公司员工离职、绩效与薪资情况分析报告</title>
+    <!-- 双CDN：优先 jsdelivr，失效则用 cdnjs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        window.chartJsFallback = false;
+        // 如果 jsdelivr 加载失败，尝试 cdnjs
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof Chart === 'undefined') {
+                var script = document.createElement('script');
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js';
+                document.head.appendChild(script);
+            }
+        });
+    </script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 40px; background: #f5f7fa; color: #333; }
+        .container { max-width: 1000px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        h2 { color: #2980b9; margin-top: 30px; border-left: 5px solid #3498db; padding-left: 12px; }
+        .overview { background: #ecf0f1; padding: 16px 20px; border-radius: 8px; margin-bottom: 25px; }
+        .finding { background: #f9f9f9; border-left: 4px solid #3498db; padding: 12px 18px; margin: 12px 0; border-radius: 4px; }
+        .finding h3 { margin: 0 0 8px 0; color: #2c3e50; }
+        .evidence { font-weight: bold; color: #e67e22; }
+        .insight { color: #555; }
+        .recommendation { background: #e8f8f5; border-left: 4px solid #1abc9c; padding: 12px 18px; margin: 12px 0; border-radius: 4px; }
+        .rec-title { font-weight: bold; }
+        .priority-high { color: #e74c3c; font-weight: bold; }
+        .priority-medium { color: #f39c12; font-weight: bold; }
+        .priority-low { color: #27ae60; font-weight: bold; }
+        .footer { text-align: center; margin-top: 35px; padding-top: 15px; border-top: 1px solid #ddd; font-size: 0.9em; color: #bdc3c7; }
+        .chart-container { 
+            background: #fff; 
+            padding: 20px; 
+            margin: 20px 0; 
+            border-radius: 8px; 
+            border: 1px solid #ecf0f1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+        }
+        .chart-box {
+            flex: 1;
+            min-width: 280px;
+            max-width: 450px;
+        }
+        .chart-box h3 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        .chart-box canvas {
+            max-height: 280px;
+            max-width: 100%;
+        }
+        .chart-error {
+            color: #999;
+            text-align: center;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>XX公司员工离职、绩效与薪资情况分析报告</h1>
+    <div class="overview">
+        <p><strong>📊 数据概览</strong></p>
+        <p>暂无概述（请检查大模型输出）</p>
+    </div>
+
+    <h2>📈 可视化统计</h2>
+    <div class="chart-container">
+        <div class="chart-box">
+            <h3>各部门离职人数分布</h3>
+            <canvas id="deptChart"></canvas>
+        </div>
+        <div class="chart-box">
+            <h3>各部门离职人数占比</h3>
+            <canvas id="pieChart"></canvas>
+        </div>
+    </div>
+
+    <h2>🔍 关键发现</h2>
+    
+    <div class="finding">
+        <h3>• 销售部离职率居各部门之首，核心老员工流失风险突出</h3>
+        <p><span class="evidence">数据证据：</span>销售部共5名员工，其中3名已离职，离职率达60%；离职员工中2名为司龄11-12年的资深经理/区域经理，占销售部离职人数的66.7%，且离职的司龄12年经理月薪11000元，低于在职司龄8年经理的12000元，存在薪资倒挂现象。</p>
+        <p><span class="insight">深度解读：</span>销售部资深员工离职可能源于薪资与司龄、贡献不匹配的内部不公平，或是长期从事销售岗位面临职业发展瓶颈、业绩压力过大等问题，核心老员工流失将直接影响团队业务稳定性与客户资源留存。</p>
+    </div>
+    
+    <div class="finding">
+        <h3>• 绩效C级员工离职率100%，低绩效员工辅导机制缺失</h3>
+        <p><span class="evidence">数据证据：</span>全公司共2名绩效C级员工，均已离职；离职的4名员工中，2名绩效为C级，占比50%。</p>
+        <p><span class="insight">深度解读：</span>低绩效员工未得到针对性的绩效辅导与改进支持，无法通过提升能力达到岗位要求，最终选择主动离职，反映出公司绩效闭环管理不完善，缺乏对低绩效员工的帮扶与激励机制。</p>
+    </div>
+    
+    <div class="finding">
+        <h3>• 跨部门同职级薪资差异明显，内部薪酬公平性待提升</h3>
+        <p><span class="evidence">数据证据：</span>同属专员职级，销售部专员月薪8000元，市场部专员7200-7500元，财务部专员6500-6800元，薪资最高差距达1500元；技术部工程师月薪9000-10500元，显著高于其他部门同层级岗位。</p>
+        <p><span class="insight">深度解读：</span>缺乏统一的职级薪酬标准与岗位价值评估体系，导致跨部门同职级薪资差距过大，易引发员工对薪酬公平性的不满，进而增加离职意愿，影响团队凝聚力。</p>
+    </div>
+    
+    <h2>📌 综合结论</h2>
+    <p>综合分析来看，公司当前人力资源管理存在三大核心风险：一是销售部核心老员工流失风险极高，薪资倒挂与发展瓶颈是主要诱因；二是低绩效员工留存机制缺失，无法通过有效辅导帮助员工提升绩效；三是内部薪酬公平性不足，跨部门同职级薪资差异较大。这些问题若不及时解决，将进一步加剧人员流失，削弱团队稳定性与业务竞争力。</p>
+
+    <h2>💡 管理建议</h2>
+    
+    <div class="recommendation">
+        <p><span class="rec-title">建议：</span>1. 立即对销售部离职老员工开展回访访谈，明确离职核心原因；2. 梳理销售部薪资体系，调整资深员工薪资结构，确保司龄、业绩贡献与薪资匹配；3. 为资深员工设置专属职业发展通道（如资深销售顾问岗）或长期激励计划（如年度工龄奖金）。 <span class="priority-medium">(高优先级)</span></p>
+        <p><strong>针对问题：</strong>销售部核心老员工高流失风险</p>
+        <p><strong>责任方：</strong>HR部门+销售部负责人</p>
+        <p><strong>预期效果：</strong>3个月内将销售部离职率降至20%以下，有效留存核心资深员工，稳定团队业务能力。</p>
+    </div>
+    
+    <div class="recommendation">
+        <p><span class="rec-title">建议：</span>1. 建立“绩效改进计划（PIP）”制度，对绩效C级员工制定为期3个月的个性化辅导方案，明确改进目标与考核标准；2. 组织部门负责人开展绩效辅导专项培训，提升管理者帮扶低绩效员工的能力；3. 设置绩效提升激励，对成功完成PIP的员工给予薪资小幅上调或荣誉奖励。 <span class="priority-medium">(中优先级)</span></p>
+        <p><strong>针对问题：</strong>低绩效员工辅导机制缺失</p>
+        <p><strong>责任方：</strong>各部门负责人+HR绩效组</p>
+        <p><strong>预期效果：</strong>低绩效员工离职率降至30%以下，员工整体绩效达标率提升10%，完善绩效闭环管理体系。</p>
+    </div>
+    
+    <div class="recommendation">
+        <p><span class="rec-title">建议：</span>1. 开展内部岗位价值评估，建立统一的职级薪酬体系，明确各职级薪资区间；2. 对标行业薪酬数据，调整各部门同职级薪资水平，缩小不合理差距；3. 每半年开展一次薪酬公平性调研，及时修正薪资体系中的偏差。 <span class="priority-medium">(中优先级)</span></p>
+        <p><strong>针对问题：</strong>内部薪酬公平性不足</p>
+        <p><strong>责任方：</strong>HR薪酬组</p>
+        <p><strong>预期效果：</strong>内部薪酬投诉率降低50%，员工对薪酬满意度提升20%，减少因薪资不公导致的离职风险。</p>
+    </div>
+    
+    <div class="footer">报告由 HR 数据分析工作流自动生成 · 数据已脱敏</div>
+</div>
+
+<script>
+    // 页面加载后绘制图表（等待 Chart.js 加载）
+    function initCharts() {
+        if (typeof Chart === 'undefined') {
+            document.querySelectorAll('.chart-box canvas').forEach(c => {
+                c.parentElement.innerHTML = '<div class="chart-error">⚠️ 图表库加载失败，请检查网络或刷新页面</div>';
+            });
+            return;
+        }
+        const deptNames = ["\u9500\u552e\u90e8", "\u5e02\u573a\u90e8", "\u6280\u672f\u90e8", "\u8d22\u52a1\u90e8", "\u4eba\u529b\u8d44\u6e90\u90e8"];
+        const deptValues = [3, 1, 0, 0, 0];
+        if (deptValues.every(v => v === 0)) {
+            document.querySelectorAll('.chart-box canvas').forEach(c => {
+                c.parentElement.innerHTML = '<div class="chart-error">📊 暂无离职数据可展示</div>';
+            });
+            return;
+        }
+        // 柱状图
+        const ctx1 = document.getElementById('deptChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: deptNames,
+                datasets: [{
+                    label: '离职人数（人）',
+                    data: deptValues,
+                    backgroundColor: ['#e74c3c', '#f39c12', '#3498db', '#2ecc71', '#9b59b6'],
+                    borderColor: ['#c0392b', '#d68910', '#2980b9', '#27ae60', '#8e44ad'],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+            }
+        });
+        // 饼图
+        const ctx2 = document.getElementById('pieChart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'pie',
+            data: {
+                labels: deptNames,
+                datasets: [{
+                    data: deptValues,
+                    backgroundColor: ['#e74c3c', '#f39c12', '#3498db', '#2ecc71', '#9b59b6'],
+                    borderColor: '#fff',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { position: 'bottom', labels: { padding: 10, font: { size: 12 } } } }
+            }
+        });
+    }
+    // 等DOM和脚本都准备好
+    if (document.readyState === 'complete') {
+        initCharts();
+    } else {
+        window.addEventListener('load', initCharts);
+    }
+</script>
+</body>
+</html>
