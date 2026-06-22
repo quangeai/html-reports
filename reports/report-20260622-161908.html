@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>员工离职、绩效与薪资管理分析报告</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 40px; background: #f5f7fa; color: #333; }
+        .container { max-width: 1100px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        h2 { color: #2980b9; margin-top: 30px; border-left: 5px solid #3498db; padding-left: 12px; }
+        .overview { background: #ecf0f1; padding: 16px 20px; border-radius: 8px; margin-bottom: 25px; }
+        .overview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 30px; }
+        .overview-item { padding: 4px 0; }
+        .overview-label { font-weight: bold; color: #2c3e50; }
+        .finding { background: #f9f9f9; border-left: 4px solid #3498db; padding: 12px 18px; margin: 12px 0; border-radius: 4px; }
+        .finding h3 { margin: 0 0 8px 0; color: #2c3e50; }
+        .evidence { font-weight: bold; color: #e67e22; }
+        .insight { color: #555; }
+        .recommendation { background: #e8f8f5; border-left: 4px solid #1abc9c; padding: 12px 18px; margin: 12px 0; border-radius: 4px; }
+        .rec-title { font-weight: bold; }
+        .priority-high { color: #e74c3c; font-weight: bold; }
+        .priority-medium { color: #f39c12; font-weight: bold; }
+        .priority-low { color: #27ae60; font-weight: bold; }
+        .footer { text-align: center; margin-top: 35px; padding-top: 15px; border-top: 1px solid #ddd; font-size: 0.9em; color: #bdc3c7; }
+        .chart-row { margin: 30px 0; padding: 20px; background: #fafbfc; border-radius: 10px; border: 1px solid #ecf0f1; }
+        .chart-row h3 { text-align: center; color: #2c3e50; margin-bottom: 15px; font-size: 16px; }
+        .chart-pair { display: flex; flex-wrap: wrap; gap: 30px; justify-content: center; }
+        .chart-box { flex: 1; min-width: 280px; max-width: 450px; }
+        .chart-box canvas { max-height: 260px; max-width: 100%; }
+        .no-charts { text-align: center; padding: 30px; color: #999; background: #f9f9f9; border-radius: 8px; }
+        .data-match { background: #eafaf1; border-radius: 6px; padding: 6px 14px; margin: 8px 0 16px 0; font-size: 0.9em; color: #1e8449; display: inline-block; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>员工离职、绩效与薪资管理分析报告</h1>
+
+    <div class="overview">
+        <p><strong>📊 数据概览</strong></p>
+        <div class="overview-grid">
+            <div class="overview-item"><span class="overview-label">样本量：</span>共20条记录，涉及11个维度</div>
+            <div class="overview-item"><span class="overview-label">时间范围：</span>数据未包含时间信息</div>
+            <div class="overview-item"><span class="overview-label">关键字段：</span>员工编号、性别、年龄、部门、职位、司龄(年)、学历、绩效评级、月薪(元)、离职状态</div>
+            <div class="overview-item"><span class="overview-label">数据质量：</span>数据无缺失值、异常值，字段完整，数据质量良好</div>
+        </div>
+    </div>
+
+    <h2>📈 可视化统计</h2>
+    <div class="data-match">✅ 以下图表与关键发现数据来源于同一数据源，完全对应</div>
+    
+            <div class="chart-row">
+                <h3>各部门离职人数分布</h3>
+                <div class="chart-pair">
+                    <div class="chart-box">
+                        <canvas id="barChart_0"></canvas>
+                    </div>
+                    <div class="chart-box">
+                        <canvas id="pieChart_0"></canvas>
+                    </div>
+                </div>
+            </div>
+            <script>
+            (function() {
+                const names_0 = ["\u9500\u552e\u90e8", "\u5e02\u573a\u90e8"];
+                const values_0 = [3, 1];
+                const colors = ['#e74c3c', '#f39c12', '#3498db', '#2ecc71', '#9b59b6', '#1abc9c', '#e67e22', '#34495e'];
+                const bgColors = names_0.map((_, i) => colors[i % colors.length]);
+
+                if (typeof Chart !== 'undefined' && names_0.length > 0 && values_0.some(v => v > 0)) {
+                    const ctx1 = document.getElementById('barChart_0').getContext('2d');
+                    new Chart(ctx1, {
+                        type: 'bar',
+                        data: {
+                            labels: names_0,
+                            datasets: [{
+                                label: '离职人数',
+                                data: values_0,
+                                backgroundColor: bgColors,
+                                borderColor: bgColors.map(c => c),
+                                borderWidth: 2
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: true,
+                            plugins: { legend: { display: false } },
+                            scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+                        }
+                    });
+
+                    const ctx2 = document.getElementById('pieChart_0').getContext('2d');
+                    new Chart(ctx2, {
+                        type: 'pie',
+                        data: {
+                            labels: names_0,
+                            datasets: [{
+                                data: values_0,
+                                backgroundColor: bgColors,
+                                borderColor: '#fff',
+                                borderWidth: 2
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: true,
+                            plugins: { legend: { position: 'bottom', labels: { padding: 10, font: { size: 12 } } } }
+                        }
+                    });
+                }
+            })();
+            </script>
+            
+            <div class="chart-row">
+                <h3>各绩效评级离职人数占比</h3>
+                <div class="chart-pair">
+                    <div class="chart-box">
+                        <canvas id="barChart_1"></canvas>
+                    </div>
+                    <div class="chart-box">
+                        <canvas id="pieChart_1"></canvas>
+                    </div>
+                </div>
+            </div>
+            <script>
+            (function() {
+                const names_1 = ["B", "C"];
+                const values_1 = [50, 50];
+                const colors = ['#e74c3c', '#f39c12', '#3498db', '#2ecc71', '#9b59b6', '#1abc9c', '#e67e22', '#34495e'];
+                const bgColors = names_1.map((_, i) => colors[i % colors.length]);
+
+                if (typeof Chart !== 'undefined' && names_1.length > 0 && values_1.some(v => v > 0)) {
+                    const ctx1 = document.getElementById('barChart_1').getContext('2d');
+                    new Chart(ctx1, {
+                        type: 'bar',
+                        data: {
+                            labels: names_1,
+                            datasets: [{
+                                label: '离职人数占比(%)',
+                                data: values_1,
+                                backgroundColor: bgColors,
+                                borderColor: bgColors.map(c => c),
+                                borderWidth: 2
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: true,
+                            plugins: { legend: { display: false } },
+                            scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+                        }
+                    });
+
+                    const ctx2 = document.getElementById('pieChart_1').getContext('2d');
+                    new Chart(ctx2, {
+                        type: 'pie',
+                        data: {
+                            labels: names_1,
+                            datasets: [{
+                                data: values_1,
+                                backgroundColor: bgColors,
+                                borderColor: '#fff',
+                                borderWidth: 2
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: true,
+                            plugins: { legend: { position: 'bottom', labels: { padding: 10, font: { size: 12 } } } }
+                        }
+                    });
+                }
+            })();
+            </script>
+            
+            <div class="chart-row">
+                <h3>各绩效评级平均月薪</h3>
+                <div class="chart-pair">
+                    <div class="chart-box">
+                        <canvas id="barChart_2"></canvas>
+                    </div>
+                    <div class="chart-box">
+                        <canvas id="pieChart_2"></canvas>
+                    </div>
+                </div>
+            </div>
+            <script>
+            (function() {
+                const names_2 = ["A", "B", "C"];
+                const values_2 = [13360, 10217, 7400];
+                const colors = ['#e74c3c', '#f39c12', '#3498db', '#2ecc71', '#9b59b6', '#1abc9c', '#e67e22', '#34495e'];
+                const bgColors = names_2.map((_, i) => colors[i % colors.length]);
+
+                if (typeof Chart !== 'undefined' && names_2.length > 0 && values_2.some(v => v > 0)) {
+                    const ctx1 = document.getElementById('barChart_2').getContext('2d');
+                    new Chart(ctx1, {
+                        type: 'bar',
+                        data: {
+                            labels: names_2,
+                            datasets: [{
+                                label: '平均月薪(元)',
+                                data: values_2,
+                                backgroundColor: bgColors,
+                                borderColor: bgColors.map(c => c),
+                                borderWidth: 2
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: true,
+                            plugins: { legend: { display: false } },
+                            scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+                        }
+                    });
+
+                    const ctx2 = document.getElementById('pieChart_2').getContext('2d');
+                    new Chart(ctx2, {
+                        type: 'pie',
+                        data: {
+                            labels: names_2,
+                            datasets: [{
+                                data: values_2,
+                                backgroundColor: bgColors,
+                                borderColor: '#fff',
+                                borderWidth: 2
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: true,
+                            plugins: { legend: { position: 'bottom', labels: { padding: 10, font: { size: 12 } } } }
+                        }
+                    });
+                }
+            })();
+            </script>
+            
+
+    <h2>🔍 关键发现</h2>
+    
+    <div class="finding">
+        <h3>• 销售部离职率显著高于其他部门</h3>
+        <p><span class="evidence">数据证据：</span>销售部共5名员工，其中3人已离职，离职率达60%；市场部离职率为25%，技术部、财务部、人力资源部离职率均为0；总离职人数4人，销售部占比75%</p>
+        <p><span class="insight">深度解读：</span>销售部人员稳定性存在严重隐患，可能与薪酬竞争力不足、工作压力过大或管理方式不当相关</p>
+    </div>
+    
+    <div class="finding">
+        <h3>• 离职员工中低绩效占比偏高，且薪资低于同部门在职员工</h3>
+        <p><span class="evidence">数据证据：</span>4名离职员工中，2人绩效为C类，占比50%；销售部离职专员月薪8000元，远低于在职销售总监的25000元、经理的12000元；市场部离职专员月薪7200元，低于在职同部门专员的7500元</p>
+        <p><span class="insight">深度解读：</span>低绩效员工主动离职占比高，反映绩效辅导与激励机制存在不足；离职员工薪资偏低，可能是导致人员流失的重要因素</p>
+    </div>
+    
+    <div class="finding">
+        <h3>• 绩效与薪资正相关，但跨部门同绩效薪资差距悬殊</h3>
+        <p><span class="evidence">数据证据：</span>绩效A类员工平均月薪13360元，B类平均10217元，C类平均7400元，呈现明显正相关；但销售部绩效A类总监月薪25000元，远高于技术部绩效A类工程师的平均10250元、市场部绩效A类主管/经理的平均10650元</p>
+        <p><span class="insight">深度解读：</span>绩效激励体系整体有效，但跨部门薪酬公平性不足，易引发员工对薪酬合理性的质疑</p>
+    </div>
+    
+    <h2>📌 综合结论</h2>
+    <p>综合分析，销售部是人员流失的核心风险区域，离职率高达60%，且离职员工中低绩效占比突出；同时存在跨部门同绩效等级薪资差距过大的问题，可能影响内部薪酬公平性；低绩效员工离职占比偏高，反映绩效辅导与激励机制需进一步优化。整体来看，人员稳定性风险、薪酬公平性风险及绩效激励不足是当前人力资源管理的核心问题。</p>
+
+    <h2>💡 管理建议</h2>
+    
+    <div class="recommendation">
+        <p><span class="rec-title">建议：</span>1. 对销售部离职员工开展一对一访谈，明确离职核心原因；2. 优化销售部薪酬结构，增加绩效提成比例并设置年度留存奖金；3. 组织销售管理者参加领导力培训，提升团队沟通与激励能力 <span class="priority-medium">(高优先级)</span></p>
+        <p><strong>针对问题：</strong>销售部离职率过高，人员稳定性差</p>
+        <p><strong>责任方：</strong>人力资源部、销售部管理层</p>
+        <p><strong>预期效果：</strong>将销售部离职率降至30%以下，提升团队稳定性与归属感</p>
+    </div>
+    
+    <div class="recommendation">
+        <p><span class="rec-title">建议：</span>1. 为C类绩效员工制定个性化绩效改进计划，配套导师辅导机制；2. 建立绩效与薪酬动态联动机制，连续2次绩效A类员工给予5%-8%的加薪，连续2次绩效C类员工启动转岗或淘汰评估；3. 开展绩效沟通技巧培训，提升管理者的绩效反馈能力 <span class="priority-medium">(中优先级)</span></p>
+        <p><strong>针对问题：</strong>低绩效员工离职占比高，绩效激励不足</p>
+        <p><strong>责任方：</strong>人力资源部、各部门主管</p>
+        <p><strong>预期效果：</strong>将低绩效员工离职占比降至20%以下，整体绩效达标率提升15%</p>
+    </div>
+    
+    <div class="recommendation">
+        <p><span class="rec-title">建议：</span>1. 开展内部岗位价值评估，建立基于岗位等级的薪酬体系；2. 调整同绩效不同部门的薪资区间，将同职级同绩效员工薪资差距控制在20%以内；3. 公开薪酬体系的制定逻辑与等级标准，提升员工对薪酬公平性的认知 <span class="priority-medium">(中优先级)</span></p>
+        <p><strong>针对问题：</strong>跨部门同绩效薪资差距过大，薪酬公平性不足</p>
+        <p><strong>责任方：</strong>人力资源部、薪酬管理岗</p>
+        <p><strong>预期效果：</strong>缩小跨部门同绩效薪资差距，员工薪酬满意度提升20%</p>
+    </div>
+    
+    <div class="footer">报告由 HR 数据分析工作流自动生成 · 数据已脱敏</div>
+</div>
+</body>
+</html>
