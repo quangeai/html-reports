@@ -1,0 +1,196 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>泌尿外科手卫生可视化分析</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        body {
+            background-color: #f5f7fa;
+            padding: 20px;
+        }
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            margin: 20px auto;
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .summary {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            line-height: 1.8;
+        }
+        .summary h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        .suggestion-item {
+            margin: 10px 0;
+            padding-left: 10px;
+            border-left: 3px solid #3498db;
+        }
+    </style>
+</head>
+<body>
+    <div class="chart-container" id="barChart"></div>
+    <div class="chart-container" id="pieChart"></div>
+    <div class="summary">
+        <h3>泌尿外科手卫生数据汇总与整改建议</h3>
+        <p><strong>科室平均分：</strong>约11.67分</p>
+        <p><strong>最高分护士：</strong>小红（15分）</p>
+        <p><strong>最低分护士：</strong>小李、小晓（10分）</p>
+        <h4>低分问题整改建议：</h4>
+        <div class="suggestion-item">
+            <strong>卫生手消毒不规范/步骤不完整：</strong>组织全员重新学习手卫生规范流程，重点强化七步洗手法的每个步骤动作标准，定期现场考核。
+        </div>
+        <div class="suggestion-item">
+            <strong>暴露患者体液风险后未执行手卫生：</strong>在处置室、病房粘贴醒目标识，提醒医护人员在接触体液、血液后立即进行手卫生，增加督导频次。
+        </div>
+        <div class="suggestion-item">
+            <strong>接触患者/患者周边环境后未执行手卫生：</strong>将手卫生时刻纳入日常查房必查项，明确接触患者前后、接触环境后的手卫生要求，建立双人互查机制。
+        </div>
+        <div class="suggestion-item">
+            <strong>清洁/无菌操作前未执行手卫生：</strong>在无菌操作区域设置手消毒装置，操作前由巡回护士提醒，将手卫生执行情况与个人绩效挂钩。
+        </div>
+        <div class="suggestion-item">
+            <strong>揉搓时间小于15秒：</strong>在洗手池旁粘贴计时提示标识，训练医护人员掌握标准揉搓时长，采用随机抽查计时的方式进行监督。
+        </div>
+    </div>
+
+    <script>
+        // 初始化柱状图：护士得分排名
+        const barChart = echarts.init(document.getElementById('barChart'));
+        const barOption = {
+            title: {
+                text: '泌尿外科护士手卫生得分排名',
+                left: 'center',
+                textStyle: {
+                    fontSize: 18,
+                    color: '#2c3e50'
+                }
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            xAxis: {
+                type: 'category',
+                data: ['小李', '小晓', '小红'],
+                axisLabel: {
+                    fontSize: 14
+                }
+            },
+            yAxis: {
+                type: 'value',
+                name: '得分',
+                axisLabel: {
+                    fontSize: 14
+                }
+            },
+            series: [
+                {
+                    name: '手卫生得分',
+                    type: 'bar',
+                    data: [10, 10, 15],
+                    itemStyle: {
+                        color: '#3498db'
+                    },
+                    label: {
+                        show: true,
+                        position: 'top',
+                        fontSize: 14
+                    }
+                }
+            ]
+        };
+        barChart.setOption(barOption);
+
+        // 初始化饼图：低分问题分布
+        const pieChart = echarts.init(document.getElementById('pieChart'));
+        const pieOption = {
+            title: {
+                text: '泌尿外科手卫生未执行问题分布',
+                left: 'center',
+                textStyle: {
+                    fontSize: 18,
+                    color: '#2c3e50'
+                }
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter: '{b}: {c} 次'
+            },
+            legend: {
+                orient: 'vertical',
+                left: 'left',
+                textStyle: {
+                    fontSize: 12
+                }
+            },
+            series: [
+                {
+                    name: '问题频次',
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    avoidLabelOverlap: false,
+                    itemStyle: {
+                        borderRadius: 10,
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    },
+                    label: {
+                        show: false,
+                        position: 'center'
+                    },
+                    emphasis: {
+                        label: {
+                            show: true,
+                            fontSize: 16,
+                            fontWeight: 'bold'
+                        }
+                    },
+                    labelLine: {
+                        show: false
+                    },
+                    data: [
+                        { value: 1, name: '卫生手消毒不规范' },
+                        { value: 1, name: '暴露患者体液风险后未执行' },
+                        { value: 1, name: '接触患者后未执行' },
+                        { value: 1, name: '接触患者周边环境后未执行' },
+                        { value: 1, name: '清洁/无菌操作前未执行' },
+                        { value: 1, name: '接触患者前未执行' },
+                        { value: 1, name: '揉搓时间小于15秒' },
+                        { value: 1, name: '卫生手消毒步骤不完整' }
+                    ]
+                }
+            ]
+        };
+        pieChart.setOption(pieOption);
+
+        // 适配窗口大小变化
+        window.addEventListener('resize', () => {
+            barChart.resize();
+            pieChart.resize();
+        });
+    </script>
+</body>
+</html>
+```
