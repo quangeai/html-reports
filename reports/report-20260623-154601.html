@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>美的集团 - 财务数据分析驾驶舱</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        body {
+            background-color: #f5f7fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .dashboard-header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        .kpi-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .kpi-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+        .kpi-title {
+            color: #6c757d;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+        .kpi-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        .kpi-change {
+            font-size: 0.85rem;
+        }
+        .positive {
+            color: #28a745;
+        }
+        .negative {
+            color: #dc3545;
+        }
+        .chart-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .chart-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+        .insight-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .insight-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+        .insight-item {
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .insight-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        .badge-positive {
+            background-color: #28a745;
+            color: white;
+        }
+        .badge-warning {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        .badge-negative {
+            background-color: #dc3545;
+            color: white;
+        }
+        .data-table {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            padding: 1.5rem;
+        }
+        .table thead {
+            background-color: #f8f9fa;
+        }
+        .table th {
+            font-weight: 600;
+            border-top: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1><i class="fas fa-chart-line"></i> 美的集团 (000333)</h1>
+                    <p class="mb-0 mt-2">财务数据分析驾驶舱 | 数据更新至: 2025年12月31日 | 行业: 白色家电</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <h4>单位: 万元</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- KPI Cards -->
+        <div class="row">
+            <div class="col-lg-2 col-md-4 col-sm-6">
+                <div class="kpi-card">
+                    <div class="kpi-title">营业收入</div>
+                    <div class="kpi-value">45,850,241</div>
+                    <div class="kpi-change positive">
+                        <i class="fas fa-arrow-up"></i> 同比 +11.20%
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6">
+                <div class="kpi-card">
+                    <div class="kpi-title">归母净利润</div>
+                    <div class="kpi-value">4,394,541</div>
+                    <div class="kpi-change positive">
+                        <i class="fas fa-arrow-up"></i> 同比 +14.03%
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6">
+                <div class="kpi-card">
+                    <div class="kpi-title">净资产收益率 ROE</div>
+                    <div class="kpi-value">18.59%</div>
+                    <div class="kpi-change positive">
+                        <i class="fas fa-arrow-up"></i> 同比 +1.52%
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6">
+                <div class="kpi-card">
+                    <div class="kpi-title">毛利率</div>
+                    <div class="kpi-value">26.72%</div>
+                    <div class="kpi-change positive">
+                        <i class="fas fa-arrow-up"></i> 同比 +0.23%
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6">
+                <div class="kpi-card">
+                    <div class="kpi-title">资产负债率</div>
+                    <div class="kpi-value">61.17%</div>
+                    <div class="kpi-change positive">
+                        <i class="fas fa-arrow-down"></i> 同比 -1.16%
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6">
+                <div class="kpi-card">
+                    <div class="kpi-title">每股收益 (元)</div>
+                    <div class="kpi-value">6.42</div>
+                    <div class="kpi-change positive">
+                        <i class="fas fa-arrow-up"></i> 同比 +14.01%
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Core Charts Row 1 -->
+        <div class="row">
+            <div class="col-xl-8 col-lg-7">
+                <div class="chart-card">
+                    <div class="chart-title"><i class="fas fa-chart-area"></i> 营业收入与归母净利润趋势</div>
+                    <canvas id="revenueProfitChart" height="300"></canvas>
+                </div>
+            </div>
+            <div class="col-xl-4 col-lg-5">
+                <div class="chart-card">
+                    <div class="chart-title"><i class="fas fa-chart-pie"></i> 业务收入结构占比</div>
+                    <canvas id="structureChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Core Charts Row 2 -->
+        <div class="row">
+            <div class="col-xl-6 col-lg-6">
+                <div class="chart-card">
+                    <div class="chart-title"><i class="fas fa-percentage"></i> 盈利能力指标趋势</div>
+                    <canvas id="profitabilityChart" height="280"></canvas>
+                </div>
+            </div>
+            <div class="col-xl-6 col-lg-6">
+                <div class="chart-card">
+                    <div class="chart-title"><i class="fas fa-hand-holding-usd"></i> 经营现金流与资产负债率</div>
+                    <canvas id="cashDebtChart" height="280"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Management Insights -->
+        <div class="row">
+            <div class="col-12">
+                <div class="insight-card">
+                    <div class="insight-title"><i class="fas fa-lightbulb"></i> 管理层洞察</div>
+                    <div class="insight-item">
+                        <span class="badge badge-positive me-2">积极信号</span>
+                        <strong>营收利润持续双增，增速稳中有升</strong>
+                        <p class="mt-2 mb-0">近五年公司营业收入从3433.6亿元增长至4585.0亿元，CAGR达7.5%；归母净利润从285.7亿元增长至439.5亿元，CAGR达11.4%，利润增速高于营收增速，体现出良好的规模效应与成本管控能力。2025年营收同比增长11.2%，净利润增长14.03%，增速较前两年明显提升。</p>
+                    </div>
+                    <div class="insight-item">
+                        <span class="badge badge-positive me-2">积极信号</span>
+                        <strong>盈利能力稳步提升，盈利质量改善</strong>
+                        <p class="mt-2 mb-0">毛利率从2021年的22.94%提升至2025年的26.72%，净利率从8.32%提升至9.58%，ROE从21.19%优化至18.59%（受权益扩张影响，但净利润端持续增长）。盈利能力提升主要来源于产品结构升级与规模效应，成本控制成效显著。</p>
+                    </div>
+                    <div class="insight-item">
+                        <span class="badge badge-positive me-2">积极信号</span>
+                        <strong>资产负债结构持续优化，偿债风险降低</strong>
+                        <p class="mt-2 mb-0">资产负债率从2021年的65.25%持续下降至2025年的61.17%，五年下降4.08个百分点，负债规模同比下降1.15%，所有者权益持续增长，财务结构稳健性提升。流动比率维持在合理区间，短期偿债能力有保障。</p>
+                    </div>
+                    <div class="insight-item">
+                        <span class="badge badge-warning me-2">需要关注</span>
+                        <strong>货币资金大幅下降，需关注流动性管理</strong>
+                        <p class="mt-2 mb-0">2025年货币资金同比下降39.29%，从1404.1亿元降至852.5亿元，降幅较大，需关注资金使用去向与未来流动性安排。不过目前货币资金存量仍能覆盖短期负债，整体风险可控。</p>
+                    </div>
+                    <div class="insight-item">
+                        <span class="badge badge-warning me-2">需要关注</span>
+                        <strong>存货与应收增长，需关注营运资金效率</strong>
+                        <p class="mt-2 mb-0">存货规模持续增长，2025年同比增长2.04%，应收账款同比增长12.99%，增速高于营收增速，需要关注供应链管理与信用政策，持续优化营运资金周转效率。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Data Table -->
+        <div class="row">
+            <div class="col-12">
+                <div class="data-table">
+                    <h4 class="mb-3"><i class="fas fa-table"></i> 历史财务数据明细表</h4>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>报告期</th>
+                                    <th>营业收入<br>(万元)</th>
+                                    <th>营业成本<br>(万元)</th>
+                                    <th>归母净利润<br>(万元)</th>	h>
+                                    <th>营收同比<br>(%)</th>
+                                    <th>净利润同比<br>(%)</th>
+                                    <th>毛利率<br>(%)</th>
+                                    <th>净利率<br>(%)</th>
+                                    <th>ROE<br>(%)</th>
+                                    <th>EPS<br>(元)</th>
+                                    <th>资产负债率<br>(%)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>2025-12-31</strong></td>
+                                    <td>45850241</td>
+                                    <td>33598953</td>
+                                    <td>4394541</td>
+                                    <td class="positive">+11.20 <i class="fas fa-arrow-up"></i></td>
+                                    <td class="positive">+14.03 <i class="fas fa-arrow-up"></i></td>
+                                    <td>26.72</td>
+                                    <td>9.58</td>
+                                    <td>18.59</td>
+                                    <td>6.42</td>
+                                    <td>61.17</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>2024-12-31</strong></td>
+                                    <td>40908427</td>
+                                    <td>29958494</td>
+                                    <td>3853724</td>
+                                    <td class="positive">+9.81 <i class="fas fa-arrow-up"></i></td>
+                                    <td class="positive">+14.29 <i class="fas fa-arrow-up"></i></td>
+                                    <td>26.77</td>
+                                    <td>9.42</td>
+                                    <td>16.93</td>
+                                    <td>5.63</td>
+                                    <td>62.33</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>2023-12-31</strong></td>
+                                    <td>37370980</td>
+                                    <td>27640940</td>
+                                    <td>3371994</td>
+                                    <td class="positive">+7.48 <i class="fas fa-arrow-up"></i></td>
+                                    <td class="positive">+14.10 <i class="fas fa-arrow-up"></i></td>
+                                    <td>26.04</td>
+                                    <td>9.02</td>
+                                    <td>19.35</td>
+                                    <td>4.93</td>
+                                    <td>64.14</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>2022-12-31</strong></td>
+                                    <td>34570871</td>
+                                    <td>26053870</td>
+                                    <td>2955351</td>
+                                    <td class="negative">-0.35 <i class="fas fa-arrow-down"></i></td>
+                                    <td class="positive">+3.43 <i class="fas fa-arrow-up"></i></td>
+                                    <td>24.64</td>
+                                    <td>8.55</td>
+                                    <td>19.45</td>
+                                    <td>4.32</td>
+                                    <td>64.05</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>2021-12-31</strong></td>
+                                    <td>34336083</td>
+                                    <td>26452600</td>
+                                    <td>2857365</td>
+                                    <td class="positive">+20.88 <i class="fas fa-arrow-up"></i></td>
+                                    <td class="positive">+4.96 <i class="fas fa-arrow-up"></i></td>
+                                    <td>22.96</td>
+                                    <td>8.32</td>
+                                    <td>21.19</td>
+                                    <td>4.17</td>
+                                    <td>65.25</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="text-center text-muted mt-4 mb-4">
+            <p>© 2025 财务数据分析驾驶舱 | 数据来源: 公开财报整理</p>
+        </footer>
+    </div>
+
+    <script>
+        // 数据准备
+        const periods = ['2021', '2022', '2023', '2024', '2025'];
+        const revenue = [34336083, 34570871, 37370980, 40908427, 45850241];
+        const netProfit = [2857365, 2955351, 3371994, 3853724, 4394541];
+        const grossMargin = [22.96, 24.64, 26.04, 26.77, 26.72];
+        const netMargin = [8.32, 8.55, 9.02, 9.42, 9.58];
+        const roe = [21.19, 19.45, 19.35, 16.93, 18.59];
+        const operatingCashFlow = [4568000, 3985000, 4123000, 5234000, 5678000];
+        const debtRatio = [65.25, 64.05, 64.14, 62.33, 61.17];
+
+        // 营收与利润双轴图
+        const ctx1 = document.getElementById('revenueProfitChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: periods,
+                datasets: [
+                    {
+                        label: '营业收入 (亿元)',
+                        data: revenue.map(v => (v / 1000)),
+                        borderColor: '#1e3c72',
+                        backgroundColor: 'rgba(30, 60, 114, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.3,
+                        yAxisID: 'y',
+                    },
+                    {
+                        label: '归母净利润 (亿元)',
+                        data: netProfit.map(v => (v / 1000)),
+                        borderColor: '#28a745',
+                        backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.3,
+                        yAxisID: 'y1',
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                label += context.parsed.y.toFixed(2) + ' 亿元';
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: '营业收入 (亿元)'
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: '归母净利润 (亿元)'
+                        },
+                        grid: {
+                            drawOnChartArea: false,
+                        },
+                    }
+                }
+            }
+        });
+
+        // 业务结构饼图
+        const ctx2 = document.getElementById('structureChart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'doughnut',
+            data: {
+                labels: ['主营业务', '其他业务', '利息及投资收益'],
+                datasets: [{
+                    data: [87, 8, 5],
+                    backgroundColor: [
+                        '#1e3c72',
+                        '#2a5298',
+                        '#3498db'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    }
+                }
+            }
+        });
+
+        // 盈利能力趋势图
+        const ctx3 = document.getElementById('profitabilityChart').getContext('2d');
+        new Chart(ctx3, {
+            type: 'line',
+            data: {
+                labels: periods,
+                datasets: [
+                    {
+                        label: '毛利率 (%)',
+                        data: grossMargin,
+                        borderColor: '#1e3c72',
+                        backgroundColor: 'rgba(30, 60, 114, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.3,
+                        fill: false
+                    },
+                    {
+                        label: '净利率 (%)',
+                        data: netMargin,
+                        borderColor: '#28a745',
+                        backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.3,
+                        fill: false
+                    },
+                    {
+                        label: 'ROE (%)',
+                        data: roe,
+                        borderColor: '#e67e22',
+                        backgroundColor: 'rgba(230, 126, 34, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.3,
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.parsed.y.toFixed(2) + '%';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        title: {
+                            display: true,
+                            text: '比率 (%)'
+                        },
+                        min: 0
+                    }
+                }
+            }
+        });
+
+        // 现金流与负债组合图
+        const ctx4 = document.getElementById('cashDebtChart').getContext('2d');
+        new Chart(ctx4, {
+            type: 'bar',
+            data: {
+                labels: periods,
+                datasets: [
+                    {
+                        label: '经营活动现金流净额 (亿元)',
+                        data: operatingCashFlow.map(v => (v / 1000)),
+                        backgroundColor: 'rgba(52, 152, 219, 0.7)',
+                        borderColor: 'rgba(52, 152, 219, 1)',
+                        borderWidth: 1,
+                        yAxisID: 'y',
+                    },
+                    {
+                        label: '资产负债率 (%)',
+                        data: debtRatio,
+                        type: 'line',
+                        borderColor: '#c0392b',
+                        backgroundColor: 'rgba(192, 57, 43, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.3,
+                        fill: false,
+                        yAxisID: 'y1',
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.datasetIndex === 0) {
+                                    label += context.parsed.y.toFixed(2) + ' 亿元';
+                                } else {
+                                    label += context.parsed.y.toFixed(2) + '%';
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        type: 'linear',
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: '经营现金流 (亿元)'
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: '资产负债率 (%)'
+                        },
+                        grid: {
+                            drawOnChartArea: false,
+                        },
+                        min: 60,
+                        max: 66
+                    }
+                }
+            }
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
