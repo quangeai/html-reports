@@ -1,0 +1,496 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI新闻专题 - 小红书风格排版</title>
+    <!-- 引入 html2canvas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #f5f6f8;
+            --card-bg: #ffffff;
+            --text-main: #333333;
+            --text-sub: #666666;
+            --accent-color: #ff2442; /* 小红书红 */
+            --accent-soft: #fff0f2;
+            --radius: 20px;
+            --shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+
+        /* 模拟手机容器 */
+        .mobile-container {
+            width: 100%;
+            max-width: 390px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            padding: 0 10px;
+        }
+
+        /* 卡片通用样式 */
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+            /* 保证截图时背景不透明 */
+            background-color: #fff; 
+        }
+
+        .card-inner {
+            padding: 32px 24px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        /* 封面页样式 */
+        .cover-card {
+            min-height: 520px;
+            background: linear-gradient(135deg, #fff5f6 0%, 100%);
+            position: relative;
+        }
+
+        .cover-tag {
+            display: inline-block;
+            background: var(--accent-color);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            align-self: flex-start;
+            letter-spacing: 1px;
+        }
+
+        .cover-title {
+            font-size: 32px;
+            font-weight: 800;
+            line-height: 1.3;
+            margin-bottom: 16px;
+            color: #000;
+        }
+
+        .cover-subtitle {
+            font-size: 16px;
+            color: var(--text-sub);
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .cover-stats {
+            display: flex;
+            gap: 16px;
+            margin-top: auto;
+        }
+
+        .stat-item {
+            background: #fff;
+            padding: 12px 16px;
+            border-radius: 12px;
+            flex: 1;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+
+        .stat-num {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent-color);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-sub);
+            margin-top: 4px;
+        }
+
+        /* 内容页样式 */
+        .content-card {
+            min-height: 500px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: var(--accent-color);
+            border-radius: 2px;
+        }
+
+        .news-item {
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed #eee;
+        }
+
+        .news-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .news-head {
+            font-size: 15px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .news-desc {
+            font-size: 13px;
+            color: var(--text-sub);
+            line-height: 1.6;
+            text-align: justify;
+        }
+
+        .highlight {
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        .emoji-bullet {
+            margin-right: 6px;
+        }
+
+        /* 列表页样式 */
+        .list-card {
+            min-height: 480px;
+        }
+
+        .list-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 18px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-main);
+        }
+
+        .list-icon {
+            color: var(--accent-color);
+            margin-right: 10px;
+            margin-top: 2px;
+            font-weight: bold;
+        }
+
+        /* 结尾页样式 */
+        .end-card {
+            min-height: 400px;
+            text-align: center;
+            justify-content: center;
+            background: #fff;
+        }
+
+        .end-card .card-inner {
+            align-items: center;
+            justify-content: center;
+        }
+
+        .end-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .end-text {
+            font-size: 14px;
+            color: var(--text-sub);
+            margin-bottom: 32px;
+            max-width: 80%;
+        }
+
+        .cta-btn {
+            background: var(--accent-color);
+            color: #fff;
+            padding: 14px 32px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 15px;
+            box-shadow: 0 4px 14px rgba(255, 36, 66, 0.3);
+        }
+
+        /* 底部操作区 */
+        .action-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 16px 20px;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .download-btn {
+            background: #000;
+            color: #fff;
+            border: none;
+            padding: 14px 40px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 100%;
+            max-width: 390px;
+        }
+
+        .download-btn:active {
+            transform: scale(0.98);
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.9);
+            z-index: 200;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--accent-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 装饰元素 */
+        .decoration-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: var(--accent-soft);
+            z-index: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="mobile-container" id="capture-area">
+        
+        <!-- 卡片1：封面 -->
+        <div class="card cover-card">
+            <div class="decoration-circle" style="width: 200px; height: 200px; top: -50px; right: -50px;"></div>
+            <div class="card-inner">
+                <span class="cover-tag">AI 资讯 · 每日精选</span>
+                <h1 class="cover-title">AI热潮席卷全球<br>从政策到基建全爆发</h1>
+                <p class="cover-subtitle">半导体、出口、影视修复...<br>人工智能正在如何改写各行各业？</p>
+                
+                <div class="cover-stats">
+                    <div class="stat-item">
+                        <span class="stat-num">10+</span>
+                        <span class="stat-label">热点新闻</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-num">270%</span>
+                        <span class="stat-label">港股暴涨</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-num">90%</span>
+                        <span class="stat-label">成本降低</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 卡片2：政策与宏观 -->
+        <div class="card content-card">
+            <div class="card-inner">
+                <div class="section-title">政策与产业宏观</div>
+                
+                <div class="news-item">
+                    <div class="news-head">🇨🇳 中国：多部门联合发力</div>
+                    <div class="news-desc">
+                        • 拟培育平台经济领域单项冠军<br>
+                        • 支持<span class="highlight">生成式AI</span>在金融领域的业务应用<br>
+                        • 利用财政贴息鼓励购买AI产品
+                    </div>
+                </div>
+
+                <div class="news-item">
+                    <div class="news-head">🇲🇾 马来西亚：出口暴增45%</div>
+                    <div class="news-desc">
+                        全球对AI基础设施及能源产品的强劲需求，支撑了该国前5个月贸易增长，全年预测翻倍上修至<span class="highlight">16.3%</span>。
+                    </div>
+                </div>
+
+                <div class="news-item">
+                    <div class="news-head">🎓 人才培养短板待补</div>
+                    <div class="news-desc">
+                        官方强调需着力解决面向AI等新兴产业的拔尖创新人才培养不足问题。
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 卡片3：基建与商业 -->
+        <div class="card content-card">
+            <div class="card-inner">
+                <div class="section-title">基建与商业合作</div>
+                
+                <div class="news-item">
+                    <div class="news-head">🤝 美光 x Anthropic</div>
+                    <div class="news-desc">
+                        达成战略合作，共同推进涵盖HBM、DRAM及SSD等关键技术的下一代AI基础设施建设。
+                    </div>
+                </div>
+
+                <div class="news-item">
+                    <div class="news-head">🇮🇩 印尼：赋能创意人才</div>
+                    <div class="news-desc">
+                        Indosat联合Adobe及旅游部，利用AI技术支持印尼人民将创造力转化为机会。
+                    </div>
+                </div>
+
+                <div class="news-item">
+                    <div class="news-head">🍎 苹果：加价不可避免</div>
+                    <div class="news-desc">
+                        库克承认因AI热潮引发内存芯片短缺及价格暴涨，产品“加价已不可避免”。
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 卡片4：市场与应用 -->
+        <div class="card list-card">
+            <div class="card-inner">
+                <div class="section-title">市场应用动态</div>
+                
+                <div class="list-item">
+                    <span class="list-icon">✔</span>
+                    <span><b>影视修复：</b>中国企业利用AI修复经典影视剧，成本降低逾九成。</span>
+                </div>
+                <div class="list-item">
+                    <span class="list-icon">✔</span>
+                    <span><b>港股狂欢：</b>AI新股海清智元单日暴涨270%，板块整体强劲。</span>
+                </div>
+                <div class="list-item">
+                    <span class="list-icon">✔</span>
+                    <span><b>算力套餐：</b>三大运营商推出低价Token套餐，但开发者反馈实际成本仍高。</span>
+                </div>
+                <div class="list-item">
+                    <span class="list-icon">✔</span>
+                    <span><b>行业趋势：</b>AI正在重塑从半导体到消费电子的整条产业链。</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 卡片5：结尾 -->
+        <div class="card end-card">
+            <div class="card-inner">
+                <div class="decoration-circle" style="width: 150px; height: 150px; bottom: -30px; left: -30px;"></div>
+                <h2 class="end-title">AI时代已来</h2>
+                <p class="end-text">无论是政策扶持还是技术突破，<br>人工智能都在以前所未有的速度<br>改变着我们的生活与投资逻辑。</p>
+                <div class="cta-btn">关注获取更多干货</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 底部下载按钮 -->
+    <div class="action-bar">
+        <button class="download-btn" onclick="downloadAllCards()">📥 一键保存所有图片</button>
+    </div>
+
+    <!-- 加载遮罩 -->
+    <div class="loading-overlay" id="loading">
+        <div class="spinner"></div>
+        <p id="loading-text">正在生成图片...</p>
+    </div>
+
+    <script>
+        async function downloadAllCards() {
+            const cards = document.querySelectorAll('.card');
+            const loading = document.getElementById('loading');
+            const loadingText = document.getElementById('loading-text');
+            
+            loading.style.display = 'flex';
+            
+            for (let i = 0; i < cards.length; i++) {
+                loadingText.innerText = `正在生成第 ${i + 1} / ${cards.length} 张...`;
+                
+                try {
+                    const canvas = await html2canvas(cards[i], {
+                        scale: 3, // 高清
+                        useCORS: true,
+                        backgroundColor: '#ffffff',
+                        logging: false
+                    });
+                    
+                    // 转换为图片并下载
+                    const image = canvas.toDataURL("image/png");
+                    const link = document.createElement('a');
+                    link.href = image;
+                    link.download = `ai-news-note-${i + 1}.png`;
+                    link.click();
+                    
+                    // 稍微延迟，避免浏览器卡顿
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                } catch (error) {
+                    console.error("生成失败", error);
+                    alert("生成图片时出错，请重试");
+                    loading.style.display = 'none';
+                    return;
+                }
+            }
+            
+            loadingText.innerText = "✅ 保存完成！";
+            setTimeout(() => {
+                loading.style.display = 'none';
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
+```
