@@ -3,428 +3,622 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>大龙地产(600159) 财务数据分析报告</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <title>贵州茅台(600519) 财务数据驾驶舱</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
     <style>
         body {
             background-color: #f8f9fa;
-            font-family: 'Microsoft YaHei', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         }
-        .report-header {
+        .dashboard-header {
             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             color: white;
             padding: 2rem 0;
             margin-bottom: 2rem;
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
-        .card {
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            border: none;
+        .kpi-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .kpi-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+        }
+        .kpi-title {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        .kpi-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        .kpi-change {
+            font-size: 0.85rem;
+        }
+        .positive {
+            color: #28a745;
+        }
+        .negative {
+            color: #dc3545;
+        }
+        .chart-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+        .chart-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+        .insight-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+        .insight-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+        .insight-item {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border-left: 4px solid #2a5298;
+            background-color: #f8f9fa;
+            border-radius: 0 8px 8px 0;
+        }
+        .insight-tag {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .tag-positive {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .tag-warning {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .tag-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .data-table {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
             margin-bottom: 2rem;
-            transition: transform 0.2s;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
         }
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
-        }
-        .card-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .table thead {
+            background-color: #2a5298;
             color: white;
+        }
+        .table thead th {
+            border: none;
             font-weight: 600;
         }
-        .metric-card {
-            text-align: center;
-            padding: 1.5rem;
+        .arrow-up {
+            color: #28a745;
         }
-        .metric-value {
-            font-size: 2rem;
-            font-weight: bold;
-        }
-        .metric-label {
-            font-size: 0.9rem;
-            color: #6c757d;
-            margin-top: 0.5rem;
-        }
-        .positive { color: #28a745; }
-        .negative { color: #dc3545; }
-        .neutral { color: #ffc107; }
-        .section-title {
-            border-left: 4px solid #667eea;
-            padding-left: 1rem;
-            margin-bottom: 1.5rem;
-        }
-        .gauge-container {
-            position: relative;
-            height: 200px;
-        }
-        table {
-            font-size: 0.9rem;
-        }
-        .insight-box {
-            background-color: #e3f2fd;
-            border-left: 4px solid #2196f3;
-            padding: 1rem;
-            margin: 1rem 0;
-            border-radius: 0 4px 4px 0;
-        }
-        .warning-box {
-            background-color: #fff3e0;
-            border-left: 4px solid #ff9800;
-            padding: 1rem;
-            margin: 1rem 0;
-            border-radius: 0 4px 4px 0;
-        }
-        .danger-box {
-            background-color: #ffebee;
-            border-left: 4px solid #f44336;
-            padding: 1rem;
-            margin: 1rem 0;
-            border-radius: 0 4px 4px 0;
+        .arrow-down {
+            color: #dc3545;
         }
     </style>
 </head>
 <body>
-    <div class="report-header">
+    <div class="dashboard-header">
         <div class="container">
-            <h1 class="display-4">大龙地产 (600159)</h1>
-            <p class="lead">财务数据分析报告 - 最新报告期: 2026-03-31</p>
-            <p class="mb-0">行业: 房地产开发</p>
+            <div class="row">
+                <div class="col-md-8">
+                    <h1><i class="fas fa-chart-line me-2"></i>贵州茅台 (600519)</h1>
+                    <p class="mb-0 mt-2 opacity-75">季度财务数据驾驶舱 | 最新报告期: 2026-03-31</p>
+                </div>
+                <div class="col-md-4 text-md-end align-self-center">
+                    <p class="mb-0 opacity-75">数据更新时间: <span id="update-time"></span></p>
+                </div>
+            </div>
         </div>
     </div>
 
     <div class="container">
-        <!-- 关键指标概览 -->
-        <section>
-            <h2 class="section-title">关键指标概览</h2>
-            <div class="row">
-                <div class="col-md-3">
-                    <div class="card metric-card">
-                        <div class="metric-value negative">-1.57亿</div>
-                        <div class="metric-label">归母净利润</div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card metric-card">
-                        <div class="metric-value">5.31亿</div>
-                        <div class="metric-label">营业总收入(万元)</div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card metric-card">
-                        <div class="metric-value">47.63%</div>
-                        <div class="metric-label">资产负债率</div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card metric-card">
-                        <div class="metric-value negative">-1694.73%</div>
-                        <div class="metric-label">净利润同比增长率</div>
+        <!-- KPI Cards -->
+        <div class="row">
+            <div class="col-lg-2 col-md-4 col-sm-6">
+                <div class="kpi-card">
+                    <div class="kpi-title">营业收入</div>
+                    <div class="kpi-value">547.03<span style="font-size: 1rem;">亿</span></div>
+                    <div class="kpi-change positive">
+                        <i class="fas fa-arrow-up"></i> 19.12% 同比
                     </div>
                 </div>
             </div>
-        </section>
-
-        <!-- 利润表分析 -->
-        <section>
-            <h2 class="section-title mt-5">利润表分析</h2>
-            <div class="row">
-                <div class="col-lg-6">
-                    <div class="card">
-                        <div class="card-header">
-                            收入利润趋势
-                        </div>
-                        <div class="card-body">
-                            <canvas id="profitTrendChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="card">
-                        <div class="card-header">
-                            增长率分析
-                        </div>
-                        <div class="card-body">
-                            <canvas id="growthChart"></canvas>
-                        </div>
+            <div class="col-lg-2 col-md-4 col-sm-6">
+                <div class="kpi-card">
+                    <div class="kpi-title">归母净利润</div>
+                    <div class="kpi-value">272.43<span style="font-size: 1rem;">亿</span></div>
+                    <div class="kpi-change positive">
+                        <i class="fas fa-arrow-up"></i> 1.47% 同比
                     </div>
                 </div>
             </div>
+            <div class="col-lg-2 col-md-4 col-sm-6">
+                <div class="kpi-card">
+                    <div class="kpi-title">ROE(年化)</div>
+                    <div class="kpi-value">9.69<span style="font-size: 1rem;">%</span></div>
+                    <div class="kpi-change negative">
+                        <i class="fas fa-arrow-down"></i> 0.18% 同比
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6">
+                <div class="kpi-card">
+                    <div class="kpi-title">毛利率</div>
+                    <div class="kpi-value">89.91<span style="font-size: 1rem;">%</span></div>
+                    <div class="kpi-change negative">
+                        <i class="fas fa-arrow-down"></i> 1.93% 同比
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6">
+                <div class="kpi-card">
+                    <div class="kpi-title">资产负债率</div>
+                    <div class="kpi-value">12.12<span style="font-size: 1rem;">%</span></div>
+                    <div class="kpi-change positive">
+                        <i class="fas fa-arrow-down"></i> 2.02pct
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6">
+                <div class="kpi-card">
+                    <div class="kpi-title">经营现金流</div>
+                    <div class="kpi-value">--</div>
+                    <div class="kpi-change">
+                        <i class="fas fa-minus"></i> 本期末披露
+                    </div>
+                </div>
+            </div>
+        </div>
 
-            <div class="card">
-                <div class="card-header">利润表关键数据 (单位: 元)</div>
-                <div class="card-body">
+        <!-- Core Charts -->
+        <div class="row">
+            <div class="col-xl-8 col-lg-7">
+                <div class="chart-card">
+                    <div class="chart-title"><i class="fas fa-chart-area me-2 text-primary"></i>营业收入与归母净利润趋势</div>
+                    <canvas id="revenueProfitChart" height="300"></canvas>
+                </div>
+            </div>
+            <div class="col-xl-4 col-lg-5">
+                <div class="chart-card">
+                    <div class="chart-title"><i class="fas fa-chart-pie me-2 text-primary"></i>利润结构分析</div>
+                    <canvas id="profitStructureChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xl-6 col-lg-6">
+                <div class="chart-card">
+                    <div class="chart-title"><i class="fas fa-percent me-2 text-primary"></i>盈利能力指标趋势</div>
+                    <canvas id="profitabilityChart" height="280"></canvas>
+                </div>
+            </div>
+            <div class="col-xl-6 col-lg-6">
+                <div class="chart-card">
+                    <div class="chart-title"><i class="fas fa-balance-scale me-2 text-primary"></i>资产负债率变化</div>
+                    <canvas id="leverageChart" height="280"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Management Insights -->
+        <div class="row">
+            <div class="col-12">
+                <div class="insight-card">
+                    <div class="insight-title"><i class="fas fa-lightbulb me-2 text-warning"></i>管理层洞察</div>
+                    
+                    <div class="insight-item">
+                        <span class="insight-tag tag-positive">积极信号</span>
+                        <h6>营业收入保持稳健增长</h6>
+                        <p class="mb-0">2026年一季度营业总收入同比增长19.12%，较去年同期的8.16%增速显著提升，显示出强劲的市场需求复苏，产品量价齐升驱动增长。</p>
+                    </div>
+
+                    <div class="insight-item">
+                        <span class="insight-tag tag-warning">需关注</span>
+                        <p>净利润增速低于营收增速，主要原因:</p>
+                        <ul class="mb-0">
+                            <li>营业成本同比增长35.93%，远高于营收增速，导致毛利率同比下降1.93个百分点</li>
+                            <li>营业税金及附加随营收增长同步增加，进一步挤压利润空间</li>
+                        </ul>
+                    </div>
+
+                    <div class="insight-item">
+                        <span class="insight-tag tag-positive">积极信号</span>
+                        <h6>资产负债结构健康稳定</h6>
+                        <p class="mb-0">资产负债率持续下降至12.12%，同比下降2.02个百分点，无偿债压力，财务状况极其稳健，现金流充裕。负债总额同比下降12.21%，去杠杆趋势明显。</p>
+                    </div>
+
+                    <div class="insight-item">
+                        <span class="insight-tag tag-positive">积极信号</span>
+                        <h6>高端白酒龙头地位稳固</h6>
+                        <p class="mb-0">毛利率持续维持在90%左右的极高水平，彰显强大的品牌溢价和产品定价能力。存货同比增长10.76%，公司主动备货应对潜在市场需求增长。</p>
+                    </div>
+
+                    <div class="insight-item">
+                        <span class="insight-tag tag-warning">风险关注</span>
+                        <h6>应收账款大幅增长</h6>
+                        <p class="mb-0">2026年一季度应收账款同比大增112.80%，需关注信用政策变化及后续回款情况，警惕潜在坏账风险。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Table -->
+        <div class="row">
+            <div class="col-12">
+                <div class="data-table">
+                    <h5 class="mb-3"><i class="fas fa-table me-2 text-primary"></i>历史财务数据明细表</h5>
                     <div class="table-responsive">
-                        <table class="table table-striped table-hover">
-                            <thead class="table-dark">
+                        <table class="table table-hover table-bordered">
+                            <thead>
                                 <tr>
                                     <th>报告期</th>
-                                    <th>营业总收入</th>
-                                    <th>营业总成本</th>
-                                    <th>营业利润</th>
-                                    <th>利润总额</th>
-                                    <th>归母净利润</th>
-                                    <th>营业利润率</th>
+                                    <th>营业总收入(亿元)</th>
+                                    <th>同比(%)</th>
+                                    <th>营业成本(亿元)</th>
+                                    <th>归母净利润(亿元)</th>
+                                    <th>同比(%)</th>
+                                    <th>毛利率(%)</th>
+                                    <th>净利率(%)</th>
+                                    <th>ROE(%)<sup>*</sup></th>
+                                    <th>资产负债率(%)</th>
+                                    <th>EPS(元)<sup>*</sup></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>2026-03-31</td>
-                                    <td>53,051,161</td>
-                                    <td>66,070,891</td>
-                                    <td class="negative">-13,996,854</td>
-                                    <td class="negative">-15,914,793</td>
-                                    <td class="negative">-15,726,983</td>
-                                    <td class="negative">-580.14%</td>
+                                    <td><strong>2026-03-31</strong></td>
+                                    <td>547.03</td>
+                                    <td class="arrow-up">+19.12 <i class="fas fa-arrow-up"></i></td>
+                                    <td>55.21</td>
+                                    <td><strong>272.43</strong></td>
+                                    <td class="arrow-up">+1.47 <i class="fas fa-arrow-up"></i></td>
+                                    <td>89.91</td>
+                                    <td>49.80</td>
+                                    <td>9.69</td>
+                                    <td>12.12</td>
+                                    <td>21.72</td>
                                 </tr>
                                 <tr>
                                     <td>2025-12-31</td>
-                                    <td>665,346,623</td>
-                                    <td>671,436,901</td>
-                                    <td class="negative">-252,894,724</td>
-                                    <td class="negative">-252,968,405</td>
-                                    <td class="negative">-253,849,856</td>
-                                    <td class="negative">-35.71%</td>
+                                    <td>1720.54</td>
+                                    <td class="arrow-up">+5.22 <i class="fas fa-arrow-up"></i></td>
+                                    <td>148.92</td>
+                                    <td>823.20</td>
+                                    <td class="arrow-down">-4.53 <i class="fas fa-arrow-down"></i></td>
+                                    <td>91.34</td>
+                                    <td>47.85</td>
+                                    <td>31.24</td>
+                                    <td>16.42</td>
+                                    <td>65.58</td>
                                 </tr>
                                 <tr>
                                     <td>2025-09-30</td>
-                                    <td>499,261,355</td>
-                                    <td>499,282,812</td>
-                                    <td class="negative">-7,534,329</td>
-                                    <td class="negative">-7,875,111</td>
-                                    <td class="negative">-10,550,264</td>
-                                    <td class="positive">17.54%</td>
+                                    <td>1309.04</td>
+                                    <td class="arrow-up">+5.73 <i class="fas fa-arrow-up"></i></td>
+                                    <td>111.84</td>
+                                    <td>646.27</td>
+                                    <td class="arrow-up">+6.25 <i class="fas fa-arrow-up"></i></td>
+                                    <td>91.46</td>
+                                    <td>49.37</td>
+                                    <td>25.17</td>
+                                    <td>12.81</td>
+                                    <td>51.54</td>
                                 </tr>
                                 <tr>
                                     <td>2025-06-30</td>
-                                    <td>311,864,635</td>
-                                    <td>313,132,157</td>
-                                    <td class="negative">-6,618,016</td>
-                                    <td class="negative">-6,958,767</td>
-                                    <td class="negative">-10,756,783</td>
-                                    <td class="positive">5.59%</td>
+                                    <td>910.94</td>
+                                    <td class="arrow-up">+9.32 <i class="fas fa-arrow-up"></i></td>
+                                    <td>77.77</td>
+                                    <td>454.03</td>
+                                    <td class="arrow-up">+8.89 <i class="fas fa-arrow-up"></i></td>
+                                    <td>91.46</td>
+                                    <td>49.84</td>
+                                    <td>18.63</td>
+                                    <td>14.75</td>
+                                    <td>36.20</td>
                                 </tr>
                                 <tr>
                                     <td>2025-03-31</td>
-                                    <td>162,206,134</td>
-                                    <td>157,832,604</td>
-                                    <td class="positive">2,915,142</td>
-                                    <td class="positive">3,028,888</td>
-                                    <td class="negative">-876,286</td>
-                                    <td class="positive">129.72%</td>
+                                    <td>514.43</td>
+                                    <td class="arrow-up">+8.16 <i class="fas fa-arrow-up"></i></td>
+                                    <td>40.61</td>
+                                    <td>268.47</td>
+                                    <td class="arrow-up">+11.56 <i class="fas fa-arrow-up"></i></td>
+                                    <td>92.10</td>
+                                    <td>52.21</td>
+                                    <td>9.87</td>
+                                    <td>14.14</td>
+                                    <td>21.40</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
+                    <small class="text-muted mt-2 d-block">* ROE为季度累计年化值；EPS基于总股本12.56亿股计算</small>
                 </div>
             </div>
+        </div>
+    </div>
 
-            <div class="danger-box">
-                <h5>⚠️ 利润风险预警</h5>
-                <ul>
-                    <li>最新一季度(2026Q1)营业总收入仅为5305万元，同比大幅下降<strong>58.14%</strong></li>
-                    <li>归母净利润同比增长率达到惊人的<strong>-1694.73%</strong>，亏损大幅扩大</li>
-                    <li>营业利润率为-580.14%，成本远远高于收入，盈利情况严重恶化</li>
-                    <li>最近五个报告期中四个报告期出现亏损，公司盈利能力面临严重挑战</li>
-                </ul>
-            </div>
-        </section>
+    <footer class="bg-white py-3 border-top">
+        <div class="container text-center text-muted">
+            <small>生成时间: <span id="current-time"></span> | 贵州茅台(600519) 财务分析驾驶舱</small>
+        </div>
+    </footer>
 
-        <!-- 资产负债表分析 -->
-        <section>
-            <h2 class="section-title mt-5">资产负债表分析</h2>
-            <div class="row">
-                <div class="col-lg-6">
-                    <div class="card">
-                        <div class="card-header">资产结构分析</div>
-                        <div class="card-body">
-                            <canvas id="assetStructureChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="card">
-                        <div class="card-header">偿债能力指标仪表盘</div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-6">
-                                    <canvas id="debtRatioGauge"></canvas>
-                                    <p class="text-center mt-2">资产负债率</p>
-                                </div>
-                                <div class="col-6">
-                                    <canvas id="currentRatioGauge"></canvas>
-                                    <p class="text-center mt-2">流动比率</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <script>
+        // Set current time
+        const now = new Date();
+        document.getElementById('update-time').textContent = now.toLocaleString('zh-CN');
+        document.getElementById('current-time').textContent = now.toLocaleString('zh-CN');
 
-            <div class="card">
-                <div class="card-header">资产负债表关键数据 (单位: 元)</div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>报告期</th>
-                                    <th>资产总计</th>
-                                    <th>负债合计</th>
-                                    <th>所有者权益</th>
-                                    <th>货币资金</th>
-                                    <th>存货</th>
-                                    <th>应收账款</th>
-                                    <th>资产负债率</th>
-                                    <th>流动比率</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>2026-03-31</td>
-                                    <td>2,927,465,756</td>
-                                    <td>1,394,213,425</td>
-                                    <td>1,533,252,331</td>
-                                    <td>282,618,712</td>
-                                    <td>1,577,763,850</td>
-                                    <td>371,620,074</td>
-                                    <td>47.63%</td>
-                                    <td>172.56</td>
-                                </tr>
-                                <tr>
-                                    <td>2025-12-31</td>
-                                    <td>3,030,871,456</td>
-                                    <td>1,481,883,591</td>
-                                    <td>1,548,987,865</td>
-                                    <td>418,525,082</td>
-                                    <td>1,579,995,660</td>
-                                    <td>375,145,739</td>
-                                    <td>48.89%</td>
-                                    <td>169.63</td>
-                                </tr>
-                                <tr>
-                                    <td>2025-09-30</td>
-                                    <td>3,246,297,312</td>
-                                    <td>1,452,716,465</td>
-                                    <td>1,793,580,847</td>
-                                    <td>373,767,206</td>
-                                    <td>1,721,322,120</td>
-                                    <td>554,333,369</td>
-                                    <td>44.75%</td>
-                                    <td>189.83</td>
-                                </tr>
-                                <tr>
-                                    <td>2025-06-30</td>
-                                    <td>3,182,262,154</td>
-                                    <td>1,388,911,587</td>
-                                    <td>1,793,350,567</td>
-                                    <td>307,894,470</td>
-                                    <td>1,759,486,963</td>
-                                    <td>488,067,756</td>
-                                    <td>43.65%</td>
-                                    <td>193.62</td>
-                                </tr>
-                                <tr>
-                                    <td>2025-03-31</td>
-                                    <td>3,226,400,976</td>
-                                    <td>1,422,792,267</td>
-                                    <td>1,803,608,708</td>
-                                    <td>376,677,295</td>
-                                    <td>1,789,162,469</td>
-                                    <td>447,376,026</td>
-                                    <td>44.10%</td>
-                                    <td>193.52</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+        // Processed data from input
+        const data = {
+            labels: ['2025-03-31', '2025-06-30', '2025-09-30', '2025-12-31', '2026-03-31'],
+            revenue: [514.43, 910.94, 1309.04, 1720.54, 547.03],
+            netProfit: [268.47, 454.03, 646.27, 823.20, 272.43],
+            grossMargin: [92.10, 91.46, 91.46, 91.34, 89.91],
+            netMargin: [52.21, 49.84, 49.37, 47.85, 49.80],
+            roe: [9.87, 18.63, 25.17, 31.24, 9.69],
+            debtRatio: [14.14, 14.75, 12.81, 16.42, 12.12],
+            cost: [40.61, 77.77, 111.84, 148.92, 55.21]
+        };
 
-            <div class="insight-box">
-                <h5>📊 资产负债分析洞察</h5>
-                <ul>
-                    <li>总资产持续缩水，最新一期较去年同期下降<strong>9.27%</strong></li>
-                    <li>存货占总资产比例超过50%，符合房地产行业特征，但存货规模持续下降</li>
-                    <li>货币资金较去年同期减少24.97%，现金储备有所下降</li>
-                    <li>资产负债率维持在47.63%，在房地产行业中处于相对合理水平</li>
-                    <li>流动比率极高，说明短期偿债能力非常充足</li>
-                </ul>
-            </div>
-        </section>
+        // 1. Revenue and Profit Chart
+        const ctx1 = document.getElementById('revenueProfitChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: data.labels,
+                datasets: [
+                    {
+                        label: '营业总收入 (亿元)',
+                        data: data.revenue,
+                        borderColor: '#1e3c72',
+                        backgroundColor: 'rgba(30, 60, 114, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.3,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: '归母净利润 (亿元)',
+                        data: data.netProfit,
+                        borderColor: '#e17055',
+                        backgroundColor: 'rgba(225, 112, 85, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.3,
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.parsed.y.toFixed(2) + ' 亿元';
+                            }
+                        }
+                    },
+                    legend: {
+                        position: 'top',
+                    }
+                },
+                scales: {
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: '营业总收入 (亿元)'
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: '归母净利润 (亿元)'
+                        },
+                        grid: {
+                            drawOnChartArea: false,
+                        }
+                    }
+                }
+            }
+        });
 
-        <!-- 同比增长率分析 -->
-        <section>
-            <h2 class="section-title mt-5">同比增长率变化</h2>
-            <div class="card">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <canvas id="assetGrowthChart"></canvas>
-                        </div>
-                        <div class="col-md-6">
-                            <canvas id="profitGrowthChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+        // 2. Profitability Chart
+        const ctx2 = document.getElementById('profitabilityChart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'line',
+            data: {
+                labels: data.labels,
+                datasets: [
+                    {
+                        label: '毛利率 (%)',
+                        data: data.grossMargin,
+                        borderColor: '#1e3c72',
+                        backgroundColor: 'rgba(30, 60, 114, 0.05)',
+                        borderWidth: 3,
+                        tension: 0.3,
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    },
+                    {
+                        label: '净利率 (%)',
+                        data: data.netMargin,
+                        borderColor: '#00b894',
+                        backgroundColor: 'rgba(0, 184, 148, 0.05)',
+                        borderWidth: 3,
+                        tension: 0.3,
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    },
+                    {
+                        label: 'ROE (%) (年化)',
+                        data: data.roe,
+                        borderColor: '#e17055',
+                        backgroundColor: 'rgba(225, 112, 85, 0.05)',
+                        borderWidth: 3,
+                        tension: 0.3,
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.parsed.y.toFixed(2) + '%';
+                            }
+                        }
+                    },
+                    legend: {
+                        position: 'top',
+                    }
+                },
+                scales: {
+                    y: {
+                        title: {
+                            display: true,
+                            text: '百分比 (%)'
+                        },
+                        min: 0
+                    }
+                }
+            }
+        });
 
-        <!-- 综合分析与结论 -->
-        <section>
-            <h2 class="section-title mt-5">综合分析与结论</h2>
-            <div class="card">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h4>主要风险点</h4>
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item text-danger">
-                                    <strong>盈利能力严重恶化：</strong>连续多个季度亏损，最新一季度亏损大幅扩大
-                                </li>
-                                <li class="list-group-item text-danger">
-                                    <strong>收入大幅下滑：</strong>营业收入同比下降58.14%，业务萎缩明显
-                                </li>
-                                <li class="list-group-item text-warning">
-                                    <strong>资产持续缩水：</strong>总资产同比下降超过9%，规模不断收缩
-                                </li>
-                                <li class="list-group-item text-warning">
-                                    <strong>货币资金减少：</strong>现金储备同比下降24.97%，需关注流动性
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="col-md-6">
-                            <h4>积极因素</h4>
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item text-success">
-                                    <strong>资产负债率可控：</strong>47.63%的负债率在房地产行业中处于较低水平
-                                </li>
-                                <li class="list-group-item text-success">
-                                    <strong>短期偿债能力强：</strong>流动比率超过170，短期偿债无忧
-                                </li>
-                                <li class="list-group-item text-success">
-                                    <strong>所有者权益仍充足：</strong>净资产超过150亿元
-                                </li>
-                                <li class="list-group-item text-info">
-                                    <strong>存货有序下降：</strong>存货持续去化，符合行业调整方向
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
+        // 3. Leverage Chart
+        const ctx3 = document.getElementById('leverageChart').getContext('2d');
+        new Chart(ctx3, {
+            type: 'line',
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    label: '资产负债率 (%)',
+                    data: data.debtRatio,
+                    borderColor: '#2d3436',
+                    backgroundColor: 'rgba(45, 52, 54, 0.8)',
+                    borderWidth: 3,
+                    tension: 0.3,
+                    fill: false,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#2d3436',
+                    pointBorderWidth: 3,
+                    pointRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return '资产负债率: ' + context.parsed.y.toFixed(2) + '%';
+                            }
+                        }
+                    },
+                    legend: {
+                        position: 'top',
+                    }
+                },
+                scales: {
+                    y: {
+                        title: {
+                            display: true,
+                            text: '资产负债率 (%)'
+                        },
+                        min: 10,
+                        max: 18
+                    }
+                }
+            }
+        });
 
-                    <hr>
-                    <div class="mt-4">
-                        <h4>💡 核心结论</h4>
-                        <p>大龙地产(600159)当前面临较为严峻的经营挑战：</p>
-                        <ol>
-                            <li>主营业务收入大幅下滑，盈利能力严重恶化，亏损幅度超出市场预期</li>
-                            <li>公司资产规模持续收缩，业绩下行压力较大</li>
-                            <li>虽然资产负债结构整体仍健康，偿债风险较低，但经营层面问题较为突出</li>
-                            <li>投资者需密切关注公司后续的业务转型和扭亏进展，警惕持续亏损风险</li>
-                        </ol>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <footer class="mt-5 mb-5 text-muted text-center">
-            <p>数据分析报告生成时间:
+        // 4. Profit Structure Pie Chart
+        const ctx4 = document.getElementById('profitStructureChart').getContext('2d');
+        new Chart(ctx4, {
+            type: 'doughnut',
+            data: {
+                labels: ['营业成本', '税金及附加', '销售费用', '管理费用', '净利润'],
+                datasets: [{
+                    data: [55.21, 82.27, 16.06, 18.54, 272.43],
+                    backgroundColor: [
+                        '#fab1a0',
+                        '#fdcb6e',
+                        '#a29bfe',
+                        '#81ecec',
+                        '#00b894'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const value = context.parsed;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = (value / total * 100).toFixed(1);
+                                return context.label + ': ' + value.toFixed(2) + '亿 (' + percentage + '%)';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
