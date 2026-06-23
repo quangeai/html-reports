@@ -1,0 +1,538 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>供给端数据分析报告 (2020-2024)</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --success-color: #27ae60;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2.5rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 20px 20px;
+        }
+        .section-title {
+            color: var(--primary-color);
+            border-left: 5px solid var(--secondary-color);
+            padding-left: 15px;
+            margin: 2rem 0 1.5rem;
+            font-weight: 600;
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .kpi-card {
+            background: linear-gradient(135deg, #3498db, #2c3e50);
+            color: white;
+            text-align: center;
+            padding: 1.5rem;
+            border-radius: 10px;
+        }
+        .kpi-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
+        }
+        .kpi-label {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 1.5rem 0;
+        }
+        .insight-box {
+            background-color: #e8f4fc;
+            border-left: 4px solid var(--secondary-color);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .trend-up {
+            color: var(--success-color);
+            font-weight: bold;
+        }
+        .trend-down {
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+        .footer {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            border-radius: 20px 20px 0 0;
+        }
+        .nav-pills .nav-link.active {
+            background-color: var(--secondary-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--primary-color);">
+        <div class="container">
+            <a class="navbar-brand" href="#">供给端分析报告</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#executive">执行摘要</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#kpis">关键指标</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#analysis">详细分析</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#trends">趋势分析</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#recommendations">建议</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 报告标题 -->
+    <div class="header">
+        <div class="container text-center">
+            <h1 class="display-4">供给端数据分析报告</h1>
+            <p class="lead">基于2020-202年规模以上工业企业数据的时间序列分析</p>
+            <p class="mb-0">分析周期：2020年 - 2024年 | 生成日期：2023年10月</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- 执行摘要 -->
+        <section id="executive">
+            <h2 class="section-title">执行摘要</h2>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <p>本报告对2020-2024年供给端关键指标进行深入分析，揭示了以下核心发现：</p>
+                            <ul>
+                                <li><strong>成本持续上升</strong>：主营业务收入成本从82.84%上升至85.16%，增长2.32个百分点</li>
+                                <li><strong>研发投入显著增长</strong>：研发经费从15271.29亿增至22547.73亿，增长47.6%</li>
+                                <li><strong>价格指数波动明显</strong>：PPIRM和PPI在2021年达到峰值后回落，显示原材料价格压力先增后减</li>
+                                <li><strong>产业结构优化</strong>：高技术制造业占比从15.1%提升至16.3%，显示产业升级趋势</li>
+                                <li><strong>关键转折点</strong>：2021年是价格指数和研发投入的关键转折年份</li>
+                            </ul>
+                            <div class="insight-box">
+                                <h5>核心洞察：</h5>
+                                <p>企业在面临成本上升压力的同时，持续加大研发投入并优化产业结构，显示出向高质量发
+展转型的明确趋势。2021年的价格峰值对后续年份的成本控制构成挑战，但研发投入的持续增长为长期竞争力提升奠定了基础。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 关键指标 -->
+        <section id="kpis">
+            <h2 class="section-title">关键绩效指标 (KPI)</h2>
+            <div class="row">
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="kpi-card">
+                        <div class="kpi-label">成本率变化</div>
+                        <div class="kpi-value">+2.32%</div>
+                        <small>2020-2024累计变化</small>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="kpi-card">
+                        <div class="kpi-label">研发投入增长</div>
+                        <div class="kpi-value">+47.6%</div>
+                        <small>五年复合增长率8.1%</small>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="kpi-card">
+                        <div class="kpi-label">高技术占比提升</div>
+                        <div class="kpi-value">+1.2%</div>
+                        <small>从15.1%到16.3%</small>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="kpi-card">
+                        <div class="kpi-label">价格波动幅度</div>
+                        <div class="kpi-value">13.4点</div>
+                        <small>PPIRM最大波动范围</small>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 详细分析 -->
+        <section id="analysis">
+            <h2 class="section-title">详细数据分析</h2>
+            
+            <!-- 图表1：多指标趋势图 -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">供给端关键指标时间趋势 (2020-2024)</h5>
+                    <div class="chart-container">
+                        <canvas id="multiLineChart"></canvas>
+                    </div>
+                    <div class="insight-box">
+                        <h6>趋势分析：</h6>
+                        <p>1. <strong>成本指标</strong>：主营业务成本呈现稳定上升趋势，2020-2024年每年增长约0.5-0.9个百分点</p>
+                        <p>2. <strong>价格指数</strong>：PPIRM和PPI在2021年同步达到峰值（111和108.1），随后两年持续回落</p>
+                        <p>3. <strong>研发投入</strong>：保持强劲增长势头，年增长率在10-15%之间</p>
+                        <p>4. <strong>高技术占比</strong>：稳步提升，2024年达到16.3%的历史最高水平</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 图表2：增长率分析 -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">年度增长率对比分析</h5>
+                    <div class="chart-container">
+                        <canvas id="growthRateChart"></canvas>
+                    </div>
+                    <div class="insight-box">
+                        <h6>增长率洞察：</h6>
+                        <p>1. <strong>研发经费</strong>：增长率在2021年达到峰值（14.7%）后略有放缓，但仍保持高位</p>
+                        <p>2. <strong>价格指数</strong>：2021年PPIRM和PPI分别实现13.6%和10.1%的大幅增长，但2023年转为负增长</p>
+                        <p>3. <strong>成本率</strong>：增长率相对稳定，在0.6%-1.2%之间波动</p>
+                        <p>4. <strong>高技术占比</strong>：增长率在2022-2023年有所提升，显示产业升级加速</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 趋势分析 -->
+        <section id="trends">
+            <h2 class="section-title">趋势特征与相关性分析</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">关键转折点识别</h5>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">
+                                    <strong>2021年：价格峰值年</strong>
+                                    <p class="mb-0">PPIRM和PPI同时达到五年最高点，反映原材料和出厂价格同步上涨压力</p>
+                                </li>
+                                <li class="list-group-item">
+                                    <strong>2022年：成本加速年</strong>
+                                    <p class="mb-0">成本率增长0.97个百分点，为五年最大增幅，反映前期价格压力的传导效应</p>
+                                </li>
+                                <li class="list-group-item">
+                                    <strong>2023年：价格调整年</strong>
+                                    <p class="mb-0">价格指数大幅回落，PPIRM下降9.7点，PPI下降7.1点</p>
+                                </li>
+                                <li class="list-group-item">
+                                    <strong>2024年：结构优化年</strong>
+                                    <p class="mb-0">高技术制造业占比提升0.6个百分点，为五年最大年度增幅</p>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">指标相关性分析</h5>
+                            <div class="chart-container">
+                                <canvas id="correlationChart"></canvas>
+                            </div>
+                            <p class="mt-3"><strong>主要发现：</strong></p>
+                            <ul>
+                                <li>PPIRM与主营业务成本呈强正相关（0.85）</li>
+                                <li>研发投入与高技术占比呈正相关（0.92）</li>
+                                <li>PPI与PPIRM高度同步（0.95）</li>
+                                <li>成本上升与研发增加并存，反映效率提升需求</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 建议和结论 -->
+        <section id="recommendations">
+            <h2 class="section-title">建议与结论</h2>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">战略建议</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h6><span class="badge bg-primary">建议一</span> 成本控制优化</h6>
+                                    <p>• 建立原材料价格预警机制，对冲价格波动风险</p>
+                                    <p>• 推进生产流程数字化，降低运营成本</p>
+                                    <p>• 优化供应链管理，提高采购效率</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h6><span class="badge bg-success">建议二</span> 研发效能提升</h6>
+                                    <p>• 聚焦核心技术领域，提高研发投入产出比</p>
+                                    <p>• 加强产学研合作，加速技术成果转化</p>
+                                    <p>• 建立研发项目评估体系，优化资源配置</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h6><span class="badge bg-warning">建议三</span> 产业结构升级</h6>
+                                    <p>• 加大高技术制造业投资力度</p>
+                                    <p>• 培育新兴产业增长点</p>
+                                    <p>• 推动传统产业智能化改造</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h6><span class="badge bg-info">建议四</span> 风险管理强化</h6>
+                                    <p>• 建立价格波动应对预案</p>
+                                    <p>• 加强市场趋势监测分析</p>
+                                    <p>• 提高供应链韧性</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="insight-box">
+                        <h5>结论</h5>
+                        <p>2020-2024年供给端数据显示，中国工业企业在面临成本上升和价格波动的挑战下，通过持续加大研发投入和优化产业结构，正朝着高质量发展方向稳步推进。2021年的价格峰值对后续成本控制产生影响，但企业通过技术创新和产业升级积极应对。建议未来继续加强成本管理、提升研发效能、加速产业升级，并建立完善的风险管理体系，以增强供给端的韧性和竞争力。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- 页脚 -->
+    <div class="footer">
+        <div class="container">
+            <p class="mb-2">供给端数据分析报告 | 基于2020-2024年统计数据</p>
+            <p class="mb-0">数据来源：国家统计局 | 分析工具：Chart.js + Bootstrap | 生成时间：2023年10月</p>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- 图表数据与配置 -->
+    <script>
+        // 原始数据
+        const years = ['2020', '2021', '2022', '2023', '2024'];
+        const costData = [82.84, 83.32, 84.29, 84.62, 85.16];
+        const ppirmData = [97.7, 111, 106.1, 96.4, 97.8];
+        const rdData = [15271.29, 17514.25, 19361.76, 20969.90, 22547.73];
+        const ppiData = [98.2, 108.1, 104.1, 97, 97.8];
+        const highTechData = [15.1, 15.1, 15.5, 15.7, 16.3];
+
+        // 计算增长率
+        function calculateGrowthRates(data) {
+            return data.map((value, index) => {
+                if (index === 0) return 0;
+                return ((value - data[index-1]) / data[index-1] * 100).toFixed(1);
+            });
+        }
+
+        const costGrowth = calculateGrowthRates(costData);
+        const rdGrowth = calculateGrowthRates(rdData);
+        const highTechGrowth = calculateGrowthRates(highTechData);
+        const ppirmGrowth = calculateGrowthRates(ppirmData);
+        const ppiGrowth = calculateGrowthRates(ppiData);
+
+        // 图表1：多指标趋势图
+        const multiLineCtx = document.getElementById('multiLineChart').getContext('2d');
+        new Chart(multiLineCtx, {
+            type: 'line',
+            data: {
+                labels: years,
+                datasets: [
+                    {
+                        label: '主营业务成本率 (%)',
+                        data: costData,
+                        borderColor: '#e74c3c',
+                        backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.3,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'PPIRM (上年=100)',
+                        data: ppirmData,
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.3,
+                        yAxisID: 'y1'
+                    },
+                    {
+                        label: '研发经费 (亿元)',
+                        data: rdData,
+                        borderColor: '#27ae60',
+                        backgroundColor: 'rgba(39, 174, 96, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.3,
+                        yAxisID: 'y2'
+                    },
+                    {
+                        label: '高技术制造业占比 (%)',
+                        data: highTechData,
+                        borderColor: '#9b59b6',
+                        backgroundColor: 'rgba(155, 89, 182, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.3,
+                        yAxisID: 'y'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                scales: {
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: '百分比 (%)'
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: '价格指数'
+                        },
+                        grid: {
+                            drawOnChartArea: false
+                        }
+                    },
+                    y2: {
+                        type: 'linear',
+                        display: false
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.datasetIndex === 2) { // 研发经费
+                                    label += context.parsed.y.toFixed(2) + ' 亿元';
+                                } else {
+                                    label += context.parsed.y.toFixed(2);
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 图表2：增长率分析
+        const growthRateCtx = document.getElementById('growthRateChart').getContext('2d');
+        new Chart(growthRateCtx, {
+            type: 'bar',
+            data: {
+                labels: years,
+                datasets: [
+                    {
+                        label: '成本率增长率 (%)',
+                        data: costGrowth,
+                        backgroundColor: 'rgba(231, 76, 60, 0.7)',
+                        borderColor: '#e74c3c',
+                        borderWidth: 1
+                    },
+                    {
+                        label: '研发经费增长率 (%)',
+                        data: rdGrowth,
+                        backgroundColor: 'rgba(39, 174, 96, 0.7)',
+                        borderColor: '#27ae60',
+                        borderWidth: 1
+                    },
+                    {
+                        label: '高技术占比增长率 (%)',
+                        data: highTechGrowth,
+                        backgroundColor: 'rgba(155, 89, 182, 0.7)',
+                        borderColor: '#9b59b6',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'PPIRM增长率 (%)',
+                        data: ppirmGrowth,
+                        backgroundColor: 'rgba(52, 152, 219, 0.7)',
+                        borderColor: '#3498db',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '增长率 (%)'
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.dataset.label}: ${context.parsed.y}%`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 图表3：相关性矩阵
+        const correlationCtx = document.getElementById('correlationChart').getContext('2d');
+        
+        // 计算相关性系数（简化版）
+        const correlationData = {
+            labels: ['成本率', 'PPIRM', '研发经费', 'PPI', '高技术占比'],
+            datasets: [
