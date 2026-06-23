@@ -1,0 +1,217 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>车辆维保数据分析报告</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --success-color: #27ae60;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--light-color) !important;
+        }
+        .report-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 20px 20px;
+        }
+        .section-title {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s;
+            margin-bottom: 20px;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .kpi-card {
+            background: linear-gradient(135deg, #ffffff, #f1f8ff);
+            border-left: 5px solid var(--secondary-color);
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        .insight-box {
+            background-color: #e8f4fc;
+            border-left: 4px solid var(--secondary-color);
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .recommendation-box {
+            background-color: #d5f4e6;
+            border-left: 4px solid var(--success-color);
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            text-align: center;
+        }
+        .table-hover tbody tr:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+        .badge-custom {
+            background-color: var(--secondary-color);
+            font-size: 0.8em;
+        }
+        .nav-link.active {
+            font-weight: bold;
+            color: var(--secondary-color) !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--primary-color);">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-graph-up"></i> 车辆维保分析报告
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#executive-summary">执行摘要</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#key-metrics">关键指标</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#detailed-analysis">详细分析</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#trends">趋势分析</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#conclusion">结论建议</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 报告标题 -->
+    <header class="report-header">
+        <div class="container text-center">
+            <h1 class="display-4 fw-bold">车辆维保数据分析报告</h1>
+            <p class="lead">基于2025年1月至6月维保记录的综合分析</p>
+            <p class="mb-0">数据周期：2025-01-03 至 2025-06-03 | 分析日期：2025年6月</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- 执行摘要 -->
+        <section id="executive-summary" class="mb-5">
+            <h2 class="section-title">执行摘要</h2>
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">核心发现</h5>
+                            <p>本报告分析了2025年上半年共<strong>45条</strong>车辆维保记录，涉及<strong>11辆</strong>不同车辆，总维保费用达<strong>113,310元</strong>。数据显示，维保活动主要集中在<strong>内江兴裕良汽车修理厂</strong>（占比93.3%），车辆平均行驶里程较高，维保项目呈现多样化特征。</p>
+                            <div class="insight-box">
+                                <h6><i class="bi bi-lightbulb"></i> 关键洞察：</h6>
+                                <ul>
+                                    <li><strong>高价值维修集中</strong>：单次费用超过5000元的大修共5次，占总费用的35.8%，表明部分车辆已进入高维修期。</li>
+                                    <li><strong>常规保养是基础</strong>：“常规保养”是最高频的维保理由（28次），但单次费用相对较低，是维持车队正常运行的基础。</li>
+                                    <li><strong>厂商依赖度高</strong>：内江兴裕良汽车修理厂处理了绝大部分业务，需评估其服务性价比及备选供应商。</li>
+                                    <li><strong>车辆状态分化</strong>：车辆里程数跨度大（4,900公里至598,024公里），维保策略需差异化。</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card kpi-card">
+                        <div class="card-body text-center">
+                            <h1 class="display-4 fw-bold text-primary">¥113,310</h1>
+                            <p class="card-text">总维保费用</p>
+                            <hr>
+                            <p><small>平均单次费用：¥2,518</small></p>
+                        </div>
+                    </div>
+                    <div class="card kpi-card">
+                        <div class="card-body text-center">
+                            <h2 class="fw-bold">45</h2>
+                            <p class="card-text">维保记录总数</p>
+                            <hr>
+                            <p><small>涉及11辆不同车辆</small></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 关键指标 -->
+        <section id="key-metrics" class="mb-5">
+            <h2 class="section-title">关键绩效指标 (KPI)</h2>
+            <div class="row">
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="card-title">¥2,518</h3>
+                            <p class="card-text">平均单次费用</p>
+                            <span class="badge bg-info">基准指标</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="card-title">4.1</h3>
+                            <p class="card-text">平均每车维保次数</p>
+                            <span class="badge bg-warning">关注</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="card-title">93.3%</h3>
+                            <p class="card-text">主修厂占比</p>
+                            <span class="badge bg-secondary">供应商</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="card-title">5</h3>
+                            <p class="card-text">高成本大修次数</p>
+                            <span class="badge bg-danger">高影响</span>
