@@ -1,0 +1,363 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>物联网讲师岗位-简历匹配可视化报告</title>
+    <!-- 国内BootCDN资源 -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <style>
+        body {
+            background-color: #0f1526;
+            color: #ffffff !important;
+            font-family: "Microsoft Yahei", sans-serif;
+        }
+        .card {
+            background-color: #1a2340;
+            border: none;
+            color: #ffffff;
+        }
+        .card-header {
+            background-color: #1a2340;
+            border-bottom: 1px solid #334155;
+            color: #ffffff;
+        }
+        .advantage-block {
+            background-color: #0f5132;
+            padding: 1rem;
+            border-radius: 0.5rem;
+        }
+        .disadvantage-block {
+            background-color: #842029;
+            padding: 1rem;
+            border-radius: 0.5rem;
+        }
+        .tag-badge {
+            background-color: #3b82f6;
+            color: #ffffff;
+            margin-right: 0.5rem;
+        }
+        .score-card {
+            text-align: center;
+            padding: 1.5rem;
+        }
+        .score-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+        .chart-container {
+            height: 350px;
+            margin-bottom: 2rem;
+        }
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 0.5rem;
+        }
+        .list-item {
+            margin-bottom: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <!-- 头部模块 -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1 class="text-white text-center mb-2">物联网讲师岗位-简历匹配评估报告</h1>
+                <p class="text-white text-center">生成日期：2024年8月</p>
+                <div class="text-center mt-2">
+                    <span class="badge tag-badge">岗位地点：泰安</span>
+                    <span class="badge tag-badge">岗位薪资：6-8K</span>
+                    <span class="badge tag-badge">候选人：陈宇宙</span>
+                    <span class="badge tag-badge">期望薪资：10-12K</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 评估结论摘要 -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <p class="text-white">候选人具备丰富的技术培训经验与国产操作系统技术积累，但求职意向、薪资预期与岗位存在差异，核心鸿蒙技术经验不足，整体匹配度中等，需进一步沟通确认关键问题。</p>
+            </div>
+        </div>
+
+        <!-- KPI卡片模块 -->
+        <div class="row mb-4">
+            <div class="col-md-2">
+                <div class="card score-card">
+                    <div class="score-number text-white">62</div>
+                    <div class="text-white">总分</div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card score-card">
+                    <div class="score-number text-white">80</div>
+                    <div class="text-white">专业匹配</div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card score-card">
+                    <div class="score-number text-white">70</div>
+                    <div class="text-white">技术能力</div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card score-card">
+                    <div class="score-number text-white">90</div>
+                    <div class="text-white">教学经验</div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card score-card">
+                    <div class="score-number text-white">40</div>
+                    <div class="text-white">岗位意向</div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card score-card">
+                    <div class="score-number text-white">30</div>
+                    <div class="text-white">薪资匹配</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 图表模块 -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="text-white">多维能力雷达图</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="radarChart" class="chart-container"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="text-white">岗位要求与简历得分对比</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="barChart" class="chart-container"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 优势劣势模块 -->
+        <div class="row mb-4">
+            <div class="col-md-6 mb-3">
+                <h3 class="section-title">匹配优势</h3>
+                <div class="advantage-block">
+                    <ul class="text-white">
+                        <li class="list-item">具备多年技术培训经验，曾教授Linux、Java、Android等课程，熟悉教学流程与课件开发，能快速适应教学工作</li>
+                        <li class="list-item">拥有深厚的国产操作系统技术积累，熟悉Linux生态，对国产化技术有深入理解，为鸿蒙教学奠定基础</li>
+                        <li class="list-item">持有PMP项目管理认证，具备团队管理与项目经验，可支撑课程体系建设与项目协作</li>
+                        <li class="list-item">期望工作地点为泰安，完全符合岗位地域要求</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <h3 class="section-title">匹配劣势</h3>
+                <div class="disadvantage-block">
+                    <ul class="text-white">
+                        <li class="list-item">当前求职意向为售前技术支持，与物联网讲师岗位的职业方向匹配度较低</li>
+                        <li class="list-item">薪资期望（10-12K）远高于岗位预算（6-8K），存在较大薪资差距</li>
+                        <li class="list-item">缺乏鸿蒙设备开发、物联网相关技术的明确实践经验，与岗位核心技术要求匹配不足</li>
+                        <li class="list-item">近期工作经历多为产品经理、开发岗位，教学相关经验中断时间较长</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 面试题模块 -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3 class="text-white">针对性面试题</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5 class="text-white mb-2">技术能力考察</h5>
+                        <ul class="text-white">
+                            <li class="list-item">请简述您对鸿蒙操作系统的理解，若有相关实践经验请详细说明</li>
+                            <li class="list-item">您曾教授过Android应用开发课程，如何将Android开发经验迁移到鸿蒙应用开发教学中？</li>
+                            <li class="list-item">请设计一门面向院校学生的物联网基础课程大纲，重点体现鸿蒙相关内容</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h5 class="text-white mb-2">职业匹配考察</h5>
+                        <ul class="text-white">
+                            <li class="list-item">您当前求职意向是售前技术支持，为何考虑申请物联网讲师岗位？</li>
+                            <li class="list-item">您的薪资期望与岗位预算存在差距，对此您有何看法？</li>
+                            <li class="list-item">您已有多年非教学岗位经验，如何快速回归教学状态，适应院校教学节奏？</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 录用建议模块 -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3 class="text-white">录用建议</h3>
+            </div>
+            <div class="card-body">
+                <h5 class="text-white">优先级：中</h5>
+                <p class="text-white mt-2">
+                    候选人具备良好的教学基础与技术背景，符合岗位的部分核心要求，但存在求职意向、薪资预期与核心技术经验的短板。建议：
+                </p>
+                <ul class="text-white">
+                    <li class="list-item">优先沟通确认候选人的求职意向转换意愿，明确其对讲师岗位的兴趣程度</li>
+                    <li class="list-item">针对薪资差距进行协商，了解候选人的薪资弹性空间</li>
+                    <li class="list-item">安排试讲环节，评估其教学能力与授课风格是否符合院校需求</li>
+                    <li class="list-item">考察候选人对鸿蒙技术的学习能力与意愿，确认其能否快速弥补技术短板</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 决策结论模块 -->
+        <div class="card mb-5">
+            <div class="card-header">
+                <h3 class="text-white">决策结论</h3>
+            </div>
+            <div class="card-body">
+                <p class="text-white">
+                    候选人整体素质较好，具备成为优秀讲师的潜力，但与岗位存在多维度差异。建议进一步沟通关键问题，若能在求职意向、薪资预期上达成一致，且试讲与技术学习潜力评估合格，可予以录用；否则建议放弃该候选人，继续寻找更匹配的人选。
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 初始化雷达图
+        var radarChart = echarts.init(document.getElementById('radarChart'));
+        var radarOption = {
+            title: {
+                text: '能力维度评分',
+                textStyle: { color: '#ffffff' }
+            },
+            tooltip: {
+                textStyle: { color: '#ffffff' }
+            },
+            legend: {
+                data: ['候选人得分', '岗位要求'],
+                textStyle: { color: '#ffffff' }
+            },
+            radar: {
+                indicator: [
+                    { name: '专业匹配', max: 100 },
+                    { name: '技术能力', max: 100 },
+                    { name: '教学经验', max: 100 },
+                    { name: '岗位意向', max: 100 },
+                    { name: '薪资匹配', max: 100 }
+                ],
+                axisName: {
+                    textStyle: { color: '#ffffff' }
+                },
+                splitLine: {
+                    lineStyle: { color: '#334155' }
+                },
+                splitArea: {
+                    areaStyle: { color: 'rgba(255,255,255,0.05)' }
+                }
+            },
+            series: [{
+                name: '能力对比',
+                type: 'radar',
+                data: [
+                    {
+                        value: [80, 70, 90, 40, 30],
+                        name: '候选人得分',
+                        lineStyle: { color: '#ffffff' },
+                        areaStyle: { color: 'rgba(255, 255, 255, 0.2)' }
+                    },
+                    {
+                        value: [100, 100, 100, 100, 100],
+                        name: '岗位要求',
+                        lineStyle: { color: '#38bdf8' },
+                        areaStyle: { color: 'rgba(56, 189, 248, 0.1)' }
+                    }
+                ]
+            }]
+        };
+        radarChart.setOption(radarOption);
+
+        // 初始化柱状图
+        var barChart = echarts.init(document.getElementById('barChart'));
+        var barOption = {
+            title: {
+                text: '得分对比',
+                textStyle: { color: '#ffffff' }
+            },
+            tooltip: {
+                textStyle: { color: '#ffffff' }
+            },
+            legend: {
+                data: ['候选人得分', '岗位要求'],
+                textStyle: { color: '#ffffff' }
+            },
+            xAxis: {
+                data: ['专业匹配', '技术能力', '教学经验', '岗位意向', '薪资匹配'],
+                axisLabel: {
+                    textStyle: { color: '#ffffff' }
+                },
+                axisLine: {
+                    lineStyle: { color: '#334155' }
+                }
+            },
+            yAxis: {
+                axisLabel: {
+                    textStyle: { color: '#ffffff' }
+                },
+                axisLine: {
+                    lineStyle: { color: '#334155' }
+                },
+                splitLine: {
+                    lineStyle: { color: '#334155' }
+                }
+            },
+            series: [
+                {
+                    name: '候选人得分',
+                    type: 'bar',
+                    data: [80, 70, 90, 40, 30],
+                    itemStyle: { color: '#38bdf8' },
+                    label: {
+                        show: true,
+                        position: 'top',
+                        textStyle: { color: '#ffffff' }
+                    }
+                },
+                {
+                    name: '岗位要求',
+                    type: 'bar',
+                    data: [100, 100, 100, 100, 100],
+                    itemStyle: { color: '#10b981' },
+                    label: {
+                        show: true,
+                        position: 'top',
+                        textStyle: { color: '#ffffff' }
+                    }
+                }
+            ]
+        };
+        barChart.setOption(barOption);
+
+        // 响应式调整
+        window.addEventListener('resize', function() {
+            radarChart.resize();
+            barChart.resize();
+        });
+    </script>
+</body>
+</html>
+```
