@@ -1,0 +1,183 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教练团队运营分析报告</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { background-color: #f8f9fa; }
+        .dashboard-card { background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 20px; margin-bottom: 20px; }
+        .metric-card { text-align: center; padding: 15px; border-radius: 8px; color: white; }
+        .section-title { color: #2c3e50; border-left: 4px solid #3498db; padding-left: 15px; margin: 30px 0 20px; }
+    </style>
+</head>
+<body>
+    <div class="container-fluid px-4 py-5">
+        <!-- 标题 -->
+        <div class="text-center mb-5">
+            <h1 class="display-5 fw-bold text-primary">教练团队运营分析报告</h1>
+            <p class="text-muted">报告生成时间：2026年06月24日</p>
+        </div>
+
+        <!-- 执行摘要 -->
+        <div class="dashboard-card">
+            <h2 class="section-title">执行摘要</h2>
+            <p>本月全组教练运营表现良好，新教练留存率达100%，共入库27名教练且全部实现代课，累计上课学员660人。教练人效平均为7.2，仍有提升空间。各小组运营能力差异显著，曾唯洋、王俊霞组表现突出，于美琪、邱慧组需重点提升。</p>
+        </div>
+
+        <!-- 关键指标 -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3">
+                <div class="metric-card bg-primary">
+                    <h3>27</h3>
+                    <p>本月入库教练数</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card bg-success">
+                    <h3>100%</h3>
+                    <p>新教练留存率</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card bg-info">
+                    <h3>660</h3>
+                    <p>现有上课学员数</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card bg-warning">
+                    <h3>7.2</h3>
+                    <p>平均教练人效</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 详细分析 -->
+        <div class="row g-4">
+            <!-- 各组核心指标对比 -->
+            <div class="col-lg-6">
+                <div class="dashboard-card">
+                    <h3 class="section-title">各组核心指标对比</h3>
+                    <canvas id="barChart" height="300"></canvas>
+                </div>
+            </div>
+
+            <!-- 教练人效分布 -->
+            <div class="col-lg-6">
+                <div class="dashboard-card">
+                    <h3 class="section-title">教练人效分布</h3>
+                    <canvas id="radarChart" height="300"></canvas>
+                </div>
+            </div>
+
+            <!-- 学员分布 -->
+            <div class="col-lg-6">
+                <div class="dashboard-card">
+                    <h3 class="section-title">各组学员占比</h3>
+                    <canvas id="pieChart" height="300"></canvas>
+                </div>
+            </div>
+
+            <!-- 渠道统计 -->
+            <div class="col-lg-6">
+                <div class="dashboard-card">
+                    <h3 class="section-title">渠道生源分布</h3>
+                    <canvas id="channelChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- 结论建议 -->
+        <div class="dashboard-card mt-4">
+            <h2 class="section-title">结论与建议</h2>
+            <h4>🔍 关键发现</h4>
+            <ul>
+                <li>新教练留存率100%，招聘转化效果优秀，但6名教练流失主要为个人原因，需关注教练职业发展规划</li>
+                <li>人效差异显著：最高组8.1，最低组仅2.67，资源分配不均问题突出</li>
+                <li>学员集中度高：曾唯洋、王俊霞、刘昕宇三组占总学员数的67.6%，头部效应明显</li>
+                <li>渠道能力薄弱：本月新渠道无新增，仅王俊霞、刘昕宇组有稳定渠道来源</li>
+            </ul>
+            <h4>💡 优化建议</h4>
+            <ul>
+                <li>建立高绩效组经验分享机制，重点帮扶于美琪、邱慧组提升人效，制定2个月人效提升至5的目标</li>
+                <li>完善教练培养体系，针对未满30节教练制定接课激励政策，提升优质教练留存率</li>
+                <li>加强渠道建设，将新渠道拓展纳入考核，目标下月每个小组至少开拓1个有效新渠道</li>
+                <li>优化评课流程，当前评课完成率仅37.4%，需建立评课监督机制，保障教学质量</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // 数据准备
+        const groups = ['曾唯洋', '刘昕宇', '王俊霞', '李禹莹', '于美琪', '邱慧', '张一鸣', '张超'];
+        const coachCount = [3,4,3,5,2,2,2,6];
+        const studentCount = [155,137,154,79,41,58,26,10];
+        const efficiency = [8.1,7.2,6.8,6.7,2.67,2.67,7.23,3.16];
+        const coachTotal = [89,68,84,39,23,21,13,11];
+        const totalStudents = [0,36,60,2,0,0,2,0];
+
+        // 柱状图
+        new Chart(document.getElementById('barChart'), {
+            type: 'bar',
+            data: {
+                labels: groups,
+                datasets: [
+                    { label: '本组教练总数', data: coachTotal, backgroundColor: 'rgba(54, 162, 235, 0.7)' },
+                    { label: '现有上课学员数', data: studentCount, backgroundColor: 'rgba(75, 192, 192, 0.7)' }
+                ]
+            },
+            options: { responsive: true, plugins: { legend: { position: 'top' } } }
+        });
+
+        // 雷达图
+        new Chart(document.getElementById('radarChart'), {
+            type: 'radar',
+            data: {
+                labels: groups,
+                datasets: [{
+                    label: '教练人效',
+                    data: efficiency,
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    pointBackgroundColor: 'rgba(255, 99, 132, 1)'
+                }]
+            },
+            options: { scales: { r: { min: 0, max: 10 } } }
+        });
+
+        // 饼图
+        new Chart(document.getElementById('pieChart'), {
+            type: 'pie',
+            data: {
+                labels: groups,
+                datasets: [{
+                    data: studentCount,
+                    backgroundColor: [
+                        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
+                        '#FF9F40', '#FF6384', '#C9CBCF'
+                    ]
+                }]
+            }
+        });
+
+        // 渠道图
+        new Chart(document.getElementById('channelChart'), {
+            type: 'bar',
+            data: {
+                labels: groups,
+                datasets: [{
+                    label: '总学生数',
+                    data: totalStudents,
+                    backgroundColor: 'rgba(153, 102, 255, 0.7)'
+                }]
+            },
+            options: { responsive: true }
+        });
+    </script>
+</body>
+</html>
+```
