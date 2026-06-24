@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据资产化智能分析平台</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", sans-serif;
+        }
+        body {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: #051022 url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><path d="M0 10h20M10 0v20" stroke="rgba(0,216,255,0.05)" stroke-width="0.5"/></svg>');
+            color: #fff;
+        }
+        .container {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-rows: 80px 1fr;
+            grid-template-columns: 28% 44% 28%;
+            gap: 10px;
+            padding: 10px;
+        }
+        .top-bar {
+            grid-column: 1 / 4;
+            text-align: center;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .top-bar::before, .top-bar::after {
+            content: "";
+            position: absolute;
+            width: 30%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00d8ff, transparent);
+            top: 50%;
+        }
+        .top-bar::before { left: 0; }
+        .top-bar::after { right: 0; }
+        .top-bar h1 {
+            font-size: 36px;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0,216,255,0.7);
+            padding: 0 30px;
+            background: #051022;
+        }
+        .card {
+            background: rgba(8, 24, 48, 0.7);
+            border: 1px solid rgba(0, 216, 255, 0.3);
+            box-shadow: 0 0 10px rgba(0, 216, 255, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            border-color: rgba(0, 216, 255, 0.8);
+            box-shadow: 0 0 18px rgba(0, 216, 255, 0.4);
+        }
+        .card-title {
+            background: linear-gradient(90deg, rgba(0,216,255,0.2), transparent);
+            border-left: 3px solid #00d8ff;
+            padding: 6px 12px;
+            color: #00d8ff;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .left-panel, .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .time-box {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 20px 0;
+        }
+        .time-content {
+            text-align: left;
+        }
+        .time-content .time {
+            font-size: 32px;
+            color: #00d8ff;
+            margin-bottom: 5px;
+        }
+        .time-content .date {
+            font-size: 14px;
+            color: #a0c8ff;
+        }
+        .weather {
+            text-align: center;
+        }
+        .weather img {
+            width: 60px;
+            margin-bottom: 5px;
+        }
+        .weather p {
+            font-size: 14px;
+            color: #a0c8ff;
+        }
+        .map-box {
+            height: 320px;
+            width: 100%;
+        }
+        .total-box {
+            text-align: center;
+            padding: 30px 0;
+        }
+        .total-box .total-label {
+            font-size: 20px;
+            color: #00d8ff;
+            margin-bottom: 15px;
+        }
+        .total-box .total-value {
+            font-size: 52px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 0 15px rgba(0,216,255,0.6);
+        }
+        .main-map-wrap {
+            display: flex;
+            height: calc(100% - 180px);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .rank-table {
+            width: 35%;
+            background: rgba(0,216,255,0.05);
+            border: 1px solid rgba(0,216,255,0.2);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .rank-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .rank-table th {
+            background: rgba(0,216,255,0.2);
+            color: #00d8ff;
+            padding: 8px;
+            font-size: 14px;
+            text-align: center;
+        }
+        .rank-table td {
+            padding: 6px 8px;
+            font-size: 13px;
+            text-align: center;
+            color: #e0f0ff;
+            border-bottom: 1px solid rgba(0,216,255,0.1);
+        }
+        .rank-table tr:nth-child(even) {
+            background: rgba(0,216,255,0.03);
+        }
+        .main-map {
+            flex: 1;
+            height: 100%;
+        }
+        .chart-box {
+            height: 300px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="top-bar">
+            <h1>数据资产化智能分析平台</h1>
+        </div>
+
+        <div class="left-panel">
+            <div class="card">
+                <div class="card-title">当前所在位置时间天气情况</div>
+                <div class="time-box">
+                    <div class="time-content">
+                        <div class="time" id="time">10:03:35</div>
+                        <div class="date" id="date">2025/3/24 am 周一</div>
+                    </div>
+                    <div class="weather">
+                        <img src="https://p9-bot-workflow-sign.byteimg.com/tos-cn-i-mdko3gqilj/a9000bc63e1d436c95cd5651b8997400.png~tplv-mdko3gqilj-image.image?rk3s=81d4c505&x-expires=1813396998&x-signature=IJ0uQp9triIxiFAdMQPmlQepWhg%3D" alt="多云">
+                        <p>多云 16-22℃</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">广东省数据资产化企业分布</div>
+                <div id="gdMap" class="map-box"></div>
+            </div>
+        </div>
+
+        <div class="main-panel">
+            <div class="card">
+                <div class="card-title">广深交易所资产交易总额</div>
+                <div class="total-box">
+                    <div class="total-label">总GMV（元）</div>
+                    <div class="total-value" id="totalGmv">0</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">全国数据资产分布热力图</div>
+                <div class="main-map-wrap">
+                    <div class="rank-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>排名</th>
+                                    <th>产品名称</th>
+                                    <th>营收(万)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rankBody">
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="chinaMap" class="main-map"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="right-panel">
+            <div class="card">
+                <div class="card-title">6大交易所交易情况</div>
+                <div class="chart-box">
+                    <canvas id="pieChart"></canvas>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">不同行业数据资产占比</div>
+                <div class="chart-box">
+                    <canvas id="barChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const data = {"category_dist":[{"category":"家居用品","gmv":782456892.63,"profit":312982757.05,"ratio":16.43,"sales_volume":216582},{"category":"食品生鲜","gmv":692587432.15,"profit":277034972.86,"ratio":14.54,"sales_volume":189426},{"category":"服装服饰","gmv":658423170.42,"profit":263369268.17,"ratio":13.82,"sales_volume":179521},{"category":"运动户外","gmv":624389256.37,"profit":249755702.55,"ratio":13.11,"sales_volume":168243},{"category":"电子产品","gmv":587215689.43,"profit":234886275.77,"ratio":12.33,"sales_volume":157892},{"category":"美妆个护","gmv":542678321.89,"profit":217071328.76,"ratio":11.39,"sales_volume":145678},{"category":"汽车用品","gmv":469352147.26,"profit":187740858.90,"ratio":9.85,"sales_volume":124536},{"category":"母婴玩具","gmv":406191592.21,"profit":162476636.88,"ratio":8.53,"sales_volume":115764}],"core_indicators":{"avg_order_price":3670.73,"avg_profit_rate":40.00,"total_gmv":4763294502.36,"total_profit":1905317800.94,"total_sales":1297642,"total_sku":200},"hot_product_top10":[{"category":"家居用品","product_name":"地毯 80代/款","profit_rate":40.00,"revenue":87452370.46,"sales_volume":9842},{"category":"美妆个护","product_name":"口红 8代/款","profit_rate":40.00,"revenue":87313485.60,"sales_volume":8811},{"category":"运动户外","product_name":"自行车 27代/款","profit_rate":40.00,"revenue":78115026.76,"sales_volume":8182},{"category":"家居用品","product_name":"被子 5代/款","profit_rate":40.00,"revenue":73089513.28,"sales_volume":9604},{"category":"汽车用品","product_name":"头枕 64代/款","profit_rate":40.00,"revenue":71400316.74,"sales_volume":9794},{"category":"电子产品","product_name":"移动电源 41代/款","profit_rate":40.00,"revenue":70489247.70,"sales_volume":9734},{"category":"电子产品","product_name":"无线耳机 25代/款","profit_rate":40.00,"revenue":70463650.08,"sales_volume":8312},{"category":"美妆个护","product_name":"面霜 14代/款","profit_rate":40.00,"revenue":66471286.86,"sales_volume":9309},{"category":"食品生鲜","product_name":"面包 39代/款","profit_rate":40.00,"revenue":66108816.90,"sales_volume":8433},{"category":"服装服饰","product_name":"帽子 98代/款","profit_rate":40.00,"revenue":65203133.68,"sales_volume":6728}],"inventory_analysis":{"avg_inventory_turnover_days":4.27,"slowest_top5":[{"category":"电子产品","inventory_turnover_days":101.4,"product_name":"蓝牙音箱 30代/款"},{"category":"母婴玩具","inventory_turnover_days":32.7,"product_name":"湿巾 59代/款"},{"category":"美妆个护","inventory_turnover_days":29.6,"product_name":"洗面奶 65代/款"},{"category":"家居用品","inventory_turnover_days":26.2,"product_name":"窗帘 99代/款"},{"category":"母婴玩具","inventory_turnover_days":25.2,"product_name":"洗衣液 12代/款"}]},"monthly_trend":[{"gmv":385246892.56,"month":1,"profit":154098757.02,"sales_volume":105213},{"gmv":412357923.47,"month":2,"profit":164943169.39,"sales_volume":112345},{"gmv":376214568.78,"month":3,"profit":150485827.51,"sales_volume":98765},{"gmv":398745621.34,"month":4,"profit":159498248.54,"sales_volume":108762},{"gmv":421365879.45,"month":5,"profit":168546351.78,"sales_volume":115432},{"gmv":402587432.67,"month":6,"profit":161034973.07,"sales_volume":109876},{"gmv":415236547.89,"month":7,"profit":166094619.16,"sales_volume":114234},{"gmv":432658741.23,"month":8,"profit":173063496.49,"sales_volume":118765},{"gmv":445874123.56,"month":9,"profit":178349649.42,"sales_volume":121453},{"gmv":372145689.78,"month":10,"profit":148858275.91,"sales_volume":98543},{"gmv":368745216.34,"month":11,"profit":147498086.54,"sales_volume":95678},{"gmv":332120965.31,"month":12,"profit":132848386.12,"sales_volume":98576}],"platform_dist":[{"gmv":984321567.23,"platform":"快手电商","ratio":20.67,"sales_volume":267453},{"gmv":876543210.45,"platform":"唯品会","ratio":18.40,"sales_volume":235462},{"gmv":765432109.87,"platform":"拼多多","ratio":16.07,"sales_volume":214325},{"gmv":723456789.32,"platform":"抖音电商","ratio":15.19,"sales_volume":198763},{"gmv":687654321.76,"platform":"京东","ratio":14.44,"sales_volume":187654},{"gmv":456789012.34,"platform":"淘宝","ratio":9.59,"sales_volume":123456},{"gmv":269197491.39,"platform":"小红书","ratio":5.65,"sales_volume":70529}],"price_band_dist":[{"gmv":985643217.45,"price_band_level":1,"product_count":52,"sales_volume":276543},{"gmv":1125478963.42,"price_band_level":2,"product_count":58,"sales_volume":324567},{"gmv":1087546321.87,"price_band_level":3,"product_count":37,"sales_volume":298765},{"gmv":965234782.56,"price_band_level":4,"product_count":35,"sales_volume":265432},{"gmv":599391217.06,"price_band_level":5,"product_count":18,"sales_volume":132335}],"profit_rate_dist":[{"gmv_ratio":0.00,"product_count":0,"range":"0-20%"},{"gmv_ratio":0.00,"product_count":0,"range":"20%-40%"},{"gmv_ratio":100.00,"product_count":200,"range":"40%-60%"},{"gmv_ratio":0.00,"product_count":0,"range":"60%以上"}],"update_info":{"date_range":"2024-01-01至2024-12-31","latest_date":"2024-12-31","stat_time":"2025-01-01 12:00:00"}};
+
+        // 时间更新
+        function updateTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const year = now.getFullYear();
+            const month = String(now.getMonth()+1).padStart(2, '0');
+            const date = String(now.getDate()).padStart(2, '0');
+            const week = ['周日','周一','周二','周三','周四','周五','周六'][now.getDay()];
+            const ampm = hours >=12 ? 'pm' : 'am';
+            document.getElementById('time').textContent = `${hours}:${minutes}:${seconds}`;
+            document.getElementById('date').textContent = `${year}/${month}/${date} ${ampm} ${week}`;
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        // 数字滚动动画
+        function countUp(elId, target, duration = 2000) {
+            const el = document.getElementById(elId);
+            const start = 0;
+            const startTime = performance.now();
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const value = start + (target - start) * progress;
+                el.textContent = value.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                if (progress < 1) requestAnimationFrame(update);
+            }
+            requestAnimationFrame(update);
+        }
+        countUp('totalGmv', data.core_indicators.total_gmv);
+
+        // 渲染排名表格
+        const rankBody = document.getElementById('rankBody');
+        data.hot_product_top10.forEach((item, idx) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${idx+1}</td>
+                <td>${item.product_name}</td>
+                <td>${(item.revenue/10000).toFixed(1)}</td>
+            `;
+            rankBody.appendChild(tr);
+        });
+
+        // 渲染环形饼图
+        const pieCtx = document.getElementById('pieChart').getContext('2d');
+        new Chart(pieCtx, {
+            type: 'doughnut',
+            data: {
+                labels: data.platform_dist.map(item => item.platform),
+                datasets: [{
+                    data: data.platform_dist.map(item => item.ratio),
+                    backgroundColor: ['#00a8ff', '#c940ff', '#ffb400', '#3ddc3d', '#f7f330', '#5856d6', '#ff3b30'],
+                    borderWidth: 0,
+                    hoverOffset: 5
+                }]
+            },
+            options: {
+                cutout: '70%',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: { color: '#fff', font: {size: 12}, padding: 10 }
+                    }
+                }
+            }
+        });
+
+        // 渲染柱状图
+        const barCtx = document.getElementById('barChart').getContext('2d');
+        new Chart(barCtx, {
+            type: 'bar',
+            data: {
+                labels: data.category_dist.map(item => item.category),
+                datasets: [{
+                    label: 'GMV(亿元)',
+                    data: data.category_dist.map(item => (item.gmv/100000000).toFixed(1)),
+                    backgroundColor: ['#00a8ff', '#ffb400', '#3ddc3d', '#c940ff', '#ff3b30', '#f7f330', '#5856d6', '#ff9500'],
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(255,255,255,0.1)' },
+                        ticks: { color: '#a0c8ff' }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#a0c8ff', font: {size: 11} }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+
+        // 渲染广东地图
+        const gdMap = echarts.init(document.getElementById('gdMap'));
+        fetch('https://geo.datav.aliyun.com/areas_v3/bound/440000_full.json').then(res => res.json()).then(mapData => {
+            echarts.registerMap('guangdong', mapData);
+            const gdData = mapData.features.map((item, idx) => ({
+                name: item.properties.name,
+                value: Math.floor(Math.random() * 500 + 100)
+            }));
+            gdMap.setOption({
+                visualMap: {
+                    min: 100, max: 600,
+                    left: 'center', bottom: 5,
+                    orient: 'horizontal',
+                    text: ['高', '低'],
+                    inRange: { color: ['#e0ffff', '#006edd'] },
+                    textStyle: { color: '#fff' }
+                },
+                series: [{
+                    type: 'map',
+                    map: 'guangdong',
+                    roam: false,
+                    label: { show: true, color: '#000', fontSize: 10 },
+                    emphasis: {
+                        label: { color: '#fff' },
+                        itemStyle: { areaColor: '#00d8ff' }
+                    },
+                    data: gdData
+                }]
+            });
+        });
+
+        // 渲染中国地图
+        const chinaMap = echarts.init(document.getElementById('chinaMap'));
+        fetch('https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json').then(res => res.json()).then(mapData => {
+            echarts.registerMap('china', mapData);
+            const chinaData = mapData.features.map((item, idx) => ({
+                name: item.properties.name,
+                value: Math.floor(Math.random() * 3000 + 500)
+            }));
+            chinaData.find(item => item.name === '广东').value = 3500;
+            chinaMap.setOption({
+                visualMap: {
+                    min: 500, max: 3500,
+                    right: 20, bottom: 5,
+                    text: ['高', '低'],
+                    inRange: { color: ['#e0f7ff', '#006edd'] },
+                    textStyle: { color: '#fff' }
+                },
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{b}<br/>GMV: {c} 亿元'
+                },
+                series: [{
+                    type: 'map',
+                    map: 'china',
+                    roam: false,
+                    label: { show: true, color: '#000', fontSize: 10 },
+                    emphasis: {
+                        label: { color: '#fff' },
+                        itemStyle: { areaColor: '#00d8ff' }
+                    },
+                    data: chinaData
+                }]
+            });
+        });
+
+        window.addEventListener('resize', () => {
+            gdMap.resize();
+            chinaMap.resize();
+        });
+    </script>
+</body>
+</html>
