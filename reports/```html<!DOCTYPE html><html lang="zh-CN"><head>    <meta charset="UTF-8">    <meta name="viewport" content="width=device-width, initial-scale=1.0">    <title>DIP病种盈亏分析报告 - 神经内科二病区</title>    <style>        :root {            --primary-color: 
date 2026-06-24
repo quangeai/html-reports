@@ -1,0 +1,429 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DIP病种盈亏分析报告 - 神经内科二病区</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --text-secondary: #7f8c8d;
+            --border-color: #e0e0e0;
+            --shadow: 0 2px 10px rgba(0,0,0,0.05);
+            --font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding-bottom: 40px;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        header .actions button {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.4);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        header .actions button:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* Layout */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* KPI Cards */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .kpi-card .title {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .kpi-card .value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .kpi-card .trend {
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+
+        .trend.positive { color: var(--success-color); }
+        .trend.negative { color: var(--danger-color); }
+
+        /* Insights Section */
+        .insights-section {
+            background: #e8f4fd;
+            border-left: 4px solid var(--accent-color);
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .insights-section h3 {
+            font-size: 1.1rem;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+
+        .insights-section ul {
+            list-style-position: inside;
+            font-size: 0.95rem;
+        }
+
+        /* Charts Area */
+        .charts-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        @media (max-width: 900px) {
+            .charts-container { grid-template-columns: 1fr; }
+        }
+
+        .chart-box {
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-box h3 {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .simple-bar-chart {
+            flex: 1;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            padding-top: 20px;
+            gap: 10px;
+        }
+
+        .bar-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            justify-content: flex-end;
+        }
+
+        .bar {
+            width: 40px;
+            background-color: var(--accent-color);
+            border-radius: 4px 4px 0 0;
+            transition: height 0.5s ease;
+            position: relative;
+        }
+
+        .bar:hover::after {
+            content: attr(data-value);
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .bar-label {
+            margin-top: 8px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        /* Data Table Section */
+        .table-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 5px;
+            background: #e0e0e0;
+            padding: 4px;
+            border-radius: 6px;
+        }
+
+        .tab-btn {
+            padding: 8px 20px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: var(--primary-color);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .search-box input {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            width: 250px;
+            font-size: 0.9rem;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: #f8f9fa;
+            color: var(--primary-color);
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        th:hover {
+            background-color: #e9ecef;
+        }
+
+        th::after {
+            content: '↕';
+            font-size: 0.7em;
+            margin-left: 5px;
+            opacity: 0.3;
+        }
+
+        tr:hover {
+            background-color: #f1f8ff;
+        }
+
+        /* Utility classes for table data */
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .val-loss { color: var(--danger-color); font-weight: bold; }
+        .val-profit { color: var(--success-color); font-weight: bold; }
+        .badge {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .badge-low { background: #e3f2fd; color: #1976d2; }
+        .badge-loss { background: #ffebee; color: #c62828; }
+
+        /* Print Styles */
+        @media print {
+            body { background: white; padding: 0; }
+            header { background: white; color: black; border-bottom: 2px solid #333; box-shadow: none; }
+            header .actions { display: none; }
+            .container { max-width: 100%; padding: 0; }
+            .card { box-shadow: none; border: 1px solid #ccc; }
+            .charts-container { display: none; } /* Hide charts in print for simplicity or ensure they fit */
+            .table-wrapper { box-shadow: none; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>DIP病种盈亏分析报告 <span style="font-size: 0.8em; font-weight: normal; opacity: 0.8;">| 神经内科二病区</span></h1>
+    <div class="actions">
+        <button onclick="window.print()">🖨️ 打印报告</button>
+    </div>
+</header>
+
+<main class="container">
+
+    <!-- KPI Section -->
+    <section class="kpi-grid">
+        <div class="card kpi-card">
+            <div class="title">总病例数</div>
+            <div class="value" id="kpi-total-cases">0</div>
+            <div class="trend">低偏差: <span id="kpi-low-count">0</span> | 亏损: <span id="kpi-loss-count">0</span></div>
+        </div>
+        <div class="card kpi-card">
+            <div class="title">总医疗费用 (元)</div>
+            <div class="value" id="kpi-total-cost">0</div>
+            <div class="trend">平均费用: <span id="kpi-avg-cost">0</span></div>
+        </div>
+        <div class="card kpi-card">
+            <div class="title">总盈亏 (元)</div>
+            <div class="value" id="kpi-total-pl">0</div>
+            <div class="trend" id="kpi-pl-trend">--</div>
+        </div>
+        <div class="card kpi-card">
+            <div class="title">平均支付率</div>
+            <div class="value" id="kpi-avg-rate">0%</div>
+            <div class="trend">医保局结算基准</div>
+        </div>
+    </section>
+
+    <!-- AI Insights -->
+    <section class="insights-section">
+        <h3>📊 数据分析师洞察</h3>
+        <ul id="insights-list">
+            <!-- JS will populate this -->
+            <li>正在分析数据...</li>
+        </ul>
+    </section>
+
+    <!-- Charts Section -->
+    <section class="charts-container">
+        <div class="card chart-box">
+            <h3>盈亏对比 (Top 10 极值)</h3>
+            <div id="chart-pl" class="simple-bar-chart">
+                <!-- Bars injected by JS -->
+            </div>
+        </div>
+        <div class="card chart-box">
+            <h3>药占比与耗占比对比 (平均值)</h3>
+            <div id="chart-ratios" class="simple-bar-chart">
+                <!-- Bars injected by JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Table Section -->
+    <section class="card">
+        <div class="table-controls">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('low_deviation')">低偏差病例</button>
+                <button class="tab-btn" onclick="switchTab('loss')">亏损病例</button>
+            </div>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="搜索诊断、病种编码或手术..." onkeyup="handleSearch()">
+            </div>
+        </div>
+
+        <div class="table-wrapper">
+            <table id="dataTable">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable('病种编码')">病种编码</th>
+                        <th onclick="sortTable('病种名称')">病种名称</th>
+                        <th onclick="sortTable('主要诊断')">主要诊断</th>
+                        <th onclick="sortTable('主要手术')">主要手术</th>
+                        <th class="text-right" onclick="sortTable('医疗总费用')">医疗总费用</th>
+                        <th class="text-right" onclick="sortTable('DIP费用')">DIP费用</th>
+                        <th class="text-right" onclick="sortTable('盈亏')">盈亏</th>
+                        <th class="text-right" onclick="sortTable('支付率')">支付率</th>
+                        <th class="text-right" onclick="sortTable('药占比')">药占比</th>
+                        <th class="text-right" onclick="sortTable('住院天数')">住院天数</th>
+                        <th onclick="sortTable('结算日期')">结算日期</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- Rows injected by JS -->
+                </tbody>
+            </table>
+        </div>
+        <div style="padding: 10px; text-align: right; color: #777; font-size: 0.85rem;">
+            显示 <span id="display-count">0</span> 条记录
+        </div>
+    </section>
+
+</main>
+
+<script>
+    // --- 1. Data Definition (Parsed from provided tables) ---
+    
+    // Helper to parse percentage strings like "72.77%" to float 72.77
+    const parsePercent = (str) => parseFloat(str) || 0;
+    // Helper to parse currency strings like "4,889.36" to float 4889.36
+    const parseCurrency = (str) => parseFloat(String(str).replace(/,/g, '')) || 0;
+
+    const rawDataLowDeviation = [
+        { "出院科室": "神经内科二病区", "病种编码": "S3:I60-I69-2", "病种名称": "脑血管病:治疗性操作组-二类资源消耗", "病种类型": "综合病种", "病例类型": "低偏差病例", "支付率": 72.77, "医疗总费用": 4889.36, "基本统筹费用": 2757.89, "DIP费用": 2006.82, "医疗成本": 2056.68, "固定成本": 400, "盈亏": 1681.6, "结余": -751.08, "结算金额": 4138.28, "病种分值": 3.91, "病种调整系数": 1, "病例分值": 0.8877, "分值单价": 4661.8, "地区病种均费": 21508.08, "病区": "神经内科二病区", "医疗组": "-", "主要诊断": "大脑动脉狭窄脑梗死(I63.501)", "主要手术": "关节治疗性物质注射(81.9201)[1]", "年龄": "75岁", "住院天数": 6, "入院日期": "2026-04-26", "入院科室": "神经内科二病区", "出院日期": "2026-05-02", "结算日期": "2026-05-02", "医保类型": "居民", "参保类型": "医保", "医保外自付比例": "43.59%", "自费金额": 2131.47, "药占比": "13.77%", "耗占比": "2.56%", "医技占比": "64.33%", "医保统筹基金支付": 2757.89, "中成药费": 0, "中药饮片费": 0, "西药费": 673.36, "材料费": 125.2, "药+耗": 798.56, "检查费": 2619.6, "化验费": 525.7, "输血费": 0, "其他费": 0, "手术费": 343, "护理费": 240, "床位费": 192.5, "治疗费": 170 },
+        { "出院科室": "神经内科二病区", "病种编码": "R57.1", "病种名称": "血容量减少性休克", "病种类型": "核心病种", "病例类型": "低偏差病例", "支付率": 70.82, "医疗总费用": 3612.18, "基本统筹费用": 1900.34, "DIP费用": 1345.84, "医疗成本": 1233.46, "固定成本": 400, "盈亏": 1424.21, "结余": -554.51, "结算金额": 3057.67, "病种分值": 1.38, "病种调整系数": 1, "病例分值": 0.6559, "分值单价": 4661.8, "地区病种均费": 7622.45, "病区": "神经内科二病区", "医疗组": "-", "主要诊断": "血容量不足性休克(R57.100)", "主要手术": "-", "年龄": "55岁", "住院天数": 4, "入院日期": "2026-05-03", "入院科室": "神经内科二病区", "出院日期": "2026-05-07", "结算日期": "2026-05-07", "医保类型": "居民", "参保类型":
