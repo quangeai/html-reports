@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>保单数据分析报告</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; }
+        .report-header { background: linear-gradient(135deg, #2c3e50, #1a2530); color: white; padding: 2rem 0; margin-bottom: 2rem; border-radius: 0 0 10px 10px; }
+        .card { border: none; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: transform 0.3s; margin-bottom: 1.5rem; }
+        .card:hover { transform: translateY(-5px); }
+        .card-title { color: #2c3e50; font-weight: 600; }
+        .card-value { font-size: 2rem; font-weight: 700; color: #3498db; }
+        .section-title { border-left: 5px solid #3498db; padding-left: 15px; margin: 2.5rem 0 1.5rem; color: #2c3e50; font-weight: 600; }
+        .chart-container { position: relative; height: 400px; padding: 15px; background: white; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .table-container { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .insight-box { background: #e8f4fc; border-left: 5px solid #2980b9; padding: 20px; border-radius: 5px; margin-top: 1rem; }
+        .footer { background-color: #2c3e50; color: #bdc3c7; padding: 1.5rem 0; margin-top: 3rem; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <header class="report-header text-center">
+            <h1 class="display-5 fw-bold">保单数据分析报告</h1>
+            <p class="lead">基于结构化保单数据的多维度可视化分析</p>
+        </header>
+
+        <main class="container">
+            <!-- 区块1：执行摘要+核心指标卡片 -->
+            <section>
+                <h2 class="section-title">执行摘要与核心指标</h2>
+                <div class="row">
+                    <div class="col-md-3 col-6">
+                        <div class="card text-center h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">总保单数</h5>
+                                <p class="card-value">8</p>
+                                <p class="text-muted">分析样本总量</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="card text-center h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">高风险保单</h5>
+                                <p class="card-value">3</p>
+                                <p class="text-muted">风险等级为高</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="card text-center h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">平均使用率</h5>
+                                <p class="card-value">61.5%</p>
+                                <p class="text-muted">已使用率均值</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="card text-center h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">总结算金额</h5>
+                                <p class="card-value">¥1.25亿</p>
+                                <p class="text-muted">累计结算额</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 区块2：保单使用率分布双轴柱状图 -->
+            <section>
+                <h2 class="section-title">保单使用率分布（签订 vs 已使用）</h2>
+                <div class="chart-container">
+                    <canvas id="usageChart"></canvas>
+                </div>
+            </section>
+
+            <!-- 区块3：风险等级分布饼图 -->
+            <section>
+                <h2 class="section-title">保单风险等级分布</h2>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="chart-container">
+                            <canvas id="riskPieChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="insight-box h-100 d-flex align-items-center">
+                            <div>
+                                <h5>风险洞察</h5>
+                                <p class="mb-0">高风险保单占比37.5%，中风险占比25%，低风险占比37.5%。高风险与低风险保单数量持平，需重点关注高风险保单的具体使用情况与客户行为。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 区块4：高风险保单明细数据表格 -->
+            <section>
+                <h2 class="section-title">高风险保单明细</h2>
+                <div class="table-container">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th scope="col">客户大类</th>
+                                    <th scope="col">发放月份</th>
+                                    <th scope="col">签订使用率</th>
+                                    <th scope="col">已使用率</th>
+                                    <th scope="col">结算金额(万元)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>企业客户</td><td>2023-10</td><td>80%</td><td>90%</td><td>5000</td></tr>
+                                <tr><td>个人客户</td><td>2023-11</td><td>70%</td><td>85%</td><td>3000</td></tr>
+                                <tr><td>企业客户</td><td>2023-12</td><td>90%</td><td>95%</td><td>4500</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 区块5：可控保单明细数据表格 -->
+            <section>
+                <h2 class="section-title">可控（中/低风险）保单明细</h2>
+                <div class="table-container">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th scope="col">客户大类</th>
+                                    <th scope="col">发放月份</th>
+                                    <th scope="col">风险等级</th>
+                                    <th scope="col">签订使用率</th>
+                                    <th scope="col">已使用率</th>
+                                    <th scope="col">结算金额(万元)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>个人客户</td><td>2023-09</td><td>中</td><td>60%</td><td>50%</td><td>1500</td></tr>
+                                <tr><td>企业客户</td><td>2023-10</td><td>低</td><td>50%</td><td>30%</td><td>2000</td></tr>
+                                <tr><td>个人客户</td><td>2023-11</td><td>低</td><td>40%</td><td>20%</td><td>1000</td></tr>
+                                <tr><td>企业客户</td><td>2023-12</td><td>中</td><td>75%</td><td>65%</td><td>2500</td></tr>
+                                <tr><td>个人客户</td><td>2023-12</td><td>低</td><td>55%</td><td>40%</td><td>1800</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 区块6：各保单大类使用率趋势折线图 -->
+            <section>
+                <h2 class="section-title">各客户大类使用率趋势</h2>
+                <div class="chart-container">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </section>
+
+            <!-- 区块7：数据分析洞察、风控落地建议 -->
+            <section>
+                <h2 class="section-title">数据分析洞察与风控建议</h2>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="insight-box h-100">
+                            <h5>核心洞察</h5>
+                            <p>1. 高风险保单使用率普遍偏高（85%-95%），且集中于企业客户，表明企业客户在保单使用上更为激进，可能带来较高的集中性风险。</p>
+                            <p>2. “签订使用率”与“已使用率”存在显著差异的保单（如10月企业低风险保单）可能存在签约后使用动力不足的问题，需审查产品匹配度。</p>
+                            <p>3. 个人客户低风险保单使用率较低（20%-40%），但数量较多，是提升整体使用率的关键潜力点。</p>
+                            <p>4. 从趋势看，企业客户使用率在四季度持续攀升，而个人客户波动较大，策略应差异化。</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="insight-box h-100">
+                            <h5>风控落地建议</h5>
+                            <p>1. <strong>建立高风险保单动态监控清单</strong>：对三笔高风险保单实施月度回顾，设定使用率阈值预警（如>90%触发复核），并审查其对应结算资金的流向。</p>
+                            <p>2. <strong>启动“低使用率保单激活”项目</strong>：针对已使用率低于40%的保单（特别是个人客户），由客户经理进行一对一联系，了解未充分使用原因，提供使用指引或产品调整。</p>
+                            <p>3. <strong>优化企业客户保单签约策略</strong>：对于新签企业客户，在签约时基于历史数据设定更合理的“签订使用率”，避免过高承诺与实际使用的落差，并加强中期使用情况跟踪。</p>
+                            <p>4. <strong>强化数据联动分析</strong>：将本报告中的使用率、风险等级数据与客户投诉数据、理赔数据进行交叉分析，识别潜在的风险传导链条，实现前瞻性风控。</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <div class="container">
+                <span>保单数据分析报告 | 数据截止日期：2023年12月 | 生成时间：2024年1月</span>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 区块2：保单使用率分布双轴柱状图
+            const usageCtx = document.getElementById('usageChart').getContext('2d');
+            new Chart(usageCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['保单1', '保单2', '保单3', '保单4', '保单5', '保单6', '保单7', '保单8'],
+                    datasets: [{
+                        label: '签订使用率 (%)',
+                        data: [80, 70, 60, 50, 90, 40, 75, 55],
+                        backgroundColor: 'rgba(52, 152, 219, 0.7)',
+                        borderColor: 'rgba(52, 152, 219, 1)',
+                        borderWidth: 1,
+                        yAxisID: 'y'
+                    }, {
+                        label: '已使用率 (%)',
+                        data: [90, 85, 50, 30, 95, 20, 65, 40],
+                        backgroundColor: 'rgba(46, 204, 113, 0.7)',
+                        borderColor: 'rgba(46, 204, 113, 1)',
+                        borderWidth: 1,
+                        type: 'line',
+                        fill: false,
+                        tension: 0.4,
+                        yAxisID: 'y1'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    scales: {
+                        x: { grid: { display: false } },
+                        y: {
+                            type: 'linear',
+                            position: 'left',
+                            title: { display: true, text: '签订使用率 (%)' },
+                            min: 0,
+                            max: 100
+                        },
+                        y1: {
+                            type: 'linear',
+                            position: 'right',
+                            title: { display: true, text: '已使用率 (%)' },
+                            min: 0,
+                            max: 100,
+                            grid: { drawOnChartArea: false }
+                        }
+                    },
+                    plugins: {
+                        tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y}%` } },
+                        legend: { position: 'top' }
+                    }
+                }
+            });
+
+            // 区块3：风险等级分布饼图
+            const riskCtx = document.getElementById('riskPieChart').getContext('2d');
+            new Chart(riskCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['高风险', '中风险', '低风险'],
+                    datasets: [{
+                        data: [3, 2, 3],
+                        backgroundColor: ['#e74c3c', '#f39c12', '#2ecc71'],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right' },
+                        tooltip: { callbacks: { label: ctx => `${ctx.label}: ${ctx.raw} 笔 (${((ctx.raw/8)*100).toFixed(1)}%)` } }
+                    }
+                }
+            });
+
+            // 区块6：各保单大类使用率趋势折线图
+            const trendCtx = document.getElementById('trendChart').getContext('2d');
+            new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: ['2023-09', '2023-10', '2023-11', '2023-12'],
+                    datasets: [{
+                        label: '企业客户-已使用率',
+                        data: [null, 90, 85, 95],
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }, {
+                        label: '个人客户-已使用率',
+                        data: [50, 30, 20, 40],
+                        borderColor: '#9b59b6',
+                        backgroundColor: 'rgba(155, 89, 182, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: { display: true, text: '已使用率 (%)' }
+                        },
+                        x: { title: { display: true, text: '发放月份' } }
+                    },
+                    plugins: {
+                        tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y}%` } },
+                        legend: { position: 'top' }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
