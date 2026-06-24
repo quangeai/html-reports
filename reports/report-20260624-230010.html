@@ -1,0 +1,188 @@
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>员工离职情况数据分析报告（基于数据分析五步法）</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { font-family: "Microsoft YaHei", Arial; margin: 20px; line-height: 1.6; }
+    h1 { color: #2c3e50; text-align: center; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+    h2 { color: #3498db; margin-top: 30px; }
+    h3 { color: #2980b9; }
+    .summary { background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px; }
+    .chart-container { width: 80%; margin: 0 auto 40px; }
+    .conclusion-list { list-style-type: disc; padding-left: 20px; }
+    .suggestion-section { background: #e8f4f8; padding: 20px; border-radius: 8px; }
+    .note { color: #7f8c8d; font-size: 0.9em; margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <h1>员工离职情况数据分析报告</h1>
+  <div class="summary">
+    <h3>数据概览</h3>
+    <p>数据来源：员工基础信息表（共30条员工记录）</p>
+    <p>分析周期：截至当前记录时间</p>
+    <p>预处理说明：
+      <ul>
+        <li>缺失值：在职员工离职原因字段为空，属于合理业务缺失，无需处理</li>
+        <li>格式统一：去除薪资字段逗号，转换为数值类型用于统计</li>
+        <li>异常值：无明显偏离业务逻辑的异常数据</li>
+        <li>去重：无重复员工记录</li>
+      </ul>
+    </p>
+    <p>核心统计：总离职人数10人，整体离职率33.33%</p>
+  </div>
+
+  <h2>一、数据分析核心发现</h2>
+  <ul class="conclusion-list">
+    <li><strong>部门离职率差异显著</strong>：销售一部、销售二部离职率最高（均为66.67%），生产车间离职率50%；人力资源部、法务部离职率为0</li>
+    <li><strong>基层岗位流失严重</strong>：专员、一线操作工等基层岗位离职率达55.56%，所有主管及以上管理岗位无离职记录</li>
+    <li><strong>薪资与离职强相关</strong>：离职员工平均薪资为5160元，仅为在职员工平均薪资（8755元）的59%，薪资偏低是核心离职原因之一</li>
+    <li><strong>新员工留存问题突出</strong>：离职员工平均司龄仅0.79年，80%离职员工司龄不足1年</li>
+    <li><strong>绩效差员工流失率100%</strong>：所有绩效等级为C的员工均已离职，占离职总人数的80%</li>
+  </ul>
+
+  <h2>二、可视化分析</h2>
+  <!-- 各部门离职率柱状图 -->
+  <div class="chart-container">
+    <h3>各部门离职率对比</h3>
+    <canvas id="deptTurnoverChart"></canvas>
+  </div>
+
+  <!-- 离职员工绩效分布饼图 -->
+  <div class="chart-container">
+    <h3>离职员工绩效等级分布</h3>
+    <canvas id="performancePieChart"></canvas>
+  </div>
+
+  <!-- 司龄与离职情况对比柱状图 -->
+  <div class="chart-container">
+    <h3>不同司龄区间离职率对比</h3>
+    <canvas id="seniorityTurnoverChart"></canvas>
+  </div>
+
+  <h2>三、优化建议</h2>
+  <div class="suggestion-section">
+    <h3>1. 高离职率部门针对性优化</h3>
+    <p>销售部门：优化薪酬结构，设置业绩保障底薪；合理管控加班时长，避免员工过度劳累；完善业绩辅导机制，帮助员工提升业绩。</p>
+    <p>生产车间：优化倒班制度，增加员工休息频次；稳定薪资发放机制，减少收入波动；完善员工福利体系，如提供餐补、住宿补贴等。</p>
+
+    <h3>2. 强化新员工留存管理</h3>
+    <p>完善新员工入职培训体系，增加岗位技能培训与企业文化融入课程；建立导师带教制度，指定老员工一对一辅导；试用期内每月开展沟通访谈，及时解决员工问题。</p>
+
+    <h3>3. 绩效与薪酬联动机制</h3>
+    <p>针对绩效C级员工，制定个性化绩效改进计划，配套技能培训资源；建立绩效达标薪资调整机制，激励员工提升业绩；优化招聘环节，提高候选人岗位匹配度，减少绩效差员工入职。</p>
+
+    <h3>4. 招聘渠道优化</h3>
+    <p>综合招聘网站、劳务中介渠道离职率较高，需优化这些渠道的招聘标准，增加岗位胜任力测评环节；重点拓展内推、猎头渠道，提升候选人稳定性。</p>
+  </div>
+
+  <div class="note">
+    <h3>数据局限性说明</h3>
+    <p>本次分析样本量较小（仅30条记录），结论可能存在一定偏差；缺乏历史离职数据对比，无法判断离职率变化趋势；部分离职原因描述较笼统，需进一步调研细化。</p>
+  </div>
+
+  <script>
+    // 各部门离职率柱状图
+    const deptLabels = ['销售一部', '销售二部', '技术研发部', '人力资源部', '财务部', '市场运营部', '行政后勤部', '生产车间', '品牌部', '法务部'];
+    const deptTurnoverData = [66.67, 66.67, 25, 0, 33.33, 33.33, 33.33, 50, 33.33, 0];
+    new Chart(document.getElementById('deptTurnoverChart'), {
+      type: 'bar',
+      data: {
+        labels: deptLabels,
+        datasets: [{
+          label: '离职率(%)',
+          data: deptTurnoverData,
+          backgroundColor: '#3498db',
+          borderColor: '#2980b9',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 100,
+            title: {
+              display: true,
+              text: '离职率(%)'
+            }
+          },
+          x: {
+            title: {
+              display: true,
+              text: '所属部门'
+            }
+          }
+        }
+      }
+    });
+
+    // 离职员工绩效分布饼图
+    const performanceLabels = ['绩效C', '绩效B'];
+    const performanceData = [8, 2];
+    new Chart(document.getElementById('performancePieChart'), {
+      type: 'pie',
+      data: {
+        labels: performanceLabels,
+        datasets: [{
+          label: '离职人数',
+          data: performanceData,
+          backgroundColor: ['#e74c3c', '#f39c12'],
+          hoverOffset: 4
+        }]
+      },
+      options: {
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                const percentage = ((context.parsed / total) * 100).toFixed(2);
+                return `${context.label}: ${context.parsed}人 (${percentage}%)`;
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // 司龄区间离职率对比柱状图
+    const seniorityLabels = ['司龄<1年', '司龄1-3年', '司龄>3年'];
+    const seniorityTurnoverData = [80, 10, 0];
+    new Chart(document.getElementById('seniorityTurnoverChart'), {
+      type: 'bar',
+      data: {
+        labels: seniorityLabels,
+        datasets: [{
+          label: '离职率(%)',
+          data: seniorityTurnoverData,
+          backgroundColor: '#9b59b6',
+          borderColor: '#8e44ad',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 100,
+            title: {
+              display: true,
+              text: '离职率(%)'
+            }
+          },
+          x: {
+            title: {
+              display: true,
+              text: '司龄区间'
+            }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
+```
