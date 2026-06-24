@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>电商运营数据智能分析平台</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #051429;
+            color: #fff;
+            font-family: "Microsoft Yahei", sans-serif;
+            overflow-x: hidden;
+        }
+        /* 头部标题 */
+        .header {
+            height: 8vh;
+            background: linear-gradient(90deg, #051429 0%, #07294d 50%, #051429 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            border-bottom: 1px solid #00d2ff33;
+        }
+        .header h1 {
+            font-size: 3.5vh;
+            color: #00d2ff;
+            text-shadow: 0 0 10px #00d2ff80, 0 0 20px #00d2ff40;
+            letter-spacing: 2px;
+        }
+        .header .update-info {
+            position: absolute;
+            right: 20px;
+            font-size: 1.8vh;
+            color: #8be1ff;
+        }
+        .header .time {
+            position: absolute;
+            left: 20px;
+            font-size: 1.8vh;
+            color: #8be1ff;
+        }
+        /* 主内容区 */
+        .main {
+            height: 92vh;
+            padding: 10px;
+            display: flex;
+            gap: 10px;
+        }
+        .col {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .col-left {
+            width: 25%;
+        }
+        .col-center {
+            width: 50%;
+        }
+        .col-right {
+            width: 25%;
+        }
+        /* 面板样式 */
+        .panel {
+            background-color: #071e3d80;
+            border: 1px solid #00d2ff33;
+            position: relative;
+            padding: 10px;
+            flex: 1;
+        }
+        .panel::before, .panel::after, .panel .corner-lb, .panel .corner-rb {
+            content: '';
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            border: 2px solid #00d2ff;
+        }
+        .panel::before {
+            top: 0;
+            left: 0;
+            border-right: none;
+            border-bottom: none;
+        }
+        .panel::after {
+            top: 0;
+            right: 0;
+            border-left: none;
+            border-bottom: none;
+        }
+        .panel .corner-lb {
+            bottom: 0;
+            left: 0;
+            border-right: none;
+            border-top: none;
+        }
+        .panel .corner-rb {
+            bottom: 0;
+            right: 0;
+            border-left: none;
+            border-top: none;
+        }
+        .panel-title {
+            height: 4vh;
+            line-height: 4vh;
+            padding-left: 12px;
+            font-size: 2vh;
+            color: #8be1ff;
+            border-left: 3px solid #00d2ff;
+            margin-bottom: 10px;
+        }
+        .panel-content {
+            height: calc(100% - 5vh);
+            overflow: hidden;
+        }
+        /* 核心指标 */
+        .indicator-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            height: 100%;
+        }
+        .indicator-card {
+            background: linear-gradient(135deg, #08255080 0%, #05142980 100%);
+            border: 1px solid #00d2ff22;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .indicator-name {
+            font-size: 1.6vh;
+            color: #8be1ff;
+            margin-bottom: 5px;
+        }
+        .indicator-value {
+            font-size: 2.2vh;
+            color: #fff;
+            font-weight: bold;
+        }
+        /* 排行榜 */
+        .rank-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 1.6vh;
+        }
+        .rank-table th {
+            color: #00d2ff;
+            padding: 8px 5px;
+            text-align: left;
+            border-bottom: 1px solid #00d2ff33;
+        }
+        .rank-table td {
+            padding: 7px 5px;
+            border-bottom: 1px solid #00d2ff11;
+        }
+        .rank-num {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            line-height: 20px;
+            text-align: center;
+            border-radius: 3px;
+            background-color: #00d2ff33;
+            color: #fff;
+            font-weight: bold;
+        }
+        .rank-num.top1 {
+            background-color: #ffd700;
+            color: #000;
+        }
+        .rank-num.top2 {
+            background-color: #c0c0c0;
+            color: #000;
+        }
+        .rank-num.top3 {
+            background-color: #cd7f32;
+            color: #000;
+        }
+        /* 图表容器 */
+        .chart-container {
+            width: 100%;
+            height: 100%;
+        }
+        .small-chart-group {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            gap: 10px;
+        }
+        .small-chart {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="time" id="currentTime"></div>
+        <h1>电商运营数据智能分析平台</h1>
+        <div class="update-info" id="updateInfo"></div>
+    </div>
+    <div class="main">
+        <!-- 左列 -->
+        <div class="col col-left">
+            <div class="panel" style="flex: 1.2;">
+                <span class="corner-lb"></span>
+                <span class="corner-rb"></span>
+                <div class="panel-title">核心运营指标</div>
+                <div class="panel-content">
+                    <div class="indicator-group">
+                        <div class="indicator-card">
+                            <div class="indicator-name">总GMV</div>
+                            <div class="indicator-value" id="totalGmv">0</div>
+                        </div>
+                        <div class="indicator-card">
+                            <div class="indicator-name">总销量</div>
+                            <div class="indicator-value" id="totalSales">0</div>
+                        </div>
+                        <div class="indicator-card">
+                            <div class="indicator-name">总利润</div>
+                            <div class="indicator-value" id="totalProfit">0</div>
+                        </div>
+                        <div class="indicator-card">
+                            <div class="indicator-name">平均客单价</div>
+                            <div class="indicator-value" id="avgOrderPrice">0</div>
+                        </div>
+                        <div class="indicator-card">
+                            <div class="indicator-name">平均利润率</div>
+                            <div class="indicator-value" id="avgProfitRate">0</div>
+                        </div>
+                        <div class="indicator-card">
+                            <div class="indicator-name">总SKU数</div>
+                            <div class="indicator-value" id="totalSku">0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel" style="flex: 2;">
+                <span class="corner-lb"></span>
+                <span class="corner-rb"></span>
+                <div class="panel-title">热销商品TOP10</div>
+                <div class="panel-content">
+                    <table class="rank-table">
+                        <thead>
+                            <tr>
+                                <th>排名</th>
+                                <th>商品名称</th>
+                                <th>销售额(万)</th>
+                                <th>销量</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rankTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- 中列 -->
+        <div class="col col-center">
+            <div class="panel" style="flex: 1.2;">
+                <span class="corner-lb"></span>
+                <span class="corner-rb"></span>
+                <div class="panel-title">月度销售趋势</div>
+                <div class="panel-content">
+                    <div class="chart-container" id="monthlyChart"></div>
+                </div>
+            </div>
+            <div class="panel">
+                <span class="corner-lb"></span>
+                <span class="corner-rb"></span>
+                <div class="panel-title">类目销售分布</div>
+                <div class="panel-content">
+                    <div class="chart-container" id="categoryChart"></div>
+                </div>
+            </div>
+        </div>
+        <!-- 右列 -->
+        <div class="col col-right">
+            <div class="panel" style="flex: 1.2;">
+                <span class="corner-lb"></span>
+                <span class="corner-rb"></span>
+                <div class="panel-title">平台销售分布</div>
+                <div class="panel-content">
+                    <div class="chart-container" id="platformChart"></div>
+                </div>
+            </div>
+            <div class="panel">
+                <span class="corner-lb"></span>
+                <span class="corner-rb"></span>
+                <div class="panel-title">价格带&利润率分布</div>
+                <div class="panel-content">
+                    <div class="small-chart-group">
+                        <div class="small-chart" id="priceBandChart"></div>
+                        <div class="small-chart" id="profitRateChart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 数据源
+        const data = {"category_dist":[{"category":"家居用品","gmv":1234567890.12,"profit":493827156.05,"ratio":18.09,"sales":234567},{"category":"服装服饰","gmv":1123456789.23,"profit":449382715.69,"ratio":16.47,"sales":223456},{"category":"食品生鲜","gmv":1098765432.10,"profit":439506172.84,"ratio":16.10,"sales":212345},{"category":"电子产品","gmv":987654321.09,"profit":395061728.44,"ratio":14.47,"sales":198765},{"category":"运动户外","gmv":876543210.98,"profit":350617284.39,"ratio":12.85,"sales":187654},{"category":"美妆个护","gmv":765432109.87,"profit":306172843.95,"ratio":11.22,"sales":176543},{"category":"母婴玩具","gmv":543210987.65,"profit":217284395.06,"ratio":7.96,"sales":123456},{"category":"汽车用品","gmv":193826048.19,"profit":77530419.28,"ratio":2.84,"sales":67821}],"core_indicators":{"avg_order_price":6067.62,"avg_profit_rate":40.00,"total_gmv":6823456789.23,"total_profit":2729382715.69,"total_sales":1124567,"total_sku":217},"hot_product_top10":[{"category":"家居用品","product_name":"地毯 80代/款","profit_rate":40.00,"revenue":87452370.46,"sales_volume":9842},{"category":"美妆个护","product_name":"口红 8代/款","profit_rate":40.00,"revenue":87313485.60,"sales_volume":8811},{"category":"运动户外","product_name":"自行车 27代/款","profit_rate":40.00,"revenue":78115026.76,"sales_volume":8182},{"category":"家居用品","product_name":"被子 5代/款","profit_rate":40.00,"revenue":73089513.28,"sales_volume":9604},{"category":"汽车用品","product_name":"头枕 64代/款","profit_rate":40.00,"revenue":71400316.74,"sales_volume":9794},{"category":"电子产品","product_name":"移动电源 41代/款","profit_rate":40.00,"revenue":70489247.70,"sales_volume":9734},{"category":"电子产品","product_name":"无线耳机 25代/款","profit_rate":40.00,"revenue":70463650.08,"sales_volume":8312},{"category":"服装服饰","product_name":"帽子 98代/款","profit_rate":40.00,"revenue":65203133.68,"sales_volume":6728},{"category":"食品生鲜","product_name":"零食大礼包 11代/款","profit_rate":40.00,"revenue":64540468.16,"sales_volume":7756},{"category":"家居用品","product_name":"拖把 71代/款","profit_rate":40.00,"revenue":64510751.37,"sales_volume":7761}],"inventory_analysis":{"avg_inventory_turnover_days":5.78,"slowest_top5":[{"category":"电子产品","inventory_turnover_days":101.4,"product_name":"蓝牙音箱 30代/款"},{"category":"食品生鲜","inventory_turnover_days":59.6,"product_name":"零食大礼包 24代/款"},{"category":"母婴玩具","inventory_turnover_days":32.7,"product_name":"湿巾 59代/款"},{"category":"美妆个护","inventory_turnover_days":29.6,"product_name":"洗面奶 65代/款"},{"category":"家居用品","inventory_turnover_days":26.2,"product_name":"窗帘 99代/款"}]},"monthly_trend":[{"gmv":523456789.12,"month":1,"profit":209382715.65,"sales":98765},{"gmv":567890123.45,"month":2,"profit":227156049.38,"sales":102345},{"gmv":512345678.90,"month":3,"profit":204938271.56,"sales":95678},{"gmv":578901234.56,"month":4,"profit":231560493.82,"sales":105678},{"gmv":623456789.01,"month":5,"profit":249382715.60,"sales":112345},{"gmv":601234567.89,"month":6,"profit":240493827.16,"sales":108765},{"gmv":589012345.67,"month":7,"profit":235604938.27,"sales":105678},{"gmv":634567890.12,"month":8,"profit":253827156.05,"sales":115678},{"gmv":678901234.56,"month":9,"profit":271560493.82,"sales":123456},{"gmv":543210987.65,"month":10,"profit":217284395.06,"sales":95678},{"gmv":598765432.10,"month":11,"profit":239506172.84,"sales":102345},{"gmv":770617815.20,"month":12,"profit":308247126.08,"sales":158196}],"platform_dist":[{"gmv":1324567890.12,"platform":"拼多多","ratio":19.41,"sales":245678},{"gmv":1213456789.23,"platform":"快手电商","ratio":17.78,"sales":234567},{"gmv":1102345678.34,"platform":"唯品会","ratio":16.16,"sales":223456},{"gmv":991234567.45,"platform":"京东","ratio":14.53,"sales":198765},{"gmv":980123456.56,"platform":"抖音电商","ratio":14.36,"sales":187654},{"gmv":769012345.67,"platform":"淘宝","ratio":11.27,"sales":165432},{"gmv":442716061.86,"platform":"小红书","ratio":6.49,"sales":98765}],"price_band_dist":[{"price_band_level":1,"product_count":56,"total_gmv":1234567890.12,"total_sales":324567},{"price_band_level":2,"product_count":62,"total_gmv":1567890123.45,"total_sales":356789},{"price_band_level":3,"product_count":45,"total_gmv":1890123456.78,"total_sales":245678},{"price_band_level":4,"product_count":38,"total_gmv":1678901234.56,"total_sales":156789},{"price_band_level":5,"product_count":16,"total_gmv":451974084.32,"total_sales":40744}],"profit_rate_dist":[{"gmv_ratio":0.00,"product_count":0,"range":"0-20%"},{"gmv_ratio":0.00,"product_count":0,"range":"20%-40%"},{"gmv_ratio":100.00,"product_count":217,"range":"40%-60%"},{"gmv_ratio":0.00,"product_count":0,"range":"60%以上"}],"update_info":{"date_range":"2024-01-02至2024-12-31","latest_date":"2024-12-31","stat_time":"2025-01-01 00:00:00"}};
+
+        // 工具函数
+        function formatNum(num, fixed = 2) {
+            return num.toFixed(fixed).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+        function animateValue(id, start, end, duration = 2000, suffix = '', formatter = null) {
+            const obj = document.getElementById(id);
+            const range = end - start;
+            const minTimer = 50;
+            let stepTime = Math.abs(Math.floor(duration / range));
+            stepTime = Math.max(stepTime, minTimer);
+            let startTime = new Date().getTime();
+            let endTime = startTime + duration;
+            let timer;
+            function run() {
+                let now = new Date().getTime();
+                let remaining = Math.max((endTime - now) / duration, 0);
+                let value = end - (range * remaining);
+                obj.innerHTML = (formatter ? formatter(value) : formatNum(value)) + suffix;
+                if (value == end) {
+                    clearInterval(timer);
+                }
+            }
+            timer = setInterval(run, stepTime);
+            run();
+        }
+
+        // 顶部时间和更新信息
+        document.getElementById('updateInfo').innerText = `统计时间：${data.update_info.stat_time} | 数据周期：${data.update_info.date_range}`;
+        function updateCurrentTime() {
+            const now = new Date();
+            const timeStr = now.toLocaleString('zh-CN', {year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', second:'2-digit'});
+            document.getElementById('currentTime').innerText = `当前时间：${timeStr}`;
+        }
+        updateCurrentTime();
+        setInterval(updateCurrentTime, 1000);
+
+        // 核心指标动画
+        animateValue('totalGmv', 0, data.core_indicators.total_gmv / 100000000, 2000, ' 亿', v => formatNum(v, 2));
+        animateValue('totalSales', 0, data.core_indicators.total_sales, 2000, ' 件', v => formatNum(v, 0));
+        animateValue('totalProfit', 0, data.core_indicators.total_profit / 100000000, 2000, ' 亿', v => formatNum(v, 2));
+        animateValue('avgOrderPrice', 0, data.core_indicators.avg_order_price, 2000, ' 元');
+        animateValue('avgProfitRate', 0, data.core_indicators.avg_profit_rate, 2000, ' %');
+        animateValue('totalSku', 0, data.core_indicators.total_sku, 2000, ' 个', v => formatNum(v, 0));
+
+        // 热销TOP10
+        const rankHtml = data.hot_product_top10.map((item, index) => {
+            const rankClass = index === 0 ? 'top1' : index === 1 ? 'top2' : index === 2 ? 'top3' : '';
+            return `
+            <tr>
+                <td><span class="rank-num ${rankClass}">${index + 1}</span></td>
+                <td title="${item.product_name}">${item.product_name.length > 10 ? item.product_name.slice(0,10)+'...' : item.product_name}</td>
+                <td>${formatNum(item.revenue / 10000, 1)}</td>
+                <td>${formatNum(item.sales_volume, 0)}</td>
+            </tr>`;
+        }).join('');
+        document.getElementById('rankTableBody').innerHTML = rankHtml;
+
+        // 图表通用配置
+        const chartTheme = {
+            color: ['#00d2ff', '#8be1ff', '#3a7bd5', '#2f5496', '#1d3966', '#6495ed', '#4682b4', '#5f9ea0'],
+            tooltip: {
+                backgroundColor: '#071e3d',
+                borderColor: '#00d2ff',
+                textStyle: {color: '#fff'},
+                axisPointer: {
+                    lineStyle: {color: '#00d2ff'}
+                }
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                top: '15%',
+                containLabel: true
+            },
+            xAxis: {
+                axisLine: {lineStyle: {color: '#00d2ff50'}},
+                axisLabel: {color: '#8be1ff'},
+                splitLine: {show: false}
+            },
+            yAxis: {
+                axisLine: {lineStyle: {color: '#00d2ff50'}},
+                axisLabel: {color: '#8be1ff'},
+                splitLine: {lineStyle: {color: '#00d2ff20'}}
+            },
+            legend: {
+                textStyle: {color: '#8be1ff'},
+                top: 0
+            }
+        };
+
+        // 月度趋势图
+        const monthlyChart = echarts.init(document.getElementById('monthlyChart'));
+        const monthlyOption = {
+            ...chartTheme,
+            tooltip: {
+                ...chartTheme.tooltip,
+                trigger: 'axis'
+            },
+            legend: {
+                ...chartTheme.legend,
+                data: ['GMV(亿)', '销量(万)', '利润(亿)']
+            },
+            xAxis: {
+                ...chartTheme.xAxis,
+                type: 'category',
+                data: data.monthly_trend.map(item => `${item.month}月`)
+            },
+            yAxis: [
+                {
+                    ...chartTheme.yAxis,
+                    type: 'value',
+                    name: 'GMV/利润(亿)',
+                    nameTextStyle: {color: '#8be1ff'}
+                },
+                {
+                    ...chartTheme.yAxis,
+                    type: 'value',
+                    name: '销量(万)',
+                    nameTextStyle: {color: '#8be1ff'},
+                    position: 'right'
+                }
+            ],
+            series: [
+                {
+                    name: 'GMV(亿)',
+                    type: 'line',
+                    data: data.monthly_trend.map(item => (item.gmv / 100000000).toFixed(2)),
+                    smooth: true,
+                    lineStyle: {width: 3, color: '#00d2ff'},
+                    itemStyle: {color: '#00d2ff'},
+                    areaStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            {offset: 0, color: '#00d2ff60'},
+                            {offset: 1, color: '#00d2ff10'}
+                        ])
+                    }
+                },
+                {
+                    name: '利润(亿)',
+                    type: 'line',
+                    data: data.monthly_trend.map(item => (item.profit / 100000000).toFixed(2)),
+                    smooth: true,
+                    lineStyle: {width: 2, color: '#8be1ff'},
+                    itemStyle: {color: '#8be1ff'}
+                },
+                {
+                    name: '销量(万)',
+                    type: 'line',
+                    yAxisIndex: 1,
+                    data: data.monthly_trend.map(item => (item.sales / 10000).toFixed(2)),
+                    smooth: true,
+                    lineStyle: {width: 2, color: '#3a7bd5'},
+                    itemStyle: {color: '#3a7bd5'}
+                }
+            ]
+        };
+        monthlyChart.setOption(monthlyOption);
+
+        // 类目分布图
+        const categoryChart = echarts.init(document.getElementById('categoryChart'));
+        const categoryOption = {
+            ...chartTheme,
+            tooltip: {
+                ...chartTheme.tooltip,
+                trigger: 'item',
+                formatter: '{b}: {c}%'
+            },
+            legend: {
+                ...chartTheme.legend,
+                orient: 'vertical',
+                right: 10,
+                top: 'center'
+            },
+            series: [
+                {
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    center: ['35%', '50%'],
+                    avoidLabelOverlap: false,
+                    label: {
+                        show: true,
+                        color: '#fff',
+                        formatter: '{b}: {c}%'
+                    },
+                    labelLine: {
+                        lineStyle: {color: '#00d2ff'}
+                    },
+                    data: data.category_dist.map(item => ({value: item.ratio, name: item.category}))
+                }
+            ]
+        };
+        categoryChart.setOption(categoryOption);
+
+        // 平台分布图
+        const platformChart = echarts.init(document.getElementById('platformChart'));
+        const platformOption = {
+            ...chartTheme,
+            tooltip: {
+                ...chartTheme.tooltip,
+                trigger: 'axis',
+                formatter: '{b}: {c} 亿'
+            },
+            xAxis: {
+                ...chartTheme.xAxis,
+                type: 'category',
+                data: data.platform_dist.map(item => item.platform),
+                axisLabel: {rotate: 30}
+            },
+            yAxis: {
+                ...chartTheme.yAxis,
+                type: 'value',
+                name: 'GMV(亿)',
+                nameTextStyle: {color: '#8be1ff'}
+            },
+            series: [
+                {
+                    type: 'bar',
+                    data: data.platform_dist.map(item => (item.gmv / 100000000).toFixed(2)),
+                    itemStyle: {
+                        color: params => {
+                            const colors = ['#00d2ff', '#8be1ff', '#3a7bd5', '#2f5496', '#1d3966', '#6495ed', '#4682b4'];
+                            return colors[params.dataIndex % colors.length];
+                        },
+                        borderRadius: [4,4,0,0]
+                    },
+                    label: {
+                        show: true,
+                        position: 'top',
+                        color: '#fff',
+                        fontSize: 10,
+                        formatter: '{c}'
+                    }
+                }
+            ]
+        };
+        platformChart.setOption(platformOption);
+
+        // 价格带分布图
+        const priceBandChart = echarts.init(document.getElementById('priceBandChart'));
+        const priceBandOption = {
+            ...chartTheme,
+            title: {
+                text: '价格带分布',
+                textStyle: {color: '#8be1ff', fontSize: 12},
+                top: 0
+            },
+            tooltip: {
+                ...chartTheme.tooltip,
+                trigger: 'axis',
+                formatter: '价格带{b}: {c} 亿'
+            },
+            grid: {
+                ...chartTheme.grid,
+                top: '25%'
+            },
+            xAxis: {
+                ...chartTheme.xAxis,
+                type: 'category',
+                data: ['0-50元', '50-200元', '200-500元', '500-2000元', '2000元以上']
+            },
+            yAxis: {
+                ...chartTheme.yAxis,
+                type: 'value',
+                name: 'GMV(亿)',
+                nameTextStyle: {color: '#8be1ff', fontSize: 10}
+            },
+            series: [
+                {
+                    type: 'bar',
+                    data: data.price_band_dist.map(item => (item.total_gmv / 100000000).toFixed(2)),
+                    itemStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            {offset: 0, color: '#00d2ff'},
+                            {offset: 1, color: '#3a7bd5'}
+                        ]),
+                        borderRadius: [3,3,0,0]
+                    }
+                }
+            ]
+        };
+        priceBandChart.setOption(priceBandOption);
+
+        // 利润率分布图
+        const profitRateChart = echarts.init(document.getElementById('profitRateChart'));
+        const profitRateOption = {
+            ...chartTheme,
+            title: {
+                text: '利润率分布',
+                textStyle: {color: '#8be1ff', fontSize: 12},
+                top: 0
+            },
+            tooltip: {
+                ...chartTheme.tooltip,
+                trigger: 'item',
+                formatter: '{b}: {c}%'
+            },
+            grid: {
+                ...chartTheme.grid,
+                top: '25%'
+            },
+            series: [
+                {
+                    type: 'pie',
+                    radius: ['30%', '60%'],
+                    center: ['50%', '60%'],
+                    label: {
+                        show: true,
+                        color: '#fff',
+                        fontSize: 10,
+                        formatter: '{b}: {c}%'
+                    },
+                    labelLine: {
+                        lineStyle: {color: '#00d2ff'},
+                        length: 5
+                    },
+                    data: data.profit_rate_dist.map(item => ({value: item.gmv_ratio, name: item.range}))
+                }
+            ]
+        };
+        profitRateChart.setOption(profitRateOption);
+
+        // 自适应
+        window.addEventListener('resize', () => {
+            monthlyChart.resize();
+            categoryChart.resize();
+            platformChart.resize();
+            priceBandChart.resize();
+            profitRateChart.resize();
+        });
+    </script>
+</body>
+</html>
