@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教练团队运营分析报告</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #36A2EB;
+            --success: #4BC0C0;
+            --warning: #FFCE56;
+            --danger: #FF6384;
+            --purple: #9966FF;
+        }
+        .dashboard-card {
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border: none;
+            margin-bottom: 24px;
+        }
+        .metric-card {
+            text-align: center;
+            padding: 20px;
+            transition: transform 0.2s;
+        }
+        .metric-card:hover {
+            transform: translateY(-4px);
+        }
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        .metric-label {
+            color: #666;
+            margin-top: 8px;
+        }
+        .section-title {
+            margin: 32px 0 24px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--primary);
+        }
+        .analysis-text {
+            background: #f8f9fa;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container py-5">
+        <header class="text-center mb-5">
+            <h1 class="display-4 fw-bold mb-3">教练团队运营分析报告</h1>
+            <p class="text-muted">报告生成时间：2026年06月24日</p>
+        </header>
+
+        <!-- 执行摘要 -->
+        <section class="mb-5">
+            <div class="card dashboard-card p-4">
+                <h2 class="section-title mt-0">执行摘要</h2>
+                <p class="lead">
+                    本月全组共入库教练27人，新教练留存率100%，总上课学员660人，教练总数348人，总代课数308节，教练人效7.2。各分组运营表现差异显著，曾唯洋组在人效和优质教练数量上领先，于美琪、邱慧组存在提升空间。
+                </p>
+            </div>
+        </section>
+
+        <!-- 关键指标 -->
+        <section class="mb-5">
+            <h2 class="section-title">关键运营指标</h2>
+            <div class="row g-4">
+                <div class="col-md-3">
+                    <div class="card dashboard-card metric-card">
+                        <div class="metric-value text-primary">27</div>
+                        <div class="metric-label">本月新入库教练</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card dashboard-card metric-card">
+                        <div class="metric-value text-success">100%</div>
+                        <div class="metric-label">新教练留存率</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card dashboard-card metric-card">
+                        <div class="metric-value text-warning">7.2</div>
+                        <div class="metric-label">整体教练人效</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card dashboard-card metric-card">
+                        <div class="metric-value text-danger">233</div>
+                        <div class="metric-label">累计满30节优质教练</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 详细数据分析 -->
+        <section class="mb-5">
+            <h2 class="section-title">分组运营表现分析</h2>
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <div class="card dashboard-card p-4">
+                        <h3 class="h5 mb-3">各组教练人效对比</h3>
+                        <canvas id="efficiencyChart" height="280"></canvas>
+                        <div class="analysis-text">
+                            <strong>洞察：</strong>曾唯洋组人效最高(8.1)，于美琪、邱慧组人效最低(2.67)，不足平均值的40%。建议对低人效组进行教练资源优化，提升上课频率。
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card dashboard-card p-4">
+                        <h3 class="h5 mb-3">各组上课学员数分布</h3>
+                        <canvas id="studentChart" height="280"></canvas>
+                        <div class="analysis-text">
+                            <strong>洞察：</strong>曾唯洋组(155人)和王俊霞组(154人)学员规模领先，张超组仅10人，学员池严重不足，急需扩大学员招募力度。
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card dashboard-card p-4">
+                        <h3 class="h5 mb-3">各组优质教练(满30节)数量</h3>
+                        <canvas id="qualityCoachChart" height="280"></canvas>
+                        <div class="analysis-text">
+                            <strong>洞察：</strong>王俊霞组优质教练最多(66人)，张超组为0，优质教练储备不足将直接影响长期教学质量和学员留存。
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card dashboard-card p-4">
+                        <h3 class="h5 mb-3">全组核心指标构成</h3>
+                        <canvas id="pieChart" height="280"></canvas>
+                        <div class="analysis-text">
+                            <strong>洞察：</strong>新教练中77.8%已上满3节课，总体流失率仅22.2%，教练团队稳定性表现优秀。
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 趋势分析 -->
+        <section class="mb-5">
+            <h2 class="section-title">运营效率分析</h2>
+            <div class="card dashboard-card p-4">
+                <h3 class="h5 mb-3">评课完成情况对比</h3>
+                <canvas id="evaluationChart" height="280"></canvas>
+                <div class="analysis-text mt-4">
+                    <strong>评课完成率趋势：</strong>张一鸣组评课完成率达600%（超额完成），而于美琪、邱慧组评课完成率为0，存在教学质量监控盲区。建议建立标准化评课流程，确保所有分组达到5%课时评课的最低要求。
+                </div>
+            </div>
+        </section>
+
+        <!-- 建议和结论 -->
+        <section>
+            <h2 class="section-title">结论与建议</h2>
+            <div class="card dashboard-card p-4">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <h4 class="h6 fw-bold text-primary">核心优势</h4>
+                        <ul>
+                            <li>新教练留存率100%，远超72%的目标要求</li>
+                            <li>整体教练流失率仅22.2%，团队稳定性好</li>
+                            <li>曾唯洋、王俊霞组运营成熟，可作为标杆案例</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h4 class="h6 fw-bold text-danger">优化建议</h4>
+                        <ul>
+                            <li>针对人效低于3的于美琪、邱慧组，开展教练产能提升专项培训</li>
+                            <li>张超组需重点扩大学员招募，解决学员不足问题</li>
+                            <li>建立评课完成率考核机制，确保所有分组完成最低评课要求</li>
+                            <li>为优质教练不足的组设计进阶培养计划，提升整体教学能力</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // 公共数据
+        const groups = ['曾唯洋', '刘昕宇', '王俊霞', '李禹莹', '于美琪', '邱慧', '张一鸣', '张超'];
+        const colors = [
+            '#36A2EB', '#4BC0C0', '#FFCE56', '#FF6384',
+            '#9966FF', '#FF9F40', '#32A852', '#E74C3C'
+        ];
+
+        // 教练人效柱状图
+        new Chart(document.getElementById('efficiencyChart'), {
+            type: 'bar',
+            data: {
+                labels: groups,
+                datasets: [{
+                    label: '教练人效',
+                    data: [8.1, 7.2, 6.8, 6.7, 2.67, 2.67, 7.23, 3.16],
+                    backgroundColor: colors,
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: { beginAtZero: true, grid: { display: true, color: 'rgba(0,0,0,0.05)' } }
+                }
+            }
+        });
+
+        // 上课学员数柱状图
+        new Chart(document.getElementById('studentChart'), {
+            type: 'bar',
+            data: {
+                labels: groups,
+                datasets: [{
+                    label: '现有上课学员数',
+                    data: [155, 137, 154, 79, 41, 58, 26, 10],
+                    backgroundColor: colors,
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: { beginAtZero: true, grid: { display: true, color: 'rgba(0,0,0,0.05)' } }
+                }
+            }
+        });
+
+        // 优质教练数量柱状图
+        new Chart(document.getElementById('qualityCoachChart'), {
+            type: 'bar',
+            data: {
+                labels: groups,
+                datasets: [{
+                    label: '累计满30节教练数',
+                    data: [56, 45, 66, 24, 20, 19, 3, 0],
+                    backgroundColor: colors,
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: { beginAtZero: true, grid: { display: true, color: 'rgba(0,0,0,0.05)' } }
+                }
+            }
+        });
+
+        // 核心指标饼图
+        new Chart(document.getElementById('pieChart'), {
+            type: 'pie',
+            data: {
+                labels: ['已上满3节课教练', '未上满3节课教练', '流失教练'],
+                datasets: [{
+                    data: [21, 6, 6],
+                    backgroundColor: ['#4BC0C0', '#FFCE56', '#FF6384'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+
+        // 评课完成情况折线图
+        new Chart(document.getElementById('evaluationChart'), {
+            type: 'line',
+            data: {
+                labels: groups,
+                datasets: [
+                    {
+                        label: '应评课数',
+                        data: [78, 57, 73, 30, 18, 0, 4, 2],
+                        borderColor: '#36A2EB',
+                        backgroundColor: 'rgba(54, 162, 235, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: '已评课数',
+                        data: [22, 13, 23, 10, 0, 0, 24, 6],
+                        borderColor: '#FF6384',
+                        backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top' }
+                },
+                scales: {
+                    y: { beginAtZero: true, grid: { display: true, color: 'rgba(0,0,0,0.05)' } }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
