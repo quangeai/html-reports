@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>神经内科二病区DIP病例运营分析报告</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        success: '#00B42A',
+                        warning: '#FF7D00',
+                        danger: '#F53F3F',
+                        light: '#F2F3F5'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 font-sans">
+    <div class="container mx-auto px-4 py-6 max-w-7xl">
+        <!-- 报告头部 -->
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <h1 class="text-2xl font-bold text-primary mb-2">神经内科二病区DIP病例运营分析报告</h1>
+            <p class="text-gray-600">数据范围：低偏差病例7例 + 亏损病例8例 | 统计维度：DIP结算、成本、盈亏指标</p>
+        </div>
+
+        <!-- 核心概览 -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div class="bg-white rounded-lg shadow-sm p-5 border-l-4 border-primary">
+                <p class="text-gray-500 text-sm mb-1">低偏差病例总数</p>
+                <p class="text-3xl font-bold text-gray-800">7<span class="text-sm ml-1">例</span></p>
+                <p class="text-success text-sm mt-1">总盈利：3,931.82元</p>
+            </div>
+            <div class="bg-white rounded-lg shadow-sm p-5 border-l-4 border-primary">
+                <p class="text-gray-500 text-sm mb-1">低偏差病例平均住院日</p>
+                <p class="text-3xl font-bold text-gray-800">2.3<span class="text-sm ml-1">天</span></p>
+                <p class="text-primary text-sm mt-1">平均支付率：63.38%</p>
+            </div>
+            <div class="bg-white rounded-lg shadow-sm p-5 border-l-4 border-danger">
+                <p class="text-gray-500 text-sm mb-1">亏损病例总数</p>
+                <p class="text-3xl font-bold text-gray-800">8<span class="text-sm ml-1">例</span></p>
+                <p class="text-danger text-sm mt-1">总亏损：-4,723.77元</p>
+            </div>
+            <div class="bg-white rounded-lg shadow-sm p-5 border-l-4 border-danger">
+                <p class="text-gray-500 text-sm mb-1">亏损病例平均超支</p>
+                <p class="text-3xl font-bold text-gray-800">4.8<span class="text-sm ml-1">万元</span></p>
+                <p class="text-danger text-sm mt-1">平均住院日：10.4天</p>
+            </div>
+        </div>
+
+        <!-- 图表区域 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="bg-white rounded-lg shadow-sm p-5">
+                <h3 class="text-lg font-semibold mb-4">低偏差病例盈亏分布</h3>
+                <div id="chart1" class="h-72"></div>
+            </div>
+            <div class="bg-white rounded-lg shadow-sm p-5">
+                <h3 class="text-lg font-semibold mb-4">亏损病例超支金额排名</h3>
+                <div id="chart2" class="h-72"></div>
+            </div>
+        </div>
+
+        <!-- 低偏差病例表格 -->
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-gray-800">低偏差病例明细</h2>
+                <span class="px-3 py-1 bg-primary/10 text-primary text-sm rounded-full">共7例</span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full border-collapse text-sm">
+                    <thead>
+                        <tr class="bg-gray-100">
+                            <th class="border border-gray-200 p-2 text-left sticky left-0 bg-gray-100 z-10">病种名称</th>
+                            <th class="border border-gray-200 p-2 text-left">病例类型</th>
+                            <th class="border border-gray-200 p-2 text-left">支付率</th>
+                            <th class="border border-gray-200 p-2 text-left">医疗总费用</th>
+                            <th class="border border-gray-200 p-2 text-left">DIP费用</th>
+                            <th class="border border-gray-200 p-2 text-left">医疗成本</th>
+                            <th class="border border-gray-200 p-2 text-left">盈亏</th>
+                            <th class="border border-gray-200 p-2 text-left">结余</th>
+                            <th class="border border-gray-200 p-2 text-left">年龄</th>
+                            <th class="border border-gray-200 p-2 text-left">住院天数</th>
+                            <th class="border border-gray-200 p-2 text-left">药占比</th>
+                            <th class="border border-gray-200 p-2 text-left">耗占比</th>
+                            <th class="border border-gray-200 p-2 text-left">医保类型</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="hover:bg-gray-50">
+                            <td class="border border-gray-200 p-2 sticky left-0 bg-white">脑血管病:治疗性操作组-二类资源消耗</td>
+                            <td class="border border-gray-200 p-2">低偏差病例</td>
+                            <td class="border border-gray-200 p-2 bg-blue-50">72.77%</td>
+                            <td class="border border-gray-200 p-2">4889.36</td>
+                            <td class="border border-gray-200 p-2">2006.82</td>
+                            <td class="border border-gray-200 p-2">2056.68</td>
+                            <td class="border border-gray-200 p-2 text-success font-medium">1681.60</td>
+                            <td class="border border-gray-200 p-2 text-danger">-751.08</td>
+                            <td class="border border-gray-200 p-2">75岁</td>
+                            <td class="border border-gray-200 p-2">6</td>
+                            <td class="border border-gray-200 p-2">13.77%</td>
+                            <td class="border border-gray-200 p-2">2.56%</td>
+                            <td class="border border-gray-200 p-2">居民</td>
+                        </tr>
+                        <tr class="hover:bg-gray-50">
+                            <td class="border border-gray-200 p-2 sticky left-0 bg-white">血容量减少性休克</td>
+                            <td class="border border-gray-200 p-2">低偏差病例</td>
+                            <td class="border border-gray-200 p-2 bg-blue-50">70.82%</td>
+                            <td class="border border-gray-200 p-2">3612.18</td>
+                            <td class="border border-gray-200 p-2">1345.84</td>
+                            <td class="border border-gray-200 p-2">1233.46</td>
+                            <td class="border border-gray-200 p-2 text-success font-medium">1424.21</td>
+                            <td class="border border-gray-200 p-2 text-danger">-554.51</td>
+                            <td class="border border-gray-200 p-2">55岁</td>
+                            <td class="border border-gray-200 p-2">4</td>
+                            <td class="border border-gray-200 p-2">2.64%</td>
+                            <td class="border border-gray-200 p-2">0.38%</td>
+                            <td class="border border-gray-200 p-2">居民</td>
+                        </tr>
+                        <tr class="hover:bg-gray-50">
+                            <td class="border border-gray-200 p-2 sticky left-0 bg-white">未特指的短暂性大脑缺血性发作</td>
+                            <td class="border border-gray-200 p-2">低偏差病例</td>
+                            <td class="border border-gray-200 p-2">64.02%</td>
+                            <td class="border border-gray-200 p-2">1544.81</td>
+                            <td class="border border-gray-200 p-2">422.08</td>
+                            <td class="border border-gray-200 p-2">618.75</td>
+                            <td class="border border-gray-200 p-2 text-success font-medium">288.88</td>
+                            <td class="border border-gray-200 p-2 text-danger">-237.18</td>
+                            <td class="border border-gray-200 p-2">85岁</td>
+                            <td class="border border-gray-200 p-2">2</td>
+                            <td class="border border-gray-200 p-2">15.20%</td>
+                            <td class="border border-gray-200 p-2">0.84%</td>
+                            <td class="border border-gray-200 p-2">居民</td>
+                        </tr>
+                        <tr class="hover:bg-gray-50">
+                            <td class="border border-gray-200 p-2 sticky left-0 bg-white">脑梗死</td>
+                            <td class="border border-gray-200 p-2">低偏差病例</td>
+                            <td class="border border-gray-200 p-2 bg-blue-50">70.05%</td>
+                            <td class="border border-gray-200 p-2">1204.49</td>
+                            <td class="border border-gray-200 p-2">432.64</td>
+                            <td class="border border-gray-200 p-2">438.37</td>
+                            <td class="border border-gray-200 p-2 text-success font-medium">181.17</td>
+                            <td class="border border-gray-200 p-2 text-danger">-184.95</td>
+                            <td class="border border-gray-200 p-2">60岁</td>
+                            <td class="border border-gray-200 p-2">1</td>
+                            <td class="border border-gray-200 p-2">6.13%</td>
+                            <td class="border border-gray-200 p-2">0.54%</td>
+                            <td class="border border-gray-200 p-2">居民</td>
+                        </tr>
+                        <tr class="hover:bg-gray-50">
+                            <td class="border border-gray-200 p-2 sticky left-0 bg-white">未特指的短暂性大脑缺血性发作</td>
+                            <td class="border border-gray-200 p-2">低偏差病例</td>
+                            <td class="border border-gray-200 p-2">46.18%</td>
+                            <td class="border border-gray-200 p-2">982.53</td>
+                            <td class="border border-gray-200 p-2">129.44</td>
+                            <td class="border border-gray-200 p-2">368.61</td>
+                            <td class="border border-gray-200 p-2 text-success font-medium">63.06</td>
+                            <td class="border border-gray-200 p-2 text-danger">-150.86</td>
+                            <td class="border border-gray-200 p-2">39岁</td>
+                            <td class="border border-gray-200 p-2">1</td>
+                            <td class="border border-gray-200 p-2">7.14%</td>
+                            <td class="border border-gray-200 p-2">0.63%</td>
+                            <td class="border border-gray-200 p-2">居民</td>
+                        </tr>
+                        <tr class="hover:bg-gray-50">
+                            <td class="border border-gray-200 p-2 sticky left-0 bg-white">椎基底动脉综合征</td>
+                            <td class="border border-gray-200 p-2">低偏差病例</td>
+                            <td class="border border-gray-200 p-2 bg-orange-50">26.84%</td>
+                            <td class="border border-gray-200 p-2">903.83</td>
+                            <td class="border border-gray-200 p-2">50.93</td>
+                            <td class="border border-gray-200 p-2">370.95</td>
+                            <td class="border border-gray-200 p-2 text-danger font-medium">-5.95</td>
+                            <td class="border border-gray-200 p-2 text-danger">-138.83</td>
+                            <td class="border border-gray-200 p-2">79岁</td>
+                            <td class="border border-gray-200 p-2">1</td>
+                            <td class="border border-gray-200 p-2">14.63%</td>
+                            <td class="border border-gray-200 p-2">0.87%</td>
+                            <td class="border border-gray-200 p-2">居民</td>
+                        </tr>
+                        <tr class="hover:bg-gray-50">
+                            <td class="border border-gray-200 p-2 sticky left-0 bg-white">椎基底动脉综合征</td>
+                            <td class="border border-gray-200 p-2">低偏差病例</td>
+                            <td class="border border-gray-200 p-2 bg-blue-50">93.00%</td>
+                            <td class="border border-gray-200 p-2">1346.19</td>
+                            <td class="border border-gray-200 p-2">643.78</td>
+                            <td class="border border-gray-200 p-2">598.87</td>
+                            <td class="border border-gray-200 p-2 text-success font-medium">298.85</td>
+                            <td class="border border-gray-200 p-2 text-danger">-48.47</td>
+                            <td class="border border-gray-200 p-2">62岁</td>
+                            <td class="border border-gray-200 p-2">1</td>
+                            <td class="border border-gray-200 p-2">15.60%</td>
+                            <td class="border border-gray-200 p-2">0.96%</td>
+                            <td class="border border-gray-200 p-2">职工</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 亏损病例表格 -->
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-gray-800">亏损病例明细</h2>
+                <span class="px-3 py-1 bg-danger/10 text
