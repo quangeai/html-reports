@@ -1,0 +1,724 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>荀以双资金网络与对外投资风险分析报告</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        .report-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2.5rem 0;
+            margin-bottom: 2rem;
+            border-bottom: 5px solid var(--accent-color);
+        }
+        .report-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .report-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        .nav-pills .nav-link {
+            color: var(--primary-color);
+            font-weight: 500;
+            border-radius: 0;
+            border-bottom: 2px solid transparent;
+            margin: 0 5px;
+        }
+        .nav-pills .nav-link.active {
+            background-color: transparent;
+            color: var(--secondary-color);
+            border-bottom: 2px solid var(--secondary-color);
+        }
+        .section-title {
+            color: var(--primary-color);
+            border-left: 5px solid var(--secondary-color);
+            padding-left: 15px;
+            margin: 2.5rem 0 1.5rem;
+            font-weight: 600;
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            border-radius: 10px 10px 0 0 !important;
+            padding: 1rem 1.25rem;
+        }
+        .key-metric {
+            text-align: center;
+            padding: 1.5rem;
+        }
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            line-height: 1;
+        }
+        .metric-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .risk-high {
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+        .risk-medium {
+            color: var(--warning-color);
+            font-weight: 600;
+        }
+        .risk-low {
+            color: var(--success-color);
+            font-weight: 600;
+        }
+        .insight-box {
+            background-color: #e8f4fc;
+            border-left: 4px solid var(--secondary-color);
+            padding: 1.25rem;
+            margin: 1.5rem 0;
+            border-radius: 0 5px 5px 0;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 1.5rem 0;
+        }
+        .footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            text-align: center;
+        }
+        .table-custom {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+        .table-custom thead th {
+            background-color: var(--light-color);
+            border-bottom: 2px solid var(--secondary-color);
+        }
+        .scroll-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--secondary-color);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 1.5rem;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+        .scroll-to-top:hover {
+            opacity: 1;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- 报告标题 -->
+    <header class="report-header">
+        <div class="container">
+            <h1 class="report-title">荀以双资金网络与对外投资风险分析报告</h1>
+            <p class="report-subtitle">基于天眼查数据的企业法人关联网络与风险综合评估</p>
+            <p class="mb-0">报告生成时间：2026年06月24日 09:01:15</p>
+        </div>
+    </header>
+
+    <!-- 导航 -->
+    <div class="container">
+        <nav>
+            <ul class="nav nav-pills justify-content-center flex-wrap">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#executive-summary">执行摘要</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#key-metrics">关键指标</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#network-analysis">资金网络分析</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#risk-analysis">风险分析</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#trends">趋势洞察</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#conclusions">结论与建议</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <main class="container my-5">
+        <!-- 执行摘要 -->
+        <section id="executive-summary">
+            <h2 class="section-title">执行摘要</h2>
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-body">
+                            <p>本报告对<strong>荀以双</strong>作为公司法人的资金网络、对外投资状况及潜在合作风险进行了全面分析。分析基于天眼查截至2026年06月24日的数据快照。</p>
+                            <p><strong>核心发现：</strong>荀以双在江苏、四川两地构建了一个以自动化设备、电子科技为核心的关联企业网络，担任4家企业的法定代表人，对外投资3家企业，并在6家企业中担任高管职务。其商业活动显示出一定的地域集中性和行业专注度。然而，分析也揭示了其关联企业中存在<strong>已注销企业</strong>以及涉及<strong>司法案件</strong>的历史，提示在合作前需进行审慎的尽职调查。</p>
+                            <div class="insight-box">
+                                <strong>主要洞察：</strong> 荀以双的商业网络呈现“核心控股+广泛任职”的特点，控制权主要通过持股49%实现。风险主要集中在历史关联企业（无锡翔天电子科技有限公司已注销）和过往的买卖合同纠纷司法案件上。当前存续企业暂无严重失信或被执行风险。
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-header">分析对象概览</div>
+                        <div class="card-body">
+                            <p><strong>姓名：</strong> 荀以双</p>
+                            <p><strong>分析焦点：</strong> 资金网络、对外投资、合作风险</p>
+                            <p><strong>数据来源：</strong> 天眼查董监高对外投资及任职报告</p>
+                            <p><strong>数据截止：</strong> 2026-06-24 09:01:15</p>
+                            <p><strong>总体风险评级：</strong> <span class="risk-medium">中等偏低</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 关键指标 -->
+        <section id="key-metrics">
+            <h2 class="section-title">关键指标总览</h2>
+            <div class="row">
+                <div class="col-md-3 col-6">
+                    <div class="card key-metric">
+                        <div class="metric-value">4</div>
+                        <div class="metric-label">担任法定代表人</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="card key-metric">
+                        <div class="metric-value">3</div>
+                        <div class="metric-label">对外投资企业</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="card key-metric">
+                        <div class="metric-value">6</div>
+                        <div class="metric-label">在外任职企业</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="card key-metric">
+                        <div class="metric-value">2</div>
+                        <div class="metric-label">司法案件</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-md-3 col-6">
+                    <div class="card key-metric">
+                        <div class="metric-value">7</div>
+                        <div class="metric-label">合作伙伴</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="card key-metric">
+                        <div class="metric-value">2</div>
+                        <div class="metric-label">实际控制企业</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="card key-metric">
+                        <div class="metric-value">1</div>
+                        <div class="metric-label">注销企业</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="card key-metric">
+                        <div class="metric-value risk-low">0</div>
+                        <div class="metric-label">当前严重风险*</div>
+                    </div>
+                </div>
+            </div>
+            <p class="text-muted small mt-2">*严重风险指：失信被执行人、限制消费令、被执行人、股权冻结等。</p>
+        </section>
+
+        <!-- 资金网络分析 -->
+        <section id="network-analysis">
+            <h2 class="section-title">资金网络与对外投资分析</h2>
+            
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">关联企业地区分布</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="regionChart"></canvas>
+                            </div>
+                            <p class="mt-2"><strong>分析：</strong>荀以双的关联企业高度集中于<strong>江苏省</strong>（5家），其次为<strong>四川省</strong>（1家）。这表明其商业活动具有明显的地域性，可能与个人资源、产业聚集地有关。</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">关联企业登记状态</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="statusChart"></canvas>
+                            </div>
+                            <p class="mt-2"><strong>分析：</strong>在全部关联企业中，“存续”和“在业”状态占主导（5家），但存在1家“注销”企业（无锡翔天电子科技有限公司）。需关注注销原因及其与当前业务的潜在关联。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-header">核心控股企业详情</div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-custom">
+                            <thead>
+                                <tr>
+                                    <th>企业名称</th>
+                                    <th>角色</th>
+                                    <th>持股比例</th>
+                                    <th>注册资本</th>
+                                    <th>成立日期</th>
+                                    <th>状态</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>江苏翔天自动化设备有限公司</td>
+                                    <td>法定代表人、执行董事、总经理、股东</td>
+                                    <td>49%</td>
+                                    <td>1000万人民币</td>
+                                    <td>2020-05-19</td>
+                                    <td><span class="badge bg-success">在业</span></td>
+                                </tr>
+                                <tr>
+                                    <td>无锡菱翔自动化有限公司</td>
+                                    <td>法定代表人、执行董事、经理、股东</td>
+                                    <td>20%</td>
+                                    <td>200万人民币</td>
+                                    <td>2021-08-03</td>
+                                    <td><span class="badge bg-primary">存续</span></td>
+                                </tr>
+                                <tr>
+                                    <td>无锡翔天电子科技有限公司</td>
+                                    <td>法定代表人、执行董事、总经理、股东</td>
+                                    <td>49%</td>
+                                    <td>500万人民币</td>
+                                    <td>2008-08-06</td>
+                                    <td><span class="badge bg-secondary">注销</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="insight-box">
+                        <strong>网络特征：</strong> 荀以双倾向于通过持有49%或20%的股权并同时担任法定代表人及核心管理职位（执行董事、总经理）来实现对企业的控制。这种“股权+职位”的双重控制模式在中小企业中较为常见。注册资本规模差异较大，从100万到1000万不等。
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-header">合作伙伴网络 (7人)</div>
+                <div class="card-body">
+                    <p>荀以双与7位合作伙伴存在商业关联，主要围绕其担任法人的几家公司展开合作。例如，<strong>吴包兰</strong>与江苏翔天自动化设备有限公司合作2次，<strong>赵美琪</strong>与无锡菱翔自动化有限公司合作1次。这表明其商业网络相对集中，围绕核心企业形成小范围合作圈。</p>
+                    <p><strong>风险提示：</strong> 合作伙伴中的<strong>薄可晨</strong>、<strong>江一宇</strong>关联的企业“无锡福源物联科技有限公司”状态为“注销”，需了解这些历史合作是否涉及未了结的责任或纠纷。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 风险分析 -->
+        <section id="risk-analysis">
+            <h2 class="section-title">风险信息综合分析</h2>
+            
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header">司法案件与风险事件</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="riskChart"></canvas>
+                            </div>
+                            <p class="mt-3"><strong>核心风险点：</strong> 荀以双涉及2起司法案件，均为2021年的<strong>买卖合同纠纷</strong>（案号：(2021)苏0205民初6566号及之三）。案件身份为“被告”或“被申请人”，涉案金额约71万元，且曾导致财产被保全冻结。案件已于2022年结案（原告撤诉）。</p>
+                            <div class="table-responsive mt-3">
+                                <table class="table table-sm table-bordered">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>风险类型</th>
+                                            <th>数量</th>
+                                            <th>状态</th>
+                                            <th>风险等级</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>失信被执行人</td>
+                                            <td>0</td>
+                                            <td>无</td>
+                                            <td><span class="risk-low">低</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>被执行人</td>
+                                            <td>0</td>
+                                            <td>无</td>
+                                            <td><span class="risk-low">低</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>限制消费令</td>
+                                            <td>0</td>
+                                            <td>无</td>
+                                            <td><span class="risk-low">低</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>司法案件（历史）</td>
+                                            <td>2</td>
+                                            <td>已结案</td>
+                                            <td><span class="risk-medium">中</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>关联企业注销</td>
+                                            <td>1</td>
+                                            <td>历史</td>
+                                            <td><span class="risk-medium">中</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-header">风险评级说明</div>
+                        <div class="card-body">
+                            <p><span class="risk-high">高风险</span>：存在当前生效的严重负面信息，如失信、限高、被执行等。</p>
+                            <p><span class="risk-medium">中风险</span>：存在已结案但涉诉金额较大的历史司法案件，或有关联企业异常注销。</p>
+                            <p><span class="risk-low">低风险</span>：无当前严重负面信息，历史记录干净或仅有轻微瑕疵。</p>
+                            <hr>
+                            <p><strong>对荀以双的评级：</strong> <span class="risk-medium">中等偏低</span></p>
+                            <p><strong>依据：</strong></p>
+                            <ul>
+                                <li>✅ 无当前严重风险项</li>
+                                <li>⚠️ 有已结案但涉诉额较高的历史案件</li>
+                                <li>⚠️ 有关联企业注销记录</li>
+                                <li>✅ 当前主营企业状态正常</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-header">历史对外投资风险提示</div>
+                <div class="card-body">
+                    <p>数据显示荀以双曾有2项历史对外投资：</p>
+                    <ol>
+                        <li><strong>无锡市沐勒机械科技有限公司</strong>（存续，法定代表人李浩添）：此公司正是前述(2021)苏0205民初6566号买卖合同纠纷案的共同被告之一。这表明荀以双的历史投资与司法风险存在直接关联。</li>
+                        <li><strong>无锡翔拓自动化设备有限公司</strong>（已注销）。</li>
+                    </ol>
+                    <div class="insight-box">
+                        <strong>关键关联：</strong> “无锡市沐勒机械科技有限公司”是连接荀以双历史投资与当前司法案件记录的关键节点。虽然案件已结，但该历史关联揭示了其过去合作伙伴或投资选择可能带来的法律连带责任风险。
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 趋势洞察 -->
+        <section id="trends">
+            <h2 class="section-title">商业行为趋势洞察</h2>
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">企业成立时间线</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="timelineChart"></canvas>
+                            </div>
+                            <p class="mt-2"><strong>趋势分析：</strong> 荀以双的商业活动在<strong>2020-2021年</strong>较为活跃（成立江苏翔天、无锡菱翔），并在<strong>2025年</strong>拓展至四川（成都菱翔）。2008年成立的企业已注销，可能意味着其早期业务尝试未果，或进行了业务重组。</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">行业专注度分析</div>
+                        <div class="card-body">
+                            <p>基于企业名称和关联性分析，荀以双的投资和任职高度集中于以下领域：</p>
+                            <ul>
+                                <li><strong>自动化设备</strong>：核心业务领域（翔天、菱翔、翔龙）。</li>
+                                <li><strong>电子科技</strong>：辅助或相关业务领域（翔天电子、菱翔电子）。</li>
+                                <li><strong>物联网科技</strong>：通过任职涉足（福源物联，已注销）。</li>
+                            </ul>
+                            <p>这显示出其商业布局具有明显的<strong>产业链相关性</strong>和<strong>技术导向性</strong>。</p>
+                            <div class="insight-box">
+                                <strong>战略推断：</strong> 从江苏向四川的拓展（成都菱翔电子，2025年成立），可能表明其有意开拓西部市场或进行区域布局。自动化与电子科技的结合符合当前制造业升级趋势。
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 结论与建议 -->
+        <section id="conclusions">
+            <h2 class="section-title">结论与建议</h2>
+            <div class="card">
+                <div class="card-header">综合评估结论</div>
+                <div class="card-body">
+                    <p>对<strong>荀以双</strong>的资金网络、对外投资及合作风险评估如下：</p>
+                    <h5>优势与中性因素：</h5>
+                    <ul>
+                        <li><strong>网络清晰</strong>：关联企业网络相对集中，控制关系明确（主要通过持股49%及任职）。</li>
+                        <li><strong>业务专注</strong>：专注于自动化设备与电子科技赛道，符合产业发展方向。</li>
+                        <li><strong>无当前严重风险</strong>：截至目前，无失信、被执行、限高等直接影响经营和信用的当前风险。</li>
+                        <li><strong>存续主体健康</strong>：核心控股企业（江苏翔天、无锡菱翔）目前登记状态正常。</li>
+                    </ul>
+                    <h5>风险与关注点：</h5>
+                    <ul>
+                        <li><strong>历史司法纠纷</strong>：曾作为被告卷入标的额约71万元的买卖合同纠纷，虽已结案（原告撤诉），但反映出其历史商业合作中存在合同履约风险。</li>
+                        <li><strong>关联企业注销</strong>：其担任法人的“无锡翔天电子科技有限公司”已注销，需关注注销原因及是否遗留债务或法律问题。</li>
+                        <li><strong>历史投资关联风险</strong>：历史投资的企业“无锡市沐勒机械科技有限公司”正是上述司法案件的当事方，提示其过往投资选择存在风险传导可能。</li>
+                    </ul>
+
+                    <h5 class="mt-4">合作建议：</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card border-success mb-3">
+                                <div class="card-header bg-success text-white">可考虑合作（需附加条件）</div>
+                                <div class="card-body">
+                                    <p>与荀以双<strong>当前存续的、状态正常的企业</strong>（如江苏翔天自动化设备有限公司）进行业务合作，在充分评估项目本身风险后，可以推进。</p>
+                                    <p><strong>前提条件：</strong></p>
+                                    <ol>
+                                        <li>进行详细的合同审查，明确权责和违约条款。</li>
+                                        <li>对合作项目的资金流、物流进行阶段性监控。</li>
+                                        <li>避免与其已注销或历史涉诉关联企业产生任何形式的连带责任安排。</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card border-warning mb-3">
+                                <div class="card-header bg-warning text-white">建议审慎或避免</div>
+                                <div class="card-body">
+                                    <p>以下情况建议保持高度审慎或避免：</p>
+                                    <ul>
+                                        <li>与其个人进行<strong>大额、长期、无抵押的信用合作</strong>。</li>
+                                        <li>涉及其<strong>历史关联企业（如沐勒机械、已注销的翔天电子）</strong>的任何形式的交易或担保。</li>
+                                        <li>在未取得其核心存续企业<strong>足额担保</strong>的情况下，进行预付款比例过高的交易。</li>
+                                    </ul>
+                                    <p><strong>总体原则：</strong> “业务合作可行，信用输出谨慎”。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="fst-italic text-muted">注：本报告基于公开数据生成，不保证完全实时与准确。在做出重大商业决策前，建议通过多种渠道进行交叉验证并开展深度尽职调查。</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>荀以双资金网络与对外投资风险分析报告 © 2026</p>
+            <p class="small">数据来源：天眼查 | 本报告仅供内部决策参考</p>
+            <p class="small">生成时间：2026-06-24 09:01:15 | 报告版本：1.0</p>
+        </div>
+    </footer>
+
+    <a href="#" class="scroll-to-top">↑</a>
+
+    <script>
+        // 区域分布图
+        const regionCtx = document.getElementById('regionChart').getContext('2d');
+        const regionChart = new Chart(regionCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['江苏省', '四川省'],
+                datasets: [{
+                    data: [5, 1],
+                    backgroundColor: ['#3498db', '#2ecc71'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    title: { display: false }
+                }
+            }
+        });
+
+        // 企业状态分布图
+        const statusCtx = document.getElementById('statusChart').getContext('2d');
+        const statusChart = new Chart(statusCtx, {
+            type: 'pie',
+            data: {
+                labels: ['存续/在业', '注销'],
+                datasets: [{
+                    data: [5, 1],
+                    backgroundColor: ['#2ecc71', '#e74c3c'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    title: { display: false }
+                }
+            }
+        });
+
+        // 风险分布图
+        const riskCtx = document.getElementById('riskChart').getContext('2d');
+        const riskChart = new Chart(riskCtx, {
+            type: 'bar',
+            data: {
+                labels: ['司法案件', '失信被执行人', '被执行人', '限制消费令', '股权冻结'],
+                datasets: [{
+                    label: '数量',
+                    data: [2, 0, 0, 0, 0],
+                    backgroundColor: [
+                        'rgba(243, 156, 18, 0.7)',
+                        'rgba(46, 204, 113, 0.7)',
+                        'rgba(46, 204, 113, 0.7)',
+                        'rgba(46, 204, 113, 0.7)',
+                        'rgba(46, 204, 113, 0.7)'
+                    ],
+                    borderColor: [
+                        '#f39c12',
+                        '#2ecc71',
+                        '#2ecc71',
+                        '#2ecc71',
+                        '#2ecc71'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 1 }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+
+        // 时间线图 (企业成立年份)
+        const timelineCtx = document.getElementById('timelineChart').getContext('2d');
+        const timelineChart = new Chart(timelineCtx, {
+            type: 'line',
+            data: {
+                labels: ['2008', '2014', '2020', '2021', '2025'],
+                datasets: [{
+                    label: '关联企业成立数量',
+                    data: [1, 0, 1, 1, 1], // 2008:1, 2020:1, 2021:1, 2025:1
+                    backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                    borderColor: '#3498db',
+                    borderWidth: 3,
+                    tension: 0.2,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 1 }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+
+        // 平滑滚动导航
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                window.scrollTo({
+                    top: targetElement.offsetTop - 80,
+                    behavior: 'smooth'
+                });
+                // 更新活动导航项
+                document.querySelectorAll('nav a').forEach(link => link.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // 返回顶部按钮
+        const scrollTopBtn = document.querySelector('.scroll-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                scrollTopBtn.style.display = 'flex';
+            } else {
+                scrollTopBtn.style.display = 'none';
+            }
+        });
+        scrollTopBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+```
