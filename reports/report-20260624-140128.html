@@ -1,0 +1,153 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教练分组绩效分析报告 | 2026年6月</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <style>
+        body { background-color: #f8f9fa; font-family: 'Microsoft YaHei', sans-serif; }
+        .dashboard-card { background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 20px; margin-bottom: 24px; }
+        .metric-card { text-align: center; padding: 16px; border-radius: 8px; color: white; }
+        .section-title { border-left: 4px solid #0d6efd; padding-left: 12px; margin: 24px 0 16px 0; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="container py-4">
+        <!-- 头部 -->
+        <div class="text-center mb-5">
+            <h1 class="fw-bold text-primary">教练分组绩效分析报告</h1>
+            <p class="text-muted">统计时间：2026年6月24日</p>
+        </div>
+
+        <!-- 执行摘要 -->
+        <div class="dashboard-card">
+            <h5 class="section-title">执行摘要</h5>
+            <p>本月全组共入库教练27人，新教练留存率100%，累计流失教练6人，教练人效均值7.2，累计上满30节优质教练233人。曾唯洋、王俊霞组在教练规模和优质教练数量上表现领先，于美琪、邱慧组人效仍有提升空间。</p>
+        </div>
+
+        <!-- 核心指标 -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3">
+                <div class="metric-card bg-primary">
+                    <h4>27</h4>
+                    <p>本月入库教练数</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card bg-success">
+                    <h4>100%</h4>
+                    <p>新教练留存率</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card bg-info">
+                    <h4>7.2</h4>
+                    <p>平均教练人效</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card bg-danger">
+                    <h4>6</h4>
+                    <p>本月流失教练数</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 图表区域 -->
+        <div class="row g-4">
+            <!-- 入库教练数对比 -->
+            <div class="col-md-6">
+                <div class="dashboard-card">
+                    <h5 class="section-title">各分组本月入库教练数</h5>
+                    <canvas id="chart1" height="250"></canvas>
+                </div>
+            </div>
+            <!-- 流失教练数对比 -->
+            <div class="col-md-6">
+                <div class="dashboard-card">
+                    <h5 class="section-title">各分组本月流失教练数</h5>
+                    <canvas id="chart2" height="250"></canvas>
+                </div>
+            </div>
+            <!-- 教练人效对比 -->
+            <div class="col-md-6">
+                <div class="dashboard-card">
+                    <h5 class="section-title">各分组教练人效对比</h5>
+                    <canvas id="chart3" height="250"></canvas>
+                </div>
+            </div>
+            <!-- 上满30节教练数 -->
+            <div class="col-md-6">
+                <div class="dashboard-card">
+                    <h5 class="section-title">累计上满30节教练人数</h5>
+                    <canvas id="chart4" height="250"></canvas>
+                </div>
+            </div>
+            <!-- 教练规模分布 -->
+            <div class="col-md-12">
+                <div class="dashboard-card">
+                    <h5 class="section-title">各分组教练总数与代课总数</h5>
+                    <canvas id="chart5" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- 分析结论 -->
+        <div class="dashboard-card mt-4">
+            <h5 class="section-title">核心发现与建议</h5>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">✅ <strong>亮点：</strong>全组新教练留存率达100%，所有入库教练均已开始代课，招聘转化效果优秀。</li>
+                <li class="list-group-item">⚠️ <strong>问题：</strong>教练人效整体低于20的目标值，于美琪、邱慧组人效仅2.67，建议重点关注低人效组的课程分配和教练培训。</li>
+                <li class="list-group-item">📈 <strong>优质教练：</strong>王俊霞组优质教练（上满30节）最多达66人，建议总结其教练培养经验全组推广。</li>
+                <li class="list-group-item">💡 <strong>建议：</strong>针对张超组教练规模小的情况，可适当增加教练招聘；对流失教练集中的组分析流失原因，优化教练留存机制。</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const groups = ['曾唯洋', '刘昕宇', '王俊霞', '李禹莹', '于美琪', '邱慧', '张一鸣', '张超'];
+        const colors = ['#0d6efd', '#20c997', '#ffc107', '#dc3545', '#6f42c1', '#fd7e14', '#28a745', '#17a2b8'];
+
+        // 入库教练数
+        new Chart(document.getElementById('chart1'), {
+            type: 'bar',
+            data: { labels: groups, datasets: [{ label: '入库教练数', data: [3,4,3,5,2,2,2,6], backgroundColor: colors }] }
+        });
+
+        // 流失教练数
+        new Chart(document.getElementById('chart2'), {
+            type: 'pie',
+            data: { labels: groups, datasets: [{ data: [1,1,2,2,0,0,0,0], backgroundColor: colors }] }
+        });
+
+        // 教练人效
+        new Chart(document.getElementById('chart3'), {
+            type: 'bar',
+            data: { labels: groups, datasets: [{ label: '教练人效', data: [8.1,7.2,6.8,6.7,2.67,2.67,7.23,3.16], backgroundColor: colors }] },
+            options: { plugins: { annotation: { annotations: { line: { type: 'line', yMin: 20, yMax: 20, borderColor: 'red', borderWidth: 2, label: { content: '目标值20', enabled: true } } } } }
+        });
+
+        // 上满30节教练数
+        new Chart(document.getElementById('chart4'), {
+            type: 'bar',
+            data: { labels: groups, datasets: [{ label: '上满30节教练数', data: [56,45,66,24,20,19,3,0], backgroundColor: colors }] }
+        });
+
+        // 教练总数与代课总数
+        new Chart(document.getElementById('chart5'), {
+            type: 'line',
+            data: {
+                labels: groups,
+                datasets: [
+                    { label: '教练总数', data: [89,68,84,39,23,21,13,11], borderColor: '#0d6efd', fill: false },
+                    { label: '代课总数', data: [72,59,77,37,23,21,13,6], borderColor: '#20c997', fill: false }
+                ]
+            }
+        });
+    </script>
+</body>
+</html>
+```
