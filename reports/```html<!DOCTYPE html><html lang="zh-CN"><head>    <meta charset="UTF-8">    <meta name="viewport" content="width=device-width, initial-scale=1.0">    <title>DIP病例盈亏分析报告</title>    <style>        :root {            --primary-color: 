@@ -1,0 +1,311 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DIP病例盈亏分析报告</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #64748b;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-light: #64748b;
+            --border-color: #e2e8f0;
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.5;
+            padding: 20px;
+        }
+
+        /* Layout */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 16px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 500;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-light);
+            transition: all 0.2s;
+        }
+
+        .tab-btn:hover {
+            background-color: #f1f5f9;
+        }
+
+        .tab-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        /* KPI Cards */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
+        }
+
+        .kpi-title {
+            font-size: 0.875rem;
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+
+        .kpi-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .kpi-sub {
+            font-size: 0.75rem;
+            margin-top: 4px;
+        }
+
+        .text-green { color: var(--success-color); }
+        .text-red { color: var(--danger-color); }
+
+        /* Charts Section */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 1024px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .chart-container {
+            height: 350px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-header {
+            margin-bottom: 16px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .chart-canvas {
+            flex: 1;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        /* Table Section */
+        .table-container {
+            overflow-x: auto;
+            background: var(--card-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+            white-space: nowrap;
+        }
+
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: #f8fafc;
+            font-weight: 600;
+            color: var(--text-light);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        tr:hover {
+            background-color: #f1f5f9;
+        }
+
+        /* SVG Chart Styles */
+        .bar-rect {
+            transition: height 0.3s ease, y 0.3s ease, fill 0.2s;
+            cursor: pointer;
+        }
+        .bar-rect:hover {
+            opacity: 0.8;
+        }
+        .axis-line {
+            stroke: #cbd5e1;
+            stroke-width: 1;
+        }
+        .axis-text {
+            font-size: 10px;
+            fill: #64748b;
+        }
+        .tooltip {
+            position: absolute;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 100;
+            white-space: normal;
+            max-width: 200px;
+        }
+
+        /* Utility */
+        .hidden { display: none; }
+        .text-right { text-align: right; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/></svg>
+            DIP病例盈亏分析报告
+            <span class="badge">神经内科二病区</span>
+        </h1>
+        <div style="font-size: 0.875rem; color: var(--text-light);">
+            报告生成日期: <span id="currentDate"></span>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('low-deviation')">低偏差病例 (7例)</button>
+        <button class="tab-btn" onclick="switchTab('loss')">亏损病例 (8例)</button>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="kpi-grid" id="kpiContainer">
+        <!-- KPIs injected via JS -->
+    </div>
+
+    <!-- Charts Area -->
+    <div class="charts-grid">
+        <div class="card chart-container">
+            <div class="chart-header">病例盈亏分析 (DIP费用 vs 医疗成本)</div>
+            <div class="chart-canvas" id="profitChart"></div>
+            <div class="tooltip" id="profitTooltip"></div>
+        </div>
+        <div class="card chart-container">
+            <div class="chart-header">平均费用结构占比</div>
+            <div class="chart-canvas" id="compositionChart"></div>
+            <div class="tooltip" id="compTooltip"></div>
+        </div>
+    </div>
+
+    <!-- Data Table -->
+    <div class="card">
+        <div class="chart-header">详细数据列表</div>
+        <div class="table-container">
+            <table id="dataTable">
+                <thead>
+                    <!-- Headers injected via JS -->
+                </thead>
+                <tbody>
+                    <!-- Rows injected via JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Data Source
+    const rawData = {
+        lowDeviation: [
+            {dept: "神经内科二病区", code: "S3:I60-I69-2", name: "脑血管病:治疗性操作组-二类资源消耗", type: "综合病种", caseType: "低偏差病例", payRate: 72.77, totalCost: 4889.36, dipCost: 2006.82, medCost: 2056.68, profit: -751.08, balance: -751.08, diseaseScore: 3.91, los: 6, age: 75, drugRatio: 13.77, matRatio: 2.56, techRatio: 64.33, diag: "大脑动脉狭窄脑梗死(I63.501)", surgery: "关节治疗性物质注射(81.9201)[1]", admission: "2026-04-26"},
+            {dept: "神经内科二病区", code: "R57.1", name: "血容量减少性休克", type: "核心病种", caseType: "低偏差病例", payRate: 70.82, totalCost: 3612.18, dipCost: 1345.84, medCost: 1233.46, profit: -554.51, balance: -554.51, diseaseScore: 1.38, los: 4, age: 55, drugRatio: 2.64, matRatio: 0.38, techRatio: 77.83, diag: "血容量不足性休克(R57.100)", surgery: "-", admission: "2026-05-03"},
+            {dept: "神经内科二病区", code: "G45.9", name: "未特指的短暂性大脑缺血性发作", type: "核心病种", caseType: "低偏差病例", payRate: 64.02, totalCost: 1544.81, dipCost: 422.08, medCost: 618.75, profit: -237.18, balance: -237.18, diseaseScore: 0.64, los: 2, age: 85, drugRatio: 15.2, matRatio: 0.84, techRatio: 60.05, diag: "短暂性大脑缺血性发作(G45.900)", surgery: "-", admission: "2026-05-08"},
+            {dept: "神经内科二病区", code: "I63.900", name: "脑梗死", type: "核心病种", caseType: "低偏差病例", payRate: 70.05, totalCost: 1204.49, dipCost: 432.64, medCost: 438.37, profit: -184.95, balance: -184.95, diseaseScore: 0.68, los: 1, age: 60, drugRatio: 6.13, matRatio: 0.54, techRatio: 74.32, diag: "脑梗死(I63.900)", surgery: "-", admission: "2026-05-07"},
+            {dept: "神经内科二病区", code: "G45.9", name: "未特指的短暂性大脑缺血性发作", type: "核心病种", caseType: "低偏差病例", payRate: 46.18, totalCost: 982.53, dipCost: 129.44, medCost: 368.61, profit: -150.86, balance: -150.86, diseaseScore: 0.64, los: 1, age: 39, drugRatio: 7.14, matRatio: 0.63, techRatio: 74.37, diag: "短暂性大脑缺血性发作(G45.900)", surgery: "-", admission: "2026-05-28"},
+            {dept: "神经内科二病区", code: "G45.0", name: "椎基底动脉综合征", type: "核心病种", caseType: "低偏差病例", payRate: 26.84, totalCost: 903.83, dipCost: 50.93, medCost: 370.95, profit: -5.95, balance: -138.83, diseaseScore: 0.61, los: 1, age: 79, drugRatio: 14.63, matRatio: 0.87, techRatio: 63.87, diag: "椎基底动脉综合征(G45.000)", surgery: "-", admission: "2026-05-06"},
+            {dept: "神经内科二病区", code: "G45.0", name: "椎基底动脉综合征", type: "核心病种", caseType: "低偏差病例", payRate: 93.00, totalCost: 1346.19, dipCost: 643.78, medCost: 598.87, profit: -48.47, balance: -48.47, diseaseScore: 0.61, los: 1, age: 62, drugRatio: 15.6, matRatio: 0.96, techRatio: 69.8, diag: "椎基底动脉综合征(G45.000)", surgery: "-", admission: "2026-05-02"}
+        ],
+        loss: [
+            {dept: "神经内科二病区", code: "I63.9+99.1000", name: "未特指的脑梗死:血栓溶解药的注射或输注", type: "核心病种", caseType: "正常病例", payRate: 16.92, totalCost: 22973.82, dipCost: 2448.33, medCost: 11383.38, profit: -834.68, balance: -12025.12, diseaseScore: 2.35, los: 16, age: 90, drugRatio: 36.58, matRatio: 0.94, techRatio: 30.09, diag: "大面积脑梗死(I63.902)", surgery: "血栓溶解药的注射或输注(99.1000)[3]", admission: "2026-04-20"},
+            {dept: "神经内科二病区", code: "I63.9+99.1000", name: "未特指的脑梗死:血栓溶解药的注射或输注", type: "核心病种", caseType: "正常病例", payRate: 33.77, totalCost: 18014.87, dipCost: 3603.07, medCost: 11566.41, profit: -1017.71, balance: -7066.17, diseaseScore: 2.35, los: 12, age: 74, drugRatio: 54.63, matRatio: 0.77, techRatio: 22.02, diag: "脑干梗死(I63.901)", surgery: "血栓溶解药的注射或输注(99.1000)[3]", admission: "2026-05-02"},
+            {dept: "神经内科二病区", code: "I63.9+99.1000", name: "未特指的脑梗死:血栓溶解药的注射或输注", type: "核心病种", caseType: "正常病例", payRate: 34.09, totalCost: 17837.39, dipCost: 3563.46, medCost: 12297.93, profit: -1749.23, balance: -6888.69, diseaseScore: 2.35, los: 12, age: 78, drugRatio: 59.45, matRatio: 0.79, techRatio: 21.76, diag: "脑干梗死(I63.901)", surgery: "血栓溶解药的注射或输注(99.1000)[3]", admission: "2026-05-13"},
+            {dept: "神经内科二病区", code: "I63.3", name: "大脑动脉血栓形成引起的脑梗死", type: "核心病种", caseType: "正常病例", payRate: 2.46, totalCost: 9616.54, dipCost: 125.69, medCost: 4643.06, profit: -404.1, balance: -4977.58, diseaseScore: 1, los: 7, age: 71, drugRatio: 28.27, matRatio: 1.64, techRatio: 45.92, diag: "大脑动脉血栓形成引起的脑梗死(I63.300)", surgery: "-", admission: "2026-05-10"},
+            {dept: "神经内科二病区", code: "I63.3", name: "大脑动脉血栓形成引起的脑梗死", type: "核心病种", caseType: "正常病例", payRate: 0.02, totalCost: 9065.29, dipCost: 0.96, medCost: 4558.49, profit: -319.53, balance: -4426.33, diseaseScore: 1, los: 13, age: 60, drugRatio: 29.72, matRatio: 1.61, techRatio: 47.38, diag: "大脑动脉血栓形成引起的脑梗死(I63.300)", surgery: "-", admission: "2026-04-23"},
+            {dept: "神经内科二病区", code: "I63.901", name: "脑干梗死", type: "核心病种", caseType: "
