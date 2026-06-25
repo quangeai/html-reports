@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>泌尿外科手卫生可视化</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            margin: 20px;
+            background-color: #f0f8ff;
+        }
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            margin: 20px 0;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 10px;
+        }
+        .summary {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        p {
+            line-height: 1.6;
+            color: #34495e;
+        }
+        .section-title {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h2>泌尿外科手卫生数据可视化</h2>
+
+    <div class="chart-container" id="patientScoreChart"></div>
+    <div class="chart-container" id="medicalScoreChart"></div>
+    <div class="chart-container" id="compositeScoreChart"></div>
+    <div class="chart-container" id="problemChart"></div>
+
+    <div class="summary">
+        <h3>数据汇总与整改建议</h3>
+        <div class="section-title">科室整体情况</div>
+        <p>科室医疗打分平均分：<strong>12.5分</strong></p>
+        <p>科室患者打分平均分：<strong>21分</strong></p>
+        <p>科室综合得分平均分：<strong>16.4分</strong></p>
+        <p>医疗打分最高分护士：<strong>小红、小妮（15分）</strong>，最低分护士：<strong>小李、小晓（10分）</strong></p>
+        <p>患者打分最高分护士：<strong>小晓、小妮（22分）</strong>，最低分护士：<strong>小红（19分）</strong></p>
+        <p>综合得分最高分护士：<strong>小妮（17.8分）</strong>，最低分护士：<strong>小晓（14.8分）</strong></p>
+
+        <div class="section-title">低分问题分布与整改建议</div>
+        <p>1. 卫生手消毒不规范（频次：1）：组织护士重新学习手消毒规范流程，进行现场实操考核，确保步骤正确。</p>
+        <p>2. 暴露患者体液风险后未规范处理（频次：2）：加强职业防护培训，明确暴露后手卫生的触发时机与操作要求，增加现场监督频次。</p>
+        <p>3. 揉搓时间小于15秒（频次：1）：在洗手区域张贴揉搓时长提示标识，培训护士掌握正确的揉搓节奏与时长。</p>
+        <p>4. 卫生手消毒步骤不完整（频次：1）：制作手消毒步骤图解海报，定期开展抽查与模拟演练。</p>
+        <p>5. 接触患者/周边环境后未执行手卫生（频次：2）：梳理手卫生五大时刻的场景，制作场景化培训材料，强化护士的手卫生触发意识。</p>
+        <p>6. 操作后低分（换药后、铺床后）（频次：3）：针对操作后易遗漏手卫生的环节，设置提醒标识，增加科室质控人员的现场督导。</p>
+    </div>
+
+    <script>
+        // 初始化图表
+        var patientChart = echarts.init(document.getElementById('patientScoreChart'));
+        var medicalChart = echarts.init(document.getElementById('medicalScoreChart'));
+        var compositeChart = echarts.init(document.getElementById('compositeScoreChart'));
+        var problemChart = echarts.init(document.getElementById('problemChart'));
+
+        // 患者打分数据
+        var patientScoreData = [
+            {name: '小红', value: 19},
+            {name: '小妮', value: 22},
+            {name: '小晓', value: 22},
+            {name: '小李', value: '无'}
+        ];
+
+        // 医疗打分数据
+        var medicalScoreData = [
+            {name: '小李', value: 10},
+            {name: '小晓', value: 10},
+            {name: '小红', value: 15},
+            {name: '小妮', value: 15}
+        ];
+
+        // 综合得分数据
+        var compositeScoreData = [
+            {name: '小红', value: 16.6},
+            {name: '小妮', value: 17.8},
+            {name: '小晓', value: 14.8},
+            {name: '小李', value: '无'}
+        ];
+
+        // 问题分布数据
+        var problemData = [
+            {value: 1, name: '卫生手消毒不规范'},
+            {value: 2, name: '暴露体液风险后未规范处理'},
+            {value: 1, name: '揉搓时间小于15秒'},
+            {value: 1, name: '手消毒步骤不完整'},
+            {value: 2, name: '接触患者/环境后未洗手'},
+            {value: 3, name: '操作后手卫生遗漏'}
+        ];
+
+        // 患者打分柱状图配置
+        var patientOption = {
+            title: {text: '患者打分情况'},
+            tooltip: {trigger: 'axis', axisPointer: {type: 'shadow'}},
+            xAxis: {type: 'category', data: patientScoreData.map(item => item.name)},
+            yAxis: {type: 'value', name: '总分'},
+            series: [{
+                name: '患者打分总分',
+                type: 'bar',
+                data: patientScoreData.map(item => item.value),
+                label: {show: true, position: 'top'}
+            }]
+        };
+
+        // 医疗打分柱状图配置
+        var medicalOption = {
+            title: {text: '医疗打分情况'},
+            tooltip: {trigger: 'axis', axisPointer: {type: 'shadow'}},
+            xAxis: {type: 'category', data: medicalScoreData.map(item => item.name)},
+            yAxis: {type: 'value', name: '得分'},
+            series: [{
+                name: '医疗打分',
+                type: 'bar',
+                data: medicalScoreData.map(item => item.value),
+                label: {show: true, position: 'top'}
+            }]
+        };
+
+        // 综合得分柱状图配置
+        var compositeOption = {
+            title: {text: '综合得分情况'},
+            tooltip: {trigger: 'axis', axisPointer: {type: 'shadow'}},
+            xAxis: {type: 'category', data: compositeScoreData.map(item => item.name)},
+            yAxis: {type: 'value', name: '综合得分'},
+            series: [{
+                name: '综合得分',
+                type: 'bar',
+                data: compositeScoreData.map(item => item.value),
+                label: {show: true, position: 'top'}
+            }]
+        };
+
+        // 问题分布饼图配置
+        var problemOption = {
+            title: {text: '低分问题分布占比'},
+            tooltip: {trigger: 'item'},
+            legend: {orient: 'vertical', left: 'left'},
+            series: [{
+                name: '问题频次',
+                type: 'pie',
+                radius: ['40%', '70%'],
+                avoidLabelOverlap: false,
+                itemStyle: {borderRadius: 10, borderColor: '#fff', borderWidth: 2},
+                label: {show: false, position: 'center'},
+                emphasis: {label: {show: true, fontSize: 16, fontWeight: 'bold'}},
+                labelLine: {show: false},
+                data: problemData
+            }]
+        };
+
+        // 渲染图表
+        patientChart.setOption(patientOption);
+        medicalChart.setOption(medicalOption);
+        compositeChart.setOption(compositeOption);
+        problemChart.setOption(problemOption);
+
+        // 自适应窗口大小
+        window.addEventListener('resize', function() {
+            patientChart.resize();
+            medicalChart.resize();
+            compositeChart.resize();
+            problemChart.resize();
+        });
+    </script>
+</body>
+</html>
