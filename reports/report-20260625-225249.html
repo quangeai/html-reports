@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>泌尿外科手卫生评分可视化</title>
+    <!-- 引入ECharts官方在线CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        body {
+            font-family: "Microsoft Yahei", Arial, sans-serif;
+            margin: 20px;
+            background-color: #f0f5f8;
+            color: #2c3e50;
+        }
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            margin: 25px 0;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            padding: 15px;
+            box-sizing: border-box;
+        }
+        .summary {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            padding: 25px;
+            margin-top: 20px;
+            line-height: 1.7;
+        }
+        h2 {
+            color: #16a085;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        .section-title {
+            font-size: 19px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: #2980b9;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 5px;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h2>泌尿外科手卫生评分可视化分析</h2>
+
+    <!-- 护士得分对比柱状图 -->
+    <div class="chart-container" id="scoreChart"></div>
+
+    <!-- 低分问题分布饼图 -->
+    <div class="chart-container" id="problemChart"></div>
+
+    <!-- 数据汇总与整改建议 -->
+    <div class="summary">
+        <div class="section-title">整体数据汇总</div>
+        <p><strong>科室综合平均分：</strong>约91.2分</p>
+        <p><strong>综合得分最高护士：</strong>王五（95.6分）</p>
+        <p><strong>综合得分最低护士：</strong>李四（86.8分）</p>
+        <p><strong>患者打分单独排名：</strong>王五（95分）> 孙七（92分）> 张三（90分）> 李四（85分）> 赵六（80分）</p>
+        <p><strong>医疗打分单独排名：</strong>王五（96分）> 张三（92分）> 吴九（90分）> 李四（88分）> 周八（85分）</p>
+
+        <div class="section-title">低分问题整改建议</div>
+        <ul>
+            <li><strong>未按七步洗手法（1次）：</strong>组织七步洗手法实操专项培训，全员考核通过后方可上岗，每周抽查实操情况并公示结果。</li>
+            <li><strong>洗手时间不足（1次）：</strong>在各洗手池旁设置计时提示牌，明确洗手时长需≥20秒，院感专员每日随机监督不少于3次。</li>
+            <li><strong>未使用洗手液（1次）：</strong>建立洗手液每日巡检台账，确保每处洗手池随时有可用洗手液，短缺时10分钟内补充到位。</li>
+            <li><strong>洗手后未擦干（1次）：</strong>在洗手区域配备充足擦手纸与干手器，张贴"洗手后彻底擦干"提示标语，纳入日常考核项。</li>
+            <li><strong>未按要求戴手套（1次）：</strong>组织无菌操作规范专题学习，明确不同诊疗场景的手套佩戴要求，每月开展操作考核。</li>
+        </ul>
+    </div>
+
+    <script>
+        // 初始化得分对比柱状图
+        var scoreChart = echarts.init(document.getElementById('scoreChart'));
+        var scoreOption = {
+            title: { text: '护士手卫生得分对比', left: 'center' },
+            tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+            legend: { top: 'bottom', center: 'center' },
+            grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true },
+            xAxis: { type: 'category', data: ['王五', '张三', '李四', '孙七', '赵六', '吴九', '周八'] },
+            yAxis: { type: 'value', min: 80, max: 100, axisLabel: { formatter: '{value}分' } },
+            series: [
+                {
+                    name: '综合得分',
+                    type: 'bar',
+                    data: [95.6, 91.2, 86.8, '无', '无', '无', '无'],
+                    itemStyle: { color: '#16a085' }
+                },
+                {
+                    name: '患者打分',
+                    type: 'bar',
+                    data: [95, 90, 85, 92, 80, '无', '无'],
+                    itemStyle: { color: '#2980b9' }
+                },
+                {
+                    name: '医疗打分',
+                    type: 'bar',
+                    data: [96, 92, 88, '无', '无', 90, 85],
+                    itemStyle: { color: '#e74c3c' }
+                }
+            ]
+        };
+        scoreChart.setOption(scoreOption);
+
+        // 初始化问题分布饼图
+        var problemChart = echarts.init(document.getElementById('problemChart'));
+        var problemOption = {
+            title: { text: '手卫生低分问题分布', left: 'center' },
+            tooltip: { trigger: 'item', formatter: '{b}: {c}次 ({d}%)' },
+            legend: { orient: 'vertical', left: 'left', top: 'center' },
+            series: [
+                {
+                    name: '问题频次',
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    avoidLabelOverlap: false,
+                    itemStyle: { borderRadius: 12, borderColor: '#fff', borderWidth: 3 },
+                    label: { show: true, position: 'outside', formatter: '{b}: {d}%' },
+                    data: [
+                        { value: 1, name: '未按七步洗手法' },
+                        { value: 1, name: '洗手时间不足' },
+                        { value: 1, name: '未使用洗手液' },
+                        { value: 1, name: '洗手后未擦干' },
+                        { value: 1, name: '未按要求戴手套' }
+                    ]
+                }
+            ]
+        };
+        problemChart.setOption(problemOption);
+
+        // 响应窗口大小变化，自动适配图表
+        window.addEventListener('resize', function() {
+            scoreChart.resize();
+            problemChart.resize();
+        });
+    </script>
+</body>
+</html>
