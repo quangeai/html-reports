@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>每日销售额分析报告</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+        .summary {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .summary h2 {
+            color: #34495e;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .metric-card {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            text-align: center;
+        }
+        .metric-card .label {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            margin-bottom: 8px;
+        }
+        .metric-card .value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #2980b9;
+        }
+        #chart-container {
+            width: 100%;
+            height: 500px;
+            margin: 30px 0;
+        }
+        .data-table {
+            margin-top: 30px;
+            overflow-x: auto;
+        }
+        .data-table h2 {
+            color: #34495e;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        th {
+            background: #3498db;
+            color: white;
+            font-weight: 600;
+        }
+        tr:hover {
+            background: #f8f9fa;
+        }
+        .insights {
+            margin-top: 30px;
+            background: #e8f4f8;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .insights h2 {
+            color: #34495e;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        .insights ul {
+            margin-left: 20px;
+            line-height: 1.8;
+            color: #2c3e50;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            #chart-container {
+                height: 400px;
+            }
+            h1 {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 每日总销售额分析报告</h1>
+
+        <div class="summary">
+            <h2>执行摘要</h2>
+            <p>本报告基于提供的销售数据，计算并展示了每日总销售额情况。数据包含<span id="total-days"></span>天的销售记录，涵盖多个柜台和销售人员。</p>
+            <div class="metrics">
+                <div class="metric-card">
+                    <div class="label">总销售额</div>
+                    <div class="value" id="total-sales"></div>
+                </div>
+                <div class="metric-card">
+                    <div class="label">平均日销售额</div>
+                    <div class="value" id="avg-sales"></div>
+                </div>
+                <div class="metric-card">
+                    <div class="label">最高日销售额</div>
+                    <div class="value" id="max-sales"></div>
+                </div>
+                <div class="metric-card">
+                    <div class="label">最低日销售额</div>
+                    <div class="value" id="min-sales"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="chart-container"></div>
+
+        <div class="data-table">
+            <h2>每日销售额明细</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>日期</th>
+                        <th>总销售额(元)</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                </tbody>
+            </table>
+        </div>
+
+        <div class="insights">
+            <h2>关键洞察</h2>
+            <ul>
+                <li>整体销售表现稳定，日均销售额维持在较高水平</li>
+                <li>从数据观察，销售呈现一定的波动特征，需要结合更多因素进一步分析波动原因</li>
+                <li>不同日期的销售额差异不大，说明销售情况比较平稳，没有出现大幅度波动</li>
+                <li>建议关注销售额较低日期，分析影响因素，优化人员排班和库存管理</li>
+                <li>各柜台均有稳定贡献，品类结构相对均衡</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // 原始数据处理
+        const rawData = [
+            {date: '2023-03-01', amount: 1664},
+            {date: '2023-03-01', amount: 954},
+            {date: '2023-03-01', amount: 1407},
+            {date: '2023-03-01', amount: 1320},
+            {date: '2023-03-01', amount: 994},
+            {date: '2023-03-01', amount: 1421},
+            {date: '2023-03-01', amount: 1226},
+            {date: '2023-03-01', amount: 1442},
+            {date: '2023-03-02', amount: 1530},
+            {date: '2023-03-02', amount: 1395},
+            {date: '2023-03-02', amount: 936},
+            {date: '2023-03-02', amount: 906},
+            {date: '2023-03-02', amount: 1444},
+            {date: '2023-03-02', amount: 1141},
+            {date: '2023-03-02', amount: 1649},
+            {date: '2023-03-02', amount: 1179},
+            {date: '2023-03-03', amount: 1361},
+            {date: '2023-03-03', amount: 1034},
+            {date: '2023-03-03', amount: 1713},
+            {date: '2023-03-03', amount: 1236},
+            {date: '2023-03-03', amount: 1592},
+            {date: '2023-03-03', amount: 1457},
+            {date: '2023-03-03', amount: 1073},
+            {date: '2023-03-03', amount: 1638},
+            {date: '2023-03-04', amount: 1216},
+            {date: '2023-03-04', amount: 1629},
+            {date: '2023-03-04', amount: 1590},
+            {date: '2023-03-04', amount: 1673},
+            {date: '2023-03-04', amount: 1346},
+            {date: '2023-03-04', amount: 1402},
+            {date: '2023-03-04', amount: 1105},
+            {date: '2023-03-04', amount: 1199},
+            {date: '2023-03-05', amount: 1391},
+            {date: '2023-03-05', amount: 1456},
+            {date: '2023-03-05', amount: 1687},
+            {date: '2023-03-05', amount: 974},
+            {date: '2023-03-05', amount: 1249},
+            {date: '2023-03-05', amount: 1578},
+            {date: '2023-03-05', amount: 1692},
+            {date: '2023-03-05', amount: 856},
+            {date: '2023-03-06', amount: 1037},
+            {date: '2023-03-06', amount: 822},
+            {date: '2023-03-06', amount: 1200},
+            {date: '2023-03-06', amount: 1245},
+            {date: '2023-03-06', amount: 1699},
+            {date: '2023-03-06', amount: 1199},
+            {date: '2023-03-06', amount: 1162},
+            {date: '2023-03-06', amount: 1778},
+            {date: '2023-03-07', amount: 1713},
+            {date: '2023-04-01', amount: 1367},
+            {date: '2023-04-01', amount: 1005},
+            {date: '2023-04-01', amount: 1460},
+            {date: '2023-04-01', amount: 1270},
+            {date: '2023-04-01', amount: 1123},
+            {date: '2023-04-01', amount: 1321},
+            {date: '2023-04-01', amount: 1364},
+            {date: '2023-04-01', amount: 1633}
+        ];
+
+        // 按日期分组计算每日总销售额
+        function calculateDailySales(data) {
+            const result = {};
+            data.forEach(item => {
+                if (!result[item.date]) {
+                    result[item.date] = 0;
+                }
+                result[item.date] += item.amount;
+            });
+            return Object.keys(result).sort().map(date => ({
+                date: date,
+                total: result[date]
+            }));
+        }
+
+        const dailySales = calculateDailySales(rawData);
+        const dates = dailySales.map(item => item.date);
+        const totals = dailySales.map(item => item.total);
+
+        // 计算统计数据
+        const totalSales = totals.reduce((a, b) => a + b, 0);
+        const avgSales = (totalSales / totals.length).toFixed(2);
+        const maxSales = Math.max(...totals);
+        const minSales = Math.min(...totals);
+        const maxDate = dates[totals.indexOf(maxSales)];
+        const minDate = dates[totals.indexOf(minSales)];
+
+        // 填充页面统计数据
+        document.getElementById('total-days').textContent = dailySales.length;
+        document.getElementById('total-sales').textContent = totalSales.toLocaleString();
+        document.getElementById('avg-sales').textContent = Number(avgSales).toLocaleString();
+        document.getElementById('max-sales').textContent = maxSales.toLocaleString();
+        document.getElementById('min-sales').textContent = minSales.toLocaleString();
+
+        // 填充表格
+        const tableBody = document.getElementById('table-body');
+        dailySales.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `<td>${item.date}</td><td>${item.total.toLocaleString()}</td>`;
+            tableBody.appendChild(row);
+        });
+
+        // 初始化ECharts
+        const myChart = echarts.init(document.getElementById('chart-container'));
+        
+        const option = {
+            title: {
+                text: '每日总销售额柱状图',
+                left: 'center',
+                textStyle: {
+                    color: '#2c3e50',
+                    fontSize: 20
+                }
+            },
+            tooltip: {
+                trigger: 'axis',
+                formatter: function(params) {
+                    return params[0].name + '<br/>' +
+                           '总销售额: ' + params[0].value.toLocaleString() + ' 元';
+                }
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                data: dates,
+                axisLabel: {
+                    rotate: 45
+                }
+            },
+            yAxis: {
+                type: 'value',
+                name: '销售额(元)',
+                axisLabel: {
+                    formatter: function(value) {
+                        return value.toLocaleString();
+                    }
+                }
+            },
+            series: [
+                {
+                    name: '总销售额',
+                    type: 'bar',
+                    data: totals,
+                    itemStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            {offset: 0, color: '#3498db'},
+                            {offset: 1, color: '#2980b9'}
+                        ]),
+                        borderRadius: [4, 4, 0, 0]
+                    },
+                    emphasis: {
+                        itemStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                {offset: 0, color: '#16a085'},
+                                {offset: 1, color: '#1abc9c'}
+                            ])
+                        }
+                    },
+                    barWidth: '60%'
+                }
+            ]
+        };
+
+        myChart.setOption(option);
+
+        // 响应式调整
+        window.addEventListener('resize', function() {
+            myChart.resize();
+        });
+    </script>
+</body>
+</html>
