@@ -1,0 +1,484 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>神经内科二病区 DIP 运营分析报告</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --secondary-color: #6c757d;
+            --success-color: #198754;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --light-bg: #f8f9fa;
+            --card-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+        }
+
+        /* Navbar */
+        .navbar {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+            background: linear-gradient(90deg, #1e3c72 0%, #2a5298 100%);
+        }
+        .navbar-brand {
+            font-weight: 700;
+            color: white !important;
+        }
+
+        /* Cards */
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 20px;
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+        }
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid #eee;
+            font-weight: 600;
+            padding: 1rem 1.25rem;
+            color: #2c3e50;
+        }
+
+        /* KPI Cards */
+        .kpi-card {
+            border-left: 4px solid var(--primary-color);
+        }
+        .kpi-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
+        }
+        .kpi-label {
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .kpi-sub {
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+        }
+        .text-success-custom { color: var(--success-color); }
+        .text-danger-custom { color: var(--danger-color); }
+
+        /* Charts */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+        /* Table */
+        .table-custom thead {
+            background-color: #f1f3f5;
+        }
+        .table-custom th {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        /* Sections */
+        .section-title {
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e9ecef;
+            font-size: 1.25rem;
+            color: #1e3c72;
+        }
+
+        /* Badges */
+        .badge-pill {
+            padding-right: 0.6em;
+            padding-left: 0.6em;
+            border-radius: 10rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-dark mb-4">
+        <div class="container-fluid">
+            <span class="navbar-brand">
+                <i class="fas fa-hospital-user me-2"></i> 医院运营分析报告
+            </span>
+            <span class="text-white small">神经内科二病区 | 2026年4月-5月数据</span>
+        </div>
+    </nav>
+
+    <div class="container-fluid px-4">
+        
+        <!-- Header Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h2 class="fw-bold text-dark">神经内科二病区 DIP 运营与盈亏分析报告</h2>
+                <p class="text-muted">基于低偏差病例与亏损病例的深度数据洞察</p>
+            </div>
+        </div>
+
+        <!-- Executive Summary -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title fw-bold"><i class="fas fa-clipboard-list me-2"></i>执行摘要</h5>
+                <p class="mb-0">
+                    本报告分析了神经内科二病区在近期结算周期内的14例样本病例（7例低偏差，7例亏损）。
+                    <strong class="text-danger-custom">整体形势严峻，样本总亏损额达 -3.48 万元。</strong>
+                    分析发现，<strong>溶栓治疗病例</strong>是主要的亏损源头，尽管支付率较低（16%-34%），但医疗成本极高。
+                    相比之下，<strong>低偏差病例</strong>虽然总体盈利，但存在严重的结余倒挂现象（医保结算金额低于实际医疗成本），提示DIP支付标准可能滞后于实际医疗资源消耗。
+                    建议重点优化溶栓路径的成本结构，并针对高价值病种进行医保申诉或临床路径调整。
+                </p>
+            </div>
+        </div>
+
+        <!-- Key Metrics (KPIs) -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card kpi-card" style="border-left-color: #0d6efd;">
+                    <div class="card-body">
+                        <div class="kpi-label">样本总病例数</div>
+                        <div class="kpi-value">14 <span class="fs-6 text-muted">例</span></div>
+                        <div class="kpi-sub text-muted">低偏差: 7 | 亏损: 7</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card kpi-card" style="border-left-color: #dc3545;">
+                    <div class="card-body">
+                        <div class="kpi-label">样本总盈亏</div>
+                        <div class="kpi-value text-danger-custom">-34,828 <span class="fs-6">元</span></div>
+                        <div class="kpi-sub text-muted">平均每例亏损 -2,487 元</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card kpi-card" style="border-left-color: #198754;">
+                    <div class="card-body">
+                        <div class="kpi-label">低偏差组平均结余</div>
+                        <div class="kpi-value text-success-custom">-1,740 <span class="fs-6">元</span></div>
+                        <div class="kpi-sub text-warning">注意：名义盈利，实际成本倒挂</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card kpi-card" style="border-left-color: #ffc107;">
+                    <div class="card-body">
+                        <div class="kpi-label">亏损组平均亏损</div>
+                        <div class="kpi-value text-danger-custom">-6,412 <span class="fs-6">元</span></div>
+                        <div class="kpi-sub text-muted">主要由溶栓病例导致</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row 1 -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <i class="fas fa-chart-bar me-2"></i>盈亏与成本对比分析
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="profitCostChart"></canvas>
+                        </div>
+                        <p class="small text-muted mt-2 text-center">注：负值表示亏损或成本结余为负（即成本>收入）</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <i class="fas fa-chart-pie me-2"></i>亏损病例费用结构占比 (均值)
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="costStructureChart"></canvas>
+                        </div>
+                        <p class="small text-muted mt-2 text-center">基于亏损组平均费用计算</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Analysis Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h3 class="section-title">详细数据分析</h3>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-table me-2"></i>关键病例数据明细</span>
+                        <span class="badge bg-secondary">Top 10 by Cost</span>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-custom align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>病种名称</th>
+                                        <th>主要诊断</th>
+                                        <th>病例类型</th>
+                                        <th class="text-end">医疗总费用</th>
+                                        <th class="text-end">医疗成本</th>
+                                        <th class="text-end">DIP结算</th>
+                                        <th class="text-end">盈亏</th>
+                                        <th class="text-end">结余</th>
+                                        <th>状态</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="analysisTableBody">
+                                    <!-- JS will populate this -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trend & Insights -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <i class="fas fa-chart-line me-2"></i>费用与亏损散点分布
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="scatterChart"></canvas>
+                        </div>
+                        <p class="small text-muted mt-2">X轴：总费用 | Y轴：亏损额 | 气泡大小：住院天数</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <i class="fas fa-lightbulb me-2"></i>运营建议与结论
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <h6 class="fw-bold text-danger">1. 溶栓病例严重亏损</h6>
+                                <p class="small text-muted mb-0">3例溶栓病例平均亏损超过 1.1 万元。主要原因是药占比极高（>50%）且DIP支付标准（分值单价）未能覆盖高昂的溶栓药物成本。建议核查药品入组合理性及临床路径。</p>
+                            </li>
+                            <li class="list-group-item">
+                                <h6 class="fw-bold text-warning">2. 低偏差病例的"假盈利"</h6>
+                                <p class="small text-muted mb-0">低偏差组虽然账面"盈亏"为正（+4,061元），但考虑实际医疗成本后的"结余"为负（-12,180元）。这意味着DIP支付标准严重偏低，科室实际上是在做赔本生意。</p>
+                            </li>
+                            <li class="list-group-item">
+                                <h6 class="fw-bold text-primary">3. 住院天数与亏损正相关</h6>
+                                <p class="small text-muted mb-0">亏损最严重的病例住院天数均较长（12-16天）。缩短平均住院日（ALOS）可能是降低固定成本和变动成本、改善结余的关键手段。</p>
+                            </li>
+                            <li class="list-group-item">
+                                <h6 class="fw-bold text-success">4. 短暂性脑缺血发作(TIA)表现较好</h6>
+                                <p class="small text-muted mb-0">G45.9相关病例费用控制较好，住院天数短（1-2天），是相对高效的病种，可作为优化其他病种的参考基准。</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center py-4 text-muted small mt-4 border-top">
+        <p class="mb-0">Generated by AI Medical Analyst | Data Source: CSV Input</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Data Processing
+        const rawData = [
+            // Low Deviation Cases
+            { type: "低偏差", name: "脑血管病:治疗性操作组-二类资源消耗", diag: "大脑动脉狭窄脑梗死", totalCost: 4889.36, medCost: 2056.68, dipPay: 4138.28, profit: 1681.6, balance: -751.08, los: 6, drug: 13.77, material: 2.56 },
+            { type: "低偏差", name: "血容量减少性休克", diag: "血容量不足性休克", totalCost: 3612.18, medCost: 1233.46, dipPay: 3057.67, profit: 1424.21, balance: -554.51, los: 4, drug: 2.64, material: 0.38 },
+            { type: "低偏差", name: "未特指的短暂性大脑缺血性发作", diag: "短暂性大脑缺血性发作", totalCost: 1544.81, medCost: 618.75, dipPay: 1307.63, profit: 288.88, balance: -237.18, los: 2, drug: 15.2, material: 0.84 },
+            { type: "低偏差", name: "脑梗死", diag: "脑梗死", totalCost: 1204.49, medCost: 438.37, dipPay: 1019.54, profit: 181.17, balance: -184.95, los: 1, drug: 6.13, material: 0.54 },
+            { type: "低偏差", name: "未特指的短暂性大脑缺血性发作", diag: "短暂性大脑缺血性发作", totalCost: 982.53, medCost: 368.61, dipPay: 831.67, profit: 63.06, balance: -150.86, los: 1, drug: 7.14, material: 0.63 },
+            { type: "低偏差", name: "椎基底动脉综合征", diag: "椎基底动脉综合征", totalCost: 903.83, medCost: 370.95, dipPay: 765, profit: -5.95, balance: -138.83, los: 1, drug: 14.63, material: 0.87 },
+            { type: "低偏差", name: "椎基底动脉综合征", diag: "椎基底动脉综合征", totalCost: 1346.19, medCost: 598.87, dipPay: 1297.72, profit: 298.85, balance: -48.47, los: 1, drug: 15.6, material: 0.96 },
+            // Loss Cases
+            { type: "亏损", name: "未特指的脑梗死:血栓溶解药的注射或输注", diag: "大面积脑梗死", totalCost: 22973.82, medCost: 11383.38, dipPay: 10948.7, profit: -834.68, balance: -12025.12, los: 16, drug: 36.58, material: 0.94 },
+            { type: "亏损", name: "未特指的脑梗死:血栓溶解药的注射或输注", diag: "脑干梗死", totalCost: 18014.87, medCost: 11566.41, dipPay: 10948.7, profit: -1017.71, balance: -7066.17, los: 12, drug: 54.63, material: 0.77 },
+            { type: "亏损", name: "未特指的脑梗死:血栓溶解药的注射或输注", diag: "脑干梗死", totalCost: 17837.39, medCost: 12297.93, dipPay: 10948.7, profit: -1749.23, balance: -6888.69, los: 12, drug: 59.45, material: 0.79 },
+            { type: "亏损", name: "大脑动脉血栓形成引起的脑梗死", diag: "大脑动脉血栓形成引起的脑梗死", totalCost: 9616.54, medCost: 4643.06, dipPay: 4638.96, profit: -404.1, balance: -4977.58, los: 7, drug: 28.27, material: 1.64 },
+            { type: "亏损", name: "大脑动脉血栓形成引起的脑梗死", diag: "大脑动脉血栓形成引起的脑梗死", totalCost: 9065.29, medCost: 4558.49, dipPay: 4638.96, profit: -319.53, balance: -4426.33, los: 13, drug: 29.72, material: 1.61 },
+            { type: "亏损", name: "脑干梗死", diag: "脑干梗死", totalCost: 9002.07, medCost: 5008.63, dipPay: 5371.79, profit: -36.84, balance: -3630.28, los: 15, drug: 37.22, material: 1.62 },
+            { type: "亏损", name: "大脑动脉未特指的闭塞或狭窄引起的脑梗死", diag: "大脑动脉狭窄脑梗死", totalCost: 8230.17, medCost: 4784.89, dipPay: 4829.16, profit: -355.73, balance: -3401.01, los: 13, drug: 44.14, material: 1.69 }
+        ];
+
+        // Aggregates
+        const lowDeviationData = rawData.filter(d => d.type === "低偏差");
+        const lossData = rawData.filter(d => d.type === "亏损");
+
+        const totalProfit = rawData.reduce((sum, d) => sum + d.profit, 0);
+        const totalBalance = rawData.reduce((sum, d) => sum + d.balance, 0);
+        
+        // Calculate Averages for Loss Group for Pie Chart
+        const avgLossTotal = lossData.reduce((sum, d) => sum + d.totalCost, 0) / lossData.length;
+        const avgLossDrug = lossData.reduce((sum, d) => sum + (d.totalCost * d.drug / 100), 0) / lossData.length;
+        const avgLossMaterial = lossData.reduce((sum, d) => sum + (d.totalCost * d.material / 100), 0) / lossData.length;
+        const avgLossOther = avgLossTotal - avgLossDrug - avgLossMaterial;
+
+        // Populate Table
+        const tableBody = document.getElementById('analysisTableBody');
+        // Sort by Total Cost Descending
+        const sortedData = [...rawData].sort((a, b) => b.totalCost - a.totalCost);
+        
+        sortedData.forEach(row => {
+            const tr = document.createElement('tr');
+            const statusBadge = row.type === "低偏差" 
+                ? '<span class="badge bg-primary bg-opacity-10 text-primary border border-primary">低偏差</span>' 
+                : '<span class="badge bg-danger bg-opacity-10 text-danger border border-danger">亏损</span>';
+            
+            tr.innerHTML = `
+                <td class="fw-bold text-truncate" style="max-width: 200px;" title="${row.name}">${row.name.substring(0, 15)}...</td>
+                <td class="small text-muted text-truncate" style="max-width: 150px;">${row.diag}</td>
+                <td>${statusBadge}</td>
+                <td class="text-end">¥${row.totalCost.toLocaleString()}</td>
+                <td class="text-end">¥${row.medCost.toLocaleString()}</td>
+                <td class="text-end">¥${row.dipPay.toLocaleString()}</td>
+                <td class="text-end ${row.profit < 0 ? 'text-danger' : 'text-success'}">¥${row.profit.toLocaleString()}</td>
+                <td class="text-end ${row.balance < 0 ? 'text-danger' : 'text-success'}">¥${row.balance.toLocaleString()}</td>
+                <td class="text-center small">${row.los}LOS</td>
+            `;
+            tableBody.appendChild(tr);
+        });
+
+        // --- Chart Configurations ---
+
+        // 1. Profit vs Cost Chart
+        const ctx1 = document.getElementById('profitCostChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: rawData.map(d => d.name.substring(0, 8) + '..'),
+                datasets: [
+                    {
+                        label: '账面盈亏',
+                        data: rawData.map(d => d.profit),
+                        backgroundColor: 'rgba(13, 110, 253, 0.6)',
+                        borderColor: 'rgba(13, 110, 253, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: '实际结余',
+                        data: rawData.map(d => d.balance),
+                        backgroundColor: 'rgba(220, 53, 69, 0.6)',
+                        borderColor: 'rgba(220, 53, 69, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: { mode: 'index', intersect: false },
+                    legend: { position: 'top' }
+                },
+                scales: {
+                    x: { ticks: { display: false } }, // Hide labels for clarity
+                    y: { title: { display: true, text: '金额 (元)' } }
+                }
+            }
+        });
+
+        // 2. Cost Structure Pie Chart (Loss Group Avg)
+        const ctx2 = document.getElementById('costStructureChart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'doughnut',
+            data: {
+                labels: ['药品费', '材料费', '其他(医技/护理等)'],
+                datasets: [{
+                    data: [avgLossDrug, avgLossMaterial, avgLossOther],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.7)',
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(201, 203, 207, 0.7)'
+                    ],
+                    borderColor: '#fff',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'right' },
+                    title: { display: true, text: '亏损组平均费用构成' }
+                }
+            }
+        });
+
+        // 3. Scatter Chart (Total Cost vs Balance)
+        const ctx3 = document.getElementById('scatterChart').getContext('2d');
+        new Chart(ctx3, {
+            type: 'bubble',
+            data: {
+                datasets: [
+                    {
+                        label: '低偏差病例',
+                        data: lowDeviationData.map(d => ({ x: d.totalCost, y: d.balance, r: d.los * 2 })),
+                        backgroundColor: 'rgba(25, 135, 84, 0.6)'
+                    },
+                    {
+                        label: '亏损病例',
+                        data: lossData.map(d => ({ x: d.totalCost, y: d.balance, r: d.los * 2 })),
+                        backgroundColor: 'rgba(220, 53, 69, 0.6)'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { 
+                        title: { display: true, text: '医疗总费用 (元)' },
+                        type: 'linear'
+                    },
+                    y: { 
+                        title: { display: true, text: '实际结余 (元)' },
+                        type: 'linear'
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `费用: ${context.raw.x}, 结余: ${context.raw.y}, 天数: ${context.raw.r/2}`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+    </script>
+</body>
+</html>
+```
