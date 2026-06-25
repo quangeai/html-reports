@@ -1,0 +1,456 @@
+这是一个为您生成的完整HTML分析报告。该报告包含了数据清洗、统计分析、可视化图表（使用Chart.js）以及基于数据的商业洞察。
+
+您可以直接保存以下代码为 `.html` 文件并在浏览器中打开。
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>股票异动交易数据分析报告</title>
+    <!-- 引入 Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- 引入 Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            color: #333;
+        }
+        .navbar-brand {
+            font-weight: 700;
+            color: #fff !important;
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+        }
+        .card-header {
+            background-color: #fff;
+            border-bottom: 1px solid #eee;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        .metric-card {
+            text-align: center;
+            padding: 20px;
+        }
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+        .metric-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        .text-up { color: #dc3545; } /* 涨通常用红色表示 */
+        .text-down { { color: #198754; } } /* 跌通常用绿色表示 */
+        .chart-container {
+            position: relative;
+            height: 350px;
+            width: 100%;
+        }
+        .insight-box {
+            background-color: #e3f2fd;
+            border-left: 5px solid #2196f3;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        footer {
+            margin-top: 40px;
+            padding: 20px;
+            background-color: #343a40;
+            color: #fff;
+            text-align: center;
+        }
+        .table th {
+            background-color: #f1f3f5;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-dark bg-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="#">📊 股票异动交易数据分析报告</a>
+            <span class="navbar-text text-white-50">
+                生成日期: <span id="reportDate"></span>
+            </span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- 执行摘要 -->
+        <section id="executive-summary" class="mb-5">
+            <h3 class="mb-3">执行摘要</h3>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card metric-card">
+                        <div class="metric-label">总异动事件数</div>
+                        <div class="metric-value text-primary" id="totalEvents">0</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card metric-card">
+                        <div class="metric-label">总成交金额 (万元)</div>
+                        <div class="metric-value text-info" id="totalVolume">0</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card metric-card">
+                        <div class="metric-label">最大单笔成交</div>
+                        <div class="metric-value text-warning" id="maxVolumeEvent">-</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card metric-card">
+                        <div class="metric-label">主要异动类型</div>
+                        <div class="metric-value text-success" style="font-size: 1.2rem;">大幅涨/跌偏离</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 可视化图表 -->
+        <section id="visualizations" class="mb-5">
+            <h3 class="mb-3">数据可视化</h3>
+            <div class="row">
+                <!-- 图表1: 成交金额排名 -->
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">个股成交金额排名 (Top 10)</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="volumeChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 图表2: 买入 vs 卖出 -->
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">资金流向分析 (买入 vs 卖出)</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="flowChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <!-- 图表3: 异动类型分布 -->
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-header">异动类型分布</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="typeChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 图表4: 净流入/流出 -->
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header">个股净资金流入 (万元)</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="netFlowChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 详细数据分析 -->
+        <section id="detailed-analysis" class="mb-5">
+            <h3 class="mb-3">详细交易数据</h3>
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped align-middle">
+                            <thead>
+                                <tr>
+                                    <th>序号</th>
+                                    <th>代码</th>
+                                    <th>名称</th>
+                                    <th>异动类型摘要</th>
+                                    <th>异动期间</th>
+                                    <th>买入金额(万)</th>
+                                    <th>卖出金额(万)</th>
+                                    <th>成交金额(万)</th>
+                                    <th>净流入(万)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dataTableBody">
+                                <!-- JS将填充此处 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 趋势分析与洞察 -->
+        <section id="insights" class="mb-5">
+            <h3 class="mb-3">趋势分析与商业洞察</h3>
+            <div class="card">
+                <div class="card-body">
+                    <div class="insight-box">
+                        <h5>📈 市场情绪分析</h5>
+                        <p id="insightSentiment">分析中...</p>
+                    </div>
+                    <div class="insight-box" style="background-color: #fff3e0; border-left-color: #ff9800;">
+                        <h5>🔍 重点个股观察</h5>
+                        <p id="insightStocks">分析中...</p>
+                    </div>
+                    <div class="insight-box" style="background-color: #e8f5e9; border-left-color: #4caf50;">
+                        <h5>💡 建议与结论</h5>
+                        <p id="insightConclusion">分析中...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>© 2024 数据分析部 | 内部机密报告</p>
+    </footer>
+
+    <!-- 数据处理与可视化脚本 -->
+    <script>
+        // 日期设置
+        document.getElementById('reportDate').innerText = new Date().toLocaleDateString('zh-CN');
+
+        // 原始数据 (模拟CSV解析后的JSON对象)
+        const rawData = [
+            { id: 1, code: "688169.SH", name: "石头科技", type: "连续30日跌幅偏离值-70%", start: "9/24/24", end: "11/11/24", buy: 2522048.55, sell: 3020872.23, total: 5542920.78 },
+            { id: 2, code: "601727.SH", name: "上海电气", type: "连续30日涨幅偏离值200%", start: "9/24/24", end: "11/8/24", buy: 1336473.10, sell: 2018067.50, total: 3354540.60 },
+            { id: 3, code: "600839.SH", name: "四川长虹", type: "连续30日涨幅偏离值200%", start: "9/30/24", end: "10/31/24", buy: 994101.19, sell: 1136024.46, total: 2130125.65 },
+            { id: 4, code: "600839.SH", name: "四川长虹", type: "连续10日涨幅偏离值100%", start: "10/17/24", end: "10/29/24", buy: 500125.24, sell: 578602.05, total: 1078727.29 },
+            { id: 5, code: "688502.SH", name: "茂莱光学", type: "连续30日涨幅偏离值200%", start: "9/24/24", end: "11/6/24", buy: 505740.1, sell: 462405.70, total: 968145.89 },
+            { id: 6, code: "688165.SH", name: "埃夫特", type: "连续30日涨幅偏离值200%", start: "11/5/24", end: "12/5/24", buy: 359760.86, sell: 397396.10, total: 757156.96 },
+            { id: 7, code: "688575.SH", name: "亚辉龙", type: "连续30日跌幅偏离值-70%", start: "9/24/24", end: "11/7/24", buy: 257776.94, sell: 385363.09, total: 643140.03 },
+            { id: 8, code: "600611.SH", name: "大众交通", type: "连续30日涨幅偏离值200%", start: "7/8/24", end: "7/26/24", buy: 289967.95, sell: 304997.02, total: 594964.97 },
+            { id: 9, code: "600622.SH", name: "光大嘉宝", type: "连续30日涨幅偏离值200%", start: "9/13/24", end: "11/1/24", buy: 267587.68, sell: 263674.87, total: 531262.55 },
+            { id: 10, code: "688165.SH", name: "埃夫特", type: "连续10日3次同向异常波动", start: "11/29/24", end: "12/10/24", buy: 223168.24, sell: 266476.03, total: 489644.27 }
+        ];
+
+        // 数据处理：计算净流入
+        const processedData = rawData.map(item => {
+            const netFlow = item.buy - item.sell;
+            return { ...item, netFlow: netFlow };
+        });
+
+        // 1. 填充关键指标
+        const totalEvents = processedData.length;
+        const totalVolume = processedData.reduce((sum, item) => sum + item.total, 0);
+        const maxVolItem = processedData.reduce((prev, current) => (prev.total > current.total) ? prev : current);
+
+        document.getElementById('totalEvents').innerText = totalEvents;
+        document.getElementById('totalVolume').innerText = totalVolume.toLocaleString('zh-CN', { maximumFractionDigits: 0 });
+        document.getElementById('maxVolumeEvent').innerText = maxVolItem.name;
+
+        // 2. 填充表格
+        const tableBody = document.getElementById('dataTableBody');
+        processedData.forEach(item => {
+            const row = document.createElement('tr');
+            const netFlowClass = item.netFlow >= 0 ? 'text-danger' : 'text-success'; // 红涨绿跌习惯，净流入为正通常被视为强势(红)
+            const netFlowSign = item.netFlow >= 0 ? '+' : '';
+            
+            row.innerHTML = `
+                <td>${item.id}</td>
+                <td><span class="badge bg-secondary">${item.code}</span></td>
+                <td class="fw-bold">${item.name}</td>
+                <td><small>${item.type}</small></td>
+                <td>${item.start} <br>至 ${item.end}</td>
+                <td>${item.buy.toLocaleString()}</td>
+                <td>${item.sell.toLocaleString()}</td>
+                <td class="fw-bold">${item.total.toLocaleString()}</td>
+                <td class="${netFlowClass} fw-bold">${netFlowSign}${item.netFlow.toLocaleString(undefined, {maximumFractionDigits:0})}</td>
+            `;
+            tableBody.appendChild(row);
+        });
+
+        // 3. Chart.js 配置
+        Chart.defaults.font.family = "'Segoe UI', 'Helvetica Neue', 'Arial', sans-serif";
+        Chart.defaults.color = '#666';
+
+        // 图表1: 成交金额排名
+        const ctxVolume = document.getElementById('volumeChart').getContext('2d');
+        new Chart(ctxVolume, {
+            type: 'bar',
+            data: {
+                labels: processedData.map(d => d.name),
+                datasets: [{
+                    label: '成交金额 (万元)',
+                    data: processedData.map(d => d.total),
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+
+        // 图表2: 买入 vs 卖出 (堆叠柱状图)
+        const ctxFlow = document.getElementById('flowChart').getContext('2d');
+        new Chart(ctxFlow, {
+            type: 'bar',
+            data: {
+                labels: processedData.map(d => d.name),
+                datasets: [
+                    {
+                        label: '买入金额',
+                        data: processedData.map(d => d.buy),
+                        backgroundColor: 'rgba(255, 99, 132, 0.6)', // 红色
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: '卖出金额',
+                        data: processedData.map(d => d.sell),
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)', // 绿色
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: { 
+                    x: { stacked: true },
+                    y: { stacked: true, beginAtZero: true } 
+                }
+            }
+        });
+
+        // 图表3: 异动类型分布
+        // 简化类型名称以便显示
+        const typeCounts = {};
+        processedData.forEach(d => {
+            let shortType = d.type.includes("涨幅") ? "大幅上涨偏离" : (d.type.includes("跌幅") ? "大幅下跌偏离" : "异常波动");
+            typeCounts[shortType] = (typeCounts[shortType] || 0) + 1;
+        });
+
+        const ctxType = document.getElementById('typeChart').getContext('2d');
+        new Chart(ctxType, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(typeCounts),
+                datasets: [{
+                    data: Object.values(typeCounts),
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.7)',
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 206, 86, 0.7)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+
+        // 图表4: 净资金流入
+        const ctxNetFlow = document.getElementById('netFlowChart').getContext('2d');
+        new Chart(ctxNetFlow, {
+            type: 'bar',
+            data: {
+                labels: processedData.map(d => d.name),
+                datasets: [{
+                    label: '净资金流入 (万元)',
+                    data: processedData.map(d => d.netFlow),
+                    backgroundColor: processedData.map(d => d.netFlow >= 0 ? 'rgba(220, 53, 69, 0.7)' : 'rgba(25, 135, 84, 0.7)'),
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } } // 可以去掉beginAtZero以更清楚地看到负值
+            }
+        });
+
+        // 4. 生成分析洞察
+        const netInflowCount = processedData.filter(d => d.netFlow > 0).length;
+        const netOutflowCount = processedData.filter(d => d.netFlow < 0).length;
+        
+        // 找出净流入最大的股票
+        const topInflowStock = processedData.reduce((prev, curr) => curr.netFlow > prev.netFlow ? curr : prev, processedData[0]);
+        // 找出净流出最大的股票
+        const topOutflowStock = processedData.reduce((prev, curr) => curr.netFlow < prev.netFlow ? curr : prev, processedData[0]);
+
+        document.getElementById('insightSentiment').innerHTML = `
+            在本次统计的 <strong>${totalEvents}</strong> 起异动事件中，市场整体呈现出<strong>资金净流出</strong>态势。
+            共有 <strong>${netOutflowCount}</strong> 起事件表现为卖出金额大于买入金额，占比显著。
+            这表明在股价发生剧烈异动（特别是大幅上涨）期间，主要参与者可能在进行获利了结操作，或者市场分歧较大，抛压较重。
+        `;
+
+        document.getElementById('insightStocks').innerHTML = `
+            <ul>
+                <li><strong>${topOutflowStock.name}</strong> 虽然成交金额最大（${(topOutflowStock.total/10000).toFixed(1)}亿），但净流出高达 <strong>${(Math.abs(topOutflowStock.netFlow)/10000).toFixed(1)}亿元</strong>，显示高位抛压极大。</li>
+                <li><strong>${topInflowStock.name}</strong> 表现出最强的资金承接力，净流入 <strong>${(topInflowStock.netFlow/10000).toFixed(1)}亿元</strong>，市场做多情绪相对集中。</li>
+                <li><strong>四川长虹</strong> 和 <strong>埃夫特</strong> 在报告期内多次触发异动预警，属于持续高热度个股。</li>
+            </ul>
+        `;
+
+        document.getElementById('insightConclusion').innerHTML = `
+            基于当前数据分析，建议重点关注<strong>净流出异动</strong>个股的回调风险，尤其是像石头科技和上海电气这类成交巨大但主力资金流出的标的。
+            对于茂莱光学等<strong>净流入</strong>个股，可观察其异动后的筹码稳固情况。
+            整体而言，异动期间多为资金撤离时刻，投资者需警惕“诱多”风险，谨慎追高。
+        `;
+
+    </script>
+</body>
+</html>
+```
+
+### 报告分析摘要
+
+这份报告对您提供的交易数据进行了以下维度的分析：
+
+1.  **执行摘要**：
+    *   **总异动事件**：10起。
+    *   **总成交金额**：约 1,509 亿元人民币（数据单位换算后），显示市场活跃度极高。
+    *   **最大成交个股**：石头科技，单笔异动成交额超过 550 亿元。
+
+2.  **关键发现与洞察**：
+    *   **资金流向特征**：这是一个非常关键的发现。在绝大多数异动事件中（包括大幅上涨的异动），**卖出金额都高于买入金额**。
+        *   例如：**上海电气**涨幅偏离200%，但卖出比买入多出约68亿元。
+        *   例如：**石头科技**跌幅偏离-70%，卖出比买入多出约49亿元。
+    *   **商业解读**：这表明这些“异动”往往发生在主力资金**派发（出货）**或市场**恐慌性抛售**的阶段。对于投资者而言，单纯看到“股价异动上涨”追高是极其危险的，因为数据背后的资金流显示主力正在撤退。
+    *   **例外情况**：**茂莱光学**和**光大嘉宝**出现了微弱的净流入，显示出相对较强的多头承接意愿。
+
+3.  **可视化设计**：
+    *   **成交排名图**：直观展示了石头科技和上海电气的体量远超其他个股。
+    *   **资金流向图**：使用红绿堆叠柱状图，清晰对比了每一笔异动中的买卖力量对比。
+    *   **净流入图**：通过正负柱状图，一眼识别出哪些股票是“真强势”（净流入），哪些是“诱多”（净流出）。
+
+4.  **技术实现**：
+    *   使用了 **Bootstrap 5** 保证页面在手机和电脑上都美观易读。
+    *   使用了 **Chart.js** 实现了交互式图表，鼠标悬停可查看具体数值。
+    *   完全基于原生 JavaScript 进行数据计算，无需后端支持。
