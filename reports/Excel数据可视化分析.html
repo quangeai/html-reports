@@ -1,0 +1,293 @@
+# 月度经济数据分析报告
+
+我将创建一个深蓝色主题、布局简约的网页，展示月度经济数据的分析结果，包括饼状图、趋势图和关键指标。
+
+下面是完整的HTML代码：
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>月度经济数据分析报告</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #0a192f;
+            color: #e6f1ff;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #1e3a5f;
+        }
+        
+        h1 {
+            color: #64ffda;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #8892b0;
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .summary {
+            background-color: #112240;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .summary h2 {
+            color: #64ffda;
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+        
+        .summary p {
+            color: #ccd6f6;
+            margin-bottom: 15px;
+            font-size: 1.05rem;
+        }
+        
+        .highlight {
+            color: #64ffda;
+            font-weight: bold;
+        }
+        
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .chart-box {
+            background-color: #112240;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .chart-title {
+            color: #64ffda;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            text-align: center;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background-color: #112240;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-card h3 {
+            color: #8892b0;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+        
+        .stat-value {
+            color: #64ffda;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        
+        .stat-desc {
+            color: #ccd6f6;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        .data-table {
+            width: 100%;
+            background-color: #112240;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .data-table h2 {
+            color: #64ffda;
+            padding: 20px;
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            background-color: #1e3a5f;
+            color: #64ffda;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        td {
+            padding: 12px 15px;
+            text-align: center;
+            color: #ccd6f6;
+            border-bottom: 1px solid #1e3a5f;
+        }
+        
+        tr:hover {
+            background-color: #1a2f52;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #8892b0;
+            font-size: 0.9rem;
+            border-top: 1px solid #1e3a5f;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .chart-box {
+                padding: 15px;
+            }
+            
+            .chart-container {
+                height: 250px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>月度经济数据分析报告</h1>
+            <p class="subtitle">基于12个月份的工业、农业、商业和外贸数据，通过可视化图表展示各行业表现及趋势分析</p>
+        </header>
+        
+        <section class="summary">
+            <h2>分析概要</h2>
+            <p>本报告对过去12个月的经济数据进行了全面分析，涵盖工业、农业、商业和外贸四个关键领域。数据显示，<span class="highlight">工业</span>和<span class="highlight">外贸</span>在某些月份表现出强劲增长，而<span class="highlight">农业</span>和<span class="highlight">商业</span>则呈现波动性特征。</p>
+            <p>从年度总量来看，<span class="highlight">工业</span>以年度总值<span class="highlight">626</span>位居第一，<span class="highlight">农业</span>以年度总值<span class="highlight">647</span>紧随其后，而<span class="highlight">外贸</span>和<span class="highlight">商业</span>分别为<span class="highlight">666</span>和<span class="highlight">643</span>，四个行业整体发展相对均衡。</p>
+            <p>通过趋势分析发现，各行业在不同月份表现差异明显，其中第9个月工业表现最佳，第5个月商业表现最佳，第2个月农业表现最佳，第10个月外贸表现最佳。</p>
+        </section>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>工业年度总值</h3>
+                <div class="stat-value">626</div>
+                <div class="stat-desc">最高值：99（第9月）</div>
+            </div>
+            <div class="stat-card">
+                <h3>农业年度总值</h3>
+                <div class="stat-value">647</div>
+                <div class="stat-desc">最高值：94（第2月）</div>
+            </div>
+            <div class="stat-card">
+                <h3>商业年度总值</h3>
+                <div class="stat-value">643</div>
+                <div class="stat-desc">最高值：99（第5月）</div>
+            </div>
+            <div class="stat-card">
+                <h3>外贸年度总值</h3>
+                <div class="stat-value">666</div>
+                <div class="stat-desc">最高值：91（第10月）</div>
+            </div>
+        </div>
+        
+        <div class="charts-container">
+            <div class="chart-box">
+                <h2 class="chart-title">各行业年度占比分析</h2>
+                <div class="chart-container">
+                    <canvas id="pieChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="chart-box">
+                <h2 class="chart-title">月度趋势分析</h2>
+                <div class="chart-container">
+                    <canvas id="lineChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <section class="data-table">
+            <h2>原始数据表</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>月份</th>
+                        <th>工业</th>
+                        <th>农业</th>
+                        <th>商业</th>
+                        <th>外贸</th>
+                    </tr>
+                </thead>
+                <tbody id="dataBody">
+                    <!-- 数据将通过JavaScript填充 -->
+                </tbody>
+            </table>
+        </section>
+        
+        <footer>
+            <p>数据分析报告 | 生成时间：<span id="currentDate"></span></p>
+            <p>数据来源：月度经济统计表 | 可视化工具：Chart.js</p>
+        </footer>
+    </div>
+
+    <script>
+        // 原始数据
+        const monthlyData = [
+            { month: 1, industry: 53, agriculture: 49, commerce: 43, foreignTrade: 68 },
+            { month:
