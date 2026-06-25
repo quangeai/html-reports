@@ -1,33 +1,274 @@
-基于提供的数据，我们可以进行一些基本的数据分析。以下是对数据的简要分析：
+# 经济数据分析报告
 
-### 1. 总体趋势分析
-- **工业**：工业数据在一年中呈现出波动趋势，从1月的53到7月的26，然后逐渐增加到12月的37。
-- **农业**：农业数据在年初和年末相对较低，中间月份较高，最高点出现在2月（94），最低点出现在6月（27）。
-- **商业**：商业数据在一年中波动较大，最高点出现在5月（99），最低点出现在8月（15）。
-- **外贸**：外贸数据在一年中也呈现出波动趋势，最高点出现在1月（68），最低点出现在6月（11）。
+我将创建一个简约大方的深蓝色调网页，展示各行业月度数据分析和可视化图表。
 
-### 2. 最高值和最低值
-- **工业最高值**：7月（71）
-- **工业最低值**：3月（15）
-- **农业最高值**：2月（94）
-- **农业最低值**：6月（27）
-- **商业最高值**：5月（99）
-- **商业最低值**：8月（15）
-- **外贸最高值**：1月（68）
-- **外贸最低值**：6月（11）
+## 设计思路
+1. 使用深蓝色为主色调，搭配白色和浅蓝色作为辅助色
+2. 创建响应式布局，适配不同设备
+3. 使用Chart.js库创建交互式图表
+4. 提供关键数据指标和趋势分析
+5. 设计简洁直观的数据表格
 
-### 3. 季节性分析
-- **工业和外贸**：这两个行业在年初和年末相对较高，中间月份相对较低。
-- **农业**：农业在年初达到高峰，然后逐渐下降，到夏季达到最低点，然后再次上升。
-- **商业**：商业在夏季达到高峰，然后在秋季和冬季逐渐下降。
+下面是完整的HTML代码：
 
-### 4. 行业对比分析
-- **增长最快的月份**：对于工业和外贸，增长最快的月份是7月；对于农业，增长最快的月份是2月；对于商业，增长最快的月份是5月。
-- **下降最快的月份**：对于工业和外贸，下降最快的月份是6月；对于农业，下降最快的月份是6月；对于商业，下降最快的月份是8月。
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>经济数据分析报告</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #0a192f;
+            color: #e6f1ff;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 1px solid #1e3a5f;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: #64ffda;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #8892b0;
+            font-size: 1.1rem;
+        }
+        
+        .summary {
+            background-color: #112240;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .summary h2 {
+            color: #64ffda;
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+        
+        .summary p {
+            color: #a8b2d1;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        
+        .highlight {
+            color: #64ffda;
+            font-weight: bold;
+        }
+        
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .chart-card {
+            background-color: #112240;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .chart-card h3 {
+            color: #64ffda;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1.5rem;
+        }
+        
+        .data-table-container {
+            background-color: #112240;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            overflow-x: auto;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .data-table-container h3 {
+            color: #64ffda;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1.5rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            color: #a8b2d1;
+        }
+        
+        th {
+            background-color: #1e3a5f;
+            color: #64ffda;
+            padding: 15px;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 12px 15px;
+            text-align: center;
+            border-bottom: 1px solid #1e3a5f;
+        }
+        
+        tr:hover {
+            background-color: #1a2f4f;
+        }
+        
+        .insights {
+            background-color: #112240;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .insights h2 {
+            color: #64ffda;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+        
+        .insight-item {
+            margin-bottom: 20px;
+            padding-left: 20px;
+            border-left: 3px solid #64ffda;
+        }
+        
+        .insight-item h4 {
+            color: #e6f1ff;
+            margin-bottom: 8px;
+            font-size: 1.2rem;
+        }
+        
+        .insight-item p {
+            color: #a8b2d1;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #8892b0;
+            border-top: 1px solid #1e3a5f;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .chart-card {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>经济数据分析报告</h1>
+            <p class="subtitle">基于2023年各行业月度数据</p>
+        </header>
+        
+        <section class="summary">
+            <h2>数据概览</h2>
+            <p>本报告分析了2023年全年工业、农业、商业和外贸四个行业的月度数据。数据显示，各行业在不同月份表现出不同的波动趋势。</p>
+            <p>工业产值在<span class="highlight">9月份达到峰值(99)</span>，农业在<span class="highlight">2月份表现最佳(94)</span>，商业在<span class="highlight">5月份达到最高值(99)</span>，而外贸在<span class="highlight">10月份表现最为突出(91)</span>。</p>
+            <p>从全年趋势来看，<span class="highlight">工业</span>和<span class="highlight">外贸</span>行业波动较大，而<span class="highlight">农业</span>和<span class="highlight">商业</span>相对稳定。</p>
+        </section>
+        
+        <section class="charts-container">
+            <div class="chart-card">
+                <h3>各行业月度趋势</h3>
+                <canvas id="lineChart"></canvas>
+            </div>
+            
+            <div class="chart-card">
+                <h3>各行业年度平均值</h3>
+                <canvas id="barChart"></canvas>
+            </div>
+        </section>
+        
+        <section class="data-table-container">
+            <h3>原始数据表</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>月份</th>
+                        <th>工业</th>
+                        <th>农业</th>
+                        <th>商业</th>
+                        <th>外贸</th>
+                    </tr>
+                </thead>
+                <tbody id="data-table-body">
+                    <!-- 数据将通过JavaScript动态填充 -->
+                </tbody>
+            </table>
+        </section>
+        
+        <section class="insights">
+            <h2>关键洞察</h2>
+            <div class="insight-item">
+                <h4>行业表现差异</h4>
+                <p>工业在9月份达到峰值(99)，但在3月份表现最差(15)，波动幅度最大。农业在2月份表现最佳(94)，全年波动相对较小。商业在5月份达到最高值(99)，在10月份表现最差(14)，波动性仅次于工业。外贸在10月份表现最好(91)，在6月份表现最差(11)。</p>
+            </div>
+            
+            <div class="insight-item">
+                <h4>季节性趋势</h4>
+                <p>数据显示，工业在年初和年末表现较弱，年中到第三季度表现强劲。农业在年初表现突出，随后趋于平稳。商业在5月份达到峰值后波动下降。外贸在6月份表现最差，但在下半年逐渐恢复并在10月份达到峰值。</p>
+            </div>
+            
+            <div class="insight-item">
+                <h4>年度表现对比</h4>
+                <p>从年度平均值来看，农业表现最为稳定，平均值为54.8。工业平均值为52.3，商业平均值为56.8，外贸平均值为58.1。外贸行业的平均表现最佳，但波动性也较大。</p>
+            </div>
+        </section>
+        
+        <footer>
+            <p>数据分析报告 | 生成时间: <span id="current-date"></span></p>
+            <p>数据来源: 2023年各行业月度统计</p>
+        </footer>
+    </div>
 
-### 5. 综合分析
-- 整体来看，各行业在一年中的不同月份都有不同程度的波动，这可能与市场需求、季节变化、节假日等因素有关。
-- 农业和商业在夏季有显著的下降趋势，这可能与夏季天气炎热、消费者减少户外活动有关。
-- 外贸在年初达到高峰，然后逐渐下降，这可能与全球贸易周期和市场需求变化有关。
-
-这些分析可以为决策者提供一些参考，例如在哪些月份可能需要增加库存，哪些月份可能需要减少生产等。
+    <script>
+        // 原始数据
+        const monthlyData = [
+            { month: 1, industry: 53, agriculture: 49, commerce: 43, foreignTrade: 68 },
+            { month: 2, industry: 28, agriculture: 94, commerce: 64, foreignTrade: 88 },
+            { month: 3, industry: 15, agriculture: 39, commerce: 46, foreignTrade: 39 },
+            { month: 4, industry: 64, agriculture: 81, commerce: 70, foreignTrade: 41 },
+            { month: 5, industry: 22, agriculture
