@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>泌尿外科手卫生可视化分析</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            margin: 20px;
+        }
+        .chart-container {
+            width: 90%;
+            height: 400px;
+            margin: 20px auto;
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .summary {
+            width: 90%;
+            margin: 20px auto;
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .suggestion-item {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <h2>泌尿外科手卫生数据分析</h2>
+    <div class="chart-container" id="scoreBar"></div>
+    <div class="chart-container" id="problemPie"></div>
+    <div class="summary">
+        <h3>整体数据汇总</h3>
+        <p>科室平均分：<strong>12.5分</strong></p>
+        <p>最高分护士：小妮、小红（15分）</p>
+        <p>最低分护士：小晓、小李（10分）</p>
+        <h3>低分问题整改建议</h3>
+        <div class="suggestion-item">• 接触患者后未执行手卫生：加强护士对“接触患者后”手卫生时刻的记忆，落实执行流程，增加现场督查频次</div>
+        <div class="suggestion-item">• 暴露患者体液风险后未采取手卫生措施：组织培训暴露风险后的应急手卫生规范，模拟场景实操演练</div>
+        <div class="suggestion-item">• 接触患者周边环境后未执行手卫生：强调环境接触后的手卫生必要性，在科室关键区域张贴提示标识</div>
+        <div class="suggestion-item">• 清洁/无菌操作前未执行手卫生：规范操作前的手卫生核查步骤，推行双人复核机制</div>
+        <div class="suggestion-item">• 接触患者前未执行手卫生：强化“接触患者前”的手卫生意识，纳入日常护理工作考核指标</div>
+        <div class="suggestion-item">• 卫生手消毒不规范：开展手消毒规范操作演练，录制标准操作视频供护士随时学习</div>
+        <div class="suggestion-item">• 揉搓时间小于15秒：制作计时提醒卡片，监督护士按标准时长执行手卫生操作</div>
+        <div class="suggestion-item">• 卫生手消毒步骤不完整：梳理标准操作步骤并组织全员考核，确保每个步骤落实到位</div>
+    </div>
+    <script>
+        // 初始化护士得分柱状图
+        var scoreChart = echarts.init(document.getElementById('scoreBar'));
+        var scoreOption = {
+            title: {
+                text: '护士手卫生得分排名',
+                left: 'center'
+            },
+            xAxis: {
+                type: 'category',
+                data: ['小妮', '小晓', '小李', '小红'],
+                axisLabel: {
+                    interval: 0,
+                    rotate: 30
+                }
+            },
+            yAxis: {
+                type: 'value',
+                name: '得分',
+                min: 0,
+                max: 25
+            },
+            series: [{
+                name: '手卫生得分',
+                type: 'bar',
+                data: [15, 10, 10, 15],
+                itemStyle: {
+                    color: '#3498db'
+                }
+            }],
+            tooltip: {
+                trigger: 'axis',
+                formatter: '{b}: {c}分'
+            }
+        };
+        scoreChart.setOption(scoreOption);
+
+        // 初始化低分问题饼图
+        var problemChart = echarts.init(document.getElementById('problemPie'));
+        var problemOption = {
+            title: {
+                text: '低分问题分布占比',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter: '{b}: {c} 次 ({d}%)'
+            },
+            series: [{
+                name: '问题频次',
+                type: 'pie',
+                radius: ['40%', '70%'],
+                data: [
+                    {value: 2, name: '接触患者后未执行'},
+                    {value: 1, name: '暴露患者体液风险后未采取措施'},
+                    {value: 1, name: '接触患者周边环境后未执行'},
+                    {value: 1, name: '清洁/无菌操作前未执行'},
+                    {value: 1, name: '接触患者前未执行'},
+                    {value: 1, name: '卫生手消毒不规范'},
+                    {value: 1, name: '暴露患者体液风险后未执行'},
+                    {value: 1, name: '揉搓时间小于15秒'},
+                    {value: 1, name: '卫生手消毒步骤不完整'}
+                ],
+                itemStyle: {
+                    borderRadius: 5,
+                    borderColor: '#fff',
+                    borderWidth: 2
+                }
+            }]
+        };
+        problemChart.setOption(problemOption);
+
+        // 适配窗口大小变化
+        window.addEventListener('resize', function() {
+            scoreChart.resize();
+            problemChart.resize();
+        });
+    </script>
+</body>
+</html>
