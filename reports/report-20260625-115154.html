@@ -1,0 +1,724 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>6月关键岗位认证情况分析报告</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #27ae60;
+            --light-bg: #f8f9fa;
+            --dark-bg: #2c3e50;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            background-color: #f9f9f9;
+        }
+        .report-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-bottom: 5px solid var(--accent-color);
+        }
+        .confidential-banner {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-left: 5px solid var(--accent-color);
+            padding: 10px;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+        .section-title {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+            transition: transform 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .kpi-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-left: 5px solid var(--secondary-color);
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 20px;
+        }
+        .key-insight {
+            background-color: #e8f4fc;
+            border-left: 4px solid var(--secondary-color);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        .recommendation {
+            background-color: #f0f9f0;
+            border-left: 4px solid var(--success-color);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        .footer {
+            background-color: var(--dark-bg);
+            color: white;
+            padding: 1.5rem 0;
+            margin-top: 3rem;
+            text-align: center;
+        }
+        .nav-tabs .nav-link {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        .nav-tabs .nav-link.active {
+            color: var(--secondary-color);
+            border-bottom: 3px solid var(--secondary-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- 报告头部 -->
+    <header class="report-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="display-5 fw-bold">泰衡诺6月关键岗位资格认证分析报告</h1>
+                    <p class="lead">基于2026年6月关键岗位员工认证数据的全面分析</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <p class="mb-1">编制部门：人力资源部 - 组织发展科</p>
+                    <p class="mb-1">发布日期：2026年6月24日</p>
+                    <p class="mb-0">版本：1.0</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 保密提示 -->
+    <div class="container">
+        <div class="confidential-banner">
+            <strong><i class="fas fa-lock"></i> 保密提示：</strong> 本报告内容为【内部公开】级别。仅限公司内部使用，如需分享到公司外部，需经部门主管授权。
+        </div>
+    </div>
+
+    <!-- 导航 -->
+    <div class="container mb-4">
+        <ul class="nav nav-tabs" id="reportTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="summary-tab" data-bs-toggle="tab" data-bs-target="#summary" type="button" role="tab">报告摘要</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="kpi-tab" data-bs-toggle="tab" data-bs-target="#kpi" type="button" role="tab">关键指标</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="analysis-tab" data-bs-toggle="tab" data-bs-target="#analysis" type="button" role="tab">详细分析</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="conclusion-tab" data-bs-toggle="tab" data-bs-target="#conclusion" type="button" role="tab">结论与建议</button>
+            </li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <div class="tab-content" id="reportTabsContent">
+            <!-- 报告摘要 -->
+            <div class="tab-pane fade show active" id="summary" role="tabpanel">
+                <div class="row">
+                    <div class="col-12">
+                        <h2 class="section-title"><i class="fas fa-file-alt"></i> 执行摘要</h2>
+                        <div class="card">
+                            <div class="card-body">
+                                <p class="card-text">
+                                    本报告对2026年6月泰衡诺公司关键岗位员工资格认证情况进行了全面分析。本次认证共涉及<strong>59名</strong>员工，覆盖<strong>质量部、物控部、项目工程部、组装厂生产部</strong>等多个核心部门。
+                                </p>
+                                <div class="row mt-3">
+                                    <div class="col-md-6">
+                                        <div class="key-insight">
+                                            <h6><i class="fas fa-check-circle text-success"></i> 核心亮点</h6>
+                                            <ul class="mb-0">
+                                                <li><strong>100%认证通过率：</strong>所有参与认证员工均通过理论及实操考核。</li>
+                                                <li><strong>100%发证率：</strong>所有通过认证的员工均已成功发证。</li>
+                                                <li><strong>整体成绩优异：</strong>理论考试平均分<strong>91.1</strong>，实操考试平均分<strong>93.8</strong>。</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="key-insight">
+                                            <h6><i class="fas fa-search text-primary"></i> 关键发现</h6>
+                                            <ul class="mb-0">
+                                                <li><strong>实操表现优于理论：</strong>实操平均分比理论高2.7分，表明员工动手能力强。</li>
+                                                <li><strong>部门表现差异：</strong>物控部（仓储二科）整体成绩最为突出。</li>
+                                                <li><strong>岗位分布：</strong>认证岗位以“仓管员”、“测试”、“目检”等一线操作岗为主。</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 关键指标 -->
+            <div class="tab-pane fade" id="kpi" role="tabpanel">
+                <h2 class="section-title"><i class="fas fa-chart-line"></i> 关键绩效指标</h2>
+                <div class="row">
+                    <!-- KPI 卡片 -->
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card kpi-card text-center">
+                            <div class="card-body">
+                                <h3 class="display-6 fw-bold text-primary">59</h3>
+                                <p class="card-text">认证总人数</p>
+                                <small class="text-muted">覆盖所有参与部门</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card kpi-card text-center">
+                            <div class="card-body">
+                                <h3 class="display-6 fw-bold text-success">100%</h3>
+                                <p class="card-text">认证通过率</p>
+                                <small class="text-muted">理论 & 实操均合格</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card kpi-card text-center">
+                            <div class="card-body">
+                                <h3 class="display-6 fw-bold" style="color: #9b59b6;">91.1</h3>
+                                <p class="card-text">理论平均分</p>
+                                <small class="text-muted">满分100分</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card kpi-card text-center">
+                            <div class="card-body">
+                                <h3 class="display-6 fw-bold" style="color: #e67e22;">93.8</h3>
+                                <p class="card-text">实操平均分</p>
+                                <small class="text-muted">表现优于理论</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KPI 图表 -->
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">各部门认证人数分布</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="deptDistributionChart"></canvas>
+                                </div>
+                                <p class="text-muted small">组装厂生产部是本次认证的主力部门，占总人数的64.4%。</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0">理论与实操成绩对比</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="scoreComparisonChart"></canvas>
+                                </div>
+                                <p class="text-muted small">实操考试平均分普遍高于理论考试，尤其在组装厂生产部最为明显。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 详细分析 -->
+            <div class="tab-pane fade" id="analysis" role="tabpanel">
+                <h2 class="section-title"><i class="fas fa-chart-bar"></i> 详细数据分析</h2>
+                
+                <!-- 部门成绩分析 -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">各部门成绩表现分析</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container" style="height: 350px;">
+                                    <canvas id="deptScoreChart"></canvas>
+                                </div>
+                                <div class="key-insight mt-3">
+                                    <h6><i class="fas fa-lightbulb text-warning"></i> 洞察：</h6>
+                                    <p><strong>物控部（仓储二科）</strong>在理论和实操考试中均表现最佳，平均分分别达到<strong>95.4</strong>和<strong>97.3</strong>，显示出该科室员工扎实的理论基础和娴熟的实操技能。<strong>质量部</strong>理论成绩相对较低，但实操成绩尚可，可能存在“重操作、轻理论”的倾向。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 岗位分析 -->
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">主要认证岗位分布</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="positionChart"></canvas>
+                                </div>
+                                <p class="text-muted small mt-2">“仓管员”和“测试”是本次认证最多的两个岗位，反映了仓储和生产测试环节对人员资质的重视。</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">成绩区间分布</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="scoreDistributionChart"></canvas>
+                                </div>
+                                <p class="text-muted small mt-2">大部分员工成绩集中在90-100分的优秀区间，但理论考试在80-89分区间人数较多，存在提升空间。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 推动干事分析 -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">各推动干事负责认证人数及平均成绩</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>推动干事</th>
+                                                <th>负责认证人数</th>
+                                                <th>理论平均分</th>
+                                                <th>实操平均分</th>
+                                                <th>总平均分</th>
+                                                <th>表现评级</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><strong>于晓萍</strong></td>
+                                                <td>34</td>
+                                                <td>88.7</td>
+                                                <td>94.5</td>
+                                                <td>91.6</td>
+                                                <td><span class="badge bg-success">优秀</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>万菊乐</strong></td>
+                                                <td>10</td>
+                                                <td>95.4</td>
+                                                <td>97.3</td>
+                                                <td>96.4</td>
+                                                <td><span class="badge bg-success">卓越</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>吴桂梅</strong></td>
+                                                <td>3</td>
+                                                <td>92.7</td>
+                                                <td>85.3</td>
+                                                <td>89.0</td>
+                                                <td><span class="badge bg-warning">良好</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>冯子芹</strong></td>
+                                                <td>5</td>
+                                                <td>93.8</td>
+                                                <td>91.0</td>
+                                                <td>92.4</td>
+                                                <td><span class="badge bg-success">优秀</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>黄梦华</strong></td>
+                                                <td>4</td>
+                                                <td>94.0</td>
+                                                <td>90.5</td>
+                                                <td>92.3</td>
+                                                <td><span class="badge bg-success">优秀</span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="key-insight mt-3">
+                                    <h6><i class="fas fa-user-check text-info"></i> 分析：</h6>
+                                    <p><strong>万菊乐</strong>负责的SMT仓员工成绩最为突出，总平均分高达96.4分，建议总结其培训与推动经验。尽管<strong>于晓萍</strong>负责人数最多（34人），管理压力大，但依然取得了优秀的平均成绩（91.6分），展现了出色的组织能力。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 结论与建议 -->
+            <div class="tab-pane fade" id="conclusion" role="tabpanel">
+                <h2 class="section-title"><i class="fas fa-clipboard-check"></i> 结论与建议</h2>
+                
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">核心结论</h5>
+                            </div>
+                            <div class="card-body">
+                                <ol>
+                                    <li><strong>认证工作成效显著：</strong>6月关键岗位认证实现了100%的通过率和发证率，整体成绩优异，表明公司现有的认证体系和培训机制是有效的。</li>
+                                    <li><strong>实操能力是强项：</strong>员工普遍实操成绩优于理论成绩，这与制造型企业的特点相符，但也提示我们需要加强系统性理论知识的培训。</li>
+                                    <li><strong>部门表现存在差异：</strong>物控部（仓储二科）表现最佳，可作为标杆；质量部和部分组装岗位的理论成绩有提升空间。</li>
+                                    <li><strong>认证覆盖关键岗位：</strong>认证有效覆盖了仓管、质检、测试、组装等一线核心岗位，为生产质量与效率提供了人员资质保障。</li>
+                                </ol>
+                            </div>
+                        </div>
+
+                        <div class="card mt-4">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0">管理建议</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="recommendation">
+                                    <h6><i class="fas fa-bullseye"></i> 短期行动（1-3个月）</h6>
+                                    <ul>
+                                        <li><strong>组织经验分享会：</strong>邀请万菊乐、于晓萍等优秀推动干事分享认证组织与培训经验。</li>
+                                        <li><strong>开展理论强化培训：</strong>针对理论平均分低于90分的部门和岗位（如部分组装测试岗），设计专项理论复习资料或微课程。</li>
+                                        <li><strong>建立成绩档案：</strong>将本次认证成绩录入员工技能档案，作为晋升、评优的参考依据之一。</li>
+                                    </ul>
+                                </div>
+                                <div class="recommendation">
+                                    <h6><i class="fas fa-chart-line"></i> 中长期策略（3-12个月）</h6>
+                                    <ul>
+                                        <li><strong>优化认证体系：</strong>考虑将“理论-实操”成绩差距作为分析点，对差距过大的岗位审查其培训内容与工作要求的匹配度。</li>
+                                        <li><strong>推广标杆实践：</strong>将物控部仓储二科的高分经验（如备考方法、实操训练模式）整理成案例，向其他部门推广。</li>
+                                        <li><strong>实施周期性复检：</strong>鉴于认证有效期为一年，建议在证书到期前3个月启动复检机制，确保持证人员技能持续达标。</li>
+                                        <li><strong>数据驱动决策：</strong>持续积累认证数据，未来可分析认证成绩与岗位绩效、产品合格率之间的相关性，进一步验证认证工作的价值。</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="mb-0">风险与机遇</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="key-insight">
+                                    <h6><i class="fas fa-exclamation-triangle text-danger"></i> 潜在风险</h6>
+                                    <ul class="small">
+                                        <li>理论成绩的“短板效应”可能在应对复杂问题或流程变更时暴露。</li>
+                                        <li>部分岗位（如“测试”）认证人数多，但理论成绩波动大，可能存在培训不均衡。</li>
+                                        <li>认证后若无持续跟踪，技能可能随时间退化。</li>
+                                    </ul>
+                                </div>
+                                <div class="key-insight mt-3">
+                                    <h6><i class="fas fa-seedling text-success"></i> 发展机遇</h6>
+                                    <ul class="small">
+                                        <li>高认证通过率提升了团队信心，可借此势头扩大关键岗位认证范围。</li>
+                                        <li>优秀的实操成绩是公司产品质量稳定的重要基础，可作为对外宣传的亮点。</li>
+                                        <li>可基于认证数据，构建更精准的“技能地图”和人才梯队。</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card mt-4">
+                            <div class="card-body text-center">
+                                <h5>报告状态</h5>
+                                <div class="mt-3">
+                                    <span class="badge bg-success p-2">数据已验证</span>
+                                    <span class="badge bg-primary p-2 mx-2">分析已完成</span>
+                                    <span class="badge bg-info p-2">建议已提出</span>
+                                </div>
+                                <p class="mt-3 small">本报告基于2026年6月认证原始数据生成，所有分析结论仅供内部管理决策参考。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <p class="mb-0">泰衡诺关键岗位认证分析报告 © 2026 人力资源部 - 组织发展科</p>
+            <p class="small mb-0">内部公开 | 最后更新: 2026-06-24</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Font Awesome for Icons -->
+    <script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
+    <!-- 替换为你的FontAwesome Kit或使用CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+
+    <script>
+        // 数据准备
+        const reportData = {
+            departments: ['组装厂生产部', '物控部', '质量部', '项目工程部', '供应链质量部'],
+            deptCounts: [38, 15, 5, 5, 1], // 根据数据统计
+            deptTheoryAvg: [88.7, 94.0, 88.6, 93.8, 95.0], // 各部门理论平均分
+            deptPracticalAvg: [94.5, 92.9, 87.6, 91.0, 86.0], // 各部门实操平均分
+            positions: ['仓管员', '测试', '目检', 'OQC', 'QC', '全能工', 'BTB扣合', '维修员', '账务员', 'IPQC', 'IQC', '其他'],
+            positionCounts: [13, 9, 6, 3, 3, 3, 5, 3, 1, 1, 1, 11], // 各岗位人数
+            scoreRanges: ['<80', '80-84', '85-89', '90-94', '95-100'],
+            theoryScoreDist: [0, 6, 12, 22, 19], // 理论成绩分布
+            practicalScoreDist: [0, 0, 2, 18, 39], // 实操成绩分布
+        };
+
+        // 1. 部门认证人数分布图 (饼图)
+        const deptCtx = document.getElementById('deptDistributionChart').getContext('2d');
+        new Chart(deptCtx, {
+            type: 'pie',
+            data: {
+                labels: reportData.departments,
+                datasets: [{
+                    data: reportData.deptCounts,
+                    backgroundColor: [
+                        '#3498db', '#2ecc71', '#e74c3c', '#f39c12', '#9b59b6'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'right' },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.label || '';
+                                if (label) label += ': ';
+                                label += context.raw + '人';
+                                label += ' (' + ((context.raw / 59) * 100).toFixed(1) + '%)';
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 2. 理论与实操成绩对比图 (分组柱状图)
+        const scoreCtx = document.getElementById('scoreComparisonChart').getContext('2d');
+        new Chart(scoreCtx, {
+            type: 'bar',
+            data: {
+                labels: reportData.departments,
+                datasets: [
+                    {
+                        label: '理论平均分',
+                        data: reportData.deptTheoryAvg,
+                        backgroundColor: 'rgba(52, 152, 219, 0.7)',
+                        borderColor: 'rgba(52, 152, 219, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: '实操平均分',
+                        data: reportData.deptPracticalAvg,
+                        backgroundColor: 'rgba(46, 204, 113, 0.7)',
+                        borderColor: 'rgba(46, 204, 113, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 80,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: '平均分数'
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.raw.toFixed(1);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 3. 各部门成绩表现雷达图
+        const deptScoreCtx = document.getElementById('deptScoreChart').getContext('2d');
+        // 为雷达图准备数据，只选取有多个员工的部门（去掉供应链质量部单人部门）
+        const radarDepts = reportData.departments.slice(0, 4);
+        const radarTheory = reportData.deptTheoryAvg.slice(0, 4);
+        const radarPractical = reportData.deptPracticalAvg.slice(0, 4);
+
+        new Chart(deptScoreCtx, {
+            type: 'radar',
+            data: {
+                labels: radarDepts,
+                datasets: [
+                    {
+                        label: '理论平均分',
+                        data: radarTheory,
+                        backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                        borderColor: 'rgba(52, 152, 219, 1)',
+                        pointBackgroundColor: 'rgba(52, 152, 219, 1)',
+                    },
+                    {
+                        label: '实操平均分',
+                        data: radarPractical,
+                        backgroundColor: 'rgba(46, 204, 113, 0.2)',
+                        borderColor: 'rgba(46, 204, 113, 1)',
+                        pointBackgroundColor: 'rgba(46, 204, 113, 1)',
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        beginAtZero: false,
+                        min: 85,
+                        max: 100,
+                        ticks: {
+                            stepSize: 5
+                        }
+                    }
+                },
+                plugins: {
+                    legend: { position: 'top' }
+                }
+            }
+        });
+
+        // 4. 岗位分布图 (水平柱状图)
+        const positionCtx = document.getElementById('positionChart').getContext('2d');
+        new Chart(positionCtx, {
+            type: 'bar',
+            data: {
+                labels: reportData.positions,
+                datasets: [{
+                    label: '认证人数',
+                    data: reportData.positionCounts,
+                    backgroundColor: 'rgba(155, 89, 182, 0.7)',
+                    borderColor: 'rgba(155, 89, 182, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y', // 水平条形图
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '人数'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+
+        // 5. 成绩分布图 (折线图)
+        const scoreDistCtx = document.getElementById('scoreDistributionChart').getContext('2d');
+        new Chart(scoreDistCtx, {
+            type: 'line',
+            data: {
+                labels: reportData.scoreRanges,
+                datasets: [
+                    {
+                        label: '理论成绩分布',
+                        data: reportData.theoryScoreDist,
+                        borderColor: 'rgba(52, 152, 219, 1)',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        tension: 0.2,
+                        fill: true
+                    },
+                    {
+                        label: '实操成绩分布',
+                        data: reportData.practicalScoreDist,
+                        borderColor: 'rgba(46, 204, 113, 1)',
+                        backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                        tension: 0.2,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '人数'
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.raw + '人';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 简单初始化标签页
+        document.addEventListener('DOMContentLoaded', function() {
+            var triggerTabList = [].slice.call(document.querySelectorAll('#reportTabs button'));
+            triggerTabList.forEach(function (triggerEl) {
+                var tabTrigger = new bootstrap.Tab(triggerEl);
+                triggerEl.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    tabTrigger.show();
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+```
