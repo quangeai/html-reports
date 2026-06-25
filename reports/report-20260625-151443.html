@@ -1,0 +1,325 @@
+# A4格式HTML文档转换与导出Word功能
+
+我将按照您提供的排版规范，将指定URL的文档内容转换为标准HTML格式，并添加导出Word文档功能。
+
+首先，我需要获取文档内容，但由于安全限制，我无法直接访问外部URL。我将创建一个模拟文档内容来演示完整的转换和导出功能。
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A4格式文档转换与导出</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: "FangSong", "仿宋", serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .controls {
+            width: 100%;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 10px 20px;
+            background-color: #2c80ff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #1a6fe0;
+        }
+        
+        .a4-container {
+            width: 210mm;
+            min-height: 297mm;
+            background-color: white;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            margin-bottom: 30px;
+            padding: 25mm 20mm;
+            position: relative;
+        }
+        
+        /* A4文档样式 - 严格按照规范 */
+        .a4-document h1 {
+            font-size: 22pt;
+            font-family: "SimSun", "NSimSun", serif;
+            line-height: 32pt;
+            text-align: center;
+            margin-bottom: 28pt;
+        }
+        
+        .a4-document p {
+            font-size: 16pt;
+            font-family: "FangSong", "仿宋", serif;
+            line-height: 28pt;
+            text-align: left;
+            margin-bottom: 14pt;
+            margin-top: 14pt;
+        }
+        
+        /* 正文第一段落不缩进 */
+        .a4-document p.body-first {
+            text-indent: 0;
+        }
+        
+        /* 正文第二段落及以后：首行缩进2字符 */
+        .a4-document p.body-paragraph {
+            text-indent: 2em;
+        }
+        
+        /* 落款处理 */
+        .a4-document p.signature {
+            text-align: right;
+            text-indent: 0;
+            margin-top: 28pt;
+        }
+        
+        .a4-document p.signature:last-child {
+            margin-bottom: 0;
+        }
+        
+        .status {
+            margin-top: 10px;
+            color: #666;
+            font-size: 14px;
+            text-align: center;
+        }
+        
+        @media print {
+            body {
+                background-color: white;
+                padding: 0;
+            }
+            
+            .controls {
+                display: none;
+            }
+            
+            .a4-container {
+                box-shadow: none;
+                margin: 0;
+                padding: 25mm 20mm;
+                width: 100%;
+                height: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="controls">
+            <button id="exportWord">导出Word文档</button>
+            <button id="printDocument">打印文档</button>
+            <button id="copyHTML">复制HTML代码</button>
+        </div>
+        
+        <div class="a4-container">
+            <div class="a4-document" id="documentContent">
+                <!-- 文档内容将通过JavaScript动态生成 -->
+            </div>
+        </div>
+        
+        <div class="status" id="statusMessage">文档已按A4规范格式化</div>
+    </div>
+
+    <script>
+        // 模拟从URL获取的文档内容
+        const documentContent = `关于进一步加强网络安全管理的通知
+
+各单位、各部门：
+
+为深入贯彻落实国家网络安全法律法规，提升我单位网络安全防护能力，保障信息系统安全稳定运行，现就进一步加强网络安全管理工作通知如下：
+
+一、提高网络安全意识。各单位要充分认识网络安全工作的重要性，牢固树立正确的网络安全观，切实增强责任感和紧迫感。
+
+二、落实网络安全责任。各单位主要负责人是网络安全第一责任人，要亲自部署、亲自检查网络安全工作，确保责任到人、措施到位。
+
+三、加强网络安全管理。各单位要建立健全网络安全管理制度，完善网络安全防护体系，定期开展网络安全检查，及时发现和整改安全隐患。
+
+四、强化技术防护措施。各单位要加强网络安全技术防护，完善防火墙、入侵检测、病毒防护等安全设施，提高网络安全防护能力。
+
+五、做好应急准备工作。各单位要制定完善网络安全应急预案，定期组织应急演练，提高应对网络安全事件的能力。
+
+六、加强人员培训教育。各单位要定期组织网络安全培训，提高全体员工的网络安全意识和防护技能。
+
+请各单位按照本通知要求，认真抓好贯彻落实，并于本月底前将落实情况报送至网络安全办公室。
+
+网络安全办公室
+2023年10月15日`;
+
+        // 按照规范处理文档内容
+        function formatDocument(content) {
+            // 分割段落（按空行分割）
+            const lines = content.split(/
+\s*
+/);
+            
+            // 识别各部分
+            let title = "";
+            let body = [];
+            let signature = [];
+            
+            if (lines.length > 0) {
+                // 第一行作为标题
+                title = lines[0].trim();
+                
+                // 最后两行作为落款
+                if (lines.length >= 3) {
+                    signature = lines.slice(-2);
+                    // 正文是从标题后到落款前的内容
+                    body = lines.slice(1, lines.length - 2);
+                } else {
+                    // 如果没有足够的行，则所有内容都是正文
+                    body = lines.slice(1);
+                }
+            }
+            
+            // 构建HTML
+            let html = "";
+            
+            // 添加标题
+            if (title) {
+                html += `<h1>${title}</h1>`;
+            }
+            
+            // 添加正文
+            body.forEach((paragraph, index) => {
+                const paragraphText = paragraph.trim();
+                if (paragraphText) {
+                    // 第一段落不缩进，后续段落缩进
+                    const className = index === 0 ? "body-first" : "body-paragraph";
+                    html += `<p class="${className}">${paragraphText}</p>`;
+                }
+            });
+            
+            // 添加落款
+            signature.forEach((line, index) => {
+                const lineText = line.trim();
+                if (lineText) {
+                    html += `<p class="signature">${lineText}</p>`;
+                }
+            });
+            
+            return html;
+        }
+
+        // 初始化文档内容
+        document.getElementById('documentContent').innerHTML = formatDocument(documentContent);
+
+        // 导出Word文档功能
+        document.getElementById('exportWord').addEventListener('click', function() {
+            const statusMessage = document.getElementById('statusMessage');
+            statusMessage.textContent = "正在生成Word文档...";
+            
+            // 获取格式化后的HTML内容
+            const content = document.getElementById('documentContent').innerHTML;
+            
+            // 创建包含完整样式的HTML文档
+            const fullHtml = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <style>
+                        body {
+                            width: 210mm;
+                            margin: 0;
+                            padding: 25mm 20mm;
+                            font-family: "FangSong", "仿宋", serif;
+                        }
+                        
+                        h1 {
+                            font-size: 22pt;
+                            font-family: "SimSun", "NSimSun", serif;
+                            line-height: 32pt;
+                            text-align: center;
+                            margin-bottom: 28pt;
+                        }
+                        
+                        p {
+                            font-size: 16pt;
+                            font-family: "FangSong", "仿宋", serif;
+                            line-height: 28pt;
+                            text-align: left;
+                            margin-bottom: 14pt;
+                            margin-top: 14pt;
+                        }
+                        
+                        p.body-first {
+                            text-indent: 0;
+                        }
+                        
+                        p.body-paragraph {
+                            text-indent: 2em;
+                        }
+                        
+                        p.signature {
+                            text-align: right;
+                            text-indent: 0;
+                            margin-top: 28pt;
+                        }
+                    </style>
+                </head>
+                <body>
+                    ${content}
+                </body>
+                </html>
+            `;
+            
+            // 创建Blob对象
+            const blob = new Blob([fullHtml], { type: 'application/msword' });
+            
+            // 创建下载链接
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'A4格式文档.doc';
+            
+            // 触发下载
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            statusMessage.textContent = "Word文档已生成并开始下载";
+            
+            // 3秒后恢复状态消息
+            setTimeout(() => {
+                statusMessage.textContent = "文档已按A4规范格式化";
+            }, 3000);
+        });
+
+        // 打印文档功能
+        document.getElementById('printDocument').addEventListener
