@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+<style>
+* {margin:0;padding:0;box-sizing:border-box;font-family:"Microsoft Yahei",sans-serif;}
+body {background:#f5f7fa;padding:30px 40px;}
+.main-box {max-width:1400px;margin:0 auto;background:#fff;padding:45px;border-radius:14px;box-shadow:0 3px 16px rgba(0,0,0,0.06);}
+h1 {text-align:center;color:#2c5282;padding-bottom:16px;border-bottom:3px solid #409EFF;margin-bottom:35px;font-size:26px;}
+h2 {font-size:19px;margin:32px 0 16px;color:#2d3748;border-left:6px solid #409EFF;padding-left:12px;}
+.chart-card {width:100%;height:430px;border:1px solid #e2e8f0;border-radius:10px;margin-bottom:40px;}
+.info-area {padding:18px 22px;background:#f8fafc;border-radius:9px;line-height:1.8;margin-bottom:22px;}
+.find-item {background:#ebf8ff;padding:12px 16px;border-radius:7px;margin:10px 0;}
+.abnormal-item {background:#fff1f1;padding:12px 16px;border-radius:7px;margin:10px 0;color:#c53030;}
+.empty-text {color:#94a3b8;text-align:center;padding-top:180px;font-size:16px;}
+footer {margin-top:60px;text-align:center;color:#718096;font-size:14px;padding-top:20px;border-top:1px solid #e2e8f0;}
+</style>
+</head>
+<body>
+<div class="main-box">
+    <h1>Excel HR数据AI可视化分析报告</h1>
+
+    <h2>一、数据集基础概览</h2>
+    <div class="info-area">
+        数据总行数：50<br/>
+        数据总列数：11<br/>
+        数值型字段：工作内容匹配度,薪酬公平性,福利完善度,绩效激励合理性,培训机会,工作环境<br/>
+        分类型字段：员工编号,所属部门,所在岗位,司龄区间,年龄区间
+    </div>
+
+    <h2>二、各字段缺失值统计柱状图</h2>
+    <div id="chart-missing" class="chart-card"></div>
+
+    <h2>三、数值字段四分位数箱线图（IQR异常识别）</h2>
+    <div id="chart-box" class="chart-card"></div>
+
+    <h2>四、核心数据分析结论</h2>
+    <div class="info-area">
+        <div class="find-item">维度：整体满意度维度<br>分析结论：工作环境满意度均值最高（3.56），无1分评价，整体认可度较好；薪酬公平性均值最低（2.7），有3名员工打1分，是当前满意度核心短板<br>可信度：高</div><div class="find-item">维度：部门-销售部<br>分析结论：销售部员工薪酬公平性满意度偏低，有3名员工打1分，占部门总人数的21.4%（3/14），需重点核查销售薪酬体系合理性<br>可信度：高</div><div class="find-item">维度：司龄-1年以内<br>分析结论：新员工（司龄1年以内）中有2人对培训机会打1分，占该群体的11.1%（2/18），反映新员工培训体系可能存在覆盖不足或质量问题<br>可信度：中</div><div class="find-item">维度：员工-EMP022<br>分析结论：产品部UE设计师（司龄5-10年）在工作内容匹配度、绩效激励合理性均打1分，为全样本满意度最低员工，需单独沟通排查问题<br>可信度：高</div><div class="find-item">维度：部门-技术部<br>分析结论：技术部绩效激励合理性均值达3.55，高于整体均值3.18，说明技术部绩效激励体系认可度较高<br>可信度：高</div>
+    </div>
+
+    <h2>五、识别到的异常数据明细</h2>
+    <div class="info-area">
+        <div class="abnormal-item">行号：22 | 字段：工作内容匹配度 | 数值：1 | 原因：员工对工作内容严重不匹配，需核实岗位适配情况</div><div class="abnormal-item">行号：22 | 字段：绩效激励合理性 | 数值：1 | 原因：员工对绩效激励体系严重不满，需排查激励规则</div><div class="abnormal-item">行号：23 | 字段：工作内容匹配度 | 数值：1 | 原因：员工对工作内容严重不匹配，需核实岗位适配情况</div><div class="abnormal-item">行号：26 | 字段：薪酬公平性 | 数值：1 | 原因：员工对薪酬公平性严重不满，需核查薪酬核算规则</div><div class="abnormal-item">行号：29 | 字段：绩效激励合理性 | 数值：1 | 原因：员工对绩效激励体系严重不满，需排查激励规则</div><div class="abnormal-item">行号：33 | 字段：工作内容匹配度 | 数值：1 | 原因：员工对工作内容严重不匹配，需核实岗位适配情况</div><div class="abnormal-item">行号：35 | 字段：薪酬公平性 | 数值：1 | 原因：员工对薪酬公平性严重不满，需核查薪酬核算规则</div><div class="abnormal-item">行号：35 | 字段：绩效激励合理性 | 数值：1 | 原因：员工对绩效激励体系严重不满，需排查激励规则</div><div class="abnormal-item">行号：35 | 字段：培训机会 | 数值：1 | 原因：员工对培训机会严重不满，需排查培训资源分配</div><div class="abnormal-item">行号：36 | 字段：培训机会 | 数值：1 | 原因：员工对培训机会严重不满，需排查培训资源分配</div><div class="abnormal-item">行号：39 | 字段：薪酬公平性 | 数值：1 | 原因：员工对薪酬公平性严重不满，需核查薪酬核算规则</div><div class="abnormal-item">行号：40 | 字段：培训机会 | 数值：1 | 原因：员工对培训机会严重不满，需排查培训资源分配</div><div class="abnormal-item">行号：49 | 字段：培训机会 | 数值：1 | 原因：员工对培训机会严重不满，需排查培训资源分配</div>
+    </div>
+
+    <h2>六、推荐可视化方案</h2>
+    <div class="info-area">
+        推荐图表类型：柱状图<br/>
+        图表分析用途：Excel人力资源指标分析
+    </div>
+
+    <footer>大连东软信息学院 HR数据分析工作流实战实验</footer>
+</div>
+
+<script>
+// 缺失值柱状图初始化
+var chartMissing = echarts.init(document.getElementById('chart-missing'));
+var missX = ["\u5458\u5de5\u7f16\u53f7", "\u6240\u5c5e\u90e8\u95e8", "\u6240\u5728\u5c97\u4f4d", "\u53f8\u9f84\u533a\u95f4", "\u5e74\u9f84\u533a\u95f4", "\u5de5\u4f5c\u5185\u5bb9\u5339\u914d\u5ea6", "\u85aa\u916c\u516c\u5e73\u6027", "\u798f\u5229\u5b8c\u5584\u5ea6", "\u7ee9\u6548\u6fc0\u52b1\u5408\u7406\u6027", "\u57f9\u8bad\u673a\u4f1a", "\u5de5\u4f5c\u73af\u5883"];
+var missY = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+var optMissing = {
+    title: {text:"字段缺失样本数量统计"},
+    tooltip: {trigger:"axis"},
+    xAxis: {type:"category", data: missX},
+    yAxis: {type:"value", name:"缺失行数"},
+    series: [{type:"bar", data: missY, itemStyle:{color:"#409EFF"}}]
+};
+// 无缺失值时图表展示提示文字，不空白
+if(missX.length === 0){
+    optMissing.title.text = "缺失值统计：数据集无缺失数据";
+    optMissing.xAxis.data = ["无缺失字段"];
+    optMissing.series[0].data = [0];
+}
+chartMissing.setOption(optMissing);
+
+// 数值箱线图初始化
+var chartBox = echarts.init(document.getElementById('chart-box'));
+var boxData = [{"name": "\u5de5\u4f5c\u5185\u5bb9\u5339\u914d\u5ea6", "data": [[1, 1, 4, 1, 5]]}, {"name": "\u85aa\u916c\u516c\u5e73\u6027", "data": [[1, 1, 3, 1, 5]]}, {"name": "\u798f\u5229\u5b8c\u5584\u5ea6", "data": [[1, 1, 3, 1, 5]]}, {"name": "\u7ee9\u6548\u6fc0\u52b1\u5408\u7406\u6027", "data": [[1, 1, 3, 1, 5]]}, {"name": "\u57f9\u8bad\u673a\u4f1a", "data": [[1, 1, 4, 1, 5]]}, {"name": "\u5de5\u4f5c\u73af\u5883", "data": [[2, 2, 4, 2, 5]]}];
+var optBox = {
+    title: {text:"数值字段四分位数分布箱线图"},
+    tooltip: {trigger:"item"},
+    xAxis: {type:"category"},
+    yAxis: {type:"value"},
+    series: boxData
+};
+// 无数值字段时展示提示
+if(boxData.length <= 2){
+    optBox.title.text = "数值分布：无有效数值字段可展示";
+}
+chartBox.setOption(optBox);
+
+// 浏览器窗口自适应重绘图表
+window.addEventListener('resize', function(){
+    chartMissing.resize();
+    chartBox.resize();
+})
+</script>
+</body>
+</html>
