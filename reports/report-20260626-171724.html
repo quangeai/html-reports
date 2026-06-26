@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>公文文档</title>
+    <style>
+        body {
+            width: 210mm;
+            margin: 25mm auto;
+            padding: 0;
+            font-family: "FangSong", "仿宋", serif;
+            font-size: 16pt;
+            line-height: 28pt;
+            background-color: #ffffff;
+        }
+        h1 {
+            font-family: "SimSun", "NSimSun", serif;
+            font-size: 22pt;
+            line-height: 32pt;
+            text-align: center;
+            margin: 0 0 28pt 0;
+        }
+        p {
+            margin-top: 14pt;
+            margin-bottom: 14pt;
+            text-align: left;
+        }
+        p.no-indent {
+            text-indent: 0;
+        }
+        p.indent {
+            text-indent: 2em;
+        }
+        p.signature {
+            text-align: right;
+            text-indent: 0;
+        }
+        .export-btn {
+            margin-bottom: 20pt;
+            padding: 8pt 16pt;
+            font-size: 16pt;
+            font-family: inherit;
+            cursor: pointer;
+            border: 1px solid #333;
+            border-radius: 4pt;
+            background-color: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+    <button class="export-btn" onclick="exportToWord()">导出Word文档</button>
+    <h1>关于开展2024年度员工培训的通知</h1>
+    <p class="no-indent">为提升员工专业技能，增强团队凝聚力，公司决定开展2024年度员工培训活动，现将有关事宜通知如下：</p>
+    <p class="indent">一、培训时间</p>
+    <p class="indent">2024年6月15日至6月20日，每日上午9:00-11:30，下午14:30-17:00。</p>
+    <p class="indent">二、培训地点</p>
+    <p class="indent">公司总部多功能会议室（北京市朝阳区XX路XX号）。</p>
+    <p class="indent">三、培训对象</p>
+    <p class="indent">公司全体在职员工，包括各部门管理人员及基层员工。</p>
+    <p class="indent">四、培训内容</p>
+    <p class="indent">1. 行业最新发展趋势解读；</p>
+    <p class="indent">2. 岗位专业技能提升课程；</p>
+    <p class="indent">3. 团队协作与沟通技巧培训。</p>
+    <p class="indent">五、注意事项</p>
+    <p class="indent">1. 请各部门统计参训人员名单，于6月10日前提交至人力资源部；</p>
+    <p class="indent">2. 参训人员需提前10分钟到达培训现场，遵守培训纪律；</p>
+    <p class="indent">3. 培训期间不得无故缺席，如有特殊情况需提前向部门负责人请假。</p>
+    <p class="signature">人力资源部</p>
+    <p class="signature">2024年5月20日</p>
+
+    <script>
+        function exportToWord() {
+            // 构建导出的HTML内容，移除导出按钮并保留完整样式
+            const exportHtml = `
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        ${document.querySelector('style').textContent}
+    </style>
+</head>
+<body>
+    ${document.body.innerHTML.replace(document.querySelector('.export-btn').outerHTML, '')}
+</body>
+</html>`;
+            
+            // 创建Blob对象
+            const blob = new Blob([exportHtml], { type: 'application/msword' });
+            const url = URL.createObjectURL(blob);
+            
+            // 创建下载链接
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = '员工培训通知.doc';
+            document.body.appendChild(a);
+            a.click();
+            
+            // 清理资源
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
