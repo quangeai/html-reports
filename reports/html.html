@@ -1,255 +1,94 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>数据看板</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
-        }
-        body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
-            padding: 20px;
-            color: #333;
-        }
-        .dashboard {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 16px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-            border-left: 6px solid #3498db;
-        }
-        .header h1 {
-            color: #2c3e50;
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-        }
-        .header h1 i {
-            color: #3498db;
-        }
-        .header p {
-            color: #7f8c8d;
-            font-size: 1.1rem;
-        }
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            margin-bottom: 30px;
-        }
-        .stat-card {
-            background: white;
-            padding: 25px;
-            border-radius: 16px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            border-top: 5px solid;
-        }
-        .stat-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
-        }
-        .stat-card:nth-child(1) { border-color: #3498db; }
-        .stat-card:nth-child(2) { border-color: #2ecc71; }
-        .stat-card:nth-child(3) { border-color: #e74c3c; }
-        .stat-card:nth-child(4) { border-color: #f39c12; }
-        .stat-icon {
-            font-size: 2.8rem;
-            margin-right: 20px;
-            opacity: 0.9;
-        }
-        .stat-card:nth-child(1) .stat-icon { color: #3498db; }
-        .stat-card:nth-child(2) .stat-icon { color: #2ecc71; }
-        .stat-card:nth-child(3) .stat-icon { color: #e74c3c; }
-        .stat-card:nth-child(4) .stat-icon { color: #f39c12; }
-        .stat-content h3 {
-            font-size: 1rem;
-            color: #7f8c8d;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .stat-value {
-            font-size: 2.2rem;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-        .stat-change {
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .positive { color: #27ae60; }
-        .negative { color: #e74c3c; }
-        .charts-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-            gap: 25px;
-            margin-bottom: 30px;
-        }
-        .chart-card {
-            background: white;
-            padding: 25px;
-            border-radius: 16px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
-        }
-        .chart-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #eee;
-        }
-        .chart-header h2 {
-            color: #2c3e50;
-            font-size: 1.4rem;
-        }
-        .chart-placeholder {
-            height: 250px;
-            background: linear-gradient(45deg, #f8f9fa, #e9ecef);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #6c757d;
-            font-size: 1.1rem;
-        }
-        .table-container {
-            background: white;
-            padding: 25px;
-            border-radius: 16px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
-            margin-bottom: 30px;
-        }
-        .table-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .table-header h2 {
-            color: #2c3e50;
-            font-size: 1.4rem;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        thead {
-            background: #f8f9fa;
-        }
-        th {
-            padding: 16px 15px;
-            text-align: left;
-            color: #2c3e50;
-            font-weight: 600;
-            border-bottom: 2px solid #dee2e6;
-        }
-        td {
-            padding: 14px 15px;
-            border-bottom: 1px solid #eee;
-        }
-        tr:hover {
-            background-color: #f8f9fa;
-        }
-        .status {
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-        .status-active {
-            background: #d4edda;
-            color: #155724;
-        }
-        .status-pending {
-            background: #fff3cd;
-            color: #856404;
-        }
-        .footer {
-            text-align: center;
-            padding: 20px;
-            color: #7f8c8d;
-            font-size: 0.9rem;
-            border-top: 1px solid #eee;
-            margin-top: 20px;
-        }
-        @media (max-width: 768px) {
-            .charts-container {
-                grid-template-columns: 1fr;
-            }
-            .chart-card, .table-container {
-                padding: 20px;
-            }
-            .header h1 {
-                font-size: 2rem;
-            }
-        }
-    </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body>
-    <div class="dashboard">
-        <div class="header">
-            <h1><i class="fas fa-chart-line"></i> 业务数据看板</h1>
-            <p>实时监控关键业务指标与性能数据 | 更新于 2023年10月27日 14:30</p>
-        </div>
+好的，根据您提供的这份详细的“45分钟课堂老师位置轨迹”数据，我们可以将之前的数据看板设计思路，具体应用到**课堂教学行为分析**这个场景中。
 
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon"><i class="fas fa-user-friends"></i></div>
-                <div class="stat-content">
-                    <h3>总用户数</h3>
-                    <div class="stat-value">12,847</div>
-                    <div class="stat-change positive"><i class="fas fa-arrow-up"></i> 8.5% 较上月</div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon"><i class="fas fa-shopping-cart"></i></div>
-                <div class="stat-content">
-                    <h3>本月订单</h3>
-                    <div class="stat-value">3,241</div>
-                    <div class="stat-change positive"><i class="fas fa-arrow-up"></i> 12.3% 较上月</div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon"><i class="fas fa-dollar-sign"></i></div>
-                <div class="stat-content">
-                    <h3>总收入</h3>
-                    <div class="stat-value">$184,250</div>
-                    <div class="stat-change positive"><i class="fas fa-arrow-up"></i> 5.7% 较上月</div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon"><i class="fas fa-chart-bar"></i></div>
-                <div class="stat-content">
-                    <h3>转化率</h3>
-                    <div class="stat-value">4.8%</div>
-                    <div class="stat-change negative"><i class="fas fa-arrow-down"></i> 0.3% 较上月</div>
-                </div>
-            </div>
-        </div>
+以下是为这份数据量身定制的**“课堂教学行为动态分析看板”** 设计思路稿。
 
-        <div class="charts-container">
-            <div class="chart-card">
-                <div class="chart-header">
-                    <h2><i class="fas fa-chart-area
+---
+
+### **课堂教学行为动态分析看板设计思路稿**
+
+**1. 看板核心目标**
+*   **宏观洞察**：快速掌握一堂课中教师行为的整体分布与时间分配。
+*   **模式分析**：清晰呈现“讲授-演示-巡视指导”的教学环节流转模式。
+*   **量化评估**：为教学设计与课堂效率提供客观、量化的评估依据。
+
+**2. 看板整体布局**
+采用“核心指标 + 时间主线 + 细节下钻”的结构：
+*   **顶部**：核心教学行为指标卡片。
+*   **中部**：以时间线为核心的教师行为轨迹与环节构成分析。
+*   **底部**：具体行为明细与时间片分析。
+
+**3. 具体图表设计**
+
+**A. 顶部 - 核心指标卡**
+*   **形式**：4-6个关键指标卡片。
+*   **内容建议**：
+    *   **总时长**：45分钟（固定值，可展示实际记录时长）。
+    *   **讲授时长**：在讲台区域进行知识讲解的总时间。
+    *   **演示时长**：在演示区进行操作演示的总时间。
+    *   **巡视指导时长**：在学生座位区域进行互动与指导的总时间。
+    *   **环节切换次数**：老师在不同区域间移动切换的次数（衡量课堂节奏）。
+    *   **单一环节最长持续时间**：识别最专注的教学环节。
+*   **设计要点**：时长类指标可附加占比（如：讲授时长 18分钟，占40%），并与理想时间分配（如有）进行对比。
+
+**B. 中部 - 核心行为分析区**
+
+*   **图表1：教师课堂行为时间线**
+    *   **图表类型**：**甘特图** 或 **堆叠面积图**。
+    *   **X轴**：分钟数（1-45）。
+    *   **Y轴/颜色**：**老师所在区域**（讲台、演示区、学生座位区），用不同颜色区分。
+    *   **作用**：**这是本看板的灵魂图表**。直观展示整节课中，教师位置随时间变化的完整轨迹，清晰看到每个环节的起止和切换点。
+
+*   **图表2：教学环节时间构成**
+    *   **图表类型**：**饼图** 或 **环形图**。
+    *   **内容**：展示“对应课堂环节”（课程开场、演示、巡视、讲解、二次演示等）的时间占比。
+    *   **作用**：量化分析教师在各类教学活动中投入的时间比重，评估教学重点。
+
+*   **图表3：各区域行为时长对比**
+    *   **图表类型**：**水平条形图**。
+    *   **内容**：比较“讲台区域”、“演示区”、“学生座位区域”三个区域的累计停留时长。
+    *   **作用**：从空间维度快速判断教师是“以教师为中心”（讲台/演示区主导）还是“以学生为中心”（座位区主导）。
+
+**C. 底部 - 明细数据与下钻分析区**
+
+*   **图表4：详细行为记录表**
+    *   **形式**：**交互式数据表格**。
+    *   **内容**：完整展示输入表格的数据（分钟数、区域、环节、说明），支持排序和筛选。
+    *   **作用**：提供最原始的记录，供深度查阅。可与上方的甘特图联动，点击时间点，表格定位到对应行。
+
+*   **图表5：环节持续时长分布**
+    *   **图表类型**：**折线图** 或 **散点图**。
+    *   **X轴**：环节顺序（第1次巡视、第2次讲解等）。
+    *   **Y轴**：该环节的持续分钟数。
+    *   **作用**：分析教师在不同教学阶段的行为模式是否稳定，例如每次巡视的时间是递增还是递减。
+
+**4. 交互与筛选功能**
+*   **全局筛选器**：可考虑按 **课程类型**（理论课、实操课）、**教师**、**班级** 进行筛选（如果有多节课数据）。
+*   **图表联动与下钻**：
+    *   点击**饼图**的某个环节，**甘特图**高亮显示该环节的所有时间段。
+    *   点击**甘特图**的任意一个色块，**详细行为记录表**自动滚动到对应分钟，并弹出该分钟的“区域说明”。
+    *   点击**条形图**的任一区域，筛选整张看板只显示在该区域发生的行为。
+
+**5. 设计原则总结**
+*   **时间为主线**：所有图表围绕“45分钟时间轴”展开，强调动态过程。
+*   **颜色一致性**：为“讲台、演示区、学生座位区”三个区域固定一套直观的颜色（如蓝色-讲授、橙色-演示、绿色-互动），并在所有图表中统一使用。
+*   **突出轨迹与模式**：通过甘特图让“行为轨迹”一目了然，这是本看板的最大价值。
+*   **服务于教学反思**：看板的最终目的是帮助教师或教研员客观回顾课堂，优化时间分配和教学环节设计。
+
+---
+**示例布局草图（针对本堂45分钟课）：**
+
+```
+| [课程筛选器] [教师筛选器] （预留） |
+|----------------------------------------|
+| [KPI:总时长] [KPI:讲授占比] [KPI:演示占比] [KPI:巡视占比] [KPI:切换次数] |
+|----------------------------------------|
+| 图表1：教师行为时间线（甘特图/堆叠面积图）  |
+|----------------------------------------|
+| 图表2：教学环节时间构成（饼图） | 图表3：区域时长对比（条形图） |
+|----------------------------------------|
+| 图表4：详细行为记录表（交互表格）           |
+|----------------------------------------|
+| 图表5：环节持续时长分布（折线图）           |
+```
+
+这套设计将您提供的线性记录数据，转化为一个**可视化、可交互、可分析**的动态教学画像，完美契合了从“数据记录”到“洞察分析”的决策支持路径。
