@@ -1,0 +1,399 @@
+# 语文生字消消乐游戏
+
+根据您的需求，我设计了一个视觉精美、交互友好的语文生字消消乐游戏。游戏采用简淡绿色主题，具有3D立体效果的泡泡卡片，支持用户输入生字表进行配对游戏。
+
+下面是完整的游戏代码，包含响应式设计、精美动画效果和完整的游戏逻辑：
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>生字消消乐</title>
+  <!-- 引入Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- 引入Font Awesome -->
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- Tailwind配置 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#4CAF50',
+            secondary: '#81C784',
+            accent: '#2E7D32',
+            light: '#E8F5E9',
+            dark: '#1B5E20'
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+  
+  <!-- 自定义工具类 -->
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .bubble-shadow {
+        box-shadow: 0 10px 15px -3px rgba(76, 175, 80, 0.3), 0 4px 6px -2px rgba(76, 175, 80, 0.15);
+      }
+      .bubble-hover {
+        transition: all 0.3s ease;
+      }
+      .bubble-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 25px -5px rgba(76, 175, 80, 0.4), 0 10px 10px -5px rgba(76, 175, 80, 0.2);
+      }
+      .bubble-selected {
+        border: 3px solid #FFC107;
+        transform: scale(1.05);
+        box-shadow: 0 15px 30px -5px rgba(255, 193, 7, 0.4);
+      }
+      .fade-out {
+        animation: fadeOut 0.5s ease forwards;
+      }
+      @keyframes fadeOut {
+        0% { opacity: 1; transform: scale(1); }
+        100% { opacity: 0; transform: scale(0.5); }
+      }
+      .pop-in {
+        animation: popIn 0.5s ease-out;
+      }
+      @keyframes popIn {
+        0% { opacity: 0; transform: scale(0.8); }
+        70% { opacity: 1; transform: scale(1.05); }
+        100% { opacity: 1; transform: scale(1); }
+      }
+      .success-animation {
+        animation: success 1.5s ease-in-out;
+      }
+      @keyframes success {
+        0% { transform: scale(0.5); opacity: 0; }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); opacity: 1; }
+      }
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-light to-white min-h-screen font-sans text-dark">
+  <!-- 页面容器 -->
+  <div class="container mx-auto px-4 py-8 max-w-6xl">
+    
+    <!-- 标题区域 -->
+    <header class="text-center mb-8 pop-in">
+      <h1 class="text-[clamp(2rem,5vw,3.5rem)] font-bold text-accent mb-2 tracking-wider">
+        <i class="fa fa-gamepad mr-3 text-primary"></i>生字消消乐
+      </h1>
+      <p class="text-gray-600 text-lg">点击配对生字和拼音，挑战成功！</p>
+    </header>
+    
+    <!-- 输入区域 -->
+    <section id="input-section" class="bg-white rounded-xl shadow-lg p-6 mb-8 max-w-3xl mx-auto pop-in" style="animation-delay: 0.1s">
+      <h2 class="text-xl font-bold text-accent mb-4 flex items-center">
+        <i class="fa fa-list-ul mr-2"></i>输入生字表
+      </h2>
+      <p class="text-gray-600 mb-4">请输入生字和拼音，格式：生字:拼音，每行一个，例如："学:xué"</p>
+      <textarea id="word-input" rows="5" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all" placeholder="例如：&#10;学:xué&#10;生:shēng&#10;语:yǔ&#10;文:wén&#10;游:yóu&#10;戏:xì"></textarea>
+      <div class="mt-4 flex justify-end">
+        <button id="start-btn" class="bg-primary hover:bg-accent text-white font-bold py-2 px-6 rounded-full transition-all transform hover:scale-105 flex items-center">
+          <i class="fa fa-play mr-2"></i>开始游戏
+        </button>
+      </div>
+    </section>
+    
+    <!-- 游戏区域 -->
+    <section id="game-section" class="hidden">
+      <!-- 游戏状态 -->
+      <div class="flex justify-between items-center mb-6">
+        <div class="text-lg font-semibold text-accent">
+          <i class="fa fa-clock-o mr-2"></i><span id="timer">00:00</span>
+        </div>
+        <div class="text-lg font-semibold text-accent">
+          <i class="fa fa-puzzle-piece mr-2"></i>剩余: <span id="remaining">0</span>
+        </div>
+      </div>
+      
+      <!-- 泡泡网格 -->
+      <div id="bubble-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
+        <!-- 泡泡将通过JS动态生成 -->
+      </div>
+      
+      <!-- 重新开始按钮 -->
+      <div class="text-center">
+        <button id="restart-btn" class="bg-secondary hover:bg-primary text-white font-bold py-2 px-6 rounded-full transition-all transform hover:scale-105 hidden">
+          <i class="fa fa-refresh mr-2"></i>再来一局
+        </button>
+      </div>
+    </section>
+    
+    <!-- 成功消息 -->
+    <div id="success-message" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4 text-center success-animation">
+        <div class="text-6xl text-yellow-500 mb-4">
+          <i class="fa fa-trophy"></i>
+        </div>
+        <h2 class="text-3xl font-bold text-accent mb-2">恭喜挑战成功！</h2>
+        <p class="text-gray-600 mb-6" id="success-time">用时: 00:00</p>
+        <button id="play-again-btn" class="bg-primary hover:bg-accent text-white font-bold py-3 px-8 rounded-full transition-all transform hover:scale-105">
+          <i class="fa fa-play-circle mr-2"></i>再玩一次
+        </button>
+      </div>
+    </div>
+    
+    <!-- 页脚 -->
+    <footer class="text-center text-gray-500 text-sm mt-12">
+      <p>语文生字消消乐 &copy; 2023 | 离线可用</p>
+    </footer>
+  </div>
+
+  <script>
+    // 游戏状态变量
+    let gameState = {
+      words: [],           // 生字和拼音数据
+      bubbles: [],         // 泡泡元素数组
+      selectedBubbles: [], // 选中的泡泡
+      gameStarted: false,  // 游戏是否开始
+      timer: null,         // 计时器
+      seconds: 0,          // 游戏时间（秒）
+      remainingPairs: 0    // 剩余配对数量
+    };
+    
+    // DOM元素
+    const inputSection = document.getElementById('input-section');
+    const gameSection = document.getElementById('game-section');
+    const successMessage = document.getElementById('success-message');
+    const wordInput = document.getElementById('word-input');
+    const startBtn = document.getElementById('start-btn');
+    const restartBtn = document.getElementById('restart-btn');
+    const playAgainBtn = document.getElementById('play-again-btn');
+    const bubbleGrid = document.getElementById('bubble-grid');
+    const timerDisplay = document.getElementById('timer');
+    const remainingDisplay = document.getElementById('remaining');
+    const successTimeDisplay = document.getElementById('success-time');
+    
+    // 生成随机绿色系颜色
+    function getRandomGreenColor() {
+      const greenShades = [
+        'bg-green-100 text-green-800',
+        'bg-green-200 text-green-800',
+        'bg-green-300 text-green-900',
+        'bg-green-400 text-green-900',
+        'bg-green-500 text-white',
+        'bg-green-600 text-white',
+      ];
+      return greenShades[Math.floor(Math.random() * greenShades.length)];
+    }
+    
+    // 解析用户输入的生字表
+    function parseWordInput(input) {
+      const lines = input.split('
+').filter(line => line.trim() !== '');
+      const words = [];
+      
+      lines.forEach(line => {
+        const [word, pinyin] = line.split(':').map(item => item.trim());
+        if (word && pinyin) {
+          words.push({
+            id: Date.now() + Math.random(), // 唯一ID
+            word: word,
+            pinyin: pinyin,
+            matched: false
+          });
+        }
+      });
+      
+      return words;
+    }
+    
+    // 创建泡泡元素
+    function createBubble(item, type) {
+      const bubble = document.createElement('div');
+      const colorClass = getRandomGreenColor();
+      
+      bubble.className = `bubble ${colorClass} rounded-full p-4 flex items-center justify-center text-center bubble-shadow bubble-hover cursor-pointer pop-in transition-all duration-300`;
+      bubble.style.animationDelay = `${Math.random() * 0.5}s`;
+      bubble.dataset.id = item.id;
+      bubble.dataset.type = type;
+      bubble.dataset.value = type === 'word' ? item.word : item.pinyin;
+      
+      const text = document.createElement('span');
+      text.className = 'text-[clamp(1.2rem,3vw,1.8rem)] font-bold';
+      text.textContent = type === 'word' ? item.word : item.pinyin;
+      
+      bubble.appendChild(text);
+      
+      // 点击事件
+      bubble.addEventListener('click', () => handleBubbleClick(bubble));
+      
+      return bubble;
+    }
+    
+    // 处理泡泡点击
+    function handleBubbleClick(bubble) {
+      // 如果已经匹配或已经选中，不做处理
+      if (bubble.classList.contains('opacity-0') || gameState.selectedBubbles.includes(bubble)) {
+        return;
+      }
+      
+      // 如果已经选中两个，先取消之前的选中
+      if (gameState.selectedBubbles.length === 2) {
+        gameState.selectedBubbles.forEach(b => b.classList.remove('bubble-selected'));
+        gameState.selectedBubbles = [];
+      }
+      
+      // 选中当前泡泡
+      bubble.classList.add('bubble-selected');
+      gameState.selectedBubbles.push(bubble);
+      
+      // 如果选中了两个泡泡，检查是否匹配
+      if (gameState.selectedBubbles.length === 2) {
+        checkMatch();
+      }
+    }
+    
+    // 检查两个选中的泡泡是否匹配
+    function checkMatch() {
+      const [bubble1, bubble2] = gameState.selectedBubbles;
+      
+      // 不能选择相同类型的泡泡
+      if (bubble1.dataset.type === bubble2.dataset.type) {
+        setTimeout(() => {
+          bubble1.classList.remove('bubble-selected');
+          bubble2.classList.remove('bubble-selected');
+          gameState.selectedBubbles = [];
+        }, 500);
+        return;
+      }
+      
+      // 检查是否匹配
+      const wordBubble = bubble1.dataset.type === 'word' ? bubble1 : bubble2;
+      const pinyinBubble = bubble1.dataset.type === 'pinyin' ? bubble1 : bubble2;
+      
+      const wordItem = gameState.words.find(item => item.id == wordBubble.dataset.id);
+      
+      if (wordItem && wordItem.pinyin === pinyinBubble.dataset.value) {
+        // 匹配成功
+        setTimeout(() => {
+          bubble1.classList.add('fade-out');
+          bubble2.classList.add('fade-out');
+          
+          // 标记为已匹配
+          wordItem.matched = true;
+          gameState.remainingPairs--;
+          remainingDisplay.textContent = gameState.remainingPairs;
+          
+          // 清空选中状态
+          gameState.selectedBubbles = [];
+          
+          // 检查游戏是否结束
+          if (gameState.remainingPairs === 0) {
+            endGame();
+          }
+        }, 500);
+      } else {
+        // 匹配失败
+        setTimeout(() => {
+          bubble1.classList.remove('bubble-selected');
+          bubble2.classList.remove('bubble-selected');
+          gameState.selectedBubbles = [];
+        }, 800);
+      }
+    }
+    
+    // 更新计时器
+    function updateTimer() {
+      gameState.seconds++;
+      const minutes = Math.floor(gameState.seconds / 60).toString().padStart(2, '0');
+      const seconds = (gameState.seconds % 60).toString().padStart(2, '0');
+      timerDisplay.textContent = `${minutes}:${seconds}`;
+    }
+    
+    // 开始游戏
+    function startGame() {
+      const input = wordInput.value.trim();
+      if (!input) {
+        alert('请输入生字表！');
+        return;
+      }
+      
+      // 解析生字表
+      gameState.words = parseWordInput(input);
+      if (gameState.words.length < 2) {
+        alert('请至少输入2个生字！');
+        return;
+      }
+      
+      // 重置游戏状态
+      gameState.selectedBubbles = [];
+      gameState.seconds = 0;
+      gameState.remainingPairs = gameState.words.length;
+      
+      // 更新剩余配对显示
+      remainingDisplay.textContent = gameState.remainingPairs;
+      
+      // 清空泡泡网格
+      bubbleGrid.innerHTML = '';
+      
+      // 创建泡泡数据（生字和拼音混合）
+      const bubbleData = [];
+      gameState.words.forEach(word => {
+        bubbleData.push({ item: word, type: 'word' });
+        bubbleData.push({ item: word, type: 'pinyin' });
+      });
+      
+      // 随机排序
+      bubbleData.sort(() => Math.random() - 0.5);
+      
+      // 创建泡泡元素
+      bubbleData.forEach(data => {
+        const bubble = createBubble(data.item, data.type);
+        bubbleGrid.appendChild(bubble);
+      });
+      
+      // 显示游戏区域，隐藏输入区域
+      inputSection.classList.add('hidden');
+      gameSection.classList.remove('hidden');
+      
+      // 启动计时器
+      if (gameState.timer) {
+        clearInterval(gameState.timer);
+      }
+      timerDisplay.textContent = '00:00';
+      gameState.timer = setInterval(updateTimer, 1000);
+    }
+    
+    // 结束游戏
+    function endGame() {
+      // 停止计时器
+      clearInterval(gameState.timer);
+      
+      // 显示成功消息
+      const minutes = Math.floor(gameState.seconds / 60).toString().padStart(2, '0');
+      const seconds = (gameState.seconds % 60).toString().padStart(2, '0');
+      successTimeDisplay.textContent = `用时: ${minutes}:${seconds}`;
+      
+      setTimeout(() => {
+        successMessage.classList.remove('hidden');
+        restartBtn.classList.remove('hidden');
+      }, 500);
+    }
+    
+    // 重新开始游戏
+    function restartGame() {
+      successMessage.classList.add('hidden');
+      restartBtn.classList.add('hidden');
+      inputSection.classList.remove('hidden');
+      gameSection.classList.add('hidden');
+      wordInput.value = '';
+    }
+    
+    // 事件监听
+    startBtn.addEventListener
