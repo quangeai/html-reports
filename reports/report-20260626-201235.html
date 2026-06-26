@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+<style>
+* {margin:0;padding:0;box-sizing:border-box;font-family:Microsoft Yahei;}
+body {background:#f6f8fa;padding:30px;}
+.main-wrap {max-width:1350px;margin:0 auto;background:#fff;padding:40px;border-radius:12px;box-shadow:0 2px 12px #0000000c;}
+h1 {text-align:center;color:#2c5282;border-bottom:3px solid #409EFF;padding-bottom:15px;margin-bottom:30px;font-size:26px;}
+h2 {font-size:18px;margin:30px 0 15px;border-left:5px solid #409EFF;padding-left:10px;color:#333;}
+.chart-box {width:100%;height:420px;border:1px solid #eee;border-radius:8px;margin-bottom:35px;}
+.info-block {padding:18px;background:#f8fafc;border-radius:8px;line-height:1.8;margin-bottom:20px;}
+.item-find {background:#ebf8ff;padding:12px;margin:8px 0;border-radius:6px;}
+.item-abnormal {background:#fff2f2;padding:12px;margin:8px 0;border-radius:6px;color:#c0392b;}
+footer {margin-top:50px;text-align:center;color:#888;padding-top:20px;border-top:1px solid #eee;font-size:13px;}
+</style>
+</head>
+<body>
+<div class="main-wrap">
+    <h1>HR人力资源数据AI可视化分析报告</h1>
+
+    <h2>一、数据基础概览</h2>
+    <div class="info-block">
+        总数据行数：920<br>
+        总字段：7<br>
+        数值字段：工龄,绩效分,月薪<br>
+        分类字段：部门,离职状态,学历
+    </div>
+
+    <h2>二、各字段缺失值柱状统计图</h2>
+    <div id="chart-miss" class="chart-box"></div>
+
+    <h2>三、数值指标四分位数箱线图（IQR异常识别）</h2>
+    <div id="chart-box" class="chart-box"></div>
+
+    <h2>四、员工离职状态分布饼图</h2>
+    <div id="chart-pie" class="chart-box"></div>
+
+    <h2>五、核心分析结论</h2>
+    <div class="info-block">
+        <div class="item-find">维度：部门离职率<br>结论：销售部离职率31%，为全公司最高，新人流失严重<br>可信度：高</div><div class="item-find">维度：绩效与工龄<br>结论：入职未满1年员工绩效均值61分，显著低于公司整体水平<br>可信度：高</div><div class="item-find">维度：薪酬差异<br>结论：技术岗平均薪资9100，行政岗4600，薪酬分层明显<br>可信度：中</div>
+    </div>
+
+    <h2>六、异常数据明细</h2>
+    <div class="info-block">
+        <div class="item-abnormal">行号：108 | 字段：月薪 | 数值：27500 | 原因：部门负责人高薪，属于正常业务数据</div><div class="item-abnormal">行号：362 | 字段：绩效分 | 数值：40 | 原因：长期休病假考核低分，非录入错误</div>
+    </div>
+
+    <h2>七、推荐可视化方案</h2>
+    <div class="info-block">
+        建议图表：柱状图<br>分析目标：人力资源指标对比
+    </div>
+
+    <footer>大连东软信息学院 HR数据分析工作流实战实验</footer>
+</div>
+
+<script>
+// 缺失值柱状图
+var missChart = echarts.init(document.getElementById('chart-miss'));
+var missOpt = {
+    title: {text:"字段缺失数量统计"},
+    xAxis: {type:"category", data:["\u5de5\u9f84", "\u7ee9\u6548\u5206", "\u79bb\u804c\u539f\u56e0"]},
+    yAxis: {type:"value", name:"缺失行数"},
+    series:[{type:"bar", data:[26, 9, 17], itemStyle:{color:"#409EFF"}}]
+};
+missChart.setOption(missOpt);
+
+// 箱线图
+var boxChart = echarts.init(document.getElementById('chart-box'));
+var boxOpt = {
+    title: {text:"数值分布四分位数箱线图"},
+    xAxis: {type:"category"},
+    yAxis: {type:"value"},
+    series: [{"name": "\u5de5\u9f84", "data": [[0.3, 2.0, 3.8, 6.7, 19]]}, {"name": "\u7ee9\u6548\u5206", "data": [[40, 70, 77, 84, 99]]}, {"name": "\u6708\u85aa", "data": [[3300, 5300, 6600, 8100, 27500]]}]
+};
+boxChart.setOption(boxOpt);
+
+// 离职饼图
+var pieChart = echarts.init(document.getElementById('chart-pie'));
+var pieOpt = {
+    title: {text:"员工在职/离职占比"},
+    tooltip: {trigger:"item"},
+    legend: {left:"left", orient:"vertical"},
+    series:[{type:"pie", radius:"65%", data:[{"name": "\u5728\u804c", "value": 640}, {"name": "\u4e3b\u52a8\u79bb\u804c", "value": 210}, {"name": "\u88ab\u52a8\u8f9e\u9000", "value": 70}]}]
+};
+pieChart.setOption(pieOpt);
+
+// 自适应窗口
+window.addEventListener('resize',function(){
+    missChart.resize();
+    boxChart.resize();
+    pieChart.resize();
+})
+</script>
+</body>
+</html>
