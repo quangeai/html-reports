@@ -1,0 +1,355 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>人力资源入职转化分析报告</title>
+    <!-- Bootstrap CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --primary-blue: #165DFF;
+            --light-blue: #E8F3FF;
+            --text-dark: #333333;
+        }
+        body {
+            background-color: #F5F7FA;
+            color: var(--text-dark);
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+        .card {
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+        .metric-card {
+            background-color: var(--light-blue);
+            border-left: 4px solid var(--primary-blue);
+        }
+        .section-title {
+            color: var(--primary-blue);
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        .table th {
+            background-color: var(--light-blue);
+            color: var(--primary-blue);
+        }
+        .high-conversion {
+            color: #00B42A;
+            font-weight: 500;
+        }
+        .mid-conversion {
+            color: #FF7D00;
+            font-weight: 500;
+        }
+        .low-conversion {
+            color: #F53F3F;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4 mb-5">
+        <!-- 顶部核心指标卡片 -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="card metric-card p-4">
+                    <div class="text-muted small mb-1">发放Offer总数</div>
+                    <div class="fs-3 fw-bold text-primary">{{sampleData.metrics.totalOffers}}</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card metric-card p-4">
+                    <div class="text-muted small mb-1">入职总数</div>
+                    <div class="fs-3 fw-bold text-primary">{{sampleData.metrics.totalHires}}</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card metric-card p-4">
+                    <div class="text-muted small mb-1">整体入职率</div>
+                    <div class="fs-3 fw-bold text-primary">{{sampleData.metrics.hireRate}}%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 数据预处理复盘 -->
+        <div class="card p-4">
+            <h3 class="section-title">一、数据预处理复盘</h3>
+            <h5 class="fw-bold mb-2">数据清洗说明</h5>
+            <ul class="list-unstyled">
+                <li>• 原始数据量：{{sampleData.cleaning.originalCount}}条候选人记录</li>
+                <li>• 缺失值处理：对学历、工作经验缺失字段填充"未知"，日期格式统一为YYYY-MM-DD</li>
+                <li>• 格式标准化：统一部门名称、岗位名称命名规则，去除冗余空格</li>
+                <li>• 异常数据校验：剔除{{sampleData.cleaning.removedCount}}条重复Offer记录，无无效数据</li>
+            </ul>
+        </div>
+
+        <!-- 可视化图表区域 -->
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card p-4">
+                    <h4 class="section-title">各部门入职率对比</h4>
+                    <canvas id="deptRateChart" height="300"></canvas>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card p-4">
+                    <h4 class="section-title">各部门入职人数占比</h4>
+                    <canvas id="deptHirePieChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- 部门统计汇总表格 -->
+        <div class="card p-4">
+            <h3 class="section-title">二、多维度数据挖掘分析</h3>
+            <h5 class="fw-bold mb-3">部门转化统计汇总</h5>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>部门名称</th>
+                            <th>发放Offer数</th>
+                            <th>入职人数</th>
+                            <th>入职率</th>
+                            <th>转化等级</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each sampleData.departments}}
+                        <tr>
+                            <td>{{department}}</td>
+                            <td>{{offerCount}}</td>
+                            <td>{{hireCount}}</td>
+                            <td>{{hireRate}}%</td>
+                            <td>
+                                {{#if (gte hireRate 100)}}
+                                <span class="high-conversion">高转化</span>
+                                {{else if (gte hireRate 60)}}
+                                <span class="mid-conversion">中等转化</span>
+                                {{else}}
+                                <span class="low-conversion">低转化</span>
+                                {{/if}}
+                            </td>
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+
+            <h5 class="fw-bold mt-4 mb-3">流失人群核心特征</h5>
+            <ul>
+                <li>• 年龄集中：22-25岁占比68%，多为应届毕业生</li>
+                <li>• 学历分布：大专及以下占比72%，本科及以上仅28%</li>
+                <li>• 经验特征：1年以下工作经验占比81%，缺乏职场稳定性</li>
+                <li>• 岗位集中：运营专员、行政助理岗位流失率最高</li>
+                <li>• 面试流程：面试轮次≥4轮的候选人流失率达65%</li>
+            </ul>
+
+            <h5 class="fw-bold mt-4 mb-3">人员结构关联规律</h5>
+            <ul>
+                <li>• 学历：本科及以上候选人入职率78%，大专及以下仅52%</li>
+                <li>• 年龄：30-35岁候选人入职率82%，22-25岁仅55%</li>
+                <li>• 经验：3-5年工作经验候选人入职率85%，1年以下仅48%</li>
+            </ul>
+        </div>
+
+        <!-- 员工明细表 -->
+        <div class="card p-4">
+            <h3 class="section-title">三、清洗后员工明细数据</h3>
+            <div class="table-responsive">
+                <table class="table table-sm table-hover">
+                    <thead>
+                        <tr>
+                            <th>姓名</th>
+                            <th>部门</th>
+                            <th>应聘岗位</th>
+                            <th>年龄</th>
+                            <th>学历</th>
+                            <th>工作经验</th>
+                            <th>面试轮次</th>
+                            <th>Offer状态</th>
+                            <th>入职状态</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each sampleData.employees}}
+                        <tr>
+                            <td>{{name}}</td>
+                            <td>{{department}}</td>
+                            <td>{{position}}</td>
+                            <td>{{age}}</td>
+                            <td>{{education}}</td>
+                            <td>{{experience}}</td>
+                            <td>{{interviewRounds}}</td>
+                            <td>{{offerStatus}}</td>
+                            <td>{{hireStatus}}</td>
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 问题诊断 -->
+        <div class="card p-4">
+            <h3 class="section-title">四、人力风险诊断</h3>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="bg-light p-3 rounded">
+                        <h5 class="fw-bold text-danger">1. 低入职率部门流失风险</h5>
+                        <p>人事部、运营部入职率低于55%，存在招聘资源浪费及岗位空缺风险</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="bg-light p-3 rounded">
+                        <h5 class="fw-bold text-danger">2. 候选人Offer接受度差异</h5>
+                        <p>年轻低经验候选人接受度低，核心原因是薪资预期与实际不符</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="bg-light p-3 rounded">
+                        <h5 class="fw-bold text-danger">3. 面试流程影响转化</h5>
+                        <p>面试轮次≥4轮的候选人流失率达65%，流程繁琐导致候选人放弃</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="bg-light p-3 rounded">
+                        <h5 class="fw-bold text-danger">4. 岗位吸引力差异</h5>
+                        <p>技术类岗位入职率达90%，运营、行政类岗位仅50%-60%，吸引力不足</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 落地优化建议 -->
+        <div class="card p-4">
+            <h3 class="section-title">五、可落地优化建议</h3>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="bg-light p-3 rounded">
+                        <h5 class="fw-bold text-primary">1. 高转化部门经验复用</h5>
+                        <p>推广行政部、技术部的Offer即时跟进机制：Offer发放后24小时内回访确认意向</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="bg-light p-3 rounded">
+                        <h5 class="fw-bold text-primary">2. 低转化部门专项优化</h5>
+                        <p>针对人事部、运营部调整岗位JD，明确薪资范围及成长路径，匹配候选人预期</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="bg-light p-3 rounded">
+                        <h5 class="fw-bold text-primary">3. Offer发放后跟进机制</h5>
+                        <p>建立Offer跟进台账，对未入职候选人进行流失原因调研，形成优化闭环</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="bg-light p-3 rounded">
+                        <h5 class="fw-bold text-primary">4. 面试流程精简</h5>
+                        <p>将非核心岗位面试轮次从4轮精简为2-3轮，优化面试环节效率</p>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="bg-light p-3 rounded">
+                        <h5 class="fw-bold text-primary">5. 候选人分层吸引策略</h5>
+                        <p>针对年轻低经验候选人，提供岗前培训、导师带教等成长福利；针对高经验候选人，突出薪资竞争力及晋升空间</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 模拟业务数据
+        const sampleData = {
+            metrics: {
+                totalOffers: 120,
+                totalHires: 85,
+                hireRate: 70.83
+            },
+            cleaning: {
+                originalCount: 150,
+                removedCount: 2
+            },
+            departments: [
+                { department: "技术部", offerCount: 30, hireCount: 27, hireRate: 90 },
+                { department: "市场部", offerCount: 25, hireCount: 19, hireRate: 76 },
+                { department: "运营部", offerCount: 20, hireCount: 11, hireRate: 55 },
+                { department: "人事部", offerCount: 15, hireCount: 8, hireRate: 53.33 },
+                { department: "行政部", offerCount: 10, hireCount: 10, hireRate: 100 },
+                { department: "产品部", offerCount: 20, hireCount: 10, hireRate: 50 }
+            ],
+            employees: [
+                { name: "张三", department: "技术部", position: "Java开发", age: 28, education: "本科", experience: "3年", interviewRounds: 3, offerStatus: "已发放", hireStatus: "已入职" },
+                { name: "李四", department: "运营部", position: "运营专员", age: 23, education: "大专", experience: "1年以下", interviewRounds: 4, offerStatus: "已发放", hireStatus: "未入职" },
+                { name: "王五", department: "行政部", position: "行政助理", age: 25, education: "本科", experience: "2年", interviewRounds: 2, offerStatus: "已发放", hireStatus: "已入职" },
+                { name: "赵六", department: "人事部", position: "招聘专员", age: 24, education: "大专", experience: "1年", interviewRounds: 4, offerStatus: "已发放", hireStatus: "未入职" },
+                { name: "孙七", department: "产品部", position: "产品经理", age: 32, education: "硕士", experience: "5年", interviewRounds: 3, offerStatus: "已发放", hireStatus: "已入职" },
+                { name: "周八", department: "市场部", position: "新媒体运营", age: 26, education: "本科", experience: "2年", interviewRounds: 3, offerStatus: "已发放", hireStatus: "已入职" }
+            ]
+        };
+
+        // 渲染部门入职率横向柱状图
+        const rateCtx = document.getElementById('deptRateChart').getContext('2d');
+        new Chart(rateCtx, {
+            type: 'bar',
+            data: {
+                labels: sampleData.departments.map(d => d.department),
+                datasets: [{
+                    label: '入职率(%)',
+                    data: sampleData.departments.map(d => d.hireRate),
+                    backgroundColor: '#165DFF',
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: '入职率(%)'
+                        }
+                    }
+                }
+            }
+        });
+
+        // 渲染部门入职人数占比饼图
+        const pieCtx = document.getElementById('deptHirePieChart').getContext('2d');
+        new Chart(pieCtx, {
+            type: 'pie',
+            data: {
+                labels: sampleData.departments.map(d => d.department),
+                datasets: [{
+                    data: sampleData.departments.map(d => d.hireCount),
+                    backgroundColor: ['#165DFF', '#36CBCB', '#722ED1', '#FF7D00', '#00B42A', '#F53F3F'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'right'
+                    }
+                }
+            }
+        });
+
+        // 替换模板变量
+        document.addEventListener('DOMContentLoaded', function() {
+            const html = document.body.innerHTML;
+            const renderedHtml = html.replace(/{{(.*?)}}/g, (match, key) => {
+                const keys = key.trim().split('.');
+                let value = sampleData;
+                for (const k of keys) {
+                    if (value[k] === undefined) return '';
