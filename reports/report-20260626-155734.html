@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>员工离职率分析报告</title>
+    <!-- Bootstrap CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        .section-title {
+            border-bottom: 3px solid #0d6efd;
+            padding-bottom: 8px;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+        .metric-card {
+            transition: transform 0.3s;
+        }
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .cleaning-table th {
+            background-color: #0d6efd;
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container py-5">
+        <!-- 页面标题 -->
+        <header class="text-center mb-5">
+            <h1 class="display-4 text-primary">员工离职率分析报告</h1>
+            <p class="text-muted">基于企业员工数据的清洗与离职特征洞察</p>
+        </header>
+
+        <!-- 导航栏 -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+            <div class="container-fluid">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav mx-auto">
+                        <li class="nav-item"><a class="nav-link" href="#exec-summary">执行摘要</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#key-metrics">关键指标</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#data-cleaning">数据清洗报告</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#turnover-analysis">离职率分析</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#insights">洞察与建议</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- 执行摘要 -->
+        <section id="exec-summary" class="mb-5">
+            <h2 class="section-title">执行摘要</h2>
+            <div class="card p-4">
+                <p>本报告基于企业16条原始员工数据，经过数据清洗后得到14条有效记录。核心分析显示：</p>
+                <ul>
+                    <li>企业整体离职率为<strong>21.43%</strong>，主要集中在市场部基层员工群体</li>
+                    <li>低绩效（C级）、年轻（23-27岁）、低薪（4800-7000元）、短工龄（1-4年）员工离职风险极高</li>
+                    <li>研发、财务、人力资源部暂无离职情况，中层及高层员工稳定性极强</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 关键指标 -->
+        <section id="key-metrics" class="mb-5">
+            <h2 class="section-title">关键指标</h2>
+            <div class="row g-4">
+                <div class="col-md-3">
+                    <div class="metric-card card bg-primary text-white text-center p-4">
+                        <h3 class="display-5">14</h3>
+                        <p>有效员工数</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="metric-card card bg-danger text-white text-center p-4">
+                        <h3 class="display-5">3</h3>
+                        <p>离职员工数</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="metric-card card bg-success text-white text-center p-4">
+                        <h3 class="display-5">78.57%</h3>
+                        <p>在职率</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="metric-card card bg-warning text-white text-center p-4">
+                        <h3 class="display-5">60%</h3>
+                        <p>市场部离职率</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 数据清洗报告 -->
+        <section id="data-cleaning" class="mb-5">
+            <h2 class="section-title">数据清洗报告</h2>
+
+            <h4 class="mb-3">一、原始数据质量评估</h4>
+            <div class="card mb-4">
+                <div class="card-body">
+                    <ul>
+                        <li><strong>缺失值：</strong>员工ID、姓名、年龄、绩效等级各缺失1条，缺失率均为6.25%；存在1条空白无效记录</li>
+                        <li><strong>重复数据：</strong>存在1条重复记录（员工ID:1002），重复率6.25%</li>
+                        <li><strong>异常值：</strong>数值字段（年龄、工龄、月薪）无明显异常值，数据范围符合企业实际情况</li>
+                        <li><strong>格式错误：</strong>所有字段格式符合规范，无需修正</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h4 class="mb-3">二、数据清洗操作</h4>
+            <div class="card mb-4">
+                <div class="card-body">
+                    <ul>
+                        <li>删除空白无效记录及缺失关键字段（员工ID、姓名）的记录</li>
+                        <li>删除重复记录，保留唯一员工信息</li>
+                        <li>所有缺失值因涉及关键字段，直接删除对应记录，未进行填充</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h4 class="mb-3">三、清洗前后对比表</h4>
+            <div class="table-responsive">
+                <table class="table table-bordered cleaning-table">
+                    <thead>
+                        <tr>
+                            <th>字段名</th>
+                            <th>处理前缺失率</th>
+                            <th>处理后缺失率</th>
+                            <th>异常值数量</th>
+                            <th>重复记录数</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>员工ID</td><td>6.25%</td><td>0%</td><td>0</td><td>0</td></tr>
+                        <tr><td>姓名</td><td>6.25%</td><td>0%</td><td>0</td><td>0</td></tr>
+                        <tr><td>年龄</td><td>6.25%</td><td>0%</td><td>0</td><td>0</td></tr>
+                        <tr><td>绩效等级</td><td>6.25%</td><td>0%</td><td>0</td><td>0</td></tr>
+                        <tr><td>其他字段</td><td>0%</td><td>0%</td><td>0</td><td>0</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 离职率分析 -->
+        <section id="turnover-analysis" class="mb-5">
+            <h2 class="section-title">离职率分析</h2>
+
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <div class="card p-3">
+                        <h5 class="card-title text-center">各部门离职率对比</h5>
+                        <canvas id="deptTurnoverChart"></canvas>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card p-3">
+                        <h5 class="card-title text-center">离职员工岗位层级分布</h5>
+                        <canvas id="levelTurnoverChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <div class="card p-3">
+                        <h5 class="card-title text-center">绩效等级与离职率关系</h5>
+                        <canvas id="performanceTurnoverChart"></canvas>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card p-3">
+                        <h5 class="card-title text-center">年龄区间离职率分布</h5>
+                        <canvas id="ageTurnoverChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card p-4">
+                <h5 class="card-title">离职特征总结</h5>
+                <ul>
+                    <li><strong>部门维度：</strong>市场部离职率高达60%，为企业离职风险最高部门；其他部门暂无离职情况</li>
+                    <li><strong>岗位层级：</strong>所有离职员工均为基层岗位，中层及高层员工稳定性100%</li>
+                    <li><strong>绩效维度：</strong>C级绩效员工离职率75%，是离职核心群体；A/B级绩效员工无离职</li>
+                    <li><strong>年龄维度：</strong>23-27岁员工离职率50%，显著高于其他年龄段</li>
+                    <li><strong>薪资维度：</strong>月薪4800-7000元区间员工离职率50%，低薪群体离职风险高</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 洞察与建议 -->
+        <section id="insights" class="mb-5">
+            <h2 class="section-title">洞察与建议</h2>
+
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5>核心洞察</h5>
+                </div>
+                <div class="card-body">
+                    <ol>
+                        <li>离职风险高度集中在市场部基层低绩效年轻员工群体，该群体存在明显的留存隐患</li>
+                        <li>员工绩效等级与离职率强相关，低绩效员工是离职高发人群</li>
+                        <li>薪资水平、岗位层级与离职率呈负相关：薪资越低、层级越低，离职风险越高</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5>可行动建议</h5>
+                </div>
+                <div class="card-body">
+                    <ol>
+                        <li><strong>针对性提升市场部基层员工留存：</strong>开展市场部基层员工访谈，了解离职原因，优化岗位待遇或工作环境</li>
+                        <li><strong>强化低绩效员工辅导：</strong>为C级绩效员工制定个性化绩效提升计划，提供技能培训和导师带教，降低离职风险</li>
+                        <li><strong>完善新人留存机制：</strong>针对23-27岁年轻员工，建立入职引导体系，明确职业发展路径，增强归属感</li>
+                        <li><strong>优化薪资结构：</strong>评估基层岗位薪资竞争力，适当提升低薪区间员工薪资，缩小与行业差距</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+
+        <!-- 结论 -->
+        <footer class="text-center mt-5">
+            <hr>
+            <p class="text-muted">© 2024 企业数据分析报告 | 数据分析师：AI数据团队</p>
+        </footer>
+    </div>
+
+    <!-- 图表初始化脚本 -->
+    <script>
+        // 各部门离职率图表
+        const deptCtx = document.getElementById('deptTurnoverChart').getContext('2d');
+        new Chart(deptCtx, {
+            type: 'bar',
+            data: {
+                labels: ['市场部', '研发部', '财务部', '人力资源部'],
+                datasets: [
+                    {
+                        label: '在职人数',
+                        data: [2, 4, 2, 2],
+                        backgroundColor: '#0d6efd'
+                    },
+                    {
+                        label: '离职人数',
+                        data: [3, 1, 0, 0],
+                        backgroundColor: '#dc3545'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true, title: { display: true, text: '人数' } }
+                }
+            }
+        });
+
+        // 离职员工岗位层级分布
+        const levelCtx = document.getElementById('levelTurnoverChart').getContext('2d');
+        new Chart(levelCtx, {
+            type: 'pie',
+            data: {
+                labels: ['基层', '中层', '高层'],
+                datasets: [{
+                    data: [3, 0, 0],
+                    backgroundColor: ['#dc3545', '#ffc107', '#28a745']
+                }]
+            },
+            options: { responsive: true }
+        });
+
+        // 绩效等级与离职率
+        const performanceCtx = document.getElementById('performanceTurnoverChart').getContext('2d');
+        new Chart(performanceCtx, {
+            type: 'bar',
+            data: {
+                labels: ['A级', 'B级', 'C级'],
+                datasets: [{
+                    label: '离职率',
+                    data: [0, 0, 75],
+                    backgroundColor: ['#28a745', '#ffc107', '#dc3545']
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true, title: { display: true, text: '离职率(%)' } }
+                }
+            }
+        });
+
+        // 年龄区间离职率
+        const ageCtx = document.getElementById('ageTurnoverChart').getContext('2d');
+        new Chart(ageCtx, {
+            type: 'line',
+            data: {
+                labels: ['23-27', '28-32', '33-38'],
+                datasets: [{
+                    label: '离职率(%)',
+                    data: [50, 0, 0],
+                    borderColor: '#0d6efd',
+                    fill: false,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true, title: { display: true, text: '离职率(%)' } },
+                    x: { title: { display: true, text: '年龄区间' } }
+                }
+            }
+        });
+    </script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
