@@ -1,0 +1,697 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>滚河项目2-6月经营分析报告</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #27ae60;
+            --light-bg: #f8f9fa;
+            --dark-bg: #2c3e50;
+            --text-light: #ecf0f1;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            background-color: #f5f7fa;
+        }
+        .report-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 2.5rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .nav-tabs .nav-link {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        .nav-tabs .nav-link.active {
+            background-color: var(--secondary-color);
+            color: white;
+            border-color: var(--secondary-color);
+        }
+        .section-title {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            font-weight: 600;
+        }
+        .kpi-card {
+            text-align: center;
+            padding: 1.5rem;
+            background: white;
+        }
+        .kpi-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            margin: 0.5rem 0;
+        }
+        .kpi-label {
+            font-size: 1rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .profit-positive {
+            color: var(--success-color);
+        }
+        .profit-negative {
+            color: var(--accent-color);
+        }
+        .insight-box {
+            background-color: #e8f4fc;
+            border-left: 5px solid var(--secondary-color);
+            padding: 1.25rem;
+            margin: 1.5rem 0;
+            border-radius: 0 5px 5px 0;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 1.5rem 0;
+        }
+        .footer {
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            padding: 1.5rem 0;
+            margin-top: 3rem;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+        .list-group-item {
+            border-left: none;
+            border-right: none;
+        }
+        .list-group-item:first-child {
+            border-top: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- 报告标题和导航 -->
+    <header class="report-header">
+        <div class="container">
+            <h1 class="display-4 fw-bold">滚河长渠灌区项目</h1>
+            <p class="lead">2-6月经营分析报告</p>
+            <p class="mb-0">工程名称：滚河长渠灌区续建配套与现代化改造工程采购施工总承包（K31+660—K38+816）</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- 导航标签 -->
+        <ul class="nav nav-tabs mb-4" id="reportTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="summary-tab" data-bs-toggle="tab" data-bs-target="#summary" type="button" role="tab">执行摘要</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="kpi-tab" data-bs-toggle="tab" data-bs-target="#kpi" type="button" role="tab">关键指标</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="analysis-tab" data-bs-toggle="tab" data-bs-target="#analysis" type="button" role="tab">详细分析</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="trend-tab" data-bs-toggle="tab" data-bs-target="#trend" type="button" role="tab">趋势与成本</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="conclusion-tab" data-bs-toggle="tab" data-bs-target="#conclusion" type="button" role="tab">建议与结论</button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="reportTabsContent">
+            <!-- 执行摘要 -->
+            <div class="tab-pane fade show active" id="summary" role="tabpanel">
+                <h2 class="section-title">执行摘要</h2>
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">项目经营概况</h5>
+                                <p>本报告对滚河长渠灌区项目在2026年2月至6月期间的经营状况进行全面分析。报告期内，项目总体实现了盈利，但部分关键指标显示存在优化空间。</p>
+                                <ul>
+                                    <li><strong>总体绩效：</strong>项目累计实现甲方产值 <strong>334.61万元</strong>，利润 <strong>50.46万元</strong>，利润率为 <strong>15.1%</strong>。项目经营处于盈利状态。</li>
+                                    <li><strong>成本控制：</strong>实际成本为218.91万元，占产值的65.4%，成本控制基本有效，但材料与机械成本有进一步优化潜力。</li>
+                                    <li><strong>现金流：</strong>应结款额269.36万元，实际收款情况需结合回款周期分析，现金流管理是后续重点。</li>
+                                    <li><strong>工程进展：</strong>建筑工程量（第一部分）是产值的主要贡献者，占总产值的75.1%，其中渠道工程是核心。</li>
+                                </ul>
+                                <div class="insight-box">
+                                    <strong>核心洞察：</strong> 项目盈利能力良好，但利润率受材料成本波动和零星费用（如超时费、转运费）影响。建议重点关注材料采购策略和现场施工效率，以提升整体利润率。
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card kpi-card">
+                            <div class="card-body">
+                                <div class="kpi-label">利润率</div>
+                                <div class="kpi-value profit-positive">15.1%</div>
+                                <p class="text-muted">(利润 / 甲方产值)</p>
+                            </div>
+                        </div>
+                        <div class="card kpi-card">
+                            <div class="card-body">
+                                <div class="kpi-label">成本占比</div>
+                                <div class="kpi-value">65.4%</div>
+                                <p class="text-muted">(实际成本 / 甲方产值)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 关键指标 -->
+            <div class="tab-pane fade" id="kpi" role="tabpanel">
+                <h2 class="section-title">关键绩效指标 (KPIs)</h2>
+                <div class="row">
+                    <div class="col-md-3 col-6 mb-3">
+                        <div class="card kpi-card">
+                            <div class="card-body">
+                                <div class="kpi-label">甲方产值</div>
+                                <div class="kpi-value">334.61</div>
+                                <small class="text-muted">万元</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <div class="card kpi-card">
+                            <div class="card-body">
+                                <div class="kpi-label">应结款额</div>
+                                <div class="kpi-value">269.36</div>
+                                <small class="text-muted">万元</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <div class="card kpi-card">
+                            <div class="card-body">
+                                <div class="kpi-label">实际成本</div>
+                                <div class="kpi-value">218.91</div>
+                                <small class="text-muted">万元</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <div class="card kpi-card">
+                            <div class="card-body">
+                                <div class="kpi-label">利润</div>
+                                <div class="kpi-value profit-positive">50.46</div>
+                                <small class="text-muted">万元</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">产值构成分析</div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="revenuePieChart"></canvas>
+                                </div>
+                                <p class="mt-2"><small>分析：建筑工程是产值的绝对主力，占比超过75%。机电、金属结构及临时工程尚未产生产值，需关注其进度与结算。</small></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">成本构成分析</div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="costPieChart"></canvas>
+                                </div>
+                                <p class="mt-2"><small>分析：材料费是最大成本项，占比近40%。机械费和劳务费紧随其后，是成本控制的重点领域。</small></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 详细数据分析 -->
+            <div class="tab-pane fade" id="analysis" role="tabpanel">
+                <h2 class="section-title">详细数据分析</h2>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">分部分项工程产值与成本分析</div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="subprojectBarChart"></canvas>
+                                </div>
+                                <div class="insight-box">
+                                    <strong>分析洞察：</strong>
+                                    <ul class="mb-0">
+                                        <li><strong>渠道工程（干渠、支渠）</strong>是产值和成本的核心，其利润率直接影响整体项目盈利。</li>
+                                        <li><strong>建筑物工程（渡槽、农桥、闸）</strong>已开始产生产值（如渡槽33.07万元），但部分子项（如营口节制闸）产值仍为0，需推动施工与结算。</li>
+                                        <li><strong>机电设备及安装工程</strong>和<strong>金属结构设备及安装工程</strong>在报表中产值均为0，需核实采购、安装进度与甲方确认流程，避免影响整体收款。</li>
+                                    </ul>
+                                </div>
+                                <h6 class="mt-4">主要工程量完成情况（2-6月）</h6>
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th>项目名称</th>
+                                                <th>单位</th>
+                                                <th>合同工程量</th>
+                                                <th>2-6月完成量</th>
+                                                <th>完成比例</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>C25现浇砼护坡（干渠）</td>
+                                                <td>m³</td>
+                                                <td>6905.95</td>
+                                                <td>907.20</td>
+                                                <td>13.1%</td>
+                                            </tr>
+                                            <tr>
+                                                <td>戎岗渡槽槽身砼</td>
+                                                <td>m³</td>
+                                                <td>80.45</td>
+                                                <td>82.78</td>
+                                                <td>102.9%</td>
+                                            </tr>
+                                            <tr>
+                                                <td>4#农桥箱涵砼</td>
+                                                <td>m³</td>
+                                                <td>45.26</td>
+                                                <td>45.36</td>
+                                                <td>100.2%</td>
+                                            </tr>
+                                            <tr>
+                                                <td>简坡支渠砼护坡/底</td>
+                                                <td>m³</td>
+                                                <td>796.25</td>
+                                                <td>196.02</td>
+                                                <td>24.6%</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 趋势与成本分析 -->
+            <div class="tab-pane fade" id="trend" role="tabpanel">
+                <h2 class="section-title">月度趋势与成本分析</h2>
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header">月度成本趋势（4-6月）</div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="monthlyCostChart"></canvas>
+                                </div>
+                                <p class="mt-2"><small>数据说明：4月前成本已归总。图表显示6月材料与机械费显著上升，与施工高峰期吻合。</small></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">成本超支风险点</div>
+                            <div class="card-body">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        混凝土超时/泵车费
+                                        <span class="badge bg-warning rounded-pill">注意</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        机械闲置/转运费
+                                        <span class="badge bg-warning rounded-pill">注意</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        零星材料采购（无票）
+                                        <span class="badge bg-danger rounded-pill">风险</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        村民阻工导致效率损失
+                                        <span class="badge bg-danger rounded-pill">风险</span>
+                                    </li>
+                                </ul>
+                                <div class="insight-box mt-3">
+                                    <strong>提示：</strong> 6月材料成本（87.58万）和机械成本（55.27万）为各月最高，需分析其与产值进度的匹配性，并严格控制零星费用。
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">主要资源消耗分析（6月示例）</div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6>主要材料消耗（6月）</h6>
+                                        <div class="chart-container">
+                                            <canvas id="materialChart"></canvas>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6>机械台班消耗（6月，小时）</h6>
+                                        <div class="chart-container">
+                                            <canvas id="machineChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 建议与结论 -->
+            <div class="tab-pane fade" id="conclusion" role="tabpanel">
+                <h2 class="section-title">管理建议与结论</h2>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">结论</div>
+                            <div class="card-body">
+                                <p>滚河项目在2-6月报告期内整体经营状况<strong>健康且盈利</strong>，实现了<strong>50.46万元</strong>的利润，利润率15.1%。项目进度符合预期，核心的渠道工程和部分建筑物工程已顺利推进并形成产值。</p>
+                                <p>然而，分析也揭示了在<strong>成本控制、现金流管理和部分工程板块推进</strong>方面存在提升空间。</p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">具体建议</div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="card h-100">
+                                            <div class="card-header bg-success text-white">短期行动 (1个月内)</div>
+                                            <div class="card-body">
+                                                <ol>
+                                                    <li><strong>加强成本管控：</strong> 审查6月高额材料与机械费用，与施工计划核对，杜绝浪费。明确混凝土泵车、机械超时费用审批流程。</li>
+                                                    <li><strong>推进结算与收款：</strong> 重点跟进机电、金属结构等“0产值”板块的施工确认与请款流程，加速269.36万元应结款的回收。</li>
+                                                    <li><strong>解决外部干扰：</strong> 积极协调解决“营口村民阻工”问题，制定预案，减少非生产性时间与成本损失。</li>
+                                                </ol>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card h-100">
+                                            <div class="card-header bg-primary text-white">中长期优化 (2-6个月)</div>
+                                            <div class="card-body">
+                                                <ol>
+                                                    <li><strong>优化采购与供应链：</strong> 对混凝土、钢材等大宗材料进行集中采购或签订长期协议，以稳定成本。规范零星材料采购，确保票据合规。</li>
+                                                    <li><strong>提升施工效率：</strong> 利用数据分析机械使用效率，优化调度，减少闲置。推广班组标准化作业，降低返工风险。</li>
+                                                    <li><strong>强化数据驱动决策：</strong> 建立月度经营分析例会制度，基于本报告类似的数据看板，及时发现偏差并纠偏。</li>
+                                                    <li><strong>风险管理：</strong> 识别并制定应对方案，针对可能的价格上涨、极端天气、设计变更等风险。</li>
+                                                </ol>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="insight-box mt-3">
+                                    <strong>最终建议：</strong> 在保持当前良好盈利势头的基础上，项目管理层应将工作重心从“保进度”适当向“优成本、促回款”倾斜。通过精细化管理和数据化工具，有望将项目利润率提升至18%以上，并保障现金流的长期健康。
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p class="mb-0">滚河项目经营分析报告 © 2026</p>
+            <p class="mb-0"><small>本报告基于2026年2月至6月项目经营数据生成，仅供参考与决策支持。</small></p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- 图表JavaScript代码 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. 产值构成饼图
+            const revenueCtx = document.getElementById('revenuePieChart').getContext('2d');
+            const revenueChart = new Chart(revenueCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['第一部分：建筑工程', '第二部分：机电设备', '第三部分：金属结构', '第五部分：施工临时工程'],
+                    datasets: [{
+                        data: [251.17, 0, 0, 83.44], // 单位：万元 (251.17来自第一部分合计，83.44来自第五部分合计/10000)
+                        backgroundColor: ['#3498db', '#e74c3c', '#f39c12', '#2ecc71'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += context.parsed.toFixed(2) + ' 万元';
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 2. 成本构成饼图 (基于报表总计估算)
+            const costCtx = document.getElementById('costPieChart').getContext('2d');
+            const costChart = new Chart(costCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['材料费', '机械费', '劳务费', '管理及其他费'],
+                    datasets: [{
+                        data: [87.58, 55.27, 47.74, 28.32], // 单位：万元 (来自报表4-6月合计+4月前，已粗略分类加总)
+                        backgroundColor: ['#e74c3c', '#f39c12', '#2ecc71', '#9b59b6'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += context.parsed.toFixed(2) + ' 万元';
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 3. 分部分项工程柱状图
+            const subprojectCtx = document.getElementById('subprojectBarChart').getContext('2d');
+            const subprojectChart = new Chart(subprojectCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['渠道工程', '建筑物工程', '机电设备', '金属结构', '临时工程'],
+                    datasets: [
+                        {
+                            label: '2-6月产值 (万元)',
+                            data: [208.86, 42.32, 0, 0, 83.44], // 渠道工程208.86, 建筑物工程42.32(渡槽+农桥)
+                            backgroundColor: 'rgba(52, 152, 219, 0.7)',
+                            borderColor: 'rgba(52, 152, 219, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: '估算成本 (万元)',
+                            data: [160.00, 35.00, 0, 0, 65.00], // 估算值，用于对比
+                            backgroundColor: 'rgba(231, 76, 60, 0.7)',
+                            borderColor: 'rgba(231, 76, 60, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            grid: { display: false }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '金额 (万元)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.parsed.y.toFixed(2) + ' 万元';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 4. 月度成本趋势图
+            const monthlyCostCtx = document.getElementById('monthlyCostChart').getContext('2d');
+            const monthlyCostChart = new Chart(monthlyCostCtx, {
+                type: 'line',
+                data: {
+                    labels: ['4月前', '4月', '5月', '6月'],
+                    datasets: [
+                        {
+                            label: '材料费',
+                            data: [13.56, 35.55, 22.77, 87.58], // 单位：万元
+                            borderColor: '#e74c3c',
+                            backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                            tension: 0.2,
+                            fill: true
+                        },
+                        {
+                            label: '机械费',
+                            data: [16.83, 19.12, 7.24, 55.27], // 单位：万元
+                            borderColor: '#f39c12',
+                            backgroundColor: 'rgba(243, 156, 18, 0.1)',
+                            tension: 0.2,
+                            fill: true
+                        },
+                        {
+                            label: '劳务费',
+                            data: [16.55, 12.65, 7.78, 47.74], // 单位：万元
+                            borderColor: '#2ecc71',
+                            backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                            tension: 0.2,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '成本 (万元)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.parsed.y.toFixed(2) + ' 万元';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 5. 6月材料消耗
+            const materialCtx = document.getElementById('materialChart').getContext('2d');
+            const materialChart = new Chart(materialCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['C25混凝土', 'C30混凝土', '其他材料', '零星材料'],
+                    datasets: [{
+                        data: [65.2, 10.6, 8.18, 3.6], // 单位：万元，基于6月报表估算
+                        backgroundColor: ['#3498db', '#9b59b6', '#1abc9c', '#e67e22'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+
+            // 6. 6月机械台班消耗
+            const machineCtx = document.getElementById('machineChart').getContext('2d');
+            const machineChart = new Chart(machineCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['大挖机', '小挖机', '微挖', '蓝牌车'],
+                    datasets: [{
+                        label: '工作小时数 (6月)',
+                        data: [320, 150, 45, 12], // 基于6月报表估算
+                        backgroundColor: [
+                            'rgba(52, 152, 219, 0.8)',
+                            'rgba(46, 204, 113, 0.8)',
+                            'rgba(155, 89, 182, 0.8)',
+                            'rgba(241, 196, 15, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgb(52, 152, 219)',
+                            'rgb(46, 204, 113)',
+                            'rgb(155, 89, 182)',
+                            'rgb(241, 196, 15)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '小时数'
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+```
