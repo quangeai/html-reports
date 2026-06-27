@@ -1,0 +1,316 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>流延过程质量异常报废分析报告</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        body {
+            padding-top: 70px;
+            line-height: 1.6;
+            background-color: #f8f9fa;
+        }
+        .section-title {
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: #0d6efd;
+            margin: 2rem 0 1rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+        .card {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 1.5rem;
+            border: none;
+        }
+        .chart-container {
+            height: 300px;
+            width: 100%;
+        }
+        .highlight-num {
+            font-weight: 700;
+            color: #dc3545;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">流延质量分析报告</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#exec-summary">执行摘要</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#key-indicators">核心指标</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#data-overview">数据概览</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#multi-analysis">多维分析</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#conclusion">改善建议</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- 1.执行摘要 -->
+        <section id="exec-summary">
+            <h2 class="section-title">1. 执行摘要</h2>
+            <div class="card p-4">
+                <p>本期统计周期内，流延过程总报废量达<span class="highlight-num">1077</span>，平均报废比例<span class="highlight-num">15.12%</span> <small class="text-muted">(报废量/当期总投入数*100%)</small>，质量波动显著。核心异常集中于<strong>杂质</strong>与尺寸不均（<strong>开裂/起拱</strong>）问题，且换料、白转黑<small class="text-muted">(指不同颜色配方的生产工艺切换操作)</small>等工艺切换是主要诱因。</p>
+            </div>
+        </section>
+
+        <!-- 2.关键质量指标汇总 -->
+        <section id="key-indicators">
+            <h2 class="section-title">2. 关键质量指标汇总</h2>
+            <div class="row g-3 mb-4">
+                <div class="col-md-3 col-6">
+                    <div class="card text-center p-3">
+                        <div class="text-muted mb-1">总报废量</div>
+                        <div class="highlight-num">1077</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="card text-center p-3">
+                        <div class="text-muted mb-1">平均报废比例</div>
+                        <div class="highlight-num">15.12%</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="card text-center p-3">
+                        <div class="text-muted mb-1">最高单日报废比例</div>
+                        <div class="highlight-num">40.20%</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="card text-center p-3">
+                        <div class="text-muted mb-1">杂质类报废量</div>
+                        <div class="highlight-num">681</div>
+                    </div>
+                </div>
+            </div>
+            <div class="card p-4">
+                <ul class="list-unstyled">
+                    <li>统计周期：2024年10月27日至2026年5月23日</li>
+                    <li>总投入数：7123.6</li>
+                    <li class="mb-3">最高单日报废日期：2025年11月9日</li>
+                    <li>主要缺陷类型报废量：
+                        <ul>
+                            <li>杂质：<strong>681</strong></li>
+                            <li>起皱/结皮/起拱：<strong>225</strong></li>
+                            <li>粘料：<strong>75</strong></li>
+                            <li>气孔/气泡/粘膜：<strong>75</strong></li>
+                            <li>厚度问题：<strong>75</strong></li>
+                            <li>开裂：<strong>21</strong></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="card p-4">
+                <h5 class="mb-3">不良缺陷占比分布</h5>
+                <div class="chart-container">
+                    <canvas id="defectPieChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3.数据概览 -->
+        <section id="data-overview">
+            <h2 class="section-title">3. 数据概览</h2>
+            <div class="card p-4">
+                <ul class="list-unstyled">
+                    <li><strong>统计周期：</strong>跨年度数据，共包含7条有效生产记录</li>
+                    <li><strong>数据完整性：</strong>整体记录完整，部分字段（干磨时间、粒径）存在缺失，不影响核心报废指标分析；所有记录均附备注说明，为根因分析提供关键现场信息</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 4.多维度详细质量分析 -->
+        <section id="multi-analysis">
+            <h2 class="section-title">4. 多维度详细质量分析</h2>
+
+            <!-- 4.1 时间趋势分析 -->
+            <div class="card p-4 mb-4">
+                <h5 class="mb-3">4.1 时间趋势分析</h5>
+                <div class="chart-container mb-3">
+                    <canvas id="trendLineChart"></canvas>
+                </div>
+                <ul>
+                    <li>月度/年度波动：数据时间跨度较大，质量异常并非连续发生，与特定生产批次或工艺变更强相关</li>
+                    <li>异常波动节点：报废高峰出现在<strong>2025年11月9日</strong>（报废比例40.20%）、<strong>2026年5月22日</strong>（报废比例38.24%）</li>
+                    <li>波动诱因：高报废率日均与换料、白转黑工艺转换、杂质处理耗时过长、起拱缺陷直接相关</li>
+                </ul>
+            </div>
+
+            <!-- 4.2 不良缺陷分布分析 -->
+            <div class="card p-4 mb-4">
+                <h5 class="mb-3">4.2 不良缺陷分布分析</h5>
+                <ul>
+                    <li>缺陷TOP排名：
+                        <ol>
+                            <li>杂质：681，占总报废量<strong>63.2%</strong>，为最突出集中性问题</li>
+                            <li>起皱/结皮/起拱：225，占比20.9%</li>
+                            <li>粘料与气孔/气泡/粘膜：各75，分别占比7.0%</li>
+                            <li>厚度问题：75，占比7.0%</li>
+                            <li>开裂：21，占比2.0%</li>
+                        </ol>
+                    </li>
+                    <li>集中性质量问题：杂质缺陷占绝对主导，是本期质量管控首要问题</li>
+                </ul>
+            </div>
+
+            <!-- 4.3 班次/产线/工序差异分析 -->
+            <div class="card p-4 mb-4">
+                <h5 class="mb-3">4.3 班次/产线/工序差异分析</h5>
+                <p class="text-muted fst-italic">本维度无数据</p>
+                <p>表格未提供明确的班次、产线或工序分类字段，无法进行横向对比。但基于现有"机号"字段观察：异常记录分布在多个机号（14RH, 14RBK, 13MZK等），未发现单一设备极端异常表现，问题更普遍与物料和工艺相关。</p>
+            </div>
+
+            <!-- 4.4 批量异常分析 -->
+            <div class="card p-4">
+                <h5 class="mb-3">4.4 批量异常分析</h5>
+                <div class="chart-container mb-3">
+                    <canvas id="batchBarChart"></canvas>
+                </div>
+                <ul>
+                    <li>突增批量不良：2025年11月9日（机号14RH）、2026年5月22日（机号14RH）均发生大规模报废，单日报废量分别为402和325</li>
+                    <li>超标拐点专项说明：两次拐点均直接由"换料"和"白转黑"工艺操作引发，表现为长时间杂质处理（8小时、4小时）和起拱缺陷，导致连续生产中断与高额报废</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 5. 问题总结+根因分析+落地改善建议 -->
+        <section id="conclusion">
+            <h2 class="section-title">5. 问题总结+根因分析+落地改善建议</h2>
+            <div class="card p-4 mb-4">
+                <h5 class="text-primary mb-3">核心质量问题总结</h5>
+                <ol>
+                    <li><strong>杂质缺陷高发</strong>：占总报废量63%，是报废比例超标的首要原因</li>
+                    <li><strong>工艺转换期质量失控</strong>：白转黑或普通换料后初期生产不稳定，杂质、起拱等问题频发</li>
+                    <li><strong>尺寸与外观异常</strong>：开裂、起拱、厚度不均等问题并存，影响产品一致性</li>
+                </ol>
+            </div>
+            <div class="card p-4 mb-4">
+                <h5 class="text-primary mb-3">根因分析</h5>
+                <h6 class="text-muted">1. 物料与工艺根因</h6>
+                <ul>
+                    <li>杂质：可能源于球磨工序清洁不彻底、原料洁净度不足，或白转黑换料过程中管道、罐体交叉污染</li>
+                    <li>工艺转换问题：白转黑涉及配方、粘度、温度等多参数变化，开机升温阶段工艺窗口未精准匹配，导致流延不稳定（起拱、尺寸不均）</li>
+                </ul>
+                <h6 class="text-muted mt-2">2. 操作与设备根因</h6>
+                <ul>
+                    <li>备注多次提及换料处理耗时过长，表明缺乏标准化快速处置流程或清机标准</li>
+                    <li>同一机号（14RH）多次出现高报废，需关注该设备特定状态或与之匹配的工艺设定</li>
+                </ul>
+            </div>
+            <div class="card p-4">
+                <h5 class="text-primary mb-3">落地改善建议</h5>
+                <h6 class="text-muted">1. 短期管控措施</h6>
+                <ul>
+                    <li>建立换料/转产清洁确认单：强制规定并记录白转黑或换料前后的设备（球磨机、脱泡罐、流延头）深度清洁与检查标准，由班长和质量员双签确认后方可投产</li>
+                    <li>制定异常处理SOP：针对出现杂质或起拱，明确前30分钟内的排查步骤（检查滤网、确认浆料粘度、调整温度梯度），缩短异常处理时间</li>
+                </ul>
+                <h6 class="text-muted mt-2">2. 长期预防方案</h6>
+                <ul>
+                    <li>开展杂质来源专项排查：对高发机台（14RH）的浆料输送管道、过滤器进行系统性排查，分析球磨日期与杂质报废的关联性，优化球磨介质清洁与更换周期</li>
+                    <li>优化工艺转换参数包：针对白转黑等常见工艺切换，建立经过验证的分阶段温度、速度、张力参数预设包，减少开机调试阶段试错成本</li>
+                    <li>引入SPC监控关键参数：对粘度、温度等关键工艺参数实施统计过程控制，换料初期加强监控频次，实现趋势预警，防止批量异常发生</li>
+                </ul>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // 缺陷分布饼图
+        const defectCtx = document.getElementById('defectPieChart').getContext('2d');
+        new Chart(defectCtx, {
+            type: 'pie',
+            data: {
+                labels: ['杂质', '起皱/结皮/起拱', '粘料', '气孔/气泡/粘膜', '厚度问题', '开裂'],
+                datasets: [{
+                    data: [681, 225, 75, 75, 75, 21],
+                    backgroundColor: ['#dc3545', '#fd7e14', '#ffc107', '#20c997', '#0d6efd', '#6c757d'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((a,b)=>a+b,0);
+                                const percentage = ((context.parsed / total)*100).toFixed(1) + '%';
+                                return context.label + ': ' + context.parsed + ' (' + percentage + ')';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 时间趋势折线图
+        const trendCtx = document.getElementById('trendLineChart').getContext('2d');
+        new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: ['2024-10', '2025-03', '2025-11', '2026-01', '2026-03', '2026-05', '2026-05'],
+                datasets: [{
+                    label: '报废比例(%)',
+                    data: [15, 14.8, 40.2, 15.3, 14.9, 38.24, 15.1],
+                    borderColor: '#0d6efd',
+                    backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#0d6efd'
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        title: {
+                            display: true,
+                            text: '报废比例(%)'
+                        },
+                        min: 0
+                    }
+                }
+            }
+        });
+
+        // 批量异常柱状图
+        const batchCtx = document.getElementById('batchBarChart').getContext('2d');
+        new Chart(batchCtx, {
+            type: 'bar',
+            data: {
+                labels: ['2025-11-09', '2026-05-22'],
+                datasets: [{
+                    label: '单日报废量',
+                    data: [402, 325],
+                    backgroundColor: ['#dc3545', '#dc3545'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '报废量'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+```
