@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>销售数据分析平台</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft Yahei', sans-serif;
+        }
+        body {
+            background-color: #f5f7fa;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .overview-cards {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        .card {
+            flex: 1;
+            min-width: 200px;
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .card-title {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        .card-value {
+            color: #2f54eb;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 20px;
+        }
+        .chart-box {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            height: 400px;
+        }
+        .chart-title {
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .chart {
+            width: 100%;
+            height: calc(100% - 40px);
+        }
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            .chart-box {
+                height: 350px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>销售数据分析可视化平台</h1>
+        <!-- 销售概况卡片 -->
+        <div class="overview-cards">
+            <div class="card">
+                <div class="card-title">销售总额</div>
+                <div class="card-value">¥454,014.61</div>
+            </div>
+        </div>
+        <!-- 图表区域 -->
+        <div class="charts-grid">
+            <!-- 分类统计柱状图 -->
+            <div class="chart-box">
+                <div class="chart-title">各品类销售额统计</div>
+                <div id="categoryBar" class="chart"></div>
+            </div>
+            <!-- 占比分析饼图 -->
+            <div class="chart-box">
+                <div class="chart-title">各品类销售额占比</div>
+                <div id="categoryPie" class="chart"></div>
+            </div>
+            <!-- 趋势分析折线图 -->
+            <div class="chart-box">
+                <div class="chart-title">月度销售额趋势</div>
+                <div id="monthLine" class="chart"></div>
+            </div>
+            <!-- 促销分析分组柱状图 -->
+            <div class="chart-box">
+                <div class="chart-title">促销与非促销销售额对比</div>
+                <div id="promotionBar" class="chart"></div>
+            </div>
+            <!-- 商品排行柱状图 -->
+            <div class="chart-box">
+                <div class="chart-title">品类销售额排行</div>
+                <div id="rankBar" class="chart"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // 初始化图表
+        // 1. 分类统计柱状图
+        const categoryBar = echarts.init(document.getElementById('categoryBar'));
+        const categoryData = {
+            categories: ['休闲', '冲调', '家居', '家电', '文体', '日配', '水产', '洗化', '烘焙', '熟食', '粮油', '肉禽', '蔬果', '酒饮', '针织'],
+            values: [74118.55, 13957.60, 6308.10, 853.90, 1970.30, 81932.46, 2891.00, 38004.90, 110.90, 5932.30, 60913.05, 25185.13, 81358.62, 54790.90, 5686.90]
+        };
+        categoryBar.setOption({
+            tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+            grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+            xAxis: { type: 'category', data: categoryData.categories, axisLabel: { rotate: 45 } },
+            yAxis: { type: 'value', axisLabel: { formatter: '¥{value}' } },
+            series: [{ name: '销售额', type: 'bar', data: categoryData.values, itemStyle: { color: '#2f54eb' } }]
+        });
+        // 2. 占比分析饼图
+        const categoryPie = echarts.init(document.getElementById('categoryPie'));
+        const pieData = categoryData.categories.map((name, idx) => ({ name, value: categoryData.values[idx] }));
+        categoryPie.setOption({
+            tooltip: { trigger: 'item', formatter: '{a} <br/>{b}: {c}元 ({d}%)' },
+            legend: { orient: 'vertical', left: 'left', bottom: '10%', textStyle: { fontSize: 12 } },
+            series: [{ name: '销售额占比', type: 'pie', radius: ['40%', '70%'], data: pieData, emphasis: { itemStyle: { shadowBlur: 10, shadowOffsetX: 0, shadowColor: 'rgba(0, 0, 0, 0.5)' } } }]
+        });
+        // 3. 趋势分析折线图
+        const monthLine = echarts.init(document.getElementById('monthLine'));
+        const monthData = {
+            months: ['2015年1月', '2015年2月', '2015年3月', '2015年4月'],
+            values: [116863.94, 139789.78, 94098.55, 103262.34]
+        };
+        monthLine.setOption({
+            tooltip: { trigger: 'axis' },
+            grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+            xAxis: { type: 'category', boundaryGap: false, data: monthData.months },
+            yAxis: { type: 'value', axisLabel: { formatter: '¥{value}' } },
+            series: [{ name: '销售额', type: 'line', data: monthData.values, smooth: true, itemStyle: { color: '#52c41a' }, lineStyle: { width: 3 } }]
+        });
+        // 4. 促销分析分组柱状图
+        const promotionBar = echarts.init(document.getElementById('promotionBar'));
+        const promotionData = {
+            types: ['非促销商品', '促销商品'],
+            values: [345572.29, 108442.32]
+        };
+        promotionBar.setOption({
+            tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+            grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+            xAxis: { type: 'category', data: promotionData.types },
+            yAxis: { type: 'value', axisLabel: { formatter: '¥{value}' } },
+            series: [{ name: '销售额', type: 'bar', data: promotionData.values, itemStyle: { color: ['#faad14', '#f5222d'] } }]
+        });
+        // 5. 商品排行柱状图（按销售额降序）
+        const rankBar = echarts.init(document.getElementById('rankBar'));
+        const sortedData = pieData.sort((a, b) => b.value - a.value).slice(0, 8);
+        rankBar.setOption({
+            tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+            grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+            xAxis: { type: 'value', axisLabel: { formatter: '¥{value}' } },
+            yAxis: { type: 'category', data: sortedData.map(item => item.name) },
+            series: [{ name: '销售额', type: 'bar', data: sortedData.map(item => item.value), itemStyle: { color: '#1890ff' } }]
+        });
+        // 响应式调整
+        window.addEventListener('resize', () => {
+            categoryBar.resize();
+            categoryPie.resize();
+            monthLine.resize();
+            promotionBar.resize();
+            rankBar.resize();
+        });
+    </script>
+</body>
+</html>
