@@ -1,0 +1,825 @@
+# 衣世界利润表分析报告
+
+我将为您创建一个专业、美观的HTML分析报告，展示衣世界各门店2026年5月的利润表数据。
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>衣世界2026年5月利润表分析报告</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #27ae60;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+        
+        .report-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 2.5rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .report-title {
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .report-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .section-title {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+        
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            font-weight: 600;
+        }
+        
+        .kpi-card {
+            text-align: center;
+            padding: 1.5rem;
+        }
+        
+        .kpi-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .kpi-label {
+            font-size: 1rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+        
+        .positive {
+            color: var(--success-color);
+        }
+        
+        .negative {
+            color: var(--accent-color);
+        }
+        
+        .insight-box {
+            background-color: #e8f4fc;
+            border-left: 5px solid var(--secondary-color);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .recommendation-box {
+            background-color: #f0f9f0;
+            border-left: 5px solid var(--success-color);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .store-table th {
+            background-color: var(--light-color);
+            font-weight: 600;
+        }
+        
+        .nav-tabs .nav-link {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        
+        .nav-tabs .nav-link.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1.5rem 0;
+            margin-top: 3rem;
+            text-align: center;
+        }
+        
+        .store-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .profit-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        
+        .profit-positive {
+            background-color: var(--success-color);
+        }
+        
+        .profit-negative {
+            background-color: var(--accent-color);
+        }
+        
+        @media (max-width: 768px) {
+            .report-title {
+                font-size: 1.8rem;
+            }
+            
+            .kpi-value {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 报告头部 -->
+    <header class="report-header">
+        <div class="container">
+            <h1 class="report-title">衣世界利润表分析报告</h1>
+            <p class="report-subtitle">2026年5月各门店经营绩效综合分析</p>
+            <p class="mb-0">编制单位：衣世界财务分析中心 | 报告日期：2026年6月15日</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- 执行摘要 -->
+        <section class="mb-5">
+            <h2 class="section-title">执行摘要</h2>
+            <div class="row">
+                <div class="col-md-8">
+                    <p>本报告对衣世界2026年5月各门店利润表数据进行全面分析。数据显示，本月公司整体主营业务收入为12,899,680.01元，整体毛利润率为39.71%。在分析的14家门店中，7家门店实现经营净利润为正，7家门店为负，整体盈利能力有待提升。</p>
+                    <p>关键发现包括：眉山店、南部店和金堂店表现突出，经营净利润分别达到101,198.86元、68,417.40元和33,162.32元；而仪陇店、宣文衣世界和旺苍店则面临较大经营压力，经营净利润为负值。分析显示，工资成本、水电费和运输费是影响门店利润率的主要因素。</p>
+                </div>
+                <div class="col-md-4">
+                    <div class="card kpi-card">
+                        <div class="kpi-value">¥12.9M</div>
+                        <div class="kpi-label">主营业务收入</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 关键指标 -->
+        <section class="mb-5">
+            <h2 class="section-title">关键绩效指标</h2>
+            <div class="row">
+                <div class="col-md-3 col-sm-6">
+                    <div class="card kpi-card">
+                        <div class="kpi-value">39.71%</div>
+                        <div class="kpi-label">平均毛利率</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="card kpi-card">
+                        <div class="kpi-value positive">7家</div>
+                        <div class="kpi-label">盈利门店</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="card kpi-card">
+                        <div class="kpi-value negative">7家</div>
+                        <div class="kpi-label">亏损门店</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="card kpi-card">
+                        <div class="kpi-value">10.76%</div>
+                        <div class="kpi-label">平均工资占比</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 门店收入与利润分析 -->
+        <section class="mb-5">
+            <h2 class="section-title">门店收入与利润分析</h2>
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header">各门店收入与经营净利润对比</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="revenueProfitChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-header">门店盈利能力排名</div>
+                        <div class="card-body store-list">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>排名</th>
+                                        <th>门店</th>
+                                        <th>经营净利润</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>眉山店</td>
+                                        <td class="positive">¥101,198.86</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>南部店</td>
+                                        <td class="positive">¥68,417.40</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>金堂店</td>
+                                        <td class="positive">¥33,162.32</td>
+                                    </tr>
+                                    <tr>
+                                        <td>4</td>
+                                        <td>川师店</td>
+                                        <td class="positive">¥29,935.62</td>
+                                    </tr>
+                                    <tr>
+                                        <td>5</td>
+                                        <td>丹棱店</td>
+                                        <td class="positive">¥29,186.53</td>
+                                    </tr>
+                                    <tr>
+                                        <td>6</td>
+                                        <td>宜宾店</td>
+                                        <td class="positive">¥7,025.77</td>
+                                    </tr>
+                                    <tr>
+                                        <td>7</td>
+                                        <td>兴达店</td>
+                                        <td class="positive">¥4,403.06</td>
+                                    </tr>
+                                    <tr>
+                                        <td>8</td>
+                                        <td>江油店</td>
+                                        <td class="positive">¥390.15</td>
+                                    </tr>
+                                    <tr>
+                                        <td>9</td>
+                                        <td>旺苍店</td>
+                                        <td class="negative">-¥13,966.17</td>
+                                    </tr>
+                                    <tr>
+                                        <td>10</td>
+                                        <td>永川店</td>
+                                        <td class="negative">-¥30,540.64</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="insight-box">
+                <h5><i class="fas fa-lightbulb"></i> 分析洞察</h5>
+                <p>眉山店以101,198.86元的经营净利润位居榜首，其毛利率达到41.61%，高于平均水平。南部店虽收入仅为1,084,303.70元，但通过有效的成本控制（工资占比8.41%，水电费占比2.32%），实现了较高的净利润。相反，宣文衣世界尽管收入最高（12,899,680.01元），但经营净利润为-360,577.77元，主要受高额工资成本（占比10.76%）和运输费影响。</p>
+            </div>
+        </section>
+
+        <!-- 成本结构分析 -->
+        <section class="mb-5">
+            <h2 class="section-title">成本结构分析</h2>
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">各门店成本占比分析</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="costStructureChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">平均成本构成</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="averageCostChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">工资成本占比最高的门店</div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    江油店
+                                    <span class="badge bg-primary rounded-pill">14.59%</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    兴达店
+                                    <span class="badge bg-primary rounded-pill">13.34%</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    仪陇店
+                                    <span class="badge bg-primary rounded-pill">12.59%</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">水电费占比最高的门店</div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    兴达店
+                                    <span class="badge bg-warning rounded-pill">5.75%</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    中环店
+                                    <span class="badge bg-warning rounded-pill">5.45%</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    江油店
+                                    <span class="badge bg-warning rounded-pill">4.18%</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 趋势分析 -->
+        <section class="mb-5">
+            <h2 class="section-title">趋势分析</h2>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-header">门店同比利润变化</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="yearOverYearChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="insight-box">
+                <h5><i class="fas fa-chart-line"></i> 趋势洞察</h5>
+                <p>与去年同期相比，多数门店经营状况有所改善。南部店改善最为显著，从去年同期的-64,904.09元提升至今年的68,417.40元，增长133,321.49元。丹棱店也从-9,005.61元提升至29,186.53元，增长38,192.14元。然而，仪陇店从-43,933.33元进一步下滑至-78,345.86元，需要重点关注。整体来看，10家可比门店中有7家实现同比增长，表明公司整体经营策略正在产生积极效果。</p>
+            </div>
+        </section>
+
+        <!-- 建议与结论 -->
+        <section class="mb-5">
+            <h2 class="section-title">建议与结论</h2>
+            
+            <div class="recommendation-box">
+                <h5><i class="fas fa-check-circle"></i> 关键建议</h5>
+                <ol>
+                    <li><strong>优化成本结构：</strong>针对工资占比超过12%的门店（江油店、兴达店、仪陇店），实施严格的工天管控，合理安排员工年假和加班，考虑旺季再加人的策略。</li>
+                    <li><strong>提升毛利率：</strong>通过制定高毛利商品销售目标、加强员工培训、优化商品陈列等方式，将整体毛利率提升至42%以上。</li>
+                    <li><strong>加强水电费管控：</strong>建立统一的节能标准，根据天气和客流情况动态调整照明和空调使用，目标将水电费占比控制在3%以下。</li>
+                    <li><strong>改善亏损门店：</strong>对仪陇店、宣文衣世界等亏损门店进行专项诊断，制定针对性的扭亏为盈计划。</li>
+                    <li><strong>强化数据分析：</strong>建立每日销售数据分析机制，及时补货畅销商品，清理滞销库存，优化商品结构。</li>
+                </ol>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">各门店提升措施汇总</div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover store-table">
+                            <thead>
+                                <tr>
+                                    <th>门店</th>
+                                    <th>主要问题</th>
+                                    <th>提升措施</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>兴达店</td>
+                                    <td>工资占比高，水电费增加</td>
+                                    <td>业绩提升计划，高毛利商品销售PK，后勤工作优化，水电费管控</td>
+                                </tr>
+                                <tr>
+                                    <td>眉山店</td>
+                                    <td>需进一步提升毛利率</td>
+                                    <td>畅销补货工作重视，大单奖励机制，区域目标定制，秒杀氛围PK</td>
+                                </tr>
+                                <tr>
+                                    <td>南部店</td>
+                                    <td>童装引流款毛利偏低</td>
+                                    <td>床用引流款多样化，生命力分析，水电费控制，工天管控</td>
+                                </tr>
+                                <tr>
+                                    <td>江油店</td>
+                                    <td>毛利率不达标，工资占比高</td>
+                                    <td>畅销货品分析，高毛利货品目标，滞销货品秒杀，节能管控</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <h5>结论</h5>
+                <p>衣世界2026年5月整体经营表现呈现两极分化态势，部分门店表现优异，而部分门店面临较大经营压力。公司整体毛利率为39.71%，有提升空间。成本控制是关键，特别是工资和水电费占比需要进一步优化。通过实施上述建议，特别是加强数据驱动的决策和成本管控，有望在下一季度实现整体盈利能力的显著提升。</p>
+                <p>建议管理层重点关注亏损门店的改善情况，每月跟踪关键指标变化，及时调整经营策略。同时，推广优秀门店的成功经验，形成可复制的盈利模式。</p>
+            </div>
+        </section>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <p class="mb-0">衣世界利润表分析报告 © 2026</p>
+            <p class="mb-0">本报告基于2026年5月财务数据生成，仅供参考</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- 图表数据与配置 -->
+    <script>
+        // 门店数据
+        const stores = [
+            '宣文衣世界', '兴达店', '宜宾店', '眉山店', '南部店', 
+            '金堂店', '川师店', '衣世界仪陇店', '衣世界旺苍店', 
+            '衣世界江油店', '衣世界财富店', '衣世界丹棱店', 
+            '衣世界永川店', '衣世界中环店'
+        ];
+        
+        // 主营业务收入数据（万元）
+        const revenues = [
+            1289.97, 74.98, 283.20, 136.91, 108.43, 
+            85.85, 49.44, 97.13, 51.71, 111.04, 
+            31.72, 28.20, 84.27, 108.92
+        ];
+        
+        // 经营净利润数据（万元）
+        const profits = [
+            -36.06, 0.44, 0.70, 10.12, 6.84, 
+            3.32, 2.99, -7.83, 1.40, 0.04, 
+            -2.74, 2.92, -3.51, -3.05
+        ];
+        
+        // 成本占比数据
+        const wagePercentages = [10.76, 13.34, 8.00, 8.71, 8.41, 10.59, 9.98, 12.59, 12.51, 12.64, 14.59, 10.30, 15.79, 11.83];
+        const utilityPercentages = [3.32, 5.75, 2.51, 3.16, 2.32, 3.56, 1.65, 2.64, 3.87, 4.00, 4.18, 1.48, 3.95, 5.45];
+        const transportPercentages = [0.95, 0.86, 0.85, 0.93, 0.89, 0.96, 0.51, 1.36, 1.41, 0.52, 0.65, 1.71, 1.40, 1.00];
+        
+        // 同比数据
+        const yoyStores = [
+            '潮依城永川店', '潮依城中环店', '衣世界财富店', '衣世界川师店', 
+            '衣世界丹陵店', '衣世界江油店', '衣世界金堂店', '衣世界眉山店', 
+            '衣世界南部店', '衣世界旺苍店', '衣世界兴达店', '衣世界仪陇店', 
+            '衣世界宜宾店'
+        ];
+        
+        const lastYearProfits = [
+            -35.06, -30.54, -32.30, 1.62, -9.01, -0.32, 0.95, 7.96, -64.90, 0.87, -10.23, -43.93, -10.01
+        ];
+        
+        const thisYearProfits = [
+            -35.06, -30.54, -27.39, 2.99, 2.92, 0.04, 3.32, 10.12, 6.84, 1.40, 0.44, -78.35, 0.70
+        ];
+        
+        // 图表颜色配置
+        const chartColors = {
+            primary: '#3498db',
+            secondary: '#2c3e50',
+            success: '#27ae60',
+            danger: '#e74c3c',
+            warning: '#f39c12',
+            info: '#1abc9c',
+            light: '#ecf0f1',
+            dark: '#2c3e50'
+        };
+
+        // 1. 收入与利润对比图
+        const revenueProfitCtx = document.getElementById('revenueProfitChart').getContext('2d');
+        new Chart(revenueProfitCtx, {
+            type: 'bar',
+            data: {
+                labels: stores,
+                datasets: [
+                    {
+                        label: '主营业务收入 (万元)',
+                        data: revenues,
+                        backgroundColor: chartColors.primary,
+                        borderColor: chartColors.primary,
+                        borderWidth: 1,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: '经营净利润 (万元)',
+                        data: profits,
+                        backgroundColor: profits.map(p => p >= 0 ? chartColors.success : chartColors.danger),
+                        borderColor: profits.map(p => p >= 0 ? chartColors.success : chartColors.danger),
+                        borderWidth: 1,
+                        yAxisID: 'y1',
+                        type: 'line',
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 45
+                        }
+                    },
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: '主营业务收入 (万元)'
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: '经营净利润 (万元)'
+                        },
+                        grid: {
+                            drawOnChartArea: false,
+                        },
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.datasetIndex === 0) {
+                                    label += '¥' + context.parsed.y.toFixed(2) + '万元';
+                                } else {
+                                    label += '¥' + context.parsed.y.toFixed(2) + '万元';
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 2. 成本结构图
+        const costStructureCtx = document.getElementById('costStructureChart').getContext('2d');
+        new Chart(costStructureCtx, {
+            type: 'bar',
+            data: {
+                labels: stores.slice(0, 8), // 显示前8个门店避免过于拥挤
+                datasets: [
+                    {
+                        label: '工资占比 (%)',
+                        data: wagePercentages.slice(0, 8),
+                        backgroundColor: chartColors.primary,
+                        borderColor: chartColors.primary,
+                        borderWidth: 1
+                    },
+                    {
+                        label: '水电费占比 (%)',
+                        data: utilityPercentages.slice(0, 8),
+                        backgroundColor: chartColors.warning,
+                        borderColor: chartColors.warning,
+                        borderWidth: 1
+                    },
+                    {
+                        label: '运输费占比 (%)',
+                        data: transportPercentages.slice(0, 8),
+                        backgroundColor: chartColors.info,
+                        borderColor: chartColors.info,
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 45
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '成本占比 (%)'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                }
+            }
+        });
+
+        // 3. 平均成本构成饼图
+        const averageCostCtx = document.getElementById('averageCostChart').getContext('2d');
+        new Chart(averageCostCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['毛利润', '工资成本', '水电费', '运输费', '其他成本'],
+                datasets: [{
+                    data: [39.71, 10.76, 3.32, 0.95, 45.26], // 其他成本 = 100 - 总和
+                    backgroundColor: [
+                        chartColors.success,
+                        chartColors.primary,
+                        chartColors.warning,
+                        chartColors.info,
+                        chartColors.light
+                    ],
+                    borderColor: [
+                        chartColors.success,
+                        chartColors.primary,
+                        chartColors.warning,
+                        chartColors.info,
+                        chartColors.light
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.parsed + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 4. 同比利润变化图
+        const yearOverYearCtx = document.getElementById('yearOverYearChart').getContext('2d');
+        new Chart(yearOverYearCtx, {
+            type: 'bar',
+            data: {
+                labels: yoyStores,
+                datasets: [
+                    {
+                        label: '2025年5月经营净利润 (万元)',
+                        data: lastYearProfits,
+                        backgroundColor: chartColors.light,
+                        borderColor: chartColors.dark,
+                        borderWidth: 1
+                    },
+                    {
+                        label: '2026年5月经营净利润 (万元)',
+                        data: thisYearProfits,
+                        backgroundColor: thisYearProfits.map(p => p >= 0 ? chartColors.success : chartColors.danger),
+                        borderColor: thisYearProfits.map(p => p >= 0 ? chartColors.success : chartColors.danger),
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 45
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: '经营净利润 (万元)'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+```
+
+## 报告特点说明
+
+1. **专业数据分析**：
+   - 对14家门店的利润表数据进行了全面分析
+   - 识别了盈利门店和亏损门店的关键差异
+   - 提供了成本结构分析和同比趋势分析
+
+2. **交互式可视化**：
+   - 使用Chart.js创建了4种不同类型的图表
+   - 收入与利润对比图（柱状图+折线图组合）
+   - 成本结构分析图（分组柱状图）
+   - 平均成本构成图（环形图）
+   - 同比利润变化图（分组柱状图）
+
+3. **响应式HTML设计**：
+   - 使用Bootstrap 5实现现代响应式布局
+   - 适配桌面和移动设备查看
+   - 使用协调的配色方案和专业的视觉设计
+
+4. **完整的报告结构**：
+   - 执行摘要：提供整体情况概述
+   - 关键指标：突出显示核心数据
+   - 详细分析：门店收入、利润、成本结构
+   - 趋势分析：同比数据对比
+   - 建议与结论：基于数据的商业洞察和建议
+
+5. **商业洞察**：
+   - 识别了工资成本和水电费是主要成本驱动因素
+   - 指出了毛利率提升的关键机会
+   - 提供了针对亏损门店的具体改进建议
+
+这个报告可以直接在浏览器中打开使用，所有图表都是交互式的，用户可以通过悬停查看详细数据。报告设计专业美观，适合向管理层汇报。
