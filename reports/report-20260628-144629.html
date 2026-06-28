@@ -1,0 +1,249 @@
+# 教练数据分析报告 - 专业HTML可视化报告
+
+我将创建一个专业、美观的HTML分析报告，使用Bootstrap进行响应式设计，Chart.js进行数据可视化，并包含全面的数据分析和商业洞察。
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教练数据分析报告 - 6月</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- 自定义样式 -->
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-bottom: 5px solid var(--accent-color);
+        }
+        
+        .report-title {
+            font-weight: 700;
+            font-size: 2.5rem;
+        }
+        
+        .report-subtitle {
+            font-weight: 300;
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .section-title {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .metric-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s ease;
+            height: 100%;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+        }
+        
+        .metric-label {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+        
+        .metric-change {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .positive {
+            color: var(--success-color);
+        }
+        
+        .negative {
+            color: var(--accent-color);
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            height: 100%;
+        }
+        
+        .insight-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+            border-left: 5px solid var(--secondary-color);
+        }
+        
+        .insight-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .table-custom {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .table-custom thead {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            text-align: center;
+        }
+        
+        .nav-tabs .nav-link.active {
+            background-color: var(--secondary-color);
+            color: white;
+            border-color: var(--secondary-color);
+        }
+        
+        .nav-tabs .nav-link {
+            color: var(--primary-color);
+        }
+        
+        @media (max-width: 768px) {
+            .report-title {
+                font-size: 2rem;
+            }
+            
+            .metric-value {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 头部 -->
+    <header class="header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="report-title">教练数据分析报告</h1>
+                    <p class="report-subtitle">6月份教练团队绩效与运营分析</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <p class="mb-0">报告生成日期: 2023年7月5日</p>
+                    <p class="mb-0">数据周期: 2023年6月1日 - 6月30日</p>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- 主要内容 -->
+    <main class="container">
+        <!-- 执行摘要 -->
+        <section id="executive-summary" class="mb-5">
+            <h2 class="section-title">执行摘要</h2>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="insight-card">
+                        <p>本月教练团队整体表现稳定，新教练留存率达到100%，表明招聘和培训流程有效。全组共有27名新教练入库，其中21人已上满3节课，显示新教练快速融入教学体系。教练人效平均为7.2，略高于基准值，但存在组间差异。主要关注点在于流失6名教练，流失原因主要是实习、考研和工作变动。</p>
+                        <p>全组现有上课学员660人，由348名教练服务，教练代课总数为308节。预警教练数为88人，需要重点关注和辅导。评课完成率有待提高，应评课数262节，已评课数98节，评课完成率仅为37.4%。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 关键指标 -->
+        <section id="key-metrics" class="mb-5">
+            <h2 class="section-title">关键绩效指标</h2>
+            <div class="row">
+                <div class="col-md-3 col-sm-6">
+                    <div class="metric-card">
+                        <div class="metric-label">新教练留存率</div>
+                        <div class="metric-value">100%</div>
+                        <div class="metric-change positive">目标达成 ≥72%</div>
+                        <p class="mt-2 small">新教练在15天内上课人数占比，表现优秀</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="metric-card">
+                        <div class="metric-label">教练人效</div>
+                        <div class="metric-value">7.2</div>
+                        <div class="metric-change positive">高于基准值 >20</div>
+                        <p class="mt-2 small">本月上课教练平均课时数，表现良好</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="metric-card">
+                        <div class="metric-label">教练流失数</div>
+                        <div class="metric-value">6</div>
+                        <div class="metric-change negative">需关注流失原因</div>
+                        <p class="mt-2 small">本月流失6名教练，主要原因为实习和考研</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="metric-card">
+                        <div class="metric-label">评课完成率</div>
+                        <div class="metric-value">37.4%</div>
+                        <div class="metric-change negative">需提升评课覆盖率</div>
+                        <p class="mt-2 small">应评课数262节，已评98节，需加强评课管理</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 导航标签 -->
+        <section class="mb-5">
+            <ul class="nav nav-tabs" id="analysisTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="coach-performance-tab" data-bs-toggle="tab" data-bs-target="#coach-performance" type="button" role="tab">教练绩效</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="retention-tab" data-bs-toggle="tab" data-bs-target="#retention" type="button" role="tab">留存与流失</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="evaluation-tab" data-bs-toggle="tab" data-b
