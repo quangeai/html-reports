@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>员工薪酬数据分析报告</title>
+    <!-- 引入ECharts官方CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 12px;
+            text-align: right;
+        }
+        th {
+            background-color: #f2f2f2;
+            text-align: center;
+        }
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            margin: 20px 0;
+        }
+        .analysis {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #2f80ed;
+        }
+    </style>
+</head>
+<body>
+    <h1>员工薪酬数据分析报告</h1>
+
+    <!-- 部门汇总表格 -->
+    <h2>部门薪酬汇总表</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>所属部门</th>
+                <th>月度应发工资总额</th>
+                <th>社保个人扣款总额</th>
+                <th>公积金个人扣款总额</th>
+                <th>个税总额</th>
+                <th>实发工资总额</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>技术部</td>
+                <td>142,331.00</td>
+                <td>14,944.78</td>
+                <td>17,079.72</td>
+                <td>4,630.66</td>
+                <td>105,665.88</td>
+            </tr>
+            <tr>
+                <td>市场部</td>
+                <td>73,024.00</td>
+                <td>7,772.55</td>
+                <td>8,882.88</td>
+                <td>1,154.29</td>
+                <td>56,214.34</td>
+            </tr>
+            <tr>
+                <td>运营部</td>
+                <td>82,780.00</td>
+                <td>8,691.91</td>
+                <td>9,933.60</td>
+                <td>1,390.50</td>
+                <td>62,743.99</td>
+            </tr>
+            <tr>
+                <td>财务部</td>
+                <td>68,695.00</td>
+                <td>7,212.99</td>
+                <td>8,243.40</td>
+                <td>1,099.04</td>
+                <td>52,149.60</td>
+            </tr>
+            <tr>
+                <td>人力资源部</td>
+                <td>72,418.00</td>
+                <td>7,603.91</td>
+                <td>8,690.16</td>
+                <td>991.09</td>
+                <td>55,132.88</td>
+            </tr>
+            <tr>
+                <td>行政部</td>
+                <td>57,225.00</td>
+                <td>6,008.63</td>
+                <td>6,867.00</td>
+                <td>280.48</td>
+                <td>44,068.90</td>
+            </tr>
+            <tr style="font-weight: bold; background-color: #f2f2f2;">
+                <td>全公司汇总</td>
+                <td>496,473.00</td>
+                <td>52,234.77</td>
+                <td>59,696.76</td>
+                <td>9,546.06</td>
+                <td>375,975.59</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- 饼图容器 -->
+    <h2>各部门月度应发工资占比</h2>
+    <div id="pieChart" class="chart-container"></div>
+
+    <!-- 分组柱状图容器 -->
+    <h2>各部门薪酬构成对比</h2>
+    <div id="barChart" class="chart-container"></div>
+
+    <!-- 人力成本分析 -->
+    <div class="analysis">
+        <h3>人力成本分析</h3>
+        <p>1. 技术部是公司人力成本核心部门，月度应发工资占全公司的28.67%，远超其他部门，主要因技术岗位薪酬水平较高且人员规模较大；</p>
+        <p>2. 全公司社保、公积金、个税三项扣除总额占应发工资的22.41%，符合国家社保公积金缴纳及个税征收标准；</p>
+        <p>3. 行政部薪酬成本最低，占全公司的11.53%，岗位以基础行政服务类为主，薪酬水平相对偏低；</p>
+        <p>4. 各部门薪酬构成结构基本一致，扣除项占比稳定，可重点关注技术部的薪酬回报率及行政部的人员效能提升。</p>
+    </div>
+
+    <script>
+        // 初始化饼图
+        var pieChart = echarts.init(document.getElementById('pieChart'));
+        var pieOption = {
+            tooltip: {
+                trigger: 'item'
+            },
+            legend: {
+                orient: 'vertical',
+                left: 'left'
+            },
+            series: [
+                {
+                    name: '月度应发工资占比',
+                    type: 'pie',
+                    radius: '50%',
+                    data: [
+                        {value: 142331, name: '技术部'},
+                        {value: 73024, name: '市场部'},
+                        {value: 82780, name: '运营部'},
+                        {value: 68695, name: '财务部'},
+                        {value: 72418, name: '人力资源部'},
+                        {value: 57225, name: '行政部'}
+                    ],
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    },
+                    label: {
+                        formatter: '{b}: {d}%'
+                    }
+                }
+            ]
+        };
+        pieChart.setOption(pieOption);
+
+        // 初始化分组柱状图
+        var barChart = echarts.init(document.getElementById('barChart'));
+        var barOption = {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            legend: {
+                data: ['月度应发工资', '社保个人扣款', '公积金个人扣款', '个税', '实发工资'],
+                bottom: 10
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '15%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'value',
+                axisLabel: {
+                    formatter: '¥{value}'
+                }
+            },
+            yAxis: {
+                type: 'category',
+                data: ['技术部', '市场部', '运营部', '财务部', '人力资源部', '行政部']
+            },
+            series: [
+                {
+                    name: '月度应发工资',
+                    type: 'bar',
+                    data: [142331, 73024, 82780, 68695, 72418, 57225]
+                },
+                {
+                    name: '社保个人扣款',
+                    type: 'bar',
+                    data: [14944.78, 7772.55, 8691.91, 7212.99, 7603.91, 6008.63]
+                },
+                {
+                    name: '公积金个人扣款',
+                    type: 'bar',
+                    data: [17079.72, 8882.88, 9933.60, 8243.40, 8690.16, 6867.00]
+                },
+                {
+                    name: '个税',
+                    type: 'bar',
+                    data: [4630.66, 1154.29, 1390.50, 1099.04, 991.09, 280.48]
+                },
+                {
+                    name: '实发工资',
+                    type: 'bar',
+                    data: [105665.88, 56214.34, 62743.99, 52149.60, 55132.88, 44068.90]
+                }
+            ]
+        };
+        barChart.setOption(barOption);
+
+        // 响应式调整
+        window.addEventListener('resize', function() {
+            pieChart.resize();
+            barChart.resize();
+        });
+    </script>
+</body>
+</html>
