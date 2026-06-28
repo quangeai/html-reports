@@ -1,0 +1,427 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>经营数据分析</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+        /* 全局样式 */
+        body{
+            background: linear-gradient(180deg, #F0F5FA 0%, #E6F0F8 100%);
+            font-family: apple-system, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: #4E5969;
+            padding: 2rem;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        /* 顶部标题栏 */
+        .ban{
+            background: linear-gradient(135deg, #0F4C81 0%, #1A6BB9 100%);
+            color: #FFFFFF;
+            padding: 3rem 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .ban h1{
+            font-size: 28px;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 0.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 3px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* 模块标题 */
+        .sec-title{
+            font-size: 20px;
+            font-weight: 600;
+            color: #1D2129;
+            border-left: 4px solid #0F4C81;
+            padding-left: 12px;
+            margin: 2rem 0 1.5rem;
+            border-radius: 0 2px 2px 0;
+        }
+
+        /* 卡片样式 */
+        .card{
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            background: #FFFFFF;
+            transition: all 0.3s ease-out;
+            height: 100%;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+        .card:hover{
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        }
+        .card:nth-child(1){ animation-delay: 0.1s; }
+        .card:nth-child(2){ animation-delay: 0.2s; }
+        .card:nth-child(3){ animation-delay: 0.3s; }
+
+        /* 卡片内部样式 */
+        .card p.fs-5{
+            color: #1D2129;
+            font-weight: 600;
+        }
+        .card .small.text-muted{
+            color: #86909C !important;
+            line-height: 1.5;
+        }
+
+        /* 图表容器 */
+        .C{
+            position: relative;
+            height: 350px;
+            width: 100%;
+        }
+
+        /* 表格容器 */
+        .TW{
+            height: 350px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        .TW::-webkit-scrollbar{
+            width: 6px;
+        }
+        .TW::-webkit-scrollbar-track{
+            background: #F5F9FC;
+            border-radius: 3px;
+        }
+        .TW::-webkit-scrollbar-thumb{
+            background: #C9CDD4;
+            border-radius: 3px;
+        }
+
+        /* 表格样式 */
+        .table{
+            margin-bottom: 0;
+        }
+        .table thead{
+            background: #F5F9FC;
+        }
+        .table th{
+            text-align: center;
+            font-weight: 600;
+            color: #4E5969;
+            border-bottom: 2px solid #E5E6EB;
+            padding: 12px;
+        }
+        .table td{
+            padding: 12px;
+            border-bottom: 1px solid #E5E6EB;
+        }
+        .table td:nth-child(n+2){
+            text-align: right;
+        }
+        .table-hover tbody tr:hover{
+            background-color: #F5F9FC;
+        }
+
+        /* 动画定义 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            body{
+                padding: 1rem;
+            }
+            .ban{
+                padding: 2rem 1rem;
+            }
+            .ban h1{
+                font-size: 24px;
+            }
+            .sec-title{
+                font-size: 18px;
+            }
+            .C{
+                height: 300px;
+            }
+            .TW{
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="ban">
+        <h1>经营数据洞察报告</h1>
+        <p class="mb-0">2025年1-6月渠道流量与客资分析</p>
+    </div>
+    <div class="container">
+        <h3 class="sec-title">一、数据分析结论</h3>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            <div class="col">
+                <div class="card p-4 border-top border-4 border-success h-100">
+                    <h6 class="text-success fw-bold mb-2">客资转化结论</h6>
+                    <p id="c1" class="fs-5 mb-1"></p>
+                    <p id="c2" class="small text-muted m-0"></p>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card p-4 border-top border-4 border-warning h-100">
+                    <h6 class="text-warning fw-bold mb-2">整体表现评级</h6>
+                    <p id="c3" class="fs-5 mb-1"></p>
+                    <p id="c4" class="small text-muted m-0"></p>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card p-4 border-top border-4 border-primary h-100">
+                    <h6 class="text-primary fw-bold mb-2">流量趋势结论</h6>
+                    <p id="c5" class="fs-5 mb-1"></p>
+                    <p id="c6" class="small text-muted m-0"></p>
+                </div>
+            </div>
+        </div>
+
+        <h3 class="sec-title">二、优化提升策略</h3>
+        <div id="s-con" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4"></div>
+
+        <h3 class="sec-title">三、数据趋势明细</h3>
+        <div class="card p-4 mb-4">
+            <h6 class="fw-bold mb-3 ps-2 border-start border-3 border-primary">1. 流量指标趋势</h6>
+            <div class="row g-4 align-items-stretch">
+                <div class="col-md-6">
+                    <div class="C">
+                        <canvas id="trafficChart"></canvas>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="TW table-responsive">
+                        <table class="table table-sm table-hover text-nowrap" id="trafficTable"></table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card p-4 mb-4">
+            <h6 class="fw-bold mb-3 ps-2 border-start border-3 border-purple">2. 客资指标分析</h6>
+            <div class="row g-4 align-items-stretch">
+                <div class="col-md-6">
+                    <div class="C">
+                        <canvas id="leadsChart"></canvas>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="C">
+                        <canvas id="channelPieChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="TW table-responsive">
+                        <table class="table table-sm table-hover text-nowrap" id="leadsTable"></table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card p-4 mb-4">
+            <h6 class="fw-bold mb-3 ps-2 border-start border-3 border-dark">3. 全量数据明细</h6>
+            <div class="TW table-responsive">
+                <table class="table table-striped table-hover text-nowrap" id="fullDataTable"></table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded",()=>{
+            // 替换为用户提供的数据
+            const d = {
+                "conclusions": {
+                    "traffic_summary": "2025年1-6月各渠道曝光量与访问量均呈持续上升趋势",
+                    "traffic_data": "曝光量从1月的144900增长至6月的869400，增长率约499.9%；访问量从1月的11692增长至6月的69552，增长率约494.8%",
+                    "leads_summary": "留资客资量稳步增长，转化效率有所提升",
+                    "leads_data": "留资客资量从1月的527增长至6月的3124，增长率约492.6%",
+                    "rank_summary": "整体流量与线索获取表现良好",
+                    "rank_name": "表现突出"
+                },
+                "strategies": [
+                    {
+                        "title": "聚焦高增长渠道投入",
+                        "content": "针对曝光量和留资客资量增长最快的前3个渠道，增加30%的广告投放预算"
+                    },
+                    {
+                        "title": "优化线索跟进流程",
+                        "content": "制定标准化线索72小时内响应机制，确保有效线索跟进率提升20%"
+                    },
+                    {
+                        "title": "精准产品投放调整",
+                        "content": "根据各产品在不同渠道的转化表现，针对性优化C产品在微信视频号的投放内容"
+                    }
+                ],
+                "traffic_analysis": {
+                    "labels": ["1月", "2月", "3月", "4月", "5月", "6月"],
+                    "exposure_data": [144900, 280800, 434700, 579600, 724500, 869400],
+                    "visit_data": [11692, 22184, 34776, 46368, 57960, 69552]
+                },
+                "leads_analysis": {
+                    "labels": ["1月", "2月", "3月", "4月", "5月", "6月"],
+                    "total_leads_data": [527, 988, 1559, 2082, 2604, 3124],
+                    "pie_chart": {
+                        "labels": ["抖音", "小红书", "百度", "微信视频号"],
+                        "data": [30, 25, 20, 25]
+                    }
+                }
+            };
+
+            // 格式化数字为千分位
+            const formatNumber = (num) => {
+                return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            };
+
+            // 渲染结论
+            const c = d.conclusions;
+            document.getElementById('c1').innerText = c.leads_summary;
+            document.getElementById('c2').innerText = c.leads_data;
+            document.getElementById('c3').innerText = c.rank_name;
+            document.getElementById('c4').innerText = c.rank_summary;
+            document.getElementById('c5').innerText = c.traffic_summary;
+            document.getElementById('c6').innerText = c.traffic_data;
+
+            // 渲染策略
+            const s = d.strategies;
+            document.getElementById('s-con').innerHTML = s.map((item, idx)=>`
+                <div class="col">
+                    <div class="card p-4 h-100 border-top border-4 border-info" style="animation-delay: ${0.1 + idx*0.1}s">
+                        <h6 class="text-info fw-bold mb-2">${item.title}</h6>
+                        <p class="small text-muted m-0">${item.content}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            // 渲染流量图表
+            const trafficCtx = document.getElementById('trafficChart').getContext('2d');
+            new Chart(trafficCtx,{
+                type:'line',
+                data:{
+                    labels:d.traffic_analysis.labels,
+                    datasets:[
+                        {
+                            label:'曝光量',
+                            data:d.traffic_analysis.exposure_data,
+                            borderColor:'#0F4C81',
+                            backgroundColor:'rgba(15, 76, 129, 0.1)',
+                            fill:true,
+                            tension:0.4,
+                            pointBackgroundColor:'#0F4C81',
+                            pointRadius:4
+                        },
+                        {
+                            label:'访问量',
+                            data:d.traffic_analysis.visit_data,
+                            borderColor:'#00875A',
+                            backgroundColor:'rgba(0, 135, 90, 0.1)',
+                            fill:true,
+                            tension:0.4,
+                            pointBackgroundColor:'#00875A',
+                            pointRadius:4
+                        }
+                    ]
+                },
+                options:{
+                    maintainAspectRatio:false,
+                    responsive:true,
+                    plugins:{
+                        legend:{
+                            position:'bottom',
+                            labels:{
+                                boxWidth:12,
+                                usePointStyle:true,
+                                pointStyle:'circle'
+                            }
+                        },
+                        tooltip:{
+                            callbacks:{
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${formatNumber(context.parsed.y)}`;
+                                }
+                            }
+                        }
+                    },
+                    scales:{
+                        y:{
+                            beginAtZero:true,
+                            ticks:{
+                                callback: function(value) {
+                                    return formatNumber(value);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 渲染客资趋势图表
+            const leadsCtx = document.getElementById('leadsChart').getContext('2d');
+            new Chart(leadsCtx,{
+                type:'line',
+                data:{
+                    labels:d.leads_analysis.labels,
+                    datasets:[
+                        {
+                            label:'留资客资量',
+                            data:d.leads_analysis.total_leads_data,
+                            borderColor:'#5E35B1',
+                            backgroundColor:'rgba(94, 53, 177, 0.1)',
+                            fill:true,
+                            tension:0.4,
+                            pointBackgroundColor:'#5E35B1',
+                            pointRadius:4
+                        }
+                    ]
+                },
+                options:{
+                    maintainAspectRatio:false,
+                    responsive:true,
+                    plugins:{
+                        legend:{
+                            position:'bottom',
+                            labels:{
+                                boxWidth:12,
+                                usePointStyle:true,
+                                pointStyle:'circle'
+                            }
+                        },
+                        tooltip:{
+                            callbacks:{
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${formatNumber(context.parsed.y)}`;
+                                }
+                            }
+                        }
+                    },
+                    scales:{
+                        y:{
+                            beginAtZero:true,
+                            ticks:{
+                                callback: function(value) {
+                                    return formatNumber(value);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 渲染渠道
