@@ -1,0 +1,890 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>兰湘子5-6月各仓拿货数据分析报告</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --success-color: #27ae60;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        .report-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2.5rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .nav-tabs .nav-link {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        .nav-tabs .nav-link.active {
+            background-color: var(--secondary-color);
+            color: white;
+            border-color: var(--secondary-color);
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            font-weight: 600;
+        }
+        .kpi-card {
+            text-align: center;
+            padding: 1.5rem;
+            background: white;
+        }
+        .kpi-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            margin: 0.5rem 0;
+        }
+        .kpi-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        .insight-box {
+            background-color: #e8f4fc;
+            border-left: 5px solid var(--secondary-color);
+            padding: 1.5rem;
+            border-radius: 5px;
+            margin: 1.5rem 0;
+        }
+        .footer {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 1.5rem 0;
+            margin-top: 3rem;
+            border-radius: 10px 10px 0 0;
+        }
+        h1, h2, h3, h4 {
+            font-weight: 600;
+        }
+        .section-title {
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+        }
+        table.data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table.data-table th, table.data-table td {
+            padding: 0.75rem;
+            border: 1px solid #dee2e6;
+        }
+        table.data-table th {
+            background-color: var(--light-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- 报告标题和导航 -->
+    <header class="report-header">
+        <div class="container">
+            <h1 class="display-4 fw-bold">兰湘子餐饮5-6月各仓拿货数据分析报告</h1>
+            <p class="lead">基于2026年5月1日至6月29日拿货数据的深度分析</p>
+            <p class="mb-0">报告生成日期: 2026年7月1日</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- 导航标签 -->
+        <ul class="nav nav-tabs mb-4" id="reportTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="summary-tab" data-bs-toggle="tab" data-bs-target="#summary" type="button" role="tab">执行摘要</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="metrics-tab" data-bs-toggle="tab" data-bs-target="#metrics" type="button" role="tab">关键指标</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="analysis-tab" data-bs-toggle="tab" data-bs-target="#analysis" type="button" role="tab">详细分析</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="trends-tab" data-bs-toggle="tab" data-bs-target="#trends" type="button" role="tab">趋势分析</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="conclusion-tab" data-bs-toggle="tab" data-bs-target="#conclusion" type="button" role="tab">建议与结论</button>
+            </li>
+        </ul>
+
+        <!-- 标签内容 -->
+        <div class="tab-content" id="reportTabsContent">
+            <!-- 执行摘要 -->
+            <div class="tab-pane fade show active" id="summary" role="tabpanel">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="mb-0">执行摘要</h3>
+                            </div>
+                            <div class="card-body">
+                                <p>本报告对西安兰湘子餐饮管理有限公司在2026年5月1日至6月29日期间，向四个主要仓库（西安、郑州、太原、兰州）的拿货数据进行了全面分析。分析维度包括拿货周期、频率、拿货量及金额。</p>
+                                <div class="insight-box">
+                                    <h5><i class="fas fa-lightbulb"></i> 核心洞察</h5>
+                                    <ul>
+                                        <li><strong>总体拿货活跃</strong>：两个月内共产生15张有效订单，总金额达<strong>108,607元</strong>。</li>
+                                        <li><strong>西安仓为核心</strong>：西安仓拿货金额占比最高（55.2%），且拿货频率最稳定。</li>
+                                        <li><strong>产品结构集中</strong>：主要采购"七叔公-中式狼牙薯条1kg"和"七叔公-锅巴土豆香辣料500g"两款产品，薯条类占比达76.5%。</li>
+                                        <li><strong>拿货周期存在差异</strong>：各仓平均拿货周期在7-14天不等，郑州仓频率最高。</li>
+                                    </ul>
+                                </div>
+                                <p>报告将深入分析各仓表现、产品需求、时间趋势，并为供应链优化提供数据支持。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 关键指标 -->
+            <div class="tab-pane fade" id="metrics" role="tabpanel">
+                <h3 class="section-title">关键绩效指标 (KPIs)</h3>
+                <div class="row">
+                    <div class="col-md-3 col-sm-6 mb-4">
+                        <div class="card kpi-card">
+                            <div class="card-body">
+                                <div class="kpi-value">15</div>
+                                <div class="kpi-label">总订单数</div>
+                                <p class="small text-muted mt-2">5-6月期间</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6 mb-4">
+                        <div class="card kpi-card">
+                            <div class="card-body">
+                                <div class="kpi-value">¥108,607</div>
+                                <div class="kpi-label">总拿货金额</div>
+                                <p class="small text-muted mt-2">平均订单额 ¥7,240</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6 mb-4">
+                        <div class="card kpi-card">
+                            <div class="card-body">
+                                <div class="kpi-value">4</div>
+                                <div class="kpi-label">覆盖仓库数</div>
+                                <p class="small text-muted mt-2">西安、郑州、太原、兰州</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6 mb-4">
+                        <div class="card kpi-card">
+                            <div class="card-body">
+                                <div class="kpi-value">9.3天</div>
+                                <div class="kpi-label">平均拿货周期</div>
+                                <p class="small text-muted mt-2">各仓平均值</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">各仓拿货金额占比</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="warehouseValueChart"></canvas>
+                                </div>
+                                <p class="mt-3"><strong>洞察：</strong>西安仓贡献超过一半的拿货金额，是供应链的绝对核心。郑州和太原仓份额相近，兰州仓份额最小。</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">产品拿货金额分布</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="productValueChart"></canvas>
+                                </div>
+                                <p class="mt-3"><strong>洞察：</strong>"中式狼牙薯条"是主力产品，占总金额的76.5%，表明该产品需求旺盛，是库存管理的重点。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 详细数据分析 -->
+            <div class="tab-pane fade" id="analysis" role="tabpanel">
+                <h3 class="section-title">详细数据分析</h3>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">各仓拿货行为对比</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="warehouseComparisonChart"></canvas>
+                                </div>
+                                <div class="row mt-4">
+                                    <div class="col-md-6">
+                                        <h6>各仓关键数据</h6>
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>仓库</th>
+                                                    <th>订单数</th>
+                                                    <th>总金额(元)</th>
+                                                    <th>平均周期(天)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>西安仓</td>
+                                                    <td>7</td>
+                                                    <td>59,900</td>
+                                                    <td>7.1</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>郑州仓</td>
+                                                    <td>5</td>
+                                                    <td>22,005</td>
+                                                    <td>6.8</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>太原仓</td>
+                                                    <td>4</td>
+                                                    <td>19,946</td>
+                                                    <td>13.3</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>兰州仓</td>
+                                                    <td>3</td>
+                                                    <td>6,756</td>
+                                                    <td>13.5</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="insight-box">
+                                            <h6><i class="fas fa-chart-line"></i> 分析洞察</h6>
+                                            <ul>
+                                                <li><strong>西安仓</strong>：订单频率最高（7次），金额最大，是需求最稳定的核心仓。</li>
+                                                <li><strong>郑州仓</strong>：频率次高（5次），但单均金额较低，可能以补充性采购为主。</li>
+                                                <li><strong>太原与兰州仓</strong>：订单频率低，拿货周期长（>13天），属于周期性补货模式。</li>
+                                                <li><strong>拿货频率与金额正相关</strong>：频率高的仓库，总拿货金额也相应更高。</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">产品维度分析</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <div class="chart-container">
+                                            <canvas id="productQuantityChart"></canvas>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <h6>产品统计摘要</h6>
+                                        <table class="table table-sm">
+                                            <tr>
+                                                <th>产品</th>
+                                                <th>总数量(件)</th>
+                                                <th>总金额(元)</th>
+                                            </tr>
+                                            <tr>
+                                                <td>中式狼牙薯条1kg</td>
+                                                <td>586</td>
+                                                <td>83,093</td>
+                                            </tr>
+                                            <tr>
+                                                <td>锅巴土豆香辣料500g</td>
+                                                <td>71</td>
+                                                <td>25,514</td>
+                                            </tr>
+                                        </table>
+                                        <p><strong>单价：</strong>薯条83元/件，香辣料360元/件。</p>
+                                        <p><strong>数量金额比：</strong>薯条数量占比89.2%，金额占比76.5%，属于高频低价产品；香辣料则相反，属于低频高价产品。</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 趋势分析 -->
+            <div class="tab-pane fade" id="trends" role="tabpanel">
+                <h3 class="section-title">时间趋势分析</h3>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">5-6月拿货金额周趋势</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="weeklyTrendChart"></canvas>
+                                </div>
+                                <div class="insight-box mt-4">
+                                    <h6><i class="fas fa-binoculars"></i> 趋势洞察</h6>
+                                    <ul>
+                                        <li><strong>6月需求更旺盛</strong>：6月总金额(¥80,677)显著高于5月(¥27,930)，增长约189%，可能与夏季餐饮消费提升有关。</li>
+                                        <li><strong>周期性波动明显</strong>：拿货呈现明显的周度波动，第24周（6.9-6.15）和第25周（6.16-6.22）为拿货高峰。</li>
+                                        <li><strong>月末集中采购</strong>：5月底和6月底均有集中下单现象，可能与月末库存盘点与补货相关。</li>
+                                        <li><strong>西安仓驱动增长</strong>：6月的增长主要由西安仓的大额订单驱动，表明其业务扩张或促销活动可能成功。</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">各仓拿货时间分布</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="timeDistributionChart"></canvas>
+                                </div>
+                                <p class="mt-3">西安仓在6月下半月拿货密集；郑州仓在6月上旬和中旬有两次集中采购；太原和兰州仓拿货时间相对分散。</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">月度对比</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="monthlyComparisonChart"></canvas>
+                                </div>
+                                <p class="mt-3"><strong>洞察：</strong>所有仓库在6月的拿货金额均超过5月，尤其是西安仓，6月金额是5月的3.7倍，增长最为迅猛。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 建议与结论 -->
+            <div class="tab-pane fade" id="conclusion" role="tabpanel">
+                <h3 class="section-title">结论与战略建议</h3>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">主要结论</h5>
+                            </div>
+                            <div class="card-body">
+                                <ol>
+                                    <li><strong>供应链高度集中</strong>：西安仓是绝对核心，贡献55%以上的拿货金额，其需求稳定性对整体供应链至关重要。</li>
+                                    <li><strong>产品需求结构清晰</strong>：“中式狼牙薯条1kg”是核心爆品，需求量大且稳定；“锅巴土豆香辣料”作为高单价辅料，需求相对平稳。</li>
+                                    <li><strong>拿货模式分化</strong>：西安、郑州属于高频次、短周期补货模式；太原、兰州属于低频次、长周期批量补货模式。</li>
+                                    <li><strong>季节性增长显著</strong>：6月相比5月拿货额大幅增长，显示夏季业务扩张或促销活动效果良好。</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0">战略建议</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="card border-success mb-3">
+                                            <div class="card-body">
+                                                <h6><i class="fas fa-boxes"></i> 库存与采购优化</h6>
+                                                <ul>
+                                                    <li><strong>对西安、郑州仓</strong>：建立安全库存预警机制，基于其~7天的拿货周期，将再订货点设置在3-4天库存量。</li>
+                                                    <li><strong>对太原、兰州仓</strong>：可尝试推广定期定量采购模式，降低其长周期带来的缺货风险。</li>
+                                                    <li><strong>核心产品备货</strong>：确保“中式狼牙薯条”的库存充足，尤其是6月旺季来临前。</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card border-primary mb-3">
+                                            <div class="card-body">
+                                                <h6><i class="fas fa-truck"></i> 物流与配送优化</h6>
+                                                <ul>
+                                                    <li><strong>优化配送路线</strong>：考虑西安仓向郑州、太原仓的干线运输整合，降低单位物流成本。</li>
+                                                    <li><strong>预测性补货</strong>：利用历史数据（如月末集中采购规律）进行预测，提前安排物流资源。</li>
+                                                    <li><strong>探索供应商管理库存(VMI)</strong>：对西安核心仓，可探讨由供应商管理部分库存的可能性。</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="card border-warning mb-3">
+                                            <div class="card-body">
+                                                <h6><i class="fas fa-chart-bar"></i> 数据分析与监控</h6>
+                                                <ul>
+                                                    <li><strong>建立周度监控看板</strong>：跟踪各仓拿货金额、数量、频率等核心指标。</li>
+                                                    <li><strong>设置异常预警</strong>：当某仓拿货周期异常延长或金额骤降时，自动预警。</li>
+                                                    <li><strong>深化需求预测</strong>：结合门店销售数据，建立更精准的需求预测模型。</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card border-info mb-3">
+                                            <div class="card-body">
+                                                <h6><i class="fas fa-expand-arrows-alt"></i> 业务拓展考量</h6>
+                                                <ul>
+                                                    <li><strong>复制西安模式</strong>：研究西安仓高增长的原因，考虑在郑州、太原等潜力仓复制成功经验。</li>
+                                                    <li><strong>评估新品引入</strong>：当前产品线较集中，可基于销售数据评估引入新SKU的可行性。</li>
+                                                    <li><strong>加强仓间协同</strong>：在需求波动时，探索仓与仓之间的临时调拨机制。</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="mt-3 fst-italic text-center">通过实施以上建议，有望进一步提升供应链效率，降低运营成本，并支持兰湘子业务的持续增长。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p class="mb-0">兰湘子5-6月各仓拿货数据分析报告 © 2026</p>
+            <p class="small">本报告基于2026年5月1日至6月29日实际拿货数据生成，仅供参考与决策支持。</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Font Awesome for icons -->
+    <script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
+    <script>
+        // 数据准备（基于输入数据计算）
+        const warehouseData = {
+            labels: ['西安仓', '郑州仓', '太原仓', '兰州仓'],
+            values: [59900, 22005, 19946, 6756],
+            orderCounts: [7, 5, 4, 3],
+            avgCycle: [7.1, 6.8, 13.3, 13.5]
+        };
+
+        const productData = {
+            labels: ['中式狼牙薯条1kg', '锅巴土豆香辣料500g'],
+            values: [83093, 25514],
+            quantities: [586, 71]
+        };
+
+        // 周趋势数据 (2026年第18-26周，5月1日为第18周初)
+        const weeklyTrend = {
+            labels: ['第20周
+(5.11-5.17)', '第21周
+(5.18-5.24)', '第22周
+(5.25-5.31)', '第23周
+(6.1-6.7)', '第24周
+(6.8-6.14)', '第25周
+(6.15-6.21)', '第26周
+(6.22-6.28)'],
+            values: [1800, 9090, 10905, 12465, 25620, 33397, 18810]
+        };
+
+        // 图表1: 各仓拿货金额占比 (饼图)
+        const ctx1 = document.getElementById('warehouseValueChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'pie',
+            data: {
+                labels: warehouseData.labels,
+                datasets: [{
+                    data: warehouseData.values,
+                    backgroundColor: [
+                        'rgba(52, 152, 219, 0.8)',
+                        'rgba(46, 204, 113, 0.8)',
+                        'rgba(155, 89, 182, 0.8)',
+                        'rgba(241, 196, 15, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgb(52, 152, 219)',
+                        'rgb(46, 204, 113)',
+                        'rgb(155, 89, 182)',
+                        'rgb(241, 196, 15)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.raw;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = Math.round((value / total) * 100);
+                                return `${label}: ¥${value.toLocaleString()} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 图表2: 产品拿货金额分布 (饼图)
+        const ctx2 = document.getElementById('productValueChart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'doughnut',
+            data: {
+                labels: productData.labels,
+                datasets: [{
+                    data: productData.values,
+                    backgroundColor: [
+                        'rgba(231, 76, 60, 0.8)',
+                        'rgba(52, 73, 94, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgb(231, 76, 60)',
+                        'rgb(52, 73, 94)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // 图表3: 各仓拿货行为对比 (柱状图)
+        const ctx3 = document.getElementById('warehouseComparisonChart').getContext('2d');
+        new Chart(ctx3, {
+            type: 'bar',
+            data: {
+                labels: warehouseData.labels,
+                datasets: [
+                    {
+                        label: '拿货金额 (元)',
+                        data: warehouseData.values,
+                        backgroundColor: 'rgba(52, 152, 219, 0.7)',
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: '订单数',
+                        data: warehouseData.orderCounts,
+                        backgroundColor: 'rgba(46, 204, 113, 0.7)',
+                        yAxisID: 'y1'
+                    },
+                    {
+                        label: '平均周期 (天)',
+                        data: warehouseData.avgCycle,
+                        backgroundColor: 'rgba(241, 196, 15, 0.7)',
+                        yAxisID: 'y2',
+                        type: 'line',
+                        borderColor: 'rgb(241, 196, 15)',
+                        borderWidth: 2,
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: '金额 (元)'
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return '¥' + value.toLocaleString();
+                            }
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: '订单数'
+                        },
+                        grid: {
+                            drawOnChartArea: false
+                        }
+                    },
+                    y2: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: '平均周期 (天)'
+                        },
+                        grid: {
+                            drawOnChartArea: false
+                        },
+                        offset: true
+                    }
+                }
+            }
+        });
+
+        // 图表4: 产品拿货数量 (柱状图)
+        const ctx4 = document.getElementById('productQuantityChart').getContext('2d');
+        new Chart(ctx4, {
+            type: 'bar',
+            data: {
+                labels: productData.labels,
+                datasets: [
+                    {
+                        label: '拿货数量 (件)',
+                        data: productData.quantities,
+                        backgroundColor: 'rgba(231, 76, 60, 0.7)',
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: '拿货金额 (元)',
+                        data: productData.values,
+                        backgroundColor: 'rgba(52, 73, 94, 0.7)',
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: '数量 (件)'
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: '金额 (元)'
+                        },
+                        grid: {
+                            drawOnChartArea: false
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return '¥' + value.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 图表5: 周趋势 (折线图)
+        const ctx5 = document.getElementById('weeklyTrendChart').getContext('2d');
+        new Chart(ctx5, {
+            type: 'line',
+            data: {
+                labels: weeklyTrend.labels,
+                datasets: [{
+                    label: '周拿货金额 (元)',
+                    data: weeklyTrend.values,
+                    borderColor: 'rgb(52, 152, 219)',
+                    backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '金额 (元)'
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return '¥' + value.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 图表6: 各仓拿货时间分布 (散点图/气泡图模拟)
+        const ctx6 = document.getElementById('timeDistributionChart').getContext('2d');
+        // 简化表示为柱状图：显示各仓在5月、6月的金额
+        new Chart(ctx6, {
+            type: 'bar',
+            data: {
+                labels: ['西安仓', '郑州仓', '太原仓', '兰州仓'],
+                datasets: [
+                    {
+                        label: '5月金额',
+                        data: [12600, 5175, 720, 3435],
+                        backgroundColor: 'rgba(149, 165, 166, 0.7)'
+                    },
+                    {
+                        label: '6月金额',
+                        data: [47300, 16830, 19226, 3321],
+                        backgroundColor: 'rgba(52, 152, 219, 0.7)'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '金额 (元)'
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return '¥' + value.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 图表7: 月度对比 (柱状图)
+        const ctx7 = document.getElementById('monthlyComparisonChart').getContext('2d');
+        new Chart(ctx7, {
+            type: 'bar',
+            data: {
+                labels: ['5月', '6月'],
+                datasets: [
+                    {
+                        label: '总拿货金额',
+                        data: [27930, 80677],
+                        backgroundColor: [
+                            'rgba(149, 165, 166, 0.7)',
+                            'rgba(46, 204, 113, 0.7)'
+                        ]
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '金额 (元)'
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return '¥' + value.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const value = context.raw;
+                                const growth = context.dataIndex === 1 ? ((80677-27930)/27930*100).toFixed(1) : '0';
+                                const growthText = context.dataIndex === 1 ? ` (增长${growth}%)` : '';
+                                return `金额: ¥${value.toLocaleString()}${growthText}`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 初始化标签页
+        var triggerTabList = [].slice.call(document.querySelectorAll('#reportTabs button'));
+        triggerTabList.forEach(function (triggerEl) {
+            var tabTrigger = new bootstrap.Tab(triggerEl);
+            triggerEl.addEventListener('click', function (event) {
+                event.preventDefault();
+                tabTrigger.show();
+            });
+        });
+    </script>
+</body>
+</html>
+```
