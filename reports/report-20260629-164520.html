@@ -1,0 +1,1077 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2025财年区域销售与运营分析报告</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        .report-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2.5rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .report-title {
+            font-size: 2.8rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+        .report-subtitle {
+            font-size: 1.2rem;
+            text-align: center;
+            opacity: 0.9;
+        }
+        .nav-pills .nav-link {
+            color: var(--primary-color);
+            font-weight: 500;
+            border-radius: 50px;
+            margin: 0 5px;
+            padding: 0.5rem 1.5rem;
+            transition: all 0.3s;
+        }
+        .nav-pills .nav-link.active {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        .section-title {
+            color: var(--primary-color);
+            border-left: 5px solid var(--secondary-color);
+            padding-left: 15px;
+            margin-top: 2.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s;
+            height: 100%;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .card-header {
+            background-color: white;
+            border-bottom: 2px solid var(--light-color);
+            font-weight: 600;
+            color: var(--primary-color);
+            border-radius: 15px 15px 0 0 !important;
+            padding: 1rem 1.5rem;
+        }
+        .kpi-card {
+            text-align: center;
+            padding: 1.5rem;
+        }
+        .kpi-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            margin: 0.5rem 0;
+        }
+        .kpi-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .kpi-change {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .positive {
+            color: var(--success-color);
+        }
+        .negative {
+            color: var(--accent-color);
+        }
+        .neutral {
+            color: var(--warning-color);
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+            margin: 1rem 0;
+        }
+        .insight-box {
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--secondary-color);
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .insight-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        .table-custom {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+        .table-custom thead th {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            font-weight: 500;
+        }
+        .table-custom tbody tr:hover {
+            background-color: rgba(52, 152, 219, 0.05);
+        }
+        .footer {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            border-radius: 20px 20px 0 0;
+        }
+        .scroll-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: var(--secondary-color);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+        .scroll-to-top:hover {
+            background-color: var(--primary-color);
+            transform: scale(1.1);
+        }
+        @media (max-width: 768px) {
+            .report-title {
+                font-size: 2rem;
+            }
+            .kpi-value {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 返回顶部按钮 -->
+    <div class="scroll-to-top" id="scrollToTop">↑</div>
+
+    <!-- 报告标题 -->
+    <header class="report-header">
+        <div class="container">
+            <h1 class="report-title">2025财年区域销售与运营分析报告</h1>
+            <p class="report-subtitle">全面洞察区域业绩、毛利、库存及商品运营表现</p>
+            <p class="text-center mt-3">报告生成日期：2026年1月</p>
+        </div>
+    </header>
+
+    <!-- 导航 -->
+    <div class="container mb-4">
+        <ul class="nav nav-pills justify-content-center flex-wrap" id="reportNav">
+            <li class="nav-item">
+                <a class="nav-link active" href="#executive-summary">执行摘要</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#key-metrics">关键指标</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#regional-analysis">区域分析</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#category-analysis">品类分析</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#inventory-analysis">库存分析</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#operations-analysis">运营分析</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#recommendations">建议与结论</a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- 报告主体内容 -->
+    <div class="container">
+        <!-- 执行摘要 -->
+        <section id="executive-summary">
+            <h2 class="section-title">执行摘要</h2>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <p>本报告对2025财年（对比2024财年）各区域、店铺、品类及运营数据进行了全面分析。总体来看，公司2025财年实现了<strong>业绩微增1.80%</strong>和<strong>毛利润增长3.80%</strong>，整体毛利率从42.55%提升至43.39%，表明盈利能力的增强。</p>
+                            <p><strong>关键发现：</strong></p>
+                            <ul>
+                                <li><strong>区域表现分化：</strong>“衣世界”区域表现突出，业绩和毛利润分别增长7.49%和11.22%。“恒宣”和“淑女”区域业绩出现下滑，需关注。</li>
+                                <li><strong>目标完成度：</strong>整体目标完成率达92.27%，但仅4家店铺业绩、2家店铺毛利润达成100%以上目标，目标设定与执行存在优化空间。</li>
+                                <li><strong>库存压力显著：</strong>整体库存比例达14.6%，远超有效库存目标，需减库存240.8万。其中“针织”、“生活”、“床用”、“玩具”等品类库存问题尤为严重。</li>
+                                <li><strong>商品运营效率下降：</strong>全区域款数大幅增加（+7054款），但款平均深度下降16件，存在“铺货过宽过浅”的风险。</li>
+                                <li><strong>盈利结构改善：</strong>高毛利段（41%-60%）业绩占比普遍提升，显示产品组合和定价策略向高盈利方向调整。</li>
+                            </ul>
+                            <p>报告将从多个维度展开详细分析，并提供具体的管理建议。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 关键指标 -->
+        <section id="key-metrics">
+            <h2 class="section-title">关键绩效指标 (KPI) 总览</h2>
+            <div class="row">
+                <!-- KPI 1 -->
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="card kpi-card">
+                        <div class="card-body">
+                            <div class="kpi-label">总销售业绩</div>
+                            <div class="kpi-value">¥3.15亿</div>
+                            <div class="kpi-change positive">同比 +1.80%</div>
+                            <p class="mt-2 small">2025财年：315,255,978</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- KPI 2 -->
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="card kpi-card">
+                        <div class="card-body">
+                            <div class="kpi-label">总毛利润</div>
+                            <div class="kpi-value">¥1.37亿</div>
+                            <div class="kpi-change positive">同比 +3.80%</div>
+                            <p class="mt-2 small">毛利率：43.39% (+0.84pp)</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- KPI 3 -->
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="card kpi-card">
+                        <div class="card-body">
+                            <div class="kpi-label">业绩目标达成率</div>
+                            <div class="kpi-value">92.27%</div>
+                            <div class="kpi-change neutral">同比 +0.49pp</div>
+                            <p class="mt-2 small">毛利润达成率：91.90%</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- KPI 4 -->
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="card kpi-card">
+                        <div class="card-body">
+                            <div class="kpi-label">总库存金额</div>
+                            <div class="kpi-value">¥1.20亿</div>
+                            <div class="kpi-change negative">需减库存241万</div>
+                            <p class="mt-2 small">库存比例：14.6%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 图表：区域业绩贡献与增长 -->
+            <div class="row mt-4">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">各区域2025财年业绩贡献与同比增长</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="regionalPerformanceChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">各区域2025财年毛利率对比</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="regionalMarginChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 区域分析 -->
+        <section id="regional-analysis">
+            <h2 class="section-title">区域深度分析</h2>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">区域目标完成及同比概览</div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover table-custom">
+                                    <thead>
+                                        <tr>
+                                            <th>区域</th>
+                                            <th>业绩目标完成%</th>
+                                            <th>业绩同比%</th>
+                                            <th>毛利润目标完成%</th>
+                                            <th>毛利润同比%</th>
+                                            <th>毛利率% (25财年)</th>
+                                            <th>状态</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>恒宣</strong></td>
+                                            <td>92.15</td>
+                                            <td class="negative">-4.41</td>
+                                            <td>92.41</td>
+                                            <td class="negative">-2.33</td>
+                                            <td>45.11</td>
+                                            <td><span class="badge bg-warning">需关注</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>绅士</strong></td>
+                                            <td>89.07</td>
+                                            <td class="negative">-4.30</td>
+                                            <td>88.39</td>
+                                            <td>N/A</td>
+                                            <td>N/A</td>
+                                            <td><span class="badge bg-warning">需关注</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>淑女</strong></td>
+                                            <td>91.51</td>
+                                            <td class="positive">+1.09</td>
+                                            <td>86.64</td>
+                                            <td class="negative">-6.55</td>
+                                            <td>46.04</td>
+                                            <td><span class="badge bg-warning">利润下滑</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>衣世界</strong></td>
+                                            <td>93.11</td>
+                                            <td class="positive">+7.49</td>
+                                            <td>91.79</td>
+                                            <td class="positive">+11.22</td>
+                                            <td>40.99</td>
+                                            <td><span class="badge bg-success">表现优异</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>总计</strong></td>
+                                            <td>92.27</td>
+                                            <td class="positive">+0.49</td>
+                                            <td>91.90</td>
+                                            <td class="positive">+2.59</td>
+                                            <td>43.39</td>
+                                            <td><span class="badge bg-success">稳健</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="insight-box mt-3">
+                                <div class="insight-title">洞察：</div>
+                                <p><strong>“衣世界”是增长引擎：</strong>业绩与利润双增长，且利润增速高于业绩增速，运营效率提升明显。“恒宣”和“绅士”区域业绩下滑，需深入分析单店原因（如“新兴旺”、“银开百货”店下滑明显）。“淑女”区域“增收不增利”，毛利率下降3.04个百分点，成本控制或促销策略需审视。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 图表：店铺贡献Top10 & Bottom10 -->
+            <div class="row mt-4">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">店铺业绩同比Top 10 (增长之星)</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="topStoresChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">店铺业绩同比Bottom 10 (需重点关注)</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="bottomStoresChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 品类分析 -->
+        <section id="category-analysis">
+            <h2 class="section-title">品类表现分析</h2>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">核心品类业绩与毛利贡献（2025财年）</div>
+                        <div class="card-body">
+                            <div class="chart-container" style="height: 400px;">
+                                <canvas id="categoryBubbleChart"></canvas>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <div class="insight-box">
+                                        <div class="insight-title">优势品类：</div>
+                                        <p><strong>女正装、男正装、女休闲、男休闲</strong>是销售和毛利的绝对核心，合计贡献超80%的业绩。其中“衣世界”的“女正装”、“男正装”增长强劲。“恒宣”的“女休闲”、“童装”毛利贡献比提升。</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="insight-box">
+                                        <div class="insight-title">问题品类：</div>
+                                        <p><strong>快消品、鞋、床用、母婴、玩具</strong>等品类普遍出现销售下滑或毛利微利/亏损状态。例如“恒宣”的“快消品”毛利率仅6.07%且大幅下滑，“鞋”类销售下滑16.46%。这些品类需重新评估其定位。</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 图表：品类毛利段分布趋势 -->
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">核心品类盈利结构变化（2025 vs 2024财年）</div>
+                        <div class="card-body">
+                            <div class="chart-container" style="height: 350px;">
+                                <canvas id="marginShiftChart"></canvas>
+                            </div>
+                            <div class="insight-box mt-3">
+                                <div class="insight-title">洞察：盈利结构优化</div>
+                                <p>对比2024财年，2025财年各区域、各核心品类在<strong>41%-50%</strong>和<strong>31%-40%</strong>毛利区间的业绩占比普遍提升，而在<strong>亏损、0-20%</strong>低毛利区间的占比普遍下降。这表明公司的商品组合和定价策略正在向更健康、更高盈利的方向调整，是一个积极的信号。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 库存分析 -->
+        <section id="inventory-analysis">
+            <h2 class="section-title">库存健康度分析</h2>
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header">各品类库存状况与减库存目标</div>
+                        <div class="card-body">
+                            <div class="chart-container" style="height: 400px;">
+                                <canvas id="inventoryChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="card h-100">
+                        <div class="card-header">库存关键事实</div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    总库存金额
+                                    <span class="badge bg-primary rounded-pill">¥1.20亿</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    库存比例
+                                    <span class="badge bg-warning rounded-pill">14.6%</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    需减库存总额
+                                    <span class="badge bg-danger rounded-pill">¥241万</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    库存最严重品类
+                                    <span class="badge bg-danger rounded-pill">针织/生活/床用</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    库存健康品类
+                                    <span class="badge bg-success rounded-pill">鞋 (需补货)</span>
+                                </li>
+                            </ul>
+                            <div class="insight-box mt-3">
+                                <div class="insight-title">紧急行动：</div>
+                                <p><strong>“针织”、“生活”、“床用”、“玩具”</strong>库存比例畸高（29.9%-54.7%），远超有效库存目标，是减库存的重中之重。“衣世界”区域承担了大部分减库存任务（114.7万）。“鞋”类库存不足，存在缺货风险。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 运营分析 -->
+        <section id="operations-analysis">
+            <h2 class="section-title">商品与运营效率分析</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">款数 vs 平均深度趋势（2025 vs 2024财年）</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="skuDepthChart"></canvas>
+                            </div>
+                            <div class="insight-box mt-3">
+                                <p><strong>“铺货过宽过浅”：</strong>2025财年总款数增加7054款(+28.8%)，但款平均深度下降16件(-15.4%)。这表明商品策略可能过于追求宽度（SKU数），牺牲了深度，可能导致单款销售效率下降、库存碎片化及运营复杂度增加。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">区域调货情况分析（2025财年）</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="transferChart"></canvas>
+                            </div>
+                            <div class="insight-box mt-3">
+                                <p><strong>调货活跃度反映库存周转：</strong>“淑女休闲”和“恒宣”区域内调货比例最高（>20%），显示其内部货品流转积极。“衣世界”调出比例(15.23%)略高于调进(14.03%)，可能与其作为增长引擎，货品流向其他区域有关。整体调货比例17%属于健康水平。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 年度目标达成分布 -->
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">店铺年度目标达成分布</div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="chart-container">
+                                        <canvas id="targetAchievementSalesChart"></canvas>
+                                        <p class="text-center small mt-2">业绩目标达成分布 (共45店)</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="chart-container">
+                                        <canvas id="targetAchievementProfitChart"></canvas>
+                                        <p class="text-center small mt-2">毛利润目标达成分布 (共35店)</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="insight-box mt-3">
+                                <div class="insight-title">洞察：目标管理</div>
+                                <p>仅<strong>4家店铺</strong>业绩达成100%以上，<strong>16家店铺(35.6%)</strong>业绩达成在90%-95%区间，<strong>9家店铺(20%)</strong>业绩达成低于90%。毛利润达成情况略好，但仍有<strong>12家店铺(34.3%)</strong>毛利润达成低于90%。这表明当前目标设定对多数店铺具有挑战性，或部分店铺运营能力有待提升。需结合历史数据对目标进行更科学的校准。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 建议与结论 -->
+        <section id="recommendations">
+            <h2 class="section-title">管理建议与结论</h2>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">核心建议</div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="card mb-3" style="border-left: 4px solid #2ecc71;">
+                                        <div class="card-body">
+                                            <h5 class="card-title">短期行动 (1-3个月)</h5>
+                                            <ul>
+                                                <li><strong>紧急减库存：</strong>成立专项小组，对“针织”、“生活”、“床用”、“玩具”等高库存品类制定并执行强力清仓计划（特卖、促销、捆绑销售）。</li>
+                                                <li><strong>帮扶落后店铺：</strong>对业绩下滑严重的“恒宣-银开百货”、“恒宣-三台恒宣”、“衣世界-西充二店”等店进行诊断，提供针对性运营支持。</li>
+                                                <li><strong>优化目标设定：</strong>回顾并校准2026财年各店铺目标，使其更具挑战性且可实现，提升团队士气。</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card mb-3" style="border-left: 4px solid #3498db;">
+                                        <div class="card-body">
+                                            <h5 class="card-title">中期策略 (3-12个月)</h5>
+                                            <ul>
+                                                <li><strong>调整商品策略：</strong>控制SKU宽度，聚焦核心品类（女/男正装、休闲）的深度，提升单款产出和周转效率。</li>
+                                                <li><strong>重塑问题品类：</strong>重新评估“快消品”、“鞋”、“母婴”等低效品类的角色，考虑收缩、转型或寻找新的供应商与合作模式。</li>
+                                                <li><strong>强化利润导向：</strong>延续并强化高毛利商品组合策略，在采购和定价环节设置更严格的毛利率门槛。</li>
+                                                <li><strong>复制成功经验：</strong>深入分析“衣世界”区域和“衣世界-丹陵店”等高增长单元的成功因素，形成可复制的模板向其他区域推广。</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card mb-3" style="border-left: 4px solid #9b59b6;">
+                                <div class="card-body">
+                                    <h5 class="card-title">长期规划 (1年以上)</h5>
+                                    <ul>
+                                        <li><strong>数据驱动决策：</strong>建立更完善的商品生命周期管理和预测系统，利用数据指导采购、配货和调拨，从源头控制库存风险。</li>
+                                        <li><strong>区域运营差异化：</strong>基于各区域（如“恒宣”成熟市场、“衣世界”成长市场、“淑女”专业市场）的特点，制定差异化的商品、营销和运营策略。</li>
+                                        <li><strong>供应链优化：</strong>与核心供应商建立更紧密的合作，缩短供货周期，提高供应链的敏捷性和反应速度。</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="insight-box">
+                                <div class="insight-title">总体结论</div>
+                                <p>2025财年在整体上实现了<strong>“量稳利增”</strong>的积极态势，毛利率提升和盈利结构优化是最大亮点。然而，<strong>区域发展不均、库存压力巨大、商品效率下降</strong>是当前面临的核心挑战。公司需采取果断措施解决库存问题，同时将运营重心从单纯的规模扩张转向<strong>“质量与效率”</strong>的提升。通过精细化的商品管理、差异化的区域运营和数据驱动的决策，有望在2026财年实现更健康、更可持续的增长。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <p class="mb-0">2025财年区域运营分析报告 © 2026</p>
+            <p class="small mt-1">本报告数据基于2025财年与2024财年对比分析生成，仅供参考与决策支持。</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- 自定义图表和数据代码 -->
+    <script>
+        // 平滑滚动导航
+        document.querySelectorAll('#reportNav a').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                window.scrollTo({
+                    top: targetElement.offsetTop - 80,
+                    behavior: 'smooth'
+                });
+                // 更新激活状态
+                document.querySelectorAll('#reportNav a').forEach(link => link.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // 返回顶部按钮
+        document.getElementById('scrollToTop').addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        window.addEventListener('scroll', () => {
+            const scrollTopBtn = document.getElementById('scrollToTop');
+            if (window.scrollY > 300) {
+                scrollTopBtn.style.display = 'flex';
+            } else {
+                scrollTopBtn.style.display = 'none';
+            }
+        });
+
+        // 图表颜色配置
+        const chartColors = {
+            primary: '#3498db',
+            secondary: '#2ecc71',
+            accent: '#e74c3c',
+            warning: '#f39c12',
+            dark: '#2c3e50',
+            light: '#ecf0f1',
+            gray: '#95a5a6'
+        };
+
+        // 1. 区域业绩贡献与增长
+        const regionalCtx = document.getElementById('regionalPerformanceChart').getContext('2d');
+        new Chart(regionalCtx, {
+            type: 'bar',
+            data: {
+                labels: ['恒宣', '绅士', '淑女', '衣世界'],
+                datasets: [{
+                    label: '2025财年业绩贡献比 (%)',
+                    data: [51.3, null, 4.5, 43.0], // 估算自数据表2总计行
+                    backgroundColor: chartColors.primary,
+                    borderColor: chartColors.dark,
+                    borderWidth: 1,
+                    yAxisID: 'y'
+                }, {
+                    label: '业绩同比增长 (%)',
+                    data: [-4.41, -4.30, 1.09, 7.49],
+                    type: 'line',
+                    borderColor: chartColors.accent,
+                    backgroundColor: 'transparent',
+                    borderWidth: 3,
+                    pointRadius: 6,
+                    pointBackgroundColor: chartColors.accent,
+                    yAxisID: 'y1'
+                }]
+            },
+            options: {
+                responsive: true,
+                interaction: { mode: 'index', intersect: false },
+                scales: {
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: { display: true, text: '贡献比 (%)' }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: { display: true, text: '同比增长 (%)' },
+                        grid: { drawOnChartArea: false }
+                    }
+                },
+                plugins: {
+                    legend: { position: 'top' },
+                    tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y?.toFixed(2) ?? 'N/A'}%` } }
+                }
+            }
+        });
+
+        // 2. 区域毛利率对比
+        const marginCtx = document.getElementById('regionalMarginChart').getContext('2d');
+        new Chart(marginCtx, {
+            type: 'bar',
+            data: {
+                labels: ['恒宣', '淑女', '衣世界', '总计'],
+                datasets: [{
+                    label: '2025财年毛利率',
+                    data: [45.11, 46.04, 40.99, 43.39],
+                    backgroundColor: [chartColors.primary, chartColors.secondary, chartColors.warning, chartColors.gray],
+                    borderColor: chartColors.dark,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: false, min: 35, title: { display: true, text: '毛利率 (%)' } }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { callbacks: { label: ctx => `毛利率: ${ctx.parsed.y}%` } }
+                }
+            }
+        });
+
+        // 3. 店铺业绩同比Top 10
+        const topStoresCtx = document.getElementById('topStoresChart').getContext('2d');
+        new Chart(topStoresCtx, {
+            type: 'bar',
+            data: {
+                labels: ['衣世界丹陵店', '孔尚国际', '夏姿绮', '衣世界南部店', '衣世界金堂店', '虹茜专卖', '衣世界宜宾店', '江油另三', '衣世界江油店', '衣世界川师店'],
+                datasets: [{
+                    label: '业绩同比增长 (%)',
+                    data: [161.96, 19.17, 9.94, 15.92, 14.14, 4.60, 8.56, 5.32, 7.15, 7.72],
+                    backgroundColor: chartColors.secondary,
+                    borderColor: chartColors.dark,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                scales: {
+                    x: { title: { display: true, text: '同比增长 (%)' } }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { callbacks: { label: ctx => `增长: ${ctx.parsed.x}%` } }
+                }
+            }
+        });
+
+        // 4. 店铺业绩同比Bottom 10
+        const bottomStoresCtx = document.getElementById('bottomStoresChart').getContext('2d');
+        new Chart(bottomStoresCtx, {
+            type: 'bar',
+            data: {
+                labels: ['衣世界西充二店', '衣世界西充一店', '广元二店', '三台恒宣', '银开百货', '资阳恒宣', '新兴旺', '大潮流', '翠花街AZ', '另类二店'],
+                datasets: [{
+                    label: '业绩同比增长 (%)',
+                    data: [-15.31, -7.29, -13.38, -9.68, -9.09, -4.91, -6.03, -8.52, 26.21, -0.86], // 注意翠花街AZ增长为正，但利润下滑严重
+                    backgroundColor: chartColors.accent,
+                    borderColor: chartColors.dark,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                scales: {
+                    x: { title: { display: true, text: '同比增长 (%)' } }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { callbacks: { label: ctx => `增长: ${ctx.parsed.x}%` } }
+                }
+            }
+        });
+
+        // 5. 品类气泡图 (简化版，使用柱状图替代)
+        const categoryCtx = document.getElementById('categoryBubbleChart').getContext('2d');
+        new Chart(categoryCtx, {
+            type: 'bar',
+            data: {
+                labels: ['女正装', '男正装', '女休闲', '男休闲', '童装', '鞋', '针织', '生活', '床用', '母婴'],
+                datasets: [{
+                    label: '2025财年销售贡献比(%)',
+                    data: [33.5, 25.4, 12.3, 11.7, 8.2, 2.1, 3.5, 1.5, 1.2, 0.4], // 近似值
+                    backgroundColor: chartColors.primary,
+                    yAxisID: 'y'
+                }, {
+                    label: '2025财年毛利率(%)',
+                    data: [44.5, 43.5, 43.5, 45.5, 39.5, 35.5, 41.0, 43.5, 33.5, 35.5], // 近似值
+                    type: 'line',
+                    borderColor: chartColors.accent,
+                    backgroundColor: 'transparent',
+                    borderWidth: 3,
+                    pointRadius: 5,
+                    yAxisID: 'y1'
+                }]
+            },
+            options: {
+                responsive: true,
+                interaction: { mode: 'index', intersect: false },
+                scales: {
+                    y: { type: 'linear', display: true, position: 'left', title: { text: '销售贡献比(%)' } },
+                    y1: { type: 'linear', display: true, position: 'right', title: { text: '毛利率(%)' }, grid: { drawOnChartArea: false } }
+                },
+                plugins: { legend: { position: 'top' } }
+            }
+        });
+
+        // 6. 毛利段分布变化
+        const marginShiftCtx = document.getElementById('marginShiftChart').getContext('2d');
+        new Chart(marginShiftCtx, {
+            type: 'bar',
+            data: {
+                labels: ['亏损', '0-10%', '11-20%', '21-30%', '31-40%', '41-50%', '51-60%', '61%+'],
+                datasets: [{
+                    label: '2024财年平均占比',
+                    data: [2.03, 2.08, 3.67, 7.65, 16.48, 33.40, 29.52, 5.18], // 三个区域平均值估算
+                    backgroundColor: chartColors.gray,
+                    borderColor: chartColors.dark,
+                    borderWidth: 1
+                }, {
+                    label: '2025财年平均占比',
+                    data: [1.50, 1.57, 2.70, 6.76, 18.63, 37.49, 27.43, 4.26], // 三个区域平均值估算
+                    backgroundColor: chartColors.primary,
+                    borderColor: chartColors.dark,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true, title: { display: true, text: '业绩占比 (%)' } }
+                },
+                plugins: {
+                    legend: { position: 'top' }
+                }
+            }
+        });
+
+        // 7. 库存分析图
+        const inventoryCtx = document.getElementById('inventoryChart').getContext('2d');
+        new Chart(inventoryCtx, {
+            type: 'bar',
+            data: {
+                labels: ['针织', '生活', '床用', '玩具', '男休闲', '女正装', '男正装', '女休闲', '童装', '快消品', '母婴', '皮具', '配饰', '鞋'],
+                datasets: [{
+                    label: '库存比例 (%)',
+                    data: [29.9, 49.6, 46.2, 54.7, 11.7, 14.5, 12.7, 10.3, 10.7, 31.6, 32.3, 52.6, 99.8, 4.1],
+                    backgroundColor: function(context) {
+                        const index = context.dataIndex;
+                        const value = context.dataset.data[index];
+                        if (value > 30) return chartColors.accent;
+                        if (value > 15) return chartColors.warning;
+                        return chartColors.secondary;
+                    },
+                    borderColor: chartColors.dark,
+                    borderWidth: 1,
+                    yAxisID: 'y'
+                }, {
+                    label: '需减库存 (千元)',
+                    data: [294.7, 198.2, 144.2, 44.7, 256.3, 705.4, 412.7, 204.9, 73.4, 68.3, 33.3, 12.5, 0.4, -41.0], // 鞋为负
+                    type: 'line',
+                    borderColor: chartColors.dark,
+                    backgroundColor: 'transparent',
+                    borderWidth: 2,
+                    pointRadius: 4,
+                    yAxisID: 'y1'
+                }]
+            },
+            options: {
+                responsive: true,
+                interaction: { mode: 'index', intersect: false },
+                scales: {
+                    y: { type: 'linear', display: true, position: 'left', title: { text: '库存比例(%)' } },
+                    y1: { type: 'linear', display: true, position: 'right', title: { text: '需减库存(千元)' }, grid: { drawOnChartArea: false } }
+                },
+                plugins: { legend: { position: 'top' } }
+            }
+        });
+
+        // 8. 款数与深度趋势
+        const skuDepthCtx = document.getElementById('skuDepthChart').getContext('2d');
+        new Chart(skuDepthCtx, {
+            type: 'line',
+            data: {
+                labels: ['恒宣', '淑女', '衣世界', '总计'],
+                datasets: [{
+                    label: '款数同比变化',
+                    data: [3003, 1471, 2580, 7054],
+                    borderColor: chartColors.primary,
+                    backgroundColor: 'transparent',
+                    borderWidth: 3,
+                    pointRadius: 6,
+                    yAxisID: 'y'
+                }, {
+                    label: '款平均深度同比变化',
+                    data: [-10, -9, -27, -16],
+                    borderColor: chartColors.accent,
+                    backgroundColor: 'transparent',
+                    borderWidth: 3,
+                    pointRadius: 6,
+                    yAxisID: 'y1'
+                }]
+            },
+            options: {
+                responsive: true,
+                interaction: { mode: 'index', intersect: false },
+                scales: {
+                    y: { type: 'linear', display: true, position: 'left', title: { text: '款数变化 (款)' } },
+                    y1: { type: 'linear', display: true, position: 'right', title: { text: '深度变化 (件/款)' }, grid: { drawOnChartArea: false } }
+                },
+                plugins: { legend: { position: 'top' } }
+            }
+        });
+
+        // 9. 调货情况
+        const transferCtx = document.getElementById('transferChart').getContext('2d');
+        new Chart(transferCtx, {
+            type: 'bar',
+            data: {
+                labels: ['衣世界', '恒宣', '淑女休闲', '绅士'],
+                datasets: [{
+                    label: '调进比例 (%)',
+                    data: [14.03, 23.21, 32.33, 27.98],
+                    backgroundColor: chartColors.primary,
+                    borderColor: chartColors.dark,
+                    borderWidth: 1
+                }, {
+                    label: '调出比例 (%)',
+                    data: [15.23, 20.16, 29.99, 30.83],
+                    backgroundColor: chartColors.secondary,
+                    borderColor: chartColors.dark,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true, title: { display: true, text: '比例 (%)' } }
+                },
+                plugins: { legend: { position: 'top' } }
+            }
+        });
+
+        // 10. 目标达成分布 - 业绩
+        const targetSalesCtx = document.getElementById('targetAchievementSalesChart').getContext('2d');
+        new Chart(targetSalesCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['100%以上', '95%-100%', '90%-95%', '85%-90%', '80%-85%', '80%以下'],
+                datasets: [{
+                    data: [4, 8, 16, 8, 4, 5],
+                    backgroundColor: [
+                        chartColors.secondary,
+                        '#27ae60',
+                        chartColors.primary,
+                        chartColors.warning,
+                        '#e67e22',
+                        chartColors.accent
+                    ],
+                    borderWidth: 2,
+                    borderColor: 'white'
+                }]
+            },
+            options: {
+                responsive: true,
+                cutout: '60%',
+                plugins: {
+                    legend: { position: 'right' },
+                    tooltip: { callbacks: { label: ctx => `${ctx.label}: ${ctx.raw} 家店铺` } }
+                }
+            }
+        });
+
+        // 11. 目标达成分布 - 毛利润
+        const targetProfitCtx = document.getElementById('targetAchievementProfitChart').getContext('2d');
+        new Chart(targetProfitCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['100%以上', '95%-100%', '90%-95%', '85%-90%', '80%-85%', '80%以下'],
+                datasets: [{
+                    data: [2, 7, 14, 5, 3, 4],
+                    backgroundColor: [
+                        chartColors.secondary,
+                        '#27ae60',
+                        chartColors.primary,
+                        chartColors.warning,
+                        '#e67e22',
+                        chartColors.accent
+                    ],
+                    borderWidth: 2,
+                    borderColor: 'white'
+                }]
+            },
+            options: {
+                responsive: true,
+                cutout: '60%',
+                plugins: {
+                    legend: { position: 'right' },
+                    tooltip: { callbacks: { label: ctx => `${ctx.label}: ${ctx.raw} 家店铺` } }
+                }
+            }
+        });
+
+        // 页面加载后激活当前可见区域的导航
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('#reportNav a');
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 100;
+                if (scrollY >= sectionTop) {
+                    current = section.getAttribute('id');
+                }
+            });
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+```
