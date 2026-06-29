@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>超市销售数据分析报告</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        body { font-family: 'Microsoft YaHei', Arial, sans-serif; background-color: #f8f9fa; }
+        .report-header { background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%); color: white; padding: 2rem 0; }
+        .section-title { border-left: 4px solid #3498db; padding-left: 15px; margin: 30px 0 20px; }
+        .metric-card { background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 20px; margin-bottom: 20px; transition: transform 0.2s; }
+        .metric-card:hover { transform: translateY(-5px); }
+        .metric-value { font-size: 2rem; font-weight: bold; color: #3498db; }
+        .metric-label { color: #6c757d; font-size: 0.9rem; }
+        .chart-container { position: relative; height: 350px; margin-bottom: 30px; background: white; border-radius: 8px; padding: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .insight-box { background-color: #e8f4f8; border-left: 4px solid #3498db; padding: 15px; margin: 15px 0; border-radius: 0 4px 4px 0; }
+        footer { background-color: #2c3e50; color: white; padding: 20px 0; margin-top: 50px; }
+    </style>
+</head>
+<body>
+    <div class="report-header">
+        <div class="container">
+            <h1 class="display-4">超市销售数据分析报告</h1>
+            <p class="lead">基于2023年3月和4月销售数据的多维度分析</p>
+        </div>
+    </div>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="#">数据分析报告</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="#summary">执行摘要</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#metrics">关键指标</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#analysis">详细分析</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#conclusion">结论建议</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <section id="summary">
+            <h2 class="section-title">执行摘要</h2>
+            <div class="row">
+                <div class="col-12">
+                    <div class="insight-box">
+                        <p>本次分析基于三天的销售数据（3月1日、3月2日、4月1日），涵盖4个柜台、6名员工的销售交易记录。分析结果表明：</p>
+                        <ul>
+                            <li>总交易额达到<strong>27,468元</strong>，平均单笔交易额为<strong>1,312.76元</strong></li>
+                            <li>蔬菜水果柜台总体表现最佳，化妆品柜台人均效能最高</li>
+                            <li>上午时段（9:00~14:00）交易额略高于下午时段（14:00~21:00）</li>
+                            <li>4月整体销售表现优于3月，呈现增长趋势</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="metrics">
+            <h2 class="section-title">关键指标展示</h2>
+            <div class="row">
+                <div class="col-md-3 col-sm-6">
+                    <div class="metric-card text-center">
+                        <div class="metric-value">27,468</div>
+                        <div class="metric-label">总交易额（元）</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="metric-card text-center">
+                        <div class="metric-value">21</div>
+                        <div class="metric-label">交易笔数</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="metric-card text-center">
+                        <div class="metric-value">1,313</div>
+                        <div class="metric-label">平均单笔交易额（元）</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="metric-card text-center">
+                        <div class="metric-value">7</div>
+                        <div class="metric-label">员工人数</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="analysis">
+            <h2 class="section-title">详细数据分析</h2>
+
+            <div class="row">
+                <div class="col-12">
+                    <h4>1. 各柜台交易额分布</h4>
+                    <div class="chart-container">
+                        <canvas id="counterChart"></canvas>
+                    </div>
+                    <div class="insight-box">
+                        <p><strong>洞察：</strong>蔬菜水果柜台交易额最高，达到7,513元，占总交易额的27.35%；化妆品柜台紧随其后，总交易额为6,911元，占25.16%。这表明蔬菜水果和化妆品是超市的核心营收品类。日用品和食品类交易额相对均衡，分别为6,103元和6,941元。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <h4>2. 不同时段交易额对比</h4>
+                    <div class="chart-container">
+                        <canvas id="timeChart"></canvas>
+                    </div>
+                    <div class="insight-box">
+                        <p><strong>洞察：</strong>上午时段（9:00~14:00）总交易额为14,643元，比下午时段多588元，占比53.3%。上午时段顾客流量更大，购买力更强，建议加强上午时段的人员配置和促销活动。</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h4>3. 不同日期交易额对比</h4>
+                    <div class="chart-container">
+                        <canvas id="dateChart"></canvas>
+                    </div>
+                    <div class="insight-box">
+                        <p><strong>洞察：</strong>4月1日总交易额达到10,543元，高于3月前两天的总和，显示出销售额逐月增长的趋势。这可能与季节因素或促销活动有关，建议持续关注四月份销售表现。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <h4>4. 各员工销售业绩</h4>
+                    <div class="chart-container">
+                        <canvas id="employeeChart"></canvas>
+                    </div>
+                    <div class="insight-box">
+                        <p><strong>洞察：</strong>钱八总交易额最高，达到5,109元；张三次之，达到5,003元。新员工孙九虽然只有一天数据，但表现优异，个人交易额已达到2,997元，显示出良好的销售潜力。</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h4>5. 柜台交易额占比</h4>
+                    <div class="chart-container">
+                        <canvas id="pieChart"></canvas>
+                    </div>
+                    <div class="insight-box">
+                        <p><strong>洞察：</strong>四个品类交易额占比相对均衡，其中蔬菜水果占比最高达到27%，化妆品和食品占比均为25%，日用品占比22%。品类结构相对健康，无需进行大的品类调整。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-12">
+                    <h4>6. 各柜台平均单笔交易额</h4>
+                    <div class="chart-container">
+                        <canvas id="avgTransactionChart"></canvas>
+                    </div>
+                    <div class="insight-box">
+                        <p><strong>洞察：</strong>化妆品柜台平均单笔交易额最高，达到1382元，说明化妆品客单价较高，盈利能力更强。食品柜台平均单笔交易额相对较低，建议考虑通过捆绑销售提升客单价。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="trend" class="mt-5">
+            <h2 class="section-title">员工职级业绩分析</h2>
+            <div class="row">
+                <div class="col-12">
+                    <table class="table table-striped table-bordered">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>职级</th>
+                                <th>姓名</th>
+                                <th>工号</th>
+                                <th>总交易额（元）</th>
+                                <th>交易笔数</th>
+                                <th>平均单笔交易额（元）</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>店长</td>
+                                <td>张三</td>
+                                <td>1001</td>
+                                <td>5003</td>
+                                <td>4</td>
+                                <td>1250.75</td>
+                            </tr>
+                            <tr>
+                                <td>主管</td>
+                                <td>李四</td>
+                                <td>1002</td>
+                                <td>5003</td>
+                                <td>4</td>
+                                <td>1250.75</td>
+                            </tr>
+                            <tr>
+                                <td>组长</td>
+                                <td>王五</td>
+                                <td>1003</td>
+                                <td>4982</td>
+                                <td>4</td>
+                                <td>1245.5</td>
+                            </tr>
+                            <tr>
+                                <td>员工</td>
+                                <td>赵六</td>
+                                <td>1004</td>
+                                <td>3496</td>
+                                <td>3</td>
+                                <td>1165.33</td>
+                            </tr>
+                            <tr>
+                                <td>员工</td>
+                                <td>周七</td>
+                                <td>1005</td>
+                                <td>3561</td>
+                                <td>3</td>
+                                <td>1187</td>
+                            </tr>
+                            <tr>
+                                <td>员工</td>
+                                <td>钱八</td>
+                                <td>1006</td>
+                                <td>5109</td>
+                                <td>4</td>
+                                <td>1277.25</td>
+                            </tr>
+                            <tr>
+                                <td>员工</td>
+                                <td>孙九</td>
+                                <td>1007</td>
+                                <td>2997</td>
+                                <td>2</td>
+                                <td>1498.5</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="insight-box">
+                        <p><strong>洞察：</strong>新员工孙九平均单笔交易额达到1498.5元，在所有员工中排名第一，超过了店长和主管，表现出优秀的销售能力。基层员工整体表现良好，钱八的总交易额甚至超过了店长和主管，说明一线销售团队战斗力强。职级越高，总交易额越大，符合管理职责分工。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="conclusion" class="mt-5">
+            <h2 class="section-title">结论与建议</h2>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">主要结论</h5>
+                            <ol>
+                                <li><strong>销售整体趋势向好</strong>：4月份销售额明显高于3月份，显示业务增长态势</li>
+                                <li><strong>品类结构均衡</strong>：四大品类占比相对均衡，蔬菜水果是最大品类，化妆品客单价最高</li>
+                                <li><strong>时段差异明显</strong>：上午时段交易额更高，是销售黄金时段</li>
+                                <li><strong>团队表现优秀</strong>：各级别员工都有出色表现，新员工成长迅速</li>
+                            </ol>
+
+                            <h5 class="card-title mt-4">改进建议</h5>
+                            <ol>
+                                <li><strong>人员配置优化</strong>：在上午高峰时段增加人手，提升顾客服务能力和成交率</li>
+                                <li><strong>品类策略调整</strong>：化妆品保持现有策略，进一步提升食品品类的客单价，可以通过组合促销实现</li>
+                                <li><strong>员工培养</strong>：孙九展现出优秀潜力，建议重点培养；钱八业绩突出，可以考虑给予更多激励和晋升机会</li>
+                                <li><strong>数据持续跟踪</strong>：目前数据量有限，建议持续收集更多日期的数据，进行更长周期的趋势分析</li>
+                                <li><strong>交叉销售推广</strong>：利用化妆品高客单价优势，推广与日用品的组合销售，提升整体毛利水平</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <div class="container text-center">
+            <p>超市销售数据分析报告 &copy; 2023 | 生成于 2023年</p>
+        </div>
+    </footer>
+
+    <script>
+        // 颜色配置
+        const colors = ['#3498db', '#2ecc71', '#e74c3c', '#f39c12', '#9b59b6', '#1abc9c', '#34495e'];
+
+        // 1. 各柜台交易额
+        const counterCtx = document.getElementById('counterChart').getContext('2d');
+        new Chart(counterCtx, {
+            type: 'bar',
+            data: {
+                labels: ['化妆品', '食品', '日用品', '蔬菜水果'],
+                datasets: [{
+                    label: '总交易额（元）',
+                    data: [6911, 6941, 6103, 7513],
+                    backgroundColor: colors.slice(0,4),
+                    borderWidth: 0
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+        });
+
+        // 2. 时段对比
+        const timeCtx = document.getElementById('timeChart').getContext('2d');
+        new Chart(timeCtx, {
+            type: 'pie',
+            data: {
+                labels: ['9:00~14:00', '14:00~21:00'],
+                datasets: [{
+                    data: [14643, 12825],
+                    backgroundColor: [colors[0], colors[1]],
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+
+        // 3. 日期对比
+        const dateCtx = document.getElementById('dateChart').getContext('2d');
+        new Chart(dateCtx, {
+            type: 'bar',
+            data: {
+                labels: ['2023-03-01', '2023-03-02', '2023-04-01'],
+                datasets: [{
+                    label: '总交易额（元）',
+                    data: [10028, 6897, 10543],
+                    backgroundColor: [colors[2], colors[3], colors[0]],
+                    borderWidth: 0
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+        });
+
+        // 4. 员工业绩
+        const employeeCtx = document.getElementById('employeeChart').getContext('2d');
+        new Chart(employeeCtx, {
+            type: 'horizontalBar',
+            type: 'bar',
+            data: {
+                labels: ['张三', '李四', '王五', '赵六', '周七', '钱八', '孙九'],
+                datasets: [{
+                    label: '总交易额（元）',
+                    data: [5003, 5003, 4982, 3496, 3561, 5109, 2997],
+                    backgroundColor: colors,
+                    borderWidth: 0
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+        });
+
+        // 5. 柜台占比饼图
+        const pieCtx = document.getElementById('pieChart').getContext('2d');
+        new Chart(pieCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['化妆品', '食品', '日用品', '蔬菜水果'],
+                datasets: [{
+                    data: [25, 25, 22, 27],
+                    backgroundColor: colors.slice(0,4),
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+
+        // 6. 平均单笔交易
+        const avgCtx = document.getElementById('avgTransactionChart').getContext('2d');
+        new Chart(avgCtx, {
+            type: 'line',
+            data: {
+                labels: ['化妆品', '食品', '日用品', '蔬菜水果'],
+                datasets: [{
+                    label: '平均单笔交易额（元）',
+                    data: [1382, 1157, 1221, 1313],
+                    borderColor: '#3498db',
+                    backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
+        });
+    </script>
+</body>
+</html>
