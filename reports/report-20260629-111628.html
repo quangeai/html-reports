@@ -1,0 +1,344 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>煤炭生产销售数据分析报告 - 平朔集团</title>
+    <!-- 引入 Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- 引入 Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: #333;
+        }
+        .navbar-brand {
+            font-weight: bold;
+            color: #fff !important;
+        }
+        .card {
+            border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            border-radius: 10px;
+        }
+        .card-header {
+            background-color: #fff;
+            border-bottom: 2px solid #f0f0f0;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        .metric-card {
+            border-left: 5px solid #0d6efd;
+        }
+        .metric-card.warning { border-left-color: #ffc107; }
+        .metric-card.success { border-left-color: #198754; }
+        .metric-card.danger { border-left-color: #dc3545; }
+        
+        .chart-container {
+            position: relative;
+            height: 350px;
+            width: 100%;
+        }
+        .section-title {
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #dee2e6;
+            color: #0d6efd;
+        }
+        .analysis-list li {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+        footer {
+            margin-top: 50px;
+            padding: 20px 0;
+            background-color: #343a40;
+            color: #fff;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-dark bg-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="#">煤炭生产销售数据分析报告</a>
+            <span class="navbar-text text-white-50">数据周期：本期 | 分析对象：平朔集团及下属单位</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        
+        <!-- 执行摘要 -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <h3 class="section-title">执行摘要</h3>
+                <div class="card p-3">
+                    <p class="mb-0">
+                        本报告基于平朔集团吨煤计划与实际偏差表及业务类型分析表生成。本期<strong>实际供应量为 573.06 万吨</strong>，较计划减少 21.94 万吨（-3.69%）。
+                        虽然产量未达计划，但<strong>实际吨煤利润达到 234.38 元/吨</strong>，超出计划 39.26 元/吨，增长显著。
+                        <strong>地销</strong>业务表现尤为突出，利润率大幅提升。然而，部分矿井（如安家岭矿）产量下滑严重，且小回沟煤业成本居高不下，需重点关注。
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 关键指标卡片 -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card metric-card">
+                    <div class="card-body">
+                        <h6 class="text-muted">实际供应量 (吨)</h6>
+                        <h3 id="kpi-volume">5,730,604</h3>
+                        <small class="text-danger">↓ 3.69% (未达标)</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card metric-card success">
+                    <div class="card-body">
+                        <h6 class="text-muted">吨煤利润 (元/吨)</h6>
+                        <h3 id="kpi-profit">234.38</h3>
+                        <small class="text-success">↑ 20.12% (超计划)</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card metric-card warning">
+                    <div class="card-body">
+                        <h6 class="text-muted">吨煤成本 (元/吨)</h6>
+                        <h3 id="kpi-cost">297.65</h3>
+                        <small class="text-danger">↑ 3.75% (成本上升)</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card metric-card">
+                    <div class="card-body">
+                        <h6 class="text-muted">平均销售价格 (元/吨)</h6>
+                        <h3 id="kpi-price">532.03</h3>
+                        <small class="text-success">↑ 10.38%</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 图表区域 1: 三级单位分析 -->
+        <h3 class="section-title">三级单位生产与效益分析</h3>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">各矿井供应量（计划 vs 实际）</div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="volumeChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">吨煤成本与利润对比</div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="costProfitChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">各矿井利润偏差分析 (实际 - 计划)</div>
+                    <div class="card-body">
+                        <div class="chart-container" style="height: 300px;">
+                            <canvas id="varianceChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 图表区域 2: 业务类型分析 -->
+        <h3 class="section-title">销售渠道与业务类型分析</h3>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">供应量渠道分布</div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="channelPieChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">各渠道收入与利润贡献</div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="channelBarChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 文本分析区域 -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header text-danger">问题洞察 (10项)</div>
+                    <div class="card-body">
+                        <ul class="analysis-list">
+                            <li><strong>总产量未达标：</strong>实际供应量较计划减少约22万吨，整体完成率96.31%，可能影响市场份额。</li>
+                            <li><strong>安家岭矿产量锐减：</strong>实际产量较计划减少30万吨（-25.27%），是导致总产量未达标的主要原因。</li>
+                            <li><strong>井工三矿产量腰斩：</strong>产量偏差率达-51.27%，实际产量仅20.9万吨，远低于计划的43万吨。</li>
+                            <li><strong>风选煤厂停产：</strong>安家岭与安太堡风选煤厂实际产量均为0，需核实是计划调整还是停产检修。</li>
+                            <li><strong>小回沟煤业成本过高：</strong>吨煤成本高达424.71元，远高于集团平均水平（297.65元），缺乏成本竞争力。</li>
+                            <li><strong>井工一矿成本攀升：</strong>吨煤成本330.45元，为各主要生产矿井之首，且超计划6.2%。</li>
+                            <li><strong>港杂费下降：</strong>虽然利润增加，但港杂费实际支出较计划减少约667万元（-7.34%），需关注是否影响物流服务质量。</li>
+                            <li><strong>直达业务萎缩：</strong>直达供应量未达标，偏差率-4.03%，且利润偏差为负，该业务板块表现疲软。</li>
+                            <li><strong>运输成本波动：</strong>煤炭销售运输成本整体较计划减少约791万元，部分单位（如井工三矿）该项成本为0，数据异常。</li>
+                            <li><strong>边际贡献率差异：</strong>地销边际贡献率高达51.35%，而直达仅为45.22%，资源分配可能未实现最优解。</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header text-success">改进建议 (10项)</div>
+                    <div class="card-body">
+                        <ul class="analysis-list">
+                            <li><strong>安家岭矿增产攻坚：</strong>深入分析安家岭矿产量未达原因（设备故障、地质条件或销售限制），制定专项增产措施。</li>
+                            <li><strong>优化高成本矿井运营：</strong>对小回沟煤业和井工一矿进行成本专项审计，严控非生产性支出，降低吨煤成本。</li>
+                            <li><strong>扩大地销业务比例：</strong>地销业务利润率极高（208元/吨利润），建议在满足长协的基础上，适当增加地销资源倾斜。</li>
+                            <li><strong>复盘风选煤厂策略：</strong>明确风选煤厂停产原因，若属长期亏损应考虑关停或转型，若为检修应明确复产时间表。</li>
+                            <li><strong>挖掘安太堡矿潜力：</strong>安太堡矿实际产量超计划36%，且成本控制良好（264元/吨），应总结其管理经验推广。</li>
+                            <li><strong>强化价格管理：</strong>平均售价提升10.38%是利润增长的主因，建议继续研判市场走势，实施动态定价策略。</li>
+                            <li><strong>直达业务效能提升：</strong>针对直达业务量利双降的局面，重新评估客户结构，剔除低效订单。</li>
+                            <li><strong>物流费用精细化管理：</strong>虽然运输成本下降，但需确保降幅源于效率提升而非服务降级，特别是港杂费部分。</li>
+                            <li><strong>数据质量治理：</strong>修复井工三矿运输成本为0的数据异常，建立财务数据自动校验机制。</li>
+                            <li><strong>对标管理：</strong>以安太堡矿（低成本、高产量）为标杆，组织其他矿井开展对标找差距活动。</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 煤炭行业数据分析中心 | 内部机密资料，请勿外传</p>
+        </div>
+    </footer>
+
+    <!-- 数据处理与图表渲染脚本 -->
+    <script>
+        // 1. 数据解析与处理 (模拟从CSV解析后的结构化数据)
+        
+        // 表1：三级单位数据 (提取关键指标)
+        const unitData = [
+            { name: '东露天矿', planVol: 2530000, actVol: 2345639.3, planCost: 288.31, actCost: 299.02, planProfit: 226.24, actProfit: 257.24 },
+            { name: '井工一矿', planVol: 660000, actVol: 746080, planCost: 311.13, actCost: 330.45, planProfit: 202.99, actProfit: 230.86 },
+            { name: '安家岭矿', planVol: 1190000, actVol: 889292.56, planCost: 319.17, actCost: 326.43, planProfit: 186.06, actProfit: 231.08 },
+            { name: '安太堡矿', planVol: 690000, actVol: 941376.98, planCost: 273.42, actCost: 264.39, planProfit: 189.35, actProfit: 171.08 },
+            { name: '茂华下梨园', planVol: 200000, actVol: 174550.56, planCost: 197.76, actCost: 155.20, planProfit: 129.58, actProfit: 196.24 },
+            { name: '井工三矿', planVol: 430000, actVol: 209560, planCost: 214.06, actCost: 182.20, planProfit: 129.39, actProfit: 211.61 },
+            { name: '山西小回沟', planVol: 100000, actVol: 114742.56, planCost: 464.40, actCost: 424.71, planProfit: 188.13, actProfit: 252.24 },
+            { name: '安家岭风选', planVol: 100000, actVol: 0, planCost: 171.31, actCost: 0, planProfit: 16.42, actProfit: 0 },
+            { name: '安太堡风选', planVol: 50000, actVol: 0, planCost: 171.31, actCost: 0, planProfit: 11.19, actProfit: 0 }
+        ];
+
+        // 表2：业务类型数据
+        const businessTypeData = [
+            { name: '地销', actVol: 1546215.40, revenue: 626545443, profit: 321711644, profitRate: 51.35 },
+            { name: '直达', actVol: 204701.56, revenue: 110012444, profit: 49752782, profitRate: 45.22 },
+            { name: '下水', actVol: 3979687.00, revenue: 2312322755, profit: 971685862, profitRate: 42.02 }
+        ];
+
+        // 2. 图表渲染函数
+
+        // 全局默认配置
+        Chart.defaults.font.family = "'Segoe UI', 'Helvetica Neue', 'Arial', sans-serif";
+        Chart.defaults.color = '#666';
+
+        // 图表1：供应量对比 (柱状图)
+        const ctxVolume = document.getElementById('volumeChart').getContext('2d');
+        new Chart(ctxVolume, {
+            type: 'bar',
+            data: {
+                labels: unitData.map(d => d.name),
+                datasets: [
+                    {
+                        label: '计划供应量 (吨)',
+                        data: unitData.map(d => d.planVol),
+                        backgroundColor: 'rgba(108, 117, 125, 0.5)',
+                        borderColor: 'rgba(108, 117, 125, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: '实际供应量 (吨)',
+                        data: unitData.map(d => d.actVol),
+                        backgroundColor: 'rgba(13, 110, 253, 0.6)',
+                        borderColor: 'rgba(13, 110, 253, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: { display: true, text: '各矿井计划与实际供应量对比' },
+                    tooltip: { mode: 'index', intersect: false }
+                },
+                scales: {
+                    y: { beginAtZero: true, title: { display: true, text: '吨' } }
+                }
+            }
+        });
+
+        // 图表2：成本与利润对比 (双轴柱状图)
+        const ctxCostProfit = document.getElementById('costProfitChart').getContext('2d');
+        new Chart(ctxCostProfit, {
+            type: 'bar',
+            data: {
+                labels: unitData.map(d => d.name),
+                datasets: [
+                    {
+                        label: '吨煤成本 (元)',
+                        data: unitData.map(d => d.actCost),
+                        backgroundColor: 'rgba(255, 193, 7, 0.6)',
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: '吨煤利润 (元)',
+                        data: unitData.map(d => d.actProfit),
+                        backgroundColor: 'rgba(25, 135, 84, 0.6)',
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: { display: true, text: '各矿井吨煤成本与利润表现' }
+                },
+                scales: {
+                    y: { 
+                        type: 'linear', display: true, position: 'left',
+                        title: { display: true, text: '成本 (元)' }
+                    },
+                    y1: { 
+                        type: 'linear
