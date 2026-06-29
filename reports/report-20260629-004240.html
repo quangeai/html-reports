@@ -1,0 +1,243 @@
+```python
+import pandas as pd
+import numpy as np
+
+# 读取整理数据
+data = [
+    [1001, '张三', '2023-03-01', '9:00~14:00', 1664, '化妆品'],
+    [1002, '李四', '2023-03-01', '14:00~21:00', 954, '化妆品'],
+    [1003, '王五', '2023-03-01', '9:00~14:00', 1407, '食品'],
+    [1004, '赵六', '2023-03-01', '14:00~21:00', 1320, '食品'],
+    [1005, '周七', '2023-03-01', '9:00~14:00', 994, '日用品'],
+    [1006, '钱八', '2023-03-01', '14:00~21:00', 1421, '日用品'],
+    [1006, '钱八', '2023-03-01', '9:00~14:00', 1226, '蔬菜水果'],
+    [1001, '张三', '2023-03-01', '14:00~21:00', 1442, '蔬菜水果'],
+    [1001, '张三', '2023-03-02', '9:00~14:00', 1530, '化妆品'],
+    [1002, '李四', '2023-03-02', '14:00~21:00', 1395, '化妆品'],
+    [1003, '王五', '2023-03-02', '9:00~14:00', 936, '食品'],
+    [1004, '赵六', '2023-03-02', '14:00~21:00', 906, '食品'],
+    [1005, '周七', '2023-03-02', '9:00~14:00', 1444, '日用品'],
+    [1006, '钱八', '2023-03-02', '14:00~21:00', 1141, '日用品'],
+    [1002, '李四', '2023-03-02', '9:00~14:00', 1649, '蔬菜水果'],
+    [1003, '王五', '2023-03-02', '14:00~21:00', 1179, '蔬菜水果'],
+    [1001, '张三', '2023-04-01', '9:00~14:00', 1367, '化妆品'],
+    [1002, '李四', '2023-04-01', '14:00~21:00', 1005, '化妆品'],
+    [1003, '王五', '2023-04-01', '9:00~14:00', 1460, '食品'],
+    [1004, '赵六', '2023-04-01', '14:00~21:00', 1270, '食品'],
+    [1005, '周七', '2023-04-01', '9:00~14:00', 1123, '日用品'],
+    [1006, '钱八', '2023-04-01', '14:00~21:00', 1321, '日用品'],
+    [1007, '孙九', '2023-04-01', '9:00~14:00', 1364, '蔬菜水果'],
+    [1007, '孙九', '2023-04-01', '14:00~21:00', 1633, '蔬菜水果']
+]
+
+employees = [
+    [1001, '张三', '店长'],
+    [1002, '李四', '主管'],
+    [1003, '王五', '组长'],
+    [1004, '赵六', '员工'],
+    [1005, '周七', '员工'],
+    [1006, '钱八', '员工'],
+    [1007, '孙九', '员工']
+]
+
+# 创建DataFrame
+df = pd.DataFrame(data, columns=['工号', '姓名', '日期', '时段', '交易额', '柜台'])
+employee_df = pd.DataFrame(employees, columns=['工号', '姓名', '职级'])
+
+# 合并员工信息
+full_df = df.merge(employee_df, on=['工号', '姓名'], how='left')
+
+# 开始生成分析报告
+report = "# 超市收银数据分析报告
+
+"
+report += "## 一、数据概况
+
+"
+report += f"- 总交易记录条数: {len(df)}
+"
+report += f"- 涉及收银员人数: {df['工号'].nunique()}
+"
+report += f"- 涉及柜台类别: {df['柜台'].nunique()}种，分别为: {', '.join(df['柜台'].unique())}
+"
+report += f"- 统计日期范围: {df['日期'].min()} 至 {df['日期'].max()}
+
+"
+
+# 描述性统计
+report += "## 二、描述性统计
+
+"
+describe = df['交易额'].describe()
+report += f"- 总交易额: {df['交易额'].sum():,.0f}元
+"
+report += f"- 平均单笔交易额: {df['交易额'].mean():.2f}元
+"
+report += f"- 交易额中位数: {df['交易额'].median()}元
+"
+report += f"- 交易额最小值: {df['交易额'].min()}元
+"
+report += f"- 交易额最大值: {df['交易额'].max()}元
+"
+report += f"- 标准差: {df['交易额'].std():.2f}
+
+"
+
+# 不同维度分组对比分析
+report += "## 三、分组对比分析
+
+"
+
+# 1. 按柜台分组
+report += "### 3.1 不同柜台交易额分析
+
+"
+counter_group = df.groupby('柜台')['交易额'].agg(['count', 'sum', 'mean'])
+counter_group = counter_group.sort_values('sum', ascending=False)
+report += "| 柜台类别 | 交易笔数 | 总交易额 | 平均单笔交易额 |
+"
+report += "|---------|---------|---------|--------------|
+"
+for idx, row in counter_group.iterrows():
+    report += f"| {idx} | {row['count']} | {row['sum']:,.0f} | {row['mean']:.2f} |
+"
+report += "
+"
+
+# 2. 按时段分组
+report += "
+### 3.2 不同时段交易额分析
+
+"
+time_group = df.groupby('时段')['交易额'].agg(['count', 'sum', 'mean'])
+report += "| 时段 | 交易笔数 | 总交易额 | 平均单笔交易额 |
+"
+report += "|-----|---------|---------|--------------|
+"
+for idx, row in time_group.iterrows():
+    report += f"| {idx} | {row['count']} | {row['sum']:,.0f} | {row['mean']:.2f} |
+"
+report += "
+"
+
+# 3. 按收银员分组
+report += "
+### 3.3 不同员工交易额分析
+
+"
+employee_group = df.groupby(['工号', '姓名'])['交易额'].agg(['count', 'sum', 'mean'])
+employee_group = employee_group.sort_values('sum', ascending=False)
+employee_group = employee_group.merge(employee_df.set_index(['工号', '姓名']), left_index=True, right_index=True)
+report += "| 工号 | 姓名 | 职级 | 交易笔数 | 总交易额 | 平均单笔交易额 |
+"
+report += "|-----|-----|-----|---------|---------|--------------|
+"
+for idx, row in employee_group.iterrows():
+    report += f"| {idx[0]} | {idx[1]} | {row['职级']} | {row['count']} | {row['sum']:,.0f} | {row['mean']:.2f} |
+"
+report += "
+"
+
+# 4. 按职级分组
+report += "
+### 3.4 不同职级交易额分析
+
+"
+rank_group = full_df.groupby('职级')['交易额'].agg(['count', 'sum', 'mean'])
+rank_group = rank_group.sort_values('sum', ascending=False)
+report += "| 职级 | 人数 | 交易笔数 | 总交易额 | 平均单笔交易额 |
+"
+report += "|-----|----|---------|---------|--------------|
+"
+for idx, row in rank_group.iterrows():
+    count_people = full_df[full_df['职级'] == idx]['工号'].nunique()
+    report += f"| {idx} | {count_people} | {row['count']} | {row['sum']:,.0f} | {row['mean']:.2f} |
+"
+report += "
+"
+
+# 5. 按日期分组
+report += "
+### 3.5 不同日期交易额分析
+
+"
+date_group = df.groupby('日期')['交易额'].agg(['count', 'sum', 'mean'])
+report += "| 日期 | 交易笔数 | 总交易额 | 平均单笔交易额 |
+"
+report += "|-----|---------|---------|--------------|
+"
+for idx, row in date_group.iterrows():
+    report += f"| {idx} | {row['count']} | {row['sum']:,.0f} | {row['mean']:.2f} |
+"
+report += "
+"
+
+# 相关性分析
+report += "## 四、相关性分析
+
+"
+# 创建数值变量相关性分析
+# 将分类变量编码进行相关分析
+corr_df = df.copy()
+corr_df['时段编码'] = corr_df['时段'].map({'9:00~14:00': 0, '14:00~21:00':1})
+corr_df['柜台编码'] = corr_df['柜台'].astype('category').cat.codes
+corr_df['工号编码'] = corr_df['工号'].astype('category').cat.codes
+
+correlation = corr_df[['工号编码', '时段编码', '柜台编码', '交易额']].corr()
+report += "各变量之间的相关系数矩阵:
+
+"
+report += str(correlation)
+report += "
+
+"
+
+# 相关性分析结论
+report += "### 相关性分析结论:
+"
+report += f"- 时段与交易额的相关系数: {correlation.loc['时段编码', '交易额']:.4f}, {'正相关' if correlation.loc['时段编码', '交易额']>0 else '负相关'}
+"
+report += f"- 柜台类别与交易额的相关系数: {correlation.loc['柜台编码', '交易额']:.4f}
+"
+report += f"- 员工工号与交易额的相关系数: {correlation.loc['工号编码', '交易额']:.4f}
+
+"
+
+# 整体结论和建议
+report += "## 五、分析结论与建议
+
+"
+report += "### 主要结论:
+"
+report += "1. **柜台表现**: 蔬菜水果和化妆品两个类别的总交易额最高，分别占据前两位，平均单笔交易额也较高，说明这两个品类销售表现较好
+"
+report += f"2. **时段差异**: 上午时段（9:00~14:00）总交易额为{time_group.loc['9:00~14:00', 'sum']}，下午晚间时段（14:00~21:00）总交易额为{time_group.loc['14:00~21:00', 'sum']}，上午时段平均单笔交易额更高({time_group.loc['9:00~14:00', 'mean']:.2f} vs {time_group.loc['14:00~21:00', 'mean']:.2f})
+"
+max_emp = employee_group.iloc[0]
+min_emp = employee_group.iloc[-1]
+report += f"3. **员工差异**: {max_emp.name[1]}总交易额最高，{min_emp.name[1]}总交易额最低，但从平均交易额来看，不同员工之间存在一定差异
+"
+report += f"4. **职级差异**: 管理职级（店长、主管）平均单笔交易额高于普通员工，体现出资深员工更强的销售能力
+"
+report += f"5. 日期方面，{date_group['sum'].idxmax()}日总交易额最高，达到{date_group['sum'].max()}元
+
+"
+
+report += "### 建议:
+"
+report += "1. 在下午晚间时段可以增加收银员人手，应对可能的客流高峰
+"
+report += "2. 继续保持蔬菜水果和化妆品品类的陈列和促销，维持良好销售势头
+"
+report += "3. 针对业绩较低的员工，可以安排资深员工进行带教，提升整体销售水平
+"
+report += "4. 可以进一步分析周末和工作日差异，优化人员排班安排
+"
+
+# 保存报告
+output_file_name = '超市收银数据分析报告.txt'
+with open(output_file_name, 'w', encoding='utf-8') as f:
+    f.write(report)
+
+print(f"文件 {output_file_name} 已成功保存。")
+```
