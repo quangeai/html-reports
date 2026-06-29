@@ -1,0 +1,361 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>煤炭生产与销售经营分析报告</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #e67e22;
+            --light-bg: #f8f9fa;
+        }
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+        }
+        .navbar {
+            background-color: var(--primary-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .navbar-brand {
+            font-weight: 700;
+            color: #fff !important;
+        }
+        .section-title {
+            border-left: 5px solid var(--accent-color);
+            padding-left: 15px;
+            margin-bottom: 25px;
+            margin-top: 40px;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        .card {
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+        }
+        .card-header {
+            background-color: #fff;
+            border-bottom: 1px solid #eee;
+            font-weight: 600;
+        }
+        .metric-card {
+            text-align: center;
+            padding: 20px;
+        }
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        .metric-label {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        .trend-up { color: #27ae60; }
+        .trend-down { color: #c0392b; }
+        
+        .table-responsive {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .table thead {
+            background-color: var(--secondary-color);
+            color: #fff;
+        }
+        .table th, .table td {
+            vertical-align: middle;
+        }
+        .insight-box {
+            background-color: #e8f4fd;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 0 4px 4px 0;
+        }
+        .rec-box {
+            background-color: #eafaf1;
+            border-left: 4px solid #2ecc71;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 0 4px 4px 0;
+        }
+        footer {
+            background-color: var(--primary-color);
+            color: #bdc3c7;
+            padding: 20px 0;
+            margin-top: 50px;
+            text-align: center;
+        }
+        canvas {
+            max-height: 350px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-chart-line me-2"></i>煤炭经营分析报告
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#summary">执行摘要</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#metrics">关键指标</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#analysis">详细分析</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#insights">问题洞察</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#recommendations">建议结论</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+
+        <!-- 1. 执行摘要 -->
+        <section id="summary">
+            <h2 class="section-title">执行摘要</h2>
+            <div class="card">
+                <div class="card-body">
+                    <p class="lead">本报告基于平朔矿区各生产单位及销售业务类型的计划与实际数据，对煤炭生产、成本、销售及利润进行了全面分析。</p>
+                    <p>在整体煤炭市场价格上行的背景下，公司实现了<strong>利润总额超计划</strong>的良好业绩。尽管总供应量略低于计划，但得益于平均销售价格的大幅提升（+10.38%），实际利润达到1.34亿元，超出计划约1821万元。</p>
+                    <p>然而，<strong>内部经营存在显著差异</strong>。部分矿井（如安家岭矿）产量严重下滑，导致成本控制压力增大；而地销业务虽然量减，但凭借价格优势实现了利润大幅增长。报告深入挖掘了各单位及业务条线的量本利偏差，旨在为后续生产调度与销售策略提供数据支撑。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. 关键指标 -->
+        <section id="metrics">
+            <h2 class="section-title">关键指标概览 (平朔整体)</h2>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card metric-card">
+                        <div class="metric-label">总供应量 (吨)</div>
+                        <div class="metric-value">5,730,604</div>
+                        <small class="text-muted">计划: 5,950,000</small>
+                        <div class="mt-2"><span class="badge bg-danger">-3.69%</span></div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card metric-card">
+                        <div class="metric-label">利润总额 (元)</div>
+                        <div class="metric-value">1.34 亿</div>
+                        <small class="text-muted">计划: 1.16 亿</small>
+                        <div class="mt-2"><span class="badge bg-success">+15.69%</span></div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card metric-card">
+                        <div class="metric-label">平均售价 (元/吨)</div>
+                        <div class="metric-value">532.03</div>
+                        <small class="text-muted">计划: 482.01</small>
+                        <div class="mt-2"><span class="badge bg-success">+10.38%</span></div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card metric-card">
+                        <div class="metric-label">吨煤成本 (元/吨)</div>
+                        <div class="metric-value">297.65</div>
+                        <small class="text-muted">计划: 286.89</small>
+                        <div class="mt-2"><span class="badge bg-danger">+3.75%</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. 详细数据分析 -->
+        <section id="analysis">
+            <h2 class="section-title">详细数据分析</h2>
+            
+            <!-- 3.1 生产单位维度分析 -->
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <h5 class="text-secondary"><i class="fas fa-industry me-2"></i>各单位供应量与利润偏差分析</h5>
+                    <p class="text-muted small">对比各矿井计划与实际的供应量及利润贡献，识别重点盈利与亏损单位。</p>
+                </div>
+                <!-- 供应量图表 -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">各单位供应量（计划 vs 实际）</div>
+                        <div class="card-body">
+                            <canvas id="supplyChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <!-- 利润图表 -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">各单位利润（计划 vs 实际）</div>
+                        <div class="card-body">
+                            <canvas id="profitChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3.2 业务类型维度分析 -->
+            <div class="row mt-4">
+                <div class="col-md-12 mb-3">
+                    <h5 class="text-secondary"><i class="fas fa-truck me-2"></i>销售业务类型量价分析</h5>
+                    <p class="text-muted small">分析地销、直达、下水三种模式的销量占比及价格成本结构。</p>
+                </div>
+                <!-- 业务类型占比 -->
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">实际供应量业务占比</div>
+                        <div class="card-body">
+                            <canvas id="businessTypePieChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <!-- 价格成本对比 -->
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">各业务类型价格与成本对比 (元/吨)</div>
+                        <div class="card-body">
+                            <canvas id="priceCostChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3.3 详细数据表 -->
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">各单位核心数据明细表</div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover table-sm text-center">
+                                    <thead>
+                                        <tr>
+                                            <th>三级单位</th>
+                                            <th>供应量偏差率</th>
+                                            <th>吨煤成本(实)</th>
+                                            <th>吨煤利润(实)</th>
+                                            <th>平均售价(实)</th>
+                                            <th>利润偏差额(万元)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>东露天矿</td>
+                                            <td class="text-danger">-7.29%</td>
+                                            <td>299.02</td>
+                                            <td>257.24</td>
+                                            <td>556.26</td>
+                                            <td class="text-success">+3101</td>
+                                        </tr>
+                                        <tr>
+                                            <td>井工一矿</td>
+                                            <td class="text-success">+13.04%</td>
+                                            <td>330.45</td>
+                                            <td>230.86</td>
+                                            <td>561.31</td>
+                                            <td class="text-success">+3826</td>
+                                        </tr>
+                                        <tr>
+                                            <td>安家岭矿</td>
+                                            <td class="text-danger">-25.27%</td>
+                                            <td>326.43</td>
+                                            <td>231.08</td>
+                                            <td>557.51</td>
+                                            <td class="text-danger">-1591</td>
+                                        </tr>
+                                        <tr>
+                                            <td>安太堡矿</td>
+                                            <td class="text-success">+36.43%</td>
+                                            <td>264.39</td>
+                                            <td>171.08</td>
+                                            <td>435.47</td>
+                                            <td class="text-success">+3040</td>
+                                        </tr>
+                                        <tr>
+                                            <td>下梨园煤业</td>
+                                            <td class="text-danger">-12.72%</td>
+                                            <td>155.20</td>
+                                            <td>196.24</td>
+                                            <td>351.44</td>
+                                            <td class="text-success">+834</td>
+                                        </tr>
+                                        <tr>
+                                            <td>井工三矿</td>
+                                            <td class="text-danger">-51.27%</td>
+                                            <td>182.20</td>
+                                            <td>211.61</td>
+                                            <td>393.81</td>
+                                            <td class="text-danger">-1129</td>
+                                        </tr>
+                                        <tr>
+                                            <td>小回沟煤业</td>
+                                            <td class="text-success">+14.74%</td>
+                                            <td>424.71</td>
+                                            <td>252.24</td>
+                                            <td>676.95</td>
+                                            <td class="text-success">+1013</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. 问题洞察 -->
+        <section id="insights">
+            <h2 class="section-title">问题洞察与偏差分析</h2>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="insight-box">
+                        <h5><i class="fas fa-exclamation-triangle me-2"></i>核心问题发现</h5>
+                        <p>通过对计划与实际数据的深度挖掘，我们发现以下关键经营问题：</p>
+                        <ul class="list-group list-group-flush mt-2">
+                            <li class="list-group-item bg-transparent"><strong>1. 安家岭矿产量严重滑坡：</strong> 安家岭矿实际供应量仅为计划的74.7%，偏差量达-30万吨，是导致整体供应量未达标的最主要因素。需排查地质条件或设备故障原因。</li>
+                            <li class="list-group-item bg-transparent"><strong>2. 井工三矿生产近乎停滞：</strong> 井工三矿实际产量仅为计划的一半（-51%），且运输成本和港杂费实际发生额为0，可能存在长期停产或销售渠道阻断的情况。</li>
+                            <li class="list-group-item bg-transparent"><strong>3. 风选煤厂完全停产：</strong> 安家岭与安太堡风选煤厂实际产量均为0，计划中的15万吨缺口完全未填补，这部分产能闲置。</li>
+                            <li class="list-group-item bg-transparent"><strong>4. 吨煤成本普遍超支：</strong> 除了安太堡矿和小回沟煤业外，其余主要生产单位（东露天、井工一、安家岭）的吨煤成本均高于计划值，整体成本上涨3.75%，抵消了部分价格上涨带来的红利。</li>
+                            <li class="list-group-item bg-transparent"><strong>5. 安太堡矿“量增利减”：</strong> 安太堡矿供应量超计划36%，但利润却未达计划（-9.6%）。数据显示其平均售价（435元）远低于其他矿井（550+元），存在“低质煤炭冲量”的嫌疑，拉低了整体效益。</li>
+                            <li class="list-group-item bg-transparent"><strong>6. 直达业务萎缩：</strong> 直达业务（铁路运输）供应量和利润双双下降，且利润降幅（-2.48%）大于销量降幅（-4.03%），显示该物流渠道的竞争力正在减弱。</li>
+                            <li class="list-group-item bg-transparent"><strong>7. 运输成本管控不力：</strong> 东露天矿和井工一矿的煤炭销售运输成本分别超支6.4%和16%，物流环节的降本增效未达预期。</li>
+                            <li class="list-group-item bg-transparent"><strong>8. 港杂费节约未转化为利润：</strong> 虽然下水业务的港杂费实际比计划节约了667万元（-7.34%），但这部分节约并未完全体现在利润的同步增长中，可能被其他成本项吞噬。</li>
+                            <li class="list-group-item bg-transparent"><strong>9. 小回沟煤业的高成本风险：</strong> 虽然利润较高，但小回沟的吨煤成本高达424元，为所有矿井最高，且售价也最高（676元）。若市场价格波动，该矿抗风险能力较弱。</li>
+                            <li class="list-group-item bg-transparent"><strong>10. 计划与市场脱节：</strong> 平均售价偏差率达到+10.38%，说明年初制定的销售计划价格严重低估了市场行情，导致预算模型过于保守，未能及时反映市场红利。</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. 建议和结论 -->
+        <section id="recommendations">
+            <h2 class="section-title">建议与结论</h2 liqui>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="rec-box">
+                        <h5><i class="fas fa-lightbulb me-2"></i>经营管理建议</h5>
+                        <p>基于上述分析，提出以下针对性改进措施：</p>
+                        <ol class="list-group list-group-numbered mt-2">
+                            <li class="list-group-item bg-transparent"><strong>重启安家岭矿产能：</strong> 立即组织对安家岭矿的生产瓶颈
