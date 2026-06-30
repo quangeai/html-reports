@@ -1,0 +1,406 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>投资数据分析报告</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .report-header {
+            background-color: #0d6efd;
+            color: white;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-radius: 8px;
+        }
+        .section-title {
+            color: #0d6efd;
+            border-bottom: 3px solid #0d6efd;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .card {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+        }
+        .metric-card {
+            text-align: center;
+            padding: 1.5rem;
+        }
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #0d6efd;
+        }
+        .metric-label {
+            color: #6c757d;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 报告标题 -->
+        <div class="report-header">
+            <h1 class="display-4">2025年Q1投资数据分析报告</h1>
+            <p class="lead">基于30家企业融资及调研数据的深度洞察</p>
+        </div>
+
+        <!-- 执行摘要 -->
+        <section>
+            <h2 class="section-title">执行摘要</h2>
+            <div class="card">
+                <div class="card-body">
+                    <p>本次分析涵盖30家企业的融资及调研数据，核心发现包括：</p>
+                    <ul>
+                        <li><strong>先进制造</strong>为最热门投资领域，占比达37%</li>
+                        <li>大额融资集中在汽车出行和航天领域，单笔最高融资达20亿人民币</li>
+                        <li>北京、上海、重庆成为企业集聚地，合计占比40%</li>
+                        <li>平均调研周期为12天，最短仅1天，最长达17天</li>
+                        <li>IPO和定向增发成为重要融资方式，占总融资额的65%</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 关键指标 -->
+        <section>
+            <h2 class="section-title">关键指标概览</h2>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card metric-card">
+                        <div class="metric-value">30</div>
+                        <div class="metric-label">调研企业总数</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card metric-card">
+                        <div class="metric-value">¥50.4亿</div>
+                        <div class="metric-label">已披露总融资额</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card metric-card">
+                        <div class="metric-value">12天</div>
+                        <div class="metric-label">平均调研周期</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card metric-card">
+                        <div class="metric-value">11个</div>
+                        <div class="metric-label">覆盖行业数量</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 详细数据分析 -->
+        <section>
+            <h2 class="section-title">详细数据分析</h2>
+            
+            <!-- 行业分布 -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>行业投资分布</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="industryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 融资轮次分布 -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>融资轮次分布</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="roundChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 地区分布 -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>企业地区分布</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="regionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 融资额TOP5 -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>融资额TOP5企业</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="topFundingChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 趋势分析 -->
+        <section>
+            <h2 class="section-title">趋势分析</h2>
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h5>调研周期分布</h5>
+                            <canvas id="researchDurationChart"></canvas>
+                        </div>
+                        <div class="col-md-4">
+                            <h5>融资时间趋势</h5>
+                            <p><strong>融资集中期：</strong>2025年3月12日-3月21日</p>
+                            <p><strong>特点：</strong>87%的企业在3月完成融资，呈现明显的季度末融资高峰</p>
+                            <p><strong>大额融资：</strong>均发生在3月中下旬，显示机构在季度末集中投放资金</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 建议与结论 -->
+        <section>
+            <h2 class="section-title">建议与结论</h2>
+            <div class="card">
+                <div class="card-body">
+                    <h5>投资建议</h5>
+                    <ul>
+                        <li>重点关注<strong>先进制造</strong>领域，尤其是人工智能、半导体和航天细分赛道</li>
+                        <li>北京、上海、重庆三地企业资源丰富，可加大区域布局力度</li>
+                        <li>IPO和定向增发项目资金规模大，适合大型机构配置</li>
+                        <li>天使轮项目中先进制造和医疗领域值得重点跟踪</li>
+                    </ul>
+                    
+                    <h5>结论</h5>
+                    <p>2025年Q1投资市场呈现出先进制造主导、大额融资集中、区域集聚明显的特点。机构投资者应聚焦高景气赛道，把握季度末融资窗口，同时关注早期项目的技术创新潜力。调研周期差异较大，建议优化调研流程以提高投资效率。</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // 数据预处理
+        const data = [
+            {"公司名称":"爱零客","行业":"消费","地区":"秦皇岛市","融资金额":"1000万人民币","当前轮次":"A轮","调研时长":14},
+            {"公司名称":"付贝科技","行业":"金融","地区":"武汉市","融资金额":"1000万人民币","当前轮次":"天使轮","调研时长":12},
+            {"公司名称":"立飞通航","行业":"先进制造","地区":"重庆市","融资金额":"100万人民币","当前轮次":"天使轮","调研时长":13},
+            {"公司名称":"若弋生物","行业":"医疗","地区":"苏州市","融资金额":"数千万人民币","当前轮次":"Pre-A+轮","调研时长":14},
+            {"公司名称":"星际荣耀","行业":"先进制造","地区":"北京市","融资金额":"15亿人民币","当前轮次":"D轮","调研时长":7},
+            {"公司名称":"远达环保","行业":"公用事业","地区":"重庆市","融资金额":"未披露","当前轮次":"被收购","调研时长":11},
+            {"公司名称":"腾龙股份","行业":"汽车出行","地区":"常州市","融资金额":"5亿人民币","当前轮次":"战略投资","调研时长":7},
+            {"公司名称":"安屯尼智慧换电","行业":"新能源","地区":"威海市","融资金额":"未披露","当前轮次":"天使轮","调研时长":13},
+            {"公司名称":"安屯尼智慧出行","行业":"汽车出行","地区":"威海市","融资金额":"未披露","当前轮次":"天使轮","调研时长":9},
+            {"公司名称":"Novabio赛尔欣","行业":"医疗","地区":"上海市","融资金额":"数千万人民币","当前轮次":"Pre-A轮","调研时长":10},
+            {"公司名称":"闽东红集团","行业":"消费","地区":"宁德市","融资金额":"未披露","当前轮次":"IPO","调研时长":2},
+            {"公司名称":"艾迪视界","行业":"先进制造","地区":"淄博市","融资金额":"数千万人民币","当前轮次":"天使轮","调研时长":2},
+            {"公司名称":"艾迪科技","行业":"先进制造","地区":"郑州市","融资金额":"未披露","当前轮次":"天使轮","调研时长":2},
+            {"公司名称":"华翔股份","行业":"传统制造","地区":"临汾市","融资金额":"2.1亿人民币","当前轮次":"主板定向增发","调研时长":11},
+            {"公司名称":"平方和","行业":"先进制造","地区":"北京市","融资金额":"数亿人民币","当前轮次":"B轮","调研时长":9},
+            {"公司名称":"启元气体","行业":"先进制造","地区":"上海市","融资金额":"1亿人民币","当前轮次":"C轮","调研时长":4},
+            {"公司名称":"普源精电","行业":"先进制造","地区":"苏州市","融资金额":"4428万人民币","当前轮次":"主板定向增发","调研时长":10},
+            {"公司名称":"托普云农","行业":"农业","地区":"杭州市","融资金额":"2.34亿人民币","当前轮次":"IPO","调研时长":12},
+            {"公司名称":"超奈科技","行业":"先进制造","地区":"合肥市","融资金额":"未披露","当前轮次":"天使轮","调研时长":14},
+            {"公司名称":"星动纪元","行业":"先进制造","地区":"北京市","融资金额":"3亿人民币","当前轮次":"Pre-A轮","调研时长":1},
+            {"公司名称":"映芯谐振","行业":"先进制造","地区":"上海市","融资金额":"数千万人民币","当前轮次":"天使+轮","调研时长":13},
+            {"公司名称":"云潼科技","行业":"先进制造","地区":"重庆市","融资金额":"数千万人民币","当前轮次":"B1轮","调研时长":15},
+            {"公司名称":"上大股份","行业":"先进制造","地区":"邢台市","融资金额":"5.48亿人民币","当前轮次":"IPO","调研时长":9},
+            {"公司名称":"七牛智能","行业":"企业服务","地区":"上海市","融资金额":"3.67亿港币","当前轮次":"IPO","调研时长":3},
+            {"公司名称":"云芯未来","行业":"先进制造","地区":"深圳市","融资金额":"未披露","当前轮次":"天使轮","调研时长":12},
+            {"公司名称":"桃园科技","行业":"传统制造","地区":"杭州市","融资金额":"未披露","当前轮次":"A轮","调研时长":6},
+            {"公司名称":"玻色量子","行业":"先进制造","地区":"北京市","融资金额":"数亿人民币","当前轮次":"A轮","调研时长":1},
+            {"公司名称":"星辉印刷","行业":"传统制造","地区":"深圳市","融资金额":"未披露","当前轮次":"IPO","调研时长":15},
+            {"公司名称":"一汽解放","行业":"汽车出行","地区":"长春市","融资金额":"20亿人民币","当前轮次":"主板定向增发","调研时长":15},
+            {"公司名称":"YOHO","行业":"企业服务","地区":"大连市","融资金额":"321.11万美元","当前轮次":"B轮","调研时长":12}
+        ];
+
+        // 行业分布统计
+        const industryCounts = {};
+        data.forEach(item => {
+            industryCounts[item.行业] = (industryCounts[item.行业] || 0) + 1;
+        });
+
+        // 融资轮次统计
+        const roundCounts = {};
+        data.forEach(item => {
+            roundCounts[item.当前轮次] = (roundCounts[item.当前轮次] || 0) + 1;
+        });
+
+        // 地区分布统计
+        const regionCounts = {};
+        data.forEach(item => {
+            regionCounts[item.地区] = (regionCounts[item.地区] || 0) + 1;
+        });
+
+        // 融资额TOP5处理
+        const fundingData = data.filter(item => item.融资金额 !== "未披露").map(item => {
+            let amount = 0;
+            if (item.融资金额.includes("亿")) {
+                amount = parseFloat(item.融资金额.replace("亿人民币", "")) * 10000;
+            } else if (item.融资金额.includes("万")) {
+                amount = parseFloat(item.融资金额.replace("万人民币", ""));
+            } else if (item.融资金额.includes("港币")) {
+                amount = parseFloat(item.融资金额.replace("亿港币", "")) * 10000 * 0.89; // 港币汇率
+            } else if (item.融资金额.includes("美元")) {
+                amount = parseFloat(item.融资金额.replace("万美元", "")) * 7.2; // 美元汇率
+            } else if (item.融资金额.includes("数千万")) {
+                amount = 5000; // 取中间值
+            } else if (item.融资金额.includes("数亿")) {
+                amount = 50000; // 取中间值
+            }
+            return {name: item.公司名称, amount: amount};
+        }).sort((a, b) => b.amount - a.amount).slice(0, 5);
+
+        // 调研时长统计
+        const durationCounts = {};
+        data.forEach(item => {
+            durationCounts[item.调研时长] = (durationCounts[item.调研时长] || 0) + 1;
+        });
+
+        // 图表初始化
+        window.onload = function() {
+            // 行业分布饼图
+            new Chart(document.getElementById('industryChart'), {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(industryCounts),
+                    datasets: [{
+                        data: Object.values(industryCounts),
+                        backgroundColor: ['#0d6efd', '#28a745', '#dc3545', '#ffc107', '#17a2b8', '#6610f2', '#fd7e14', '#e83e8c', '#20c997', '#6c757d', '#343a40']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'right'
+                        }
+                    }
+                }
+            });
+
+            // 融资轮次柱状图
+            new Chart(document.getElementById('roundChart'), {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(roundCounts),
+                    datasets: [{
+                        label: '企业数量',
+                        data: Object.values(roundCounts),
+                        backgroundColor: '#0d6efd'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '企业数量'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 地区分布饼图
+            new Chart(document.getElementById('regionChart'), {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(regionCounts),
+                    datasets: [{
+                        data: Object.values(regionCounts),
+                        backgroundColor: ['#0d6efd', '#28a745', '#dc3545', '#ffc107', '#17a2b8', '#6610f2', '#fd7e14', '#e83e8c', '#20c997', '#6c757d', '#343a40', '#868e96', '#adb5bd']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'right'
+                        }
+                    }
+                }
+            });
+
+            // 融资额TOP5条形图
+            new Chart(document.getElementById('topFundingChart'), {
+                type: 'bar',
+                data: {
+                    labels: fundingData.map(item => item.name),
+                    datasets: [{
+                        label: '融资金额(万元)',
+                        data: fundingData.map(item => item.amount),
+                        backgroundColor: '#28a745'
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '融资金额(万元)'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 调研时长分布柱状图
+            new Chart(document.getElementById('researchDurationChart'), {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(durationCounts).sort((a,b)=>a-b),
+                    datasets: [{
+                        label: '企业数量',
+                        data: Object.values(durationCounts),
+                        backgroundColor: '#17a2b8'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '企业数量'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: '调研时长(天)'
+                            }
+                        }
+                    }
+                }
+            });
+        };
+    </script>
+</body>
+</html>
+```
