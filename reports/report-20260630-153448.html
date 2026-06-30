@@ -1,0 +1,307 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>煤炭生产与销售经营分析报告</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+        }
+        .card-header {
+            background-color: #fff;
+            border-bottom: 1px solid #eee;
+            font-weight: 600;
+            color: #1e3c72;
+            padding: 1rem 1.5rem;
+        }
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2a5298;
+        }
+        .metric-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        .positive-trend { color: #28a745; }
+        .negative-trend { color: #dc3545; }
+        .section-title {
+            border-left: 5px solid #2a5298;
+            padding-left: 15px;
+            margin-bottom: 20px;
+            font margin-top: 30px;
+        }
+        table {
+            font-size: 0.9rem;
+        }
+        .insight-item {
+            margin-bottom: 15px;
+            padding-left: 20px;
+            position: relative;
+        }
+        .insight-item::before {
+            content: "•";
+            color: #2a5298;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+        .suggestion-item {
+            margin-bottom: 15px;
+            padding-left: 20px;
+            position: relative;
+        }
+        .suggestion-item::before {
+            content: "✓";
+            color: #28a745;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+        .chart-container {
+            position: relative;
+            height: 400px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="container">
+            <h1 class="text-center">煤炭生产与销售经营分析报告</h1>
+            <p class="text-center text-white-50 mt-2">基于吨煤计划与实际偏差数据及业务类型分析</p>
+        </div>
+    </div>
+
+    <div class="container">
+        
+        <!-- Executive Summary -->
+        <section>
+            <h3 class="section-title">执行摘要</h3>
+            <div class="card">
+                <div class="card-body">
+                    <p>本报告基于平朔集团及相关下属单位的煤炭生产与销售数据，对比分析了计划值与实际执行情况。总体来看，尽管煤炭总供应量较计划下降了 <strong>3.69%</strong>，但由于市场行情利好，平均销售价格上涨 <strong>10.38%</strong>，带动整体利润大幅超出计划 <strong>20.12%</strong>。然而，部分矿井（如井工三矿、安家岭风选煤厂）产量严重未达预期，且个别单位（如安太堡矿）出现“量增利跌”的反常现象，需引起管理层高度重视。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Key Metrics -->
+        <section>
+            <h3 class="section-title">关键指标概览 (平朔汇总)</h3>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <div class="metric-label">总供应量偏差率</div>
+                            <div class="metric-value negative-trend">-3.69%</div>
+                            <small>计划: 595万吨 | 实际: 573万吨</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <div class="metric-label">吨煤利润偏差率</div>
+                            <div class="metric-value positive-trend">+20.12%</div>
+                            <small>计划: 195元 | 实际: 234元</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <div class="metric-label">平均销售价格偏差</div>
+                            <div class="metric-value positive-trend">+10.38%</div>
+                            <small>计划: 482元 | 实际: 532元</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <div class="metric-label">吨煤成本偏差率</div>
+                            <div class="metric-value negative-trend">+3.75%</div>
+                            <small>计划: 287元 | 实际: 298元</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Detailed Analysis -->
+        <section>
+            <h3 class="section-title">详细数据分析</h3>
+            
+            <!-- Analysis by Units -->
+            <div class="card">
+                <div class="card-header">各三级单位经营分析</div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>吨煤利润：计划 vs 实际</h5>
+                            <p class="text-muted small">注：安太堡矿实际利润低于计划，井工三矿实际利润大幅超计划。</p>
+                            <div class="chart-container">
+                                <canvas id="profitChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>供应量偏差分析</h5>
+                            <p class="text-muted small">注：安家岭风选与安太堡风选实际产量为0，井工三矿产量减半。</p>
+                            <div class="chart-container">
+                                <canvas id="volumeChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <h5>各单位吨煤成本与销售价格对比</h5>
+                            <div class="chart-container" style="height: 350px;">
+                                <canvas id="costPriceChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analysis by Business Type -->
+            <div class="card">
+                <div class="card-header">业务类型分析 (地销/直达/下水)</div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h5>实际供应量占比</h5>
+                            <div class="chart-container" style="height: 300px;">
+                                <canvas id="typePieChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <h5>各业务类型盈利能力对比</h5>
+                            <div class="chart-container" style="height: 300px;">
+                                <canvas id="typeBarChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Problem Insights -->
+        <section>
+            <h3 class="section-title">问题洞察与原因分析</h3>
+            <div class="card">
+                <div class="card-body">
+                    <p>通过对各单位吨煤成本、利润、供应量及运输费用的计划与实际对比，挖掘出以下关键问题：</p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>生产与供应层面</h5>
+                            <div class="insight-item"><strong>井工三矿产量断崖式下跌：</strong>实际供应量仅为计划的48.7%（偏差率-51.3%），直接导致该矿匡算生产成本和运输成本大幅下降。原因可能是工作面搬迁、地质条件恶化或设备故障。</div>
+                            <div class="insight-item"><strong>风选煤厂全面停产：</strong>安家岭风选煤厂和安太堡风选煤厂实际产量均为0，所有指标偏差率为-100%。这表明风选业务可能已被战略性放弃或因技术经济原因关停。</div>
+                            <div class="insight-item"><strong>安家岭矿产量不足：</strong>实际产量较计划减少25.3%。作为主力矿井之一，如此大的减产幅度虽未影响总利润（因涨价），但反映出生产执行力度的欠缺。</div>
+                            <div class="insight-item"><strong>小回沟煤业超产：</strong>实际产量较计划增加14.7%，且成本下降8.5%，利润大幅提升。这是一个积极的信号，但需核实超产是否在安全许可范围内。</div>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>成本与利润层面</h5>
+                            <div class="insight-item"><strong>安太堡矿“量增利跌”反常现象：</strong>在煤炭价格普涨的背景下，安太堡矿实际平均售价下跌5.9%，导致吨煤利润下降9.6%。这极可能是因为<strong>煤质不符合要求</strong>，导致只能低价销售，或混配了低质煤拉低了均价。</div>
+                            <div class="insight-item"><strong>井工一矿成本失控：</strong>吨煤实际成本较计划上涨6.2%，是所有生产矿井中涨幅最高的。虽然售价上涨覆盖了成本，但成本管控能力明显弱于其他矿井。</div>
+                            <div class="insight-item"><strong>地销业务价格暴涨：</strong>地销平均售价上涨17.6%，远高于下水（9.2%）和直达（2.6%）。这可能与地销主要面向周边急需现货的电厂或化工企业有关，但也提示地销定价策略可能过于保守（计划价定低了）。</div>
+                            <div class="insight-item"><strong>下水运输港杂费节约：</strong>下水业务港杂费实际较计划减少7.3%，显示港口环节的降本增效措施取得了实效。</div>
+                            <div class="insight-item"><strong>直达业务萎缩：</strong>直达业务量减少4%，且利润增长微弱（1.6%）。在铁路运力紧张背景下，直达业务的竞争力似乎在减弱。</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Suggestions -->
+        <section>
+            <h3 class="section-title">建议与结论</h3>
+            <div class="card">
+                <div class="card-body">
+                    <p>基于上述对煤炭量、本、价、利差异的分析，为提升模型优越性及经营效益，提出以下建议：</p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>生产与质量管理</h5>
+                            <div class="suggestion-item"><strong>重点排查安太堡矿煤质问题：</strong>鉴于该矿出现“量增价跌”且利润下滑，需立即开展质量追溯。是否是开采煤层变化导致灰分/硫分超标？建议加强洗选环节，确保煤质符合客户要求，以支撑合理售价。</div>
+                            <div class="suggestion-item"><strong>恢复井工三矿产能：</strong>针对井工三矿巨大的产量缺口，需制定专项追赶计划。若为不可抗力，应在下月度计划中及时调整预期，避免计划偏差过大影响考核准确性。</div>
+                            <div class="suggestion-item"><strong>明确风选业务定位：</strong>既然风选煤厂实际停产，建议在后续计划模型中剔除该部分数据，或正式下达关停指令，避免虚假计划占用资源。</div>
+                            <div class="suggestion-item"><strong>推广小回沟矿经验：</strong>小回沟矿实现了“成本降、利润升、产量增”，应总结其生产组织、成本管控经验，在安家岭、井工一等矿井进行推广。</div>
+                            <div class="suggestion-item"><strong>强化井工一矿成本管控：</strong>深入分析井工一矿成本上涨6.2%的具体动因（材料、人工或电力），针对性制定降本措施。</div>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>销售与策略优化</h5>
+                            <div class="suggestion-item"><strong>优化销售结构，向地销倾斜：</strong>地销业务具有零运输费、零港杂费的优势，且本次涨价幅度最大。在物流允许范围内，建议适当增加地销比例，最大化吨煤利润。</div>
+                            <div class="suggestion-item"><strong>修正定价模型参数：</strong>本次地销、直达、下水的实际售价均大幅高于计划，说明原计划中的价格预测过于保守。建议引入更灵敏的市场价格指数，提高下期售价预测准确度。</div>
+                            <div class="suggestion-item"><strong>关注下水业务港口效率：</strong>下水业务虽港杂费下降，但总运输成本（铁路+港口）依然高昂。需持续优化港口作业流程，进一步压缩滞期费等隐性成本。</div>
+                            <div class="suggestion-item"><strong>建立量本利动态预警机制：</strong>当出现“安太堡”类（量增利跌）或“井工三矿”类（量减半）异常数据时，系统应自动预警，以便管理层快速介入。</div>
+                            <div class="suggestion-item"><strong>细化计划颗粒度：</strong>目前的偏差显示部分单位计划与实际脱节严重。建议将计划分解到月度甚至旬，提高执行监控的频率。</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center py-4 text-muted mt-5 border-top">
+        <small>© 2023 煤炭行业数据分析中心 | 内部经营分析报告</small>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // Data extracted from the provided tables
+        const unitData = {
+            labels: ['东露天矿', '井工一矿', '安家岭矿', '安太堡矿', '茂华下梨园', '井工三矿', '小回沟', '安家岭风选', '安太堡风选'],
+            profitPlan: [226.24, 202.99, 186.06, 189.35, 129.58, 129.39, 188.13, 16.42, 11.19],
+            profitActual: [257.24, 230.86, 231.08, 171.08, 196.24, 211.61, 252.24, 0, 0],
+            volumePlan: [2530000, 660000, 1190000, 690000, 200000, 430000, 100000, 100000, 50000],
+            volumeActual: [2345639, 746080, 889293, 941377, 174551, 209560, 114743, 0, 0],
+            costPlan: [288.31, 311.13, 319.17, 273.42, 197.76, 214.06, 464.40, 171.31, 171.31],
+            costActual: [299.02, 330.45, 326.43, 264.39, 155.20, 182.20, 424.71, 0, 0],
+            pricePlan: [514.54, 514.13, 505.23, 462.77, 327.34, 343.45, 652.53, 187.73, 182.50],
+            priceActual: [556.26, 561.31, 557.51, 435.47, 351.44, 393.81, 676.95, 0, 0]
+        };
+
+        const businessTypeData = {
+            labels: ['地销', '直达', '下水'],
+            volumeActual: [1546215, 204702, 3979687],
+            profitPlan: [151.38, 239.19, 209.53],
+            profitActual: [208.06, 243.05, 244.16],
+            priceActual: [405.21, 537.43, 581.03],
+            costActual: [197.15, 294.38, 336.87]
+        };
+
+        // Chart Default Config
+        Chart.defaults.font.family = "'Segoe UI', 'Helvetica', 'Arial', sans-serif";
+        Chart.defaults.color = '#666';
+
+        // 1. Profit Chart (Plan vs Actual by Unit)
+        const ctxProfit = document.getElementById('profitChart').getContext('2d
