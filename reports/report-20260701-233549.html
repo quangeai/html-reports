@@ -1,0 +1,169 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>肿瘤科手卫生数据可视化</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            margin: 20px;
+            padding: 0;
+        }
+        .chart-container {
+            width: 90%;
+            height: 400px;
+            margin: 30px auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        .summary {
+            width: 90%;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h2 {
+            color: #2c3e50;
+            text-align: center;
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <h2>肿瘤科手卫生数据统计</h2>
+
+    <div class="chart-container" id="scoreBar"></div>
+    <div class="chart-container" id="problemPie"></div>
+
+    <div class="summary">
+        <h3>数据汇总与整改建议</h3>
+        <p><strong>科室平均分：</strong>综合得分平均分14分，患者打分平均分约13.33分，院感打分平均分约13.33分</p>
+        <p><strong>最高分护士：</strong>小白（综合得分15分，患者打分15分，院感打分15分）</p>
+        <p><strong>最低分护士：</strong>小红（院感打分10分）、小黄（患者打分10分）</p>
+        <h4>低分问题整改建议：</h4>
+        <ul>
+            <li><strong>接触患者周边环境后、清洁/无菌操作前、接触患者前未执行手卫生：</strong>加强手卫生五个时刻的专项培训，增加现场监督频次，确保护士严格执行操作规范</li>
+            <li><strong>揉搓时间小于15秒、卫生手消毒步骤不完整：</strong>组织手消毒流程标准化演示，开展现场考核，将手消毒步骤纳入日常质控检查</li>
+            <li><strong>接触患者后、暴露患者体液风险后未采取手卫生措施：</strong>强化感染风险意识培训，制作风险场景提示卡张贴在工作区域</li>
+            <li><strong>多次铺床后未洗手：</strong>制定铺床后必洗手的操作规范，增加护理巡检环节，对违规行为及时纠正</li>
+        </ul>
+    </div>
+
+    <script>
+        // 初始化柱状图
+        var scoreChart = echarts.init(document.getElementById('scoreBar'));
+        var option = {
+            title: {
+                text: '护士手卫生得分对比'
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            legend: {
+                data: ['患者打分', '院感打分', '综合得分'],
+                bottom: 10
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '15%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                data: ['小红', '小黄', '小白', '小明']
+            },
+            yAxis: {
+                type: 'value',
+                min: 0,
+                max: 20
+            },
+            series: [
+                {
+                    name: '患者打分',
+                    type: 'bar',
+                    data: ['无', 10, 15, 15],
+                    label: {
+                        show: true,
+                        position: 'top'
+                    }
+                },
+                {
+                    name: '院感打分',
+                    type: 'bar',
+                    data: [10, 15, 15, '无'],
+                    label: {
+                        show: true,
+                        position: 'top'
+                    }
+                },
+                {
+                    name: '综合得分',
+                    type: 'bar',
+                    data: ['无', 13, 15, '无'],
+                    label: {
+                        show: true,
+                        position: 'top'
+                    }
+                }
+            ]
+        };
+        scoreChart.setOption(option);
+
+        // 初始化饼图
+        var problemChart = echarts.init(document.getElementById('problemPie'));
+        var pieOption = {
+            title: {
+                text: '手卫生低分问题分布'
+            },
+            tooltip: {
+                trigger: 'item'
+            },
+            legend: {
+                orient: 'vertical',
+                left: 'left'
+            },
+            series: [
+                {
+                    name: '问题频次',
+                    type: 'pie',
+                    radius: '50%',
+                    data: [
+                        { value: 1, name: '接触患者周边环境后等未执行' },
+                        { value: 1, name: '揉搓时间不足/步骤不完整' },
+                        { value: 1, name: '接触患者后等未采取措施' },
+                        { value: 1, name: '铺床后未洗手' }
+                    ],
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }
+            ]
+        };
+        problemChart.setOption(pieOption);
+
+        // 适配窗口大小
+        window.onresize = function() {
+            scoreChart.resize();
+            problemChart.resize();
+        };
+    </script>
+</body>
+</html>
+```
