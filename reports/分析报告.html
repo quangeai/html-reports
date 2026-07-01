@@ -1,249 +1,186 @@
-```html
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2023年4月白酒消费数据分析报告</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>白酒行业消费行为分析报告</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
     <style>
-        body { background-color: #f9f6f0; color: #4a3a2a; font-family: "Microsoft YaHei", sans-serif; }
-        .nav-pills .nav-link.active { background-color: #b8860b; }
-        .card { border: none; box-shadow: 0 3px 10px rgba(184,134,11,0.15); }
-        .metric-badge { background: linear-gradient(135deg, #d2b48c, #b8860b); padding: 1rem; border-radius: 12px; color: white; }
-        .chart-container { height: 380px; position: relative; }
-        h2 { border-left: 4px solid #b8860b; padding-left: 12px; margin-bottom: 1.5rem; }
+        body { font-family: 'Microsoft YaHei', sans-serif; background-color: #f8f9fa; }
+        .header { background: linear-gradient(135deg, #8B4513 0%, #D2691E 100%); color: white; padding: 2rem 0; }
+        .section { background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin: 1.5rem 0; padding: 1.5rem; }
+        .metric-card { border-left: 4px solid #8B4513; }
+        .chart-container { position: relative; height: 300px; }
+        .insight { background-color: #fff3e6; border-left: 4px solid #D2691E; padding: 1rem; border-radius: 5px; margin-top: 1rem; }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg bg-white shadow-sm py-3 mb-4">
+    <header class="header text-center">
         <div class="container">
-            <span class="navbar-brand fw-bold fs-4" style="color:#b8860b;">🍶 白酒消费分析</span>
-            <ul class="nav nav-pills ms-auto">
-                <li class="nav-item"><a class="nav-link active" href="#summary">执行摘要</a></li>
-                <li class="nav-item"><a class="nav-link" href="#metrics">关键指标</a></li>
-                <li class="nav-item"><a class="nav-link" href="#detail">详细分析</a></li>
-                <li class="nav-item"><a class="nav-link" href="#trend">趋势分析</a></li>
-                <li class="nav-item"><a class="nav-link" href="#suggest">建议结论</a></li>
-            </ul>
+            <h1 class="fw-bold">白酒行业消费行为分析报告</h1>
+            <p class="lead">数据周期：2023年4月7日-26日</p>
         </div>
-    </nav>
+    </header>
 
-    <div class="container">
+    <main class="container mt-4">
         <!-- 执行摘要 -->
-        <section id="summary" class="mb-5">
-            <h2>执行摘要</h2>
-            <div class="card p-4">
-                <p class="fs-5">本报告分析了2023年4月7日-26日的10类白酒消费数据，总数据30条。核心发现：</p>
-                <ul class="mt-3">
-                    <li>总销售额超39万元，但高度依赖2笔大额订单（占比超69%），业务稳定性存在风险</li>
-                    <li>客单价差异悬殊（69元-36879元），产品分层明显</li>
-                    <li>米香型销量占比最高（26.2%）但销售额仅排第6；酱香型、凤香型虽销量少但贡献核心收入</li>
-                </ul>
-            </div>
+        <section class="section">
+            <h2 class="fw-bold text-dark">执行摘要</h2>
+            <p>本次分析基于29笔白酒消费订单数据，发现：</p>
+            <ul>
+                <li>整体消费呈<strong>两极分化</strong>态势：高端订单（酱香型4.16、凤香型4.20）贡献超64%销售额，大众订单覆盖日常多元需求</li>
+                <li>兼香型、老白干香型、米香型是<strong>销量TOP3</strong>品类，覆盖场景广</li>
+                <li>平均客单价受高端订单拉动达1.5万元/笔，<strong>剔除异常值后约5800元/笔</strong></li>
+            </ul>
         </section>
 
         <!-- 关键指标 -->
-        <section id="metrics" class="mb-5">
-            <h2>关键指标展示</h2>
-            <div class="row g-4">
+        <section class="section">
+            <h2 class="fw-bold text-dark mb-4">关键指标展示</h2>
+            <div class="row g-3">
                 <div class="col-md-3 col-sm-6">
-                    <div class="metric-badge text-center">
-                        <div class="fs-5 mb-1">总销售额</div>
-                        <div class="fw-bold fs-3" id="total-sales"></div>
+                    <div class="card metric-card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title text-muted">总订单数</h5>
+                            <h2 class="card-text fw-bold text-danger">29笔</h2>
+                        </div>
                     </div>
                 </div>
                 <div class="col-md-3 col-sm-6">
-                    <div class="metric-badge text-center">
-                        <div class="fs-5 mb-1">总销量</div>
-                        <div class="fw-bold fs-3" id="total-quantity"></div>
+                    <div class="card metric-card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title text-muted">总销量</h5>
+                            <h2 class="card-text fw-bold text-primary">217瓶</h2>
+                        </div>
                     </div>
                 </div>
                 <div class="col-md-3 col-sm-6">
-                    <div class="metric-badge text-center">
-                        <div class="fs-5 mb-1">单日最高销额</div>
-                        <div class="fw-bold fs-3" id="max-day-sales"></div>
+                    <div class="card metric-card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title text-muted">总销售额</h5>
+                            <h2 class="card-text fw-bold text-success">43.96万元</h2>
+                        </div>
                     </div>
                 </div>
                 <div class="col-md-3 col-sm-6">
-                    <div class="metric-badge text-center">
-                        <div class="fs-5 mb-1">平均客单价</div>
-                        <div class="fw-bold fs-3" id="avg-ticket"></div>
+                    <div class="card metric-card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title text-muted">平均客单价（含异常）</h5>
+                            <h2 class="card-text fw-bold text-warning">1.52万元</h2>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- 详细分析 -->
-        <section id="detail" class="mb-5">
-            <h2>详细数据分析</h2>
-            <div class="row g-4">
+        <!-- 详细数据分析 -->
+        <section class="section">
+            <h2 class="fw-bold text-dark mb-4">品类表现分析</h2>
+            <div class="row g-3">
                 <div class="col-md-6">
-                    <div class="card p-4">
-                        <h5 class="mb-3">各香型销量占比</h5>
-                        <div class="chart-container"><canvas id="quantityPie"></canvas></div>
+                    <div class="chart-container">
+                        <canvas id="salesAmountChart"></canvas>
+                    </div>
+                    <div class="insight">
+                        <strong>洞察：</strong>销售额TOP3为酱香型、凤香型、兼香型，高端品类是核心利润来源，建议在重点节点（如商务宴请、节日前夕）加强高端酒布局
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="card p-4">
-                        <h5 class="mb-3">各香型销售额占比</h5>
-                        <div class="chart-container"><canvas id="salesDoughnut"></canvas></div>
+                    <div class="chart-container">
+                        <canvas id="salesVolumeChart"></canvas>
+                    </div>
+                    <div class="insight">
+                        <strong>洞察：</strong>兼香型、老白干香型、米香型销量领先，属于大众流通款，建议优化渠道库存，保证日常供应稳定
                     </div>
                 </div>
-                <div class="col-12">
-                    <div class="card p-4">
-                        <h5 class="mb-3">各香型销量与客单价对比</h5>
-                        <div class="chart-container"><canvas id="groupBar"></canvas></div>
+                <div class="col-md-12">
+                    <div class="chart-container">
+                        <canvas id="avgPriceChart"></canvas>
+                    </div>
+                    <div class="insight">
+                        <strong>洞察：</strong>清香型（4.19单客）、凤香型（4.20大单）、酱香型（4.16大单）客单价断层领先，需区分大众消费和高端定制化服务体系
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- 趋势分析 -->
-        <section id="trend" class="mb-5">
-            <h2>趋势分析</h2>
-            <div class="card p-4">
-                <h5 class="mb-3">每日销售额变化</h5>
-                <div class="chart-container"><canvas id="salesTrend"></canvas></div>
+        <section class="section">
+            <h2 class="fw-bold text-dark mb-4">趋势分析</h2>
+            <div class="chart-container" style="height: 350px;">
+                <canvas id="timeTrendChart"></canvas>
+            </div>
+            <div class="insight mt-3">
+                <strong>洞察：</strong>4.16酱香型、4.20凤香型的大额订单拉高整体曲线，其余日期以大众消费为主；建议后续收集更长周期数据，验证周末/节日效应
             </div>
         </section>
 
-        <!-- 建议结论 -->
-        <section id="suggest" class="mb-5">
-            <h2>建议与结论</h2>
-            <div class="card p-4">
-                <h6>结论</h6>
-                <p>4月白酒消费呈现“高低两极分化、头部订单拉动”的特征，大众消费型（米香型、老白干）和高端收藏/宴请型（酱香型、凤香型）是主要消费场景。</p>
-                <h6 class="mt-4">建议</h6>
-                <ol>
-                    <li>核实2笔大额订单的真实性与可持续性，建立高端客户维护机制</li>
-                    <li>针对米香型（高销量低单价）开展“组合装促销”“满减升级”提升客单价</li>
-                    <li>分析老白干/特香型低价订单原因，调整低端产品定价或优化促销策略</li>
-                </ol>
+        <!-- 建议和结论 -->
+        <section class="section">
+            <h2 class="fw-bold text-dark mb-4">建议和结论</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <h5 class="fw-bold text-danger">产品策略</h5>
+                    <ul>
+                        <li>构建“双轨制”产品体系：大众款覆盖全渠道，高端款增加定制化包装/服务</li>
+                        <li>补充兼香型产品线的价位带，提升大众款竞争力</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h5 class="fw-bold text-primary">运营策略</h5>
+                    <ul>
+                        <li>重点跟踪大额订单的触发因素（如购买渠道、客户背景）</li>
+                        <li>保证老白干、米香等流通款的库存周转率</li>
+                    </ul>
+                </div>
             </div>
         </section>
-    </div>
+    </main>
+
+    <footer class="text-center py-4 mt-4 bg-light">
+        <p class="text-muted">© 2023 白酒行业数据分析报告 | 数据分析师：员工3</p>
+    </footer>
 
     <script>
-        // 原始数据
-        const rawData = [
-            {date:'2023/4/7',type:'馥郁香型',qty:5,amt:2610,ticket:522},
-            {date:'2023/4/8',type:'米香型',qty:9,amt:3663,ticket:407},
-            {date:'2023/4/9',type:'特香型',qty:6,amt:834,ticket:139},
-            {date:'2023/4/10',type:'特香型',qty:5,amt:1710,ticket:342},
-            {date:'2023/4/11',type:'芝麻香型',qty:10,amt:2870,ticket:287},
-            {date:'2023/4/12',type:'芝麻香型',qty:6,amt:21546,ticket:3591},
-            {date:'2023/4/13',type:'浓香型',qty:12,amt:20532,ticket:1711},
-            {date:'2023/4/14',type:'老白干香型',qty:11,amt:2189,ticket:199},
-            {date:'2023/4/15',type:'兼香型',qty:12,amt:5448,ticket:454},
-            {date:'2023/4/16',type:'米香型',qty:9,amt:639,ticket:71},
-            {date:'2023/4/17',type:'老白干香型',qty:7,amt:2856,ticket:408},
-            {date:'2023/4/18',type:'米香型',qty:10,amt:7570,ticket:757},
-            {date:'2023/4/19',type:'清香型',qty:3,amt:20919,ticket:6973},
-            {date:'2023/4/20',type:'凤香型',qty:10,amt:98280,ticket:9828},
-            {date:'2023/4/21',type:'凤香型',qty:10,amt:3770,ticket:377},
-            {date:'2023/4/22',type:'芝麻香型',qty:5,amt:7275,ticket:1455},
-            {date:'2023/4/23',type:'兼香型',qty:4,amt:17252,ticket:4313},
-            {date:'2023/4/24',type:'兼香型',qty:11,amt:10527,ticket:957},
-            {date:'2023/4/16',type:'酱香型',qty:5,amt:184395,ticket:36879},
-            {date:'2023/4/17',type:'特香型',qty:8,amt:784,ticket:98},
-            {date:'2023/4/18',type:'兼香型',qty:11,amt:3421,ticket:311},
-            {date:'2023/4/19',type:'米香型',qty:6,amt:456,ticket:76},
-            {date:'2023/4/20',type:'米香型',qty:4,amt:768,ticket:192},
-            {date:'2023/4/21',type:'凤香型',qty:5,amt:4440,ticket:888},
-            {date:'2023/4/22',type:'老白干香型',qty:11,amt:759,ticket:69},
-            {date:'2023/4/23',type:'兼香型',qty:7,amt:3549,ticket:507},
-            {date:'2023/4/24',type:'酱香型',qty:8,amt:9792,ticket:1224},
-            {date:'2023/4/25',type:'老白干香型',qty:5,amt:435,ticket:87},
-            {date:'2023/4/26',type:'凤香型',qty:2,amt:290,ticket:145}
-        ];
+        // 数据准备
+        const categories = ['馥郁香型','米香型','特香型','芝麻香型','浓香型','老白干香型','兼香型','清香型','凤香型','酱香型'];
+        const salesVolume = [5,38,19,21,12,34,45,3,27,13]; // 汇总后的销量
+        const salesAmount = [2610,13096,3328,31691,20532,6239,40197,20919,106780,194187]; // 汇总后的销售额
+        const avgPrice = [522,345,175,1509,1711,184,893,6973,3955,14937]; // 汇总后的客单价
+        const dates = ['4.7','4.8','4.9','4.10','4.11','4.12','4.13','4.14','4.15','4.16','4.17','4.18','4.19','4.20','4.21','4.22','4.23','4.24','4.25','4.26'];
+        const dailyAmount = [2610,3663,834,1710,2870,21546,20532,2189,5448,190794,3640,10991,21375,102048,8210,8034,20801,20319,435,290]; // 合并重复日期后的销售额
 
-        // 数据预处理
-        const totalSales = rawData.reduce((sum,d)=>sum+d.amt,0);
-        const totalQty = rawData.reduce((sum,d)=>sum+d.qty,0);
-        const avgTicket = Math.round(totalSales / rawData.length);
+        // 颜色配置
+        const colors = ['#CD853F','#DEB887','#F4A460','#DAA520','#B8860B','#A0522D','#8B4513','#6B4226','#5D4037','#3E2723'];
 
-        // 按日期聚合销额
-        const dateAgg = {};
-        rawData.forEach(d=>{
-            if(!dateAgg[d.date]) dateAgg[d.date] = 0;
-            dateAgg[d.date] += d.amt;
-        });
-        const sortedDates = Object.keys(dateAgg).sort((a,b)=>new Date(a)-new Date(b));
-        const dailySales = sortedDates.map(d=>dateAgg[d]);
-        const maxDaySales = Math.max(...dailySales);
-
-        // 按香型聚合
-        const typeAgg = {};
-        rawData.forEach(d=>{
-            if(!typeAgg[d.type]) typeAgg[d.type] = {qty:0,amt:0,tickets:[]};
-            typeAgg[d.type].qty += d.qty;
-            typeAgg[d.type].amt += d.amt;
-            typeAgg[d.type].tickets.push(d.ticket);
-        });
-        const types = Object.keys(typeAgg);
-        const typeQty = types.map(t=>typeAgg[t].qty);
-        const typeAmt = types.map(t=>typeAgg[t].amt);
-        const typeAvgTicket = types.map(t=>Math.round(typeAgg[t].tickets.reduce((a,b)=>a+b,0)/typeAgg[t].tickets.length));
-
-        // 图表配色
-        const colors = ['#d2691e','#deb887','#cd853f','#8b4513','#a0522d','#d2b48c','#b8860b','#556b2f','#6b8e23','#2e8b57'];
-
-        // 填充关键指标
-        document.getElementById('total-sales').textContent = `¥${(totalSales/10000).toFixed(1)}万`;
-        document.getElementById('total-quantity').textContent = totalQty;
-        document.getElementById('max-day-sales').textContent = `¥${(maxDaySales/10000).toFixed(1)}万`;
-        document.getElementById('avg-ticket').textContent = `¥${avgTicket}`;
-
-        // 1. 销量饼图
-        new Chart(document.getElementById('quantityPie'), {
+        // 品类销售额饼图
+        new Chart(document.getElementById('salesAmountChart'), {
             type: 'pie',
-            data: {labels:types, datasets:[{data:typeQty, backgroundColor:colors, borderWidth:0}]},
-            options: {plugins:{legend:{position:'bottom', labels:{padding:15}}}, responsive:true}
+            data: { labels: categories, datasets: [{ data: salesAmount, backgroundColor: colors, hoverOffset: 10 }] },
+            options: { responsive: true, plugins: { legend: { position: 'bottom' }, title: { display: true, text: '各品类销售额占比' } } }
         });
 
-        // 2. 销额环形图
-        new Chart(document.getElementById('salesDoughnut'), {
-            type: 'doughnut',
-            data: {labels:types, datasets:[{data:typeAmt, backgroundColor:colors, borderWidth:0, cutout:'50%'}]},
-            options: {plugins:{legend:{position:'bottom', labels:{padding:15}}}, responsive:true}
-        });
-
-        // 3. 分组柱状图
-        new Chart(document.getElementById('groupBar'), {
+        // 品类销量柱状图
+        new Chart(document.getElementById('salesVolumeChart'), {
             type: 'bar',
-            data: {
-                labels: types,
-                datasets: [
-                    {label:'销量', data:typeQty, backgroundColor:'#d2b48c', yAxisID:'y'},
-                    {label:'平均客单价(元)', data:typeAvgTicket, backgroundColor:'#b8860b', yAxisID:'y1'}
-                ]
-            },
-            options: {
-                plugins:{legend:{position:'top'}},
-                responsive:true,
-                scales: {
-                    y:{type:'linear', position:'left', title:{display:true, text:'销量'}},
-                    y1:{type:'linear', position:'right', title:{display:true, text:'平均客单价(元)'}, grid:{drawOnChartArea:false}}
-                }
-            }
+            data: { labels: categories, datasets: [{ label: '销量(瓶)', data: salesVolume, backgroundColor: colors }] },
+            options: { responsive: true, plugins: { legend: { display: false }, title: { display: true, text: '各品类销量排名' } }, scales: { y: { beginAtZero: true } } }
         });
 
-        // 4. 趋势折线图
-        new Chart(document.getElementById('salesTrend'), {
+        // 平均客单价折线图
+        new Chart(document.getElementById('avgPriceChart'), {
             type: 'line',
-            data: {
-                labels: sortedDates.map(d=>d.split('/')[2]+'日'),
-                datasets: [{label:'销售额(元)', data:dailySales, borderColor:'#b8860b', backgroundColor:'rgba(184,134,11,0.1)', fill:true, tension:0.3}]
-            },
-            options: {
-                plugins:{legend:{position:'top'}},
-                responsive:true,
-                scales: {y:{title:{display:true, text:'销售额(元)'}}}
-            }
+            data: { labels: categories, datasets: [{ label: '客单价(元)', data: avgPrice, borderColor: '#8B4513', backgroundColor: 'rgba(139,69,19,0.2)', fill: true, tension: 0.4 }] },
+            options: { responsive: true, plugins: { title: { display: true, text: '各品类平均客单价' } }, scales: { y: { beginAtZero: true } } }
+        });
+
+        // 每日销售额趋势图
+        new Chart(document.getElementById('timeTrendChart'), {
+            type: 'line',
+            data: { labels: dates, datasets: [{ label: '每日销售额(元)', data: dailyAmount, borderColor: '#8B4513', backgroundColor: 'rgba(139,69,19,0.2)', fill: true, tension: 0.3 }] },
+            options: { responsive: true, plugins: { title: { display: true, text: '每日销售额波动趋势' } }, scales: { y: { beginAtZero: true } } }
         });
     </script>
 </body>
 </html>
-```
