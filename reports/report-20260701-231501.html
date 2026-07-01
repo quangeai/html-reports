@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>泌尿外科手卫生数据可视化</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            margin: 20px;
+        }
+        .chart-container {
+            width: 90%;
+            height: 400px;
+            margin: 20px auto;
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .summary {
+            width: 90%;
+            margin: 20px auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            line-height: 1.6;
+        }
+        h2 {
+            color: #2c3e50;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h2>泌尿外科手卫生数据统计</h2>
+    <div class="chart-container" id="scoreChart"></div>
+    <div class="chart-container" id="problemChart"></div>
+    <div class="summary">
+        <h3>数据汇总与整改建议</h3>
+        <p><strong>科室平均分：</strong>约13.33分</p>
+        <p><strong>最高分护士：</strong>小红、小妮（15分）</p>
+        <p><strong>最低分护士：</strong>小晓（10分）</p>
+        <h4>低分问题整改建议：</h4>
+        <ul>
+            <li><strong>接触患者周边环境后未执行手卫生（1次）：</strong>加强培训，明确手卫生五大时刻要求，在环境接触后立即执行手卫生；</li>
+            <li><strong>清洁/无菌操作前未执行手卫生（1次）：</strong>制作操作前手卫生提示卡，放置在操作区显眼位置，提醒护士执行；</li>
+            <li><strong>接触患者前未执行手卫生（1次）：</strong>每日晨交班强调手卫生首接触原则，督导人员随机抽查；</li>
+            <li><strong>揉搓时间小于15秒（1次）：</strong>采用计时手环或播放15秒提示音，帮助护士掌握揉搓时长；</li>
+            <li><strong>卫生手消毒步骤不完整（1次）：</strong>组织现场演练，规范七步洗手法/消毒步骤，考核合格后方可上岗；</li>
+            <li><strong>接触患者后未执行手卫生（1次）：</strong>在患者床头张贴手卫生标识，提醒护士接触后及时洗手；</li>
+            <li><strong>暴露患者体液风险后未执行手卫生（1次）：</strong>制定应急预案，明确体液暴露后的手卫生流程，加强应急培训。</li>
+        </ul>
+    </div>
+    <script>
+        // 初始化得分柱状图
+        var scoreChart = echarts.init(document.getElementById('scoreChart'));
+        var scoreOption = {
+            title: { text: '护士手卫生得分排名', left: 'center' },
+            xAxis: { type: 'category', data: ['小晓', '小红', '小妮'] },
+            yAxis: { type: 'value', name: '得分', min: 0, max: 20 },
+            series: [{
+                name: '手卫生得分',
+                type: 'bar',
+                data: [10, 15, 15],
+                itemStyle: { color: '#5ab1ef' }
+            }],
+            tooltip: { trigger: 'axis' }
+        };
+        scoreChart.setOption(scoreOption);
+
+        // 初始化问题分布饼图
+        var problemChart = echarts.init(document.getElementById('problemChart'));
+        var problemOption = {
+            title: { text: '手卫生未执行问题分布', left: 'center' },
+            tooltip: { trigger: 'item' },
+            series: [{
+                name: '问题频次',
+                type: 'pie',
+                radius: ['40%', '70%'],
+                data: [
+                    { value: 1, name: '接触患者周边环境后未执行' },
+                    { value: 1, name: '清洁/无菌操作前未执行' },
+                    { value: 1, name: '接触患者前未执行' },
+                    { value: 1, name: '揉搓时间小于15秒' },
+                    { value: 1, name: '卫生手消毒步骤不完整' },
+                    { value: 1, name: '接触患者后未执行' },
+                    { value: 1, name: '暴露患者体液风险后未执行' }
+                ],
+                itemStyle: {
+                    borderRadius: 5,
+                    borderColor: '#fff',
+                    borderWidth: 2
+                }
+            }]
+        };
+        problemChart.setOption(problemOption);
+
+        // 适配窗口大小
+        window.addEventListener('resize', function() {
+            scoreChart.resize();
+            problemChart.resize();
+        });
+    </script>
+</body>
+</html>
