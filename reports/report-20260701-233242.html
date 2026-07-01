@@ -1,0 +1,138 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>肿瘤科手卫生数据可视化</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f7fa;
+            margin: 20px;
+            padding: 0;
+        }
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            margin: 20px 0;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 10px;
+        }
+        .summary {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-top: 20px;
+        }
+        h2 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h2>肿瘤科手卫生数据统计</h2>
+
+    <!-- 护士得分对比柱状图 -->
+    <div class="chart-container" id="scoreBarChart"></div>
+
+    <!-- 低分问题分布饼图 -->
+    <div class="chart-container" id="problemPieChart"></div>
+
+    <div class="summary">
+        <h3>数据汇总与整改建议</h3>
+        <p><strong>科室平均分：</strong>院感打分平均分13.33分，患者打分平均分15分</p>
+        <p><strong>最高分护士：</strong>小黄（院感15分）、小白（院感15分、患者15分）、小明（患者15分）</p>
+        <p><strong>最低分护士：</strong>小红（院感10分）</p>
+        <h4>低分问题整改建议：</h4>
+        <ul>
+            <li><strong>接触患者周边环境后、清洁/无菌操作前、接触患者前未执行手卫生：</strong>加强手卫生五个时刻的培训，制作时刻提醒卡张贴在病房显眼位置，每班抽查执行情况。</li>
+            <li><strong>揉搓时间小于15秒、卫生手消毒步骤不完整：</strong>组织现场演示正确的手消毒步骤，配备计时提醒标识，确保员工掌握标准时长。</li>
+            <li><strong>接触患者后、暴露患者体液风险后未采取措施：</strong>针对高风险操作环节开展专项培训，明确暴露后应急处理流程，增加监督频次。</li>
+            <li><strong>多次铺床后未洗手：</strong>在铺床区域设置洗手提示牌，将铺床后洗手纳入护理操作规范考核内容。</li>
+        </ul>
+    </div>
+
+    <script>
+        // 初始化柱状图
+        var barChart = echarts.init(document.getElementById('scoreBarChart'));
+        // 数据整理
+        var nurseNames = ['小红', '小黄', '小白', '小明'];
+        var patientScores = ['无', '无', 15, 15];
+        var infectionScores = [10, 15, 15, '无'];
+        var compositeScores = ['无', '无', 15*0.4 + 15*0.6, '无'];
+
+        var barOption = {
+            title: { text: '护士手卫生得分对比', left: 'center' },
+            tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+            legend: { data: ['患者打分', '院感打分', '综合得分'], bottom: 10 },
+            grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true },
+            xAxis: { type: 'category', data: nurseNames },
+            yAxis: { type: 'value', name: '分数' },
+            series: [
+                {
+                    name: '患者打分',
+                    type: 'bar',
+                    data: patientScores.map(s => s === '无' ? null : s),
+                    label: { show: true, position: 'top' }
+                },
+                {
+                    name: '院感打分',
+                    type: 'bar',
+                    data: infectionScores.map(s => s === '无' ? null : s),
+                    label: { show: true, position: 'top' }
+                },
+                {
+                    name: '综合得分',
+                    type: 'bar',
+                    data: compositeScores.map(s => s === '无' ? null : s),
+                    label: { show: true, position: 'top' }
+                }
+            ]
+        };
+        barChart.setOption(barOption);
+
+        // 初始化饼图
+        var pieChart = echarts.init(document.getElementById('problemPieChart'));
+        var problemData = [
+            { value: 1, name: '接触患者周边环境后、清洁/无菌操作前、接触患者前未执行' },
+            { value: 1, name: '揉搓时间小于15秒; 卫生手消毒步骤不完整' },
+            { value: 1, name: '接触患者后、暴露患者体液风险后未采取措施' },
+            { value: 1, name: '多次铺床后未洗手' }
+        ];
+
+        var pieOption = {
+            title: { text: '低分问题分布占比', left: 'center' },
+            tooltip: { trigger: 'item' },
+            legend: { orient: 'vertical', left: 'left' },
+            series: [
+                {
+                    name: '问题频次',
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    avoidLabelOverlap: false,
+                    itemStyle: { borderRadius: 10, borderColor: '#fff', borderWidth: 2 },
+                    label: { show: false, position: 'center' },
+                    emphasis: { label: { show: true, fontSize: 16, fontWeight: 'bold' } },
+                    labelLine: { show: false },
+                    data: problemData
+                }
+            ]
+        };
+        pieChart.setOption(pieOption);
+
+        // 适配窗口大小变化
+        window.addEventListener('resize', function() {
+            barChart.resize();
+            pieChart.resize();
+        });
+    </script>
+</body>
+</html>
+```
