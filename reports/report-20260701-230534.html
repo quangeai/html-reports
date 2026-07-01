@@ -1,0 +1,164 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>肿瘤科手卫生数据可视化</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f8fa;
+        }
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            margin: 20px 0;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .summary {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+        h2, h3, h4 {
+            color: #2c3e50;
+        }
+        ul {
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="chart-container" id="scoreBar"></div>
+    <div class="chart-container" id="problemPie"></div>
+    <div class="summary" id="summary"></div>
+
+    <script>
+        // 合并后的护士手卫生得分数据
+        const nurseData = [
+            { name: '小红', patientScore: 10, infectionScore: '无', comprehensiveScore: '无' },
+            { name: '小黄', patientScore: 15, infectionScore: '无', comprehensiveScore: '无' },
+            { name: '小白', patientScore: 15, infectionScore: 15, comprehensiveScore: 15 },
+            { name: '小明', patientScore: '无', infectionScore: 15, comprehensiveScore: '无' }
+        ];
+
+        // 低分问题统计数据
+        const problemData = [
+            { name: '接触患者周边环境后未执行', value: 1 },
+            { name: '清洁/无菌操作前未执行', value: 1 },
+            { name: '接触患者前未执行', value: 1 },
+            { name: '揉搓时间小于15秒', value: 1 },
+            { name: '卫生手消毒步骤不完整', value: 1 },
+            { name: '接触患者后未执行', value: 1 },
+            { name: '暴露患者体液风险后未采取措施', value: 1 },
+            { name: '多次铺床后未洗手', value: 1 }
+        ];
+
+        // 整改建议映射
+        const suggestions = {
+            '接触患者周边环境后未执行': '加强护士对接触患者周边环境后手卫生要求的培训，明确操作规范',
+            '清洁/无菌操作前未执行': '在清洁/无菌操作区域张贴醒目的手卫生提示标识，提醒护士执行',
+            '接触患者前未执行': '开展情景模拟演练，强化护士接触患者前的手卫生意识',
+            '揉搓时间小于15秒': '培训正确的手揉搓方法，配备计时工具，确保揉搓时长达标',
+            '卫生手消毒步骤不完整': '制作手消毒步骤流程图，定期考核护士操作规范性',
+            '接触患者后未执行': '在病房门口设置手消毒站，方便护士接触患者后及时消毒',
+            '暴露患者体液风险后未采取措施': '组织职业防护专项培训，明确暴露风险后的手卫生及防护流程',
+            '多次铺床后未洗手': '在铺床区域附近设置洗手设施，提醒护士铺床后及时洗手'
+        };
+
+        // 计算汇总统计数据
+        const validComprehensiveScores = nurseData.filter(n => n.comprehensiveScore !== '无').map(n => n.comprehensiveScore);
+        const avgComprehensiveScore = validComprehensiveScores.length ? (validComprehensiveScores.reduce((a,b) => a+b, 0)/validComprehensiveScores.length).toFixed(2) : '无';
+
+        const patientScores = nurseData.filter(n => n.patientScore !== '无').map(n => ({name: n.name, score: n.patientScore}));
+        const maxPatient = patientScores.length ? patientScores.reduce((max, curr) => curr.score > max.score ? curr : max, patientScores[0]) : {name: '无', score: '无'};
+        const minPatient = patientScores.length ? patientScores.reduce((min, curr) => curr.score < min.score ? curr : min, patientScores[0]) : {name: '无', score: '无'};
+
+        const infectionScores = nurseData.filter(n => n.infectionScore !== '无').map(n => ({name: n.name, score: n.infectionScore}));
+        const maxInfection = infectionScores.length ? infectionScores.reduce((max, curr) => curr.score > max.score ? curr : max, infectionScores[0]) : {name: '无', score: '无'};
+        const minInfection = infectionScores.length ? infectionScores.reduce((min, curr) => curr.score < min.score ? curr : min, infectionScores[0]) : {name: '无', score: '无'};
+
+        // 初始化得分对比柱状图
+        const scoreChart = echarts.init(document.getElementById('scoreBar'));
+        const scoreOption = {
+            title: { text: '肿瘤科护士手卫生得分对比' },
+            tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+            legend: { data: ['患者打分', '院感打分', '综合得分'], bottom: 10 },
+            grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true },
+            xAxis: { type: 'category', data: nurseData.map(n => n.name) },
+            yAxis: { type: 'value', min: 0, max: 20, axisLabel: { formatter: '{value}分' } },
+            series: [
+                {
+                    name: '患者打分',
+                    type: 'bar',
+                    data: nurseData.map(n => n.patientScore === '无' ? null : n.patientScore),
+                    label: { show: true, position: 'top' },
+                    itemStyle: { color: '#5470c6' }
+                },
+                {
+                    name: '院感打分',
+                    type: 'bar',
+                    data: nurseData.map(n => n.infectionScore === '无' ? null : n.infectionScore),
+                    label: { show: true, position: 'top' },
+                    itemStyle: { color: '#91cc75' }
+                },
+                {
+                    name: '综合得分',
+                    type: 'bar',
+                    data: nurseData.map(n => n.comprehensiveScore === '无' ? null : n.comprehensiveScore),
+                    label: { show: true, position: 'top' },
+                    itemStyle: { color: '#fac858' }
+                }
+            ]
+        };
+        scoreChart.setOption(scoreOption);
+
+        // 初始化问题分布饼图
+        const problemChart = echarts.init(document.getElementById('problemPie'));
+        const problemOption = {
+            title: { text: '肿瘤科手卫生低分问题分布' },
+            tooltip: { trigger: 'item', formatter: '{b}: {c} 次 ({d}%)' },
+            legend: { orient: 'vertical', left: 'left', bottom: 10 },
+            series: [
+                {
+                    name: '问题频次',
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    avoidLabelOverlap: false,
+                    itemStyle: { borderRadius: 10, borderColor: '#fff', borderWidth: 2 },
+                    label: { show: true, formatter: '{b}: {d}%' },
+                    data: problemData
+                }
+            ]
+        };
+        problemChart.setOption(problemOption);
+
+        // 窗口自适应
+        window.addEventListener('resize', () => {
+            scoreChart.resize();
+            problemChart.resize();
+        });
+
+        // 生成汇总内容
+        let summaryHtml = `<h3>肿瘤科手卫生数据汇总</h3>`;
+        summaryHtml += `<p>科室综合得分平均分：${avgComprehensiveScore}分</p>`;
+        summaryHtml += `<p>患者打分最高分：${maxPatient.name}（${maxPatient.score}分），最低分：${minPatient.name}（${minPatient.score}分）</p>`;
+        summaryHtml += `<p>院感打分最高分：${maxInfection.name}（${maxInfection.score}分），最低分：${minInfection.name}（${minInfection.score}分）</p>`;
+        summaryHtml += `<h4>低分问题整改建议</h4><ul>`;
+        problemData.forEach(problem => {
+            summaryHtml += `<li>${problem.name}（频次：${problem.value}次）：${suggestions[problem.name]}</li>`;
+        });
+        summaryHtml += `</ul>`;
+        document.getElementById('summary').innerHTML = summaryHtml;
+    </script>
+</body>
+</html>
+```
