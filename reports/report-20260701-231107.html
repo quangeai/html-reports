@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>妇产科手卫生数据可视化</title>
+    <!-- 引入ECharts官方在线CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        body {
+            font-family: "Microsoft Yahei", sans-serif;
+            margin: 20px;
+            background-color: #f5f8fa;
+            color: #333;
+        }
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            margin: 20px 0;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 10px;
+        }
+        .summary {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #2c6e49;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .summary h3 {
+            color: #2c6e49;
+            margin-top: 0;
+        }
+        .suggestions {
+            margin-top: 15px;
+        }
+        .suggestions p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <h2>妇产科手卫生数据统计</h2>
+    <div class="chart-container" id="barChart"></div>
+    <div class="chart-container" id="pieChart"></div>
+    <div class="summary">
+        <h3>数据汇总与整改建议</h3>
+        <p><strong>科室平均分：</strong>综合分平均分10.4，院感得分平均分11.67</p>
+        <p><strong>最高分护士：</strong>小张（院感得分15）</p>
+        <p><strong>最低分护士：</strong>小猪（院感得分10）</p>
+        <div class="suggestions">
+            <h4>整改建议：</h4>
+            <p>1. 针对「暴露患者体液风险后」「接触患者后」高频问题，强化对应时刻手卫生规范培训，增加现场监督频次。</p>
+            <p>2. 针对「打针后不洗手」问题，在治疗区域张贴醒目标语，操作后安排同伴提醒机制。</p>
+            <p>3. 对「卫生手消毒不规范」的护士开展一对一操作指导，确保消毒流程符合院感标准。</p>
+            <p>4. 定期组织手卫生知识考核与情景模拟演练，提升全员手卫生意识。</p>
+        </div>
+    </div>
+    <script>
+        // 初始化护士得分排名柱状图
+        var barChart = echarts.init(document.getElementById('barChart'));
+        var barOption = {
+            title: {
+                text: '护士手卫生得分排名',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            legend: {
+                data: ['综合得分', '患者得分', '院感得分'],
+                bottom: 10
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '15%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                data: ['小蓝', '小猪', '小张']
+            },
+            yAxis: {
+                type: 'value',
+                name: '得分'
+            },
+            series: [
+                {
+                    name: '综合得分',
+                    type: 'bar',
+                    data: [10.4, 0, 0],
+                    itemStyle: {
+                        color: '#2c6e49'
+                    }
+                },
+                {
+                    name: '患者得分',
+                    type: 'bar',
+                    data: [11, 0, 0],
+                    itemStyle: {
+                        color: '#52b788'
+                    }
+                },
+                {
+                    name: '院感得分',
+                    type: 'bar',
+                    data: [10, 10, 15],
+                    itemStyle: {
+                        color: '#74c69d'
+                    }
+                }
+            ]
+        };
+        barChart.setOption(barOption);
+
+        // 初始化手卫生问题分布饼图
+        var pieChart = echarts.init(document.getElementById('pieChart'));
+        var pieOption = {
+            title: {
+                text: '手卫生问题分布',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'item'
+            },
+            legend: {
+                orient: 'vertical',
+                left: 'left'
+            },
+            series: [
+                {
+                    name: '问题频次',
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    avoidLabelOverlap: false,
+                    itemStyle: {
+                        borderRadius: 10,
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    },
+                    label: {
+                        show: false,
+                        position: 'center'
+                    },
+                    emphasis: {
+                        label: {
+                            show: true,
+                            fontSize: 16,
+                            fontWeight: 'bold'
+                        }
+                    },
+                    labelLine: {
+                        show: false
+                    },
+                    data: [
+                        { value: 2, name: '暴露患者体液风险后' },
+                        { value: 2, name: '接触患者后' },
+                        { value: 1, name: '接触患者周边环境后' },
+                        { value: 1, name: '清洁/无菌操作前' },
+                        { value: 1, name: '接触患者前' },
+                        { value: 1, name: '卫生手消毒不规范' },
+                        { value: 1, name: '未采取措施' },
+                        { value: 1, name: '打针后不洗手' }
+                    ]
+                }
+            ]
+        };
+        pieChart.setOption(pieOption);
+
+        // 响应式适配窗口大小变化
+        window.addEventListener('resize', function() {
+            barChart.resize();
+            pieChart.resize();
+        });
+    </script>
+</body>
+</html>
