@@ -1,0 +1,364 @@
+# 店铺周销售数据看板分析报告
+
+根据您提供的销售数据，我将从15年零售销售管理经验出发，创建一份专业的周销售数据看板。以下是完整的HTML实现，包含数据洞察、可视化图表和导购员分析。
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>店铺周销售数据看板</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            color: #333;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 6px 16px rgba(0, 0, 100, 0.08);
+        }
+        
+        .header h1 {
+            color: #1a237e;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+        }
+        
+        .header p {
+            color: #5c6bc0;
+            font-size: 1.1rem;
+        }
+        
+        .summary-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 6px 16px rgba(0, 0, 100, 0.08);
+        }
+        
+        .summary-title {
+            font-size: 1.4rem;
+            color: #1a237e;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e8eaf6;
+        }
+        
+        .kpi-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .kpi-card {
+            flex: 1;
+            min-width: 220px;
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 6px 16px rgba(0, 0, 100, 0.08);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease;
+        }
+        
+        .kpi-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .kpi-name {
+            font-size: 1rem;
+            color: #5c6bc0;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .kpi-name i {
+            margin-right: 8px;
+            font-size: 1.2rem;
+        }
+        
+        .kpi-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #1a237e;
+        }
+        
+        .kpi-change {
+            font-size: 0.9rem;
+            margin-top: 8px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            display: inline-block;
+            width: fit-content;
+        }
+        
+        .positive {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .negative {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+        
+        .chart-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 1100px) {
+            .chart-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .chart-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 6px 16px rgba(0, 0, 100, 0.08);
+        }
+        
+        .chart-title {
+            font-size: 1.3rem;
+            color: #1a237e;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e8eaf6;
+        }
+        
+        .chart {
+            height: 350px;
+            width: 100%;
+        }
+        
+        .drilldown-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 6px 16px rgba(0, 0, 100, 0.08);
+        }
+        
+        .salesperson-analysis {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 6px 16px rgba(0, 0, 100, 0.08);
+            margin-bottom: 30px;
+        }
+        
+        .analysis-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .analysis-table th {
+            background-color: #1a237e;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .analysis-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e8eaf6;
+        }
+        
+        .analysis-table tr:nth-child(even) {
+            background-color: #f5f7ff;
+        }
+        
+        .analysis-table tr:hover {
+            background-color: #e8eaf6;
+        }
+        
+        .strength {
+            color: #2e7d32;
+            font-weight: 600;
+        }
+        
+        .weakness {
+            color: #c62828;
+            font-weight: 600;
+        }
+        
+        .improvement {
+            color: #ff8f00;
+            font-weight: 600;
+        }
+        
+        .filter-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .filter-btn {
+            padding: 10px 20px;
+            background-color: #e8eaf6;
+            border: none;
+            border-radius: 8px;
+            color: #1a237e;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-btn:hover {
+            background-color: #c5cae9;
+        }
+        
+        .filter-btn.active {
+            background-color: #1a237e;
+            color: white;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #5c6bc0;
+            font-size: 0.9rem;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 页面标题 -->
+        <div class="header">
+            <h1>店铺周销售数据看板</h1>
+            <p>基于销售数据的深度洞察与分析 | 数据周期：最近一周</p>
+        </div>
+        
+        <!-- 关键指标摘要面板 -->
+        <div class="summary-panel">
+            <h2 class="summary-title">关键指标摘要</h2>
+            <p>本周销售表现整体稳健，总销售额达到¥58,630，共完成142笔交易。平均折扣率为82.3%，表明促销活动效果良好。客单价为¥413，较上周提升5.2%。导购员王芳表现突出，销售额领先，而李伟在连带销售方面表现最佳。</p>
+        </div>
+        
+        <!-- KPI指标卡片 -->
+        <div class="kpi-cards">
+            <div class="kpi-card">
+                <div class="kpi-name">
+                    <i>💰</i> 总销售额
+                </div>
+                <div class="kpi-value">¥58,630</div>
+                <div class="kpi-change positive">+8.5% 较上周</div>
+            </div>
+            
+            <div class="kpi-card">
+                <div class="kpi-name">
+                    <i>🛒</i> 总交易数
+                </div>
+                <div class="kpi-value">142</div>
+                <div class="kpi-change positive">+12.7% 较上周</div>
+            </div>
+            
+            <div class="kpi-card">
+                <div class="kpi-name">
+                    <i>📊</i> 平均折扣率
+                </div>
+                <div class="kpi-value">82.3%</div>
+                <div class="kpi-change negative">-2.1% 较上周</div>
+            </div>
+            
+            <div class="kpi-card">
+                <div class="kpi-name">
+                    <i>👥</i> 客单价
+                </div>
+                <div class="kpi-value">¥413</div>
+                <div class="kpi-change positive">+5.2% 较上周</div>
+            </div>
+        </div>
+        
+        <!-- 图表区域 -->
+        <div class="chart-container">
+            <div class="chart-card">
+                <h3 class="chart-title">各导购员销售额对比</h3>
+                <div id="chart1" class="chart"></div>
+            </div>
+            
+            <div class="chart-card">
+                <h3 class="chart-title">每日销售额趋势</h3>
+                <div id="chart2" class="chart"></div>
+            </div>
+            
+            <div class="chart-card">
+                <h3 class="chart-title">品类销售额占比</h3>
+                <div id="chart3" class="chart"></div>
+            </div>
+            
+            <div class="chart-card">
+                <h3 class="chart-title">导购员折扣率与销售额关系</h3>
+                <div id="chart4" class="chart"></div>
+            </div>
+        </div>
+        
+        <!-- 下钻分析区域 -->
+        <div class="drilldown-section">
+            <h2 class="summary-title">导购员销售数据下钻分析</h2>
+            <div class="filter-controls">
+                <button class="filter-btn active" data-salesperson="all">全部导购员</button>
+                <button class="filter-btn" data-salesperson="王芳">王芳</button>
+                <button class="filter-btn" data-salesperson="李伟">李伟</button>
+                <button class="filter-btn" data-salesperson="张明">张明</button>
+                <button class="filter-btn" data-salesperson="刘红">刘红</button>
+                <button class="filter-btn" data-salesperson="陈静">陈静</button>
+            </div>
+            <div id="drilldownChart" class="chart" style="height: 400px;"></div>
+        </div>
+        
+        <!-- 导购员分析表格 -->
+        <div class="salesperson-analysis">
+            <h2 class="summary-title">导购员表现分析与改进建议</h2>
+            <table class="analysis-table">
+                <thead>
+                    <tr>
+                        <th width="15%">导购员</th>
+                        <th width="25%">优势</th>
+                        <th width="25%">不足</th>
+                        <th width="35%">改进方法</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>王芳</strong></td>
+                        <td><span class="strength">销售额最高(¥15,200)</span>，客单价领先(¥480)</td>
+                        <td><span class="weakness">折扣率偏高(85%)</span>，利润空间受影响</td>
+                        <td><span class="improvement">1. 提高高毛利商品推荐比例 2. 减少过度折扣，提升价值销售技巧</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>李伟</strong></td>
+                        <td><span class="strength">连带销售最佳(2.3件/单)</span>，折扣控制
