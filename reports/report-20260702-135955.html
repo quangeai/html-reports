@@ -1,0 +1,359 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>内部异常类型分析报告</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background-color: #f8f9fa;
+            color: #343a40;
+        }
+        .report-header {
+            background-color: #0d6efd;
+            color: white;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-radius: 8px;
+        }
+        .metric-card {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        .metric-card:hover {
+            transform: translateY(-5px);
+        }
+        .chart-container {
+            height: 400px;
+            margin-bottom: 2rem;
+        }
+        .section-title {
+            color: #0d6efd;
+            border-bottom: 2px solid #0d6efd;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid px-4">
+        <!-- 报告头部 -->
+        <div class="report-header">
+            <h1 class="display-5">内部异常类型分析报告</h1>
+            <p class="lead">报告周期：2025.5 VS 2026.5 | 生成时间：2026-07-02</p>
+        </div>
+
+        <!-- 执行摘要 -->
+        <section class="mb-5">
+            <h2 class="section-title">执行摘要</h2>
+            <div class="card p-4">
+                <p>本报告分析了2025年5月至2026年5月的内部异常类型数据，核心发现如下：</p>
+                <ul>
+                    <li>总异常量从329件增长至652件，同比增长98.2%，整体异常规模翻倍</li>
+                    <li>异常结构发生显著变化：「薛通知取消重下的」占比从50.2%飙升至86.3%，成为绝对主导异常类型</li>
+                    <li>「一直未扫描」异常得到极大改善，占比从28.0%降至0.8%，同比下降97.3%</li>
+                    <li>多个传统异常类型（如扫不进无法流转、总检确认个性）占比均出现大幅下降</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 关键指标 -->
+        <section class="mb-5">
+            <h2 class="section-title">关键指标概览</h2>
+            <div class="row g-4">
+                <div class="col-md-3">
+                    <div class="card metric-card p-4 text-center">
+                        <h5 class="card-title text-primary">2025.5总异常数</h5>
+                        <p class="display-4">329</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card metric-card p-4 text-center">
+                        <h5 class="card-title text-success">2026.5总异常数</h5>
+                        <p class="display-4">652</p>
+                        <small class="text-success">+98.2%</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card metric-card p-4 text-center">
+                        <h5 class="card-title text-warning">Top1异常占比</h5>
+                        <p class="display-4">86.3%</p>
+                        <small class="text-warning">+72.2%</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card metric-card p-4 text-center">
+                        <h5 class="card-title text-info">最大改善异常</h5>
+                        <p class="display-4">-97.3%</p>
+                        <small>「一直未扫描」占比变化</small>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 详细数据分析 -->
+        <section class="mb-5">
+            <h2 class="section-title">详细数据分析</h2>
+
+            <!-- 异常类型数量对比柱状图 -->
+            <div class="card p-4 mb-4">
+                <h3 class="card-title mb-3">各异常类型数量对比</h3>
+                <div class="chart-container">
+                    <canvas id="quantityChart"></canvas>
+                </div>
+            </div>
+
+            <!-- 异常类型占比饼图 -->
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="card p-4">
+                        <h3 class="card-title mb-3">2025.5异常类型占比</h3>
+                        <div class="chart-container">
+                            <canvas id="pieChart2025"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card p-4">
+                        <h3 class="card-title mb-3">2026.5异常类型占比</h3>
+                        <div class="chart-container">
+                            <canvas id="pieChart2026"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 异常类型变化率柱状图 -->
+            <div class="card p-4 mt-4">
+                <h3 class="card-title mb-3">异常类型占比变化率</h3>
+                <div class="chart-container">
+                    <canvas id="changeRateChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- 趋势分析 -->
+        <section class="mb-5">
+            <h2 class="section-title">趋势与异常点分析</h2>
+            <div class="card p-4">
+                <h3 class="card-title mb-3">核心趋势解读</h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>异常规模增长</h4>
+                        <p>总异常量翻倍，说明业务规模扩大或流程管控压力增加，需结合业务实际情况分析根源</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h4>异常结构集中化</h4>
+                        <p>「薛通知取消重下的」异常占比急剧上升，成为绝对主导，需重点关注该类型的触发原因（如订单变更流程、系统交互问题等）</p>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <h4>流程优化成效显著</h4>
+                        <p>「一直未扫描」异常占比下降97.3%，说明针对该类型的流程优化（如扫描提醒机制、超时预警）取得了极大成功，应固化相关经验</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h4>次要异常波动</h4>
+                        <p>「无法加工」异常占比小幅上升（+26.2%），需排查是否为原材料质量、设备稳定性或工艺标准变化导致；「重复单」「发货夹坏」占比基本稳定</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 建议与结论 -->
+        <section class="mb-5">
+            <h2 class="section-title">建议与结论</h2>
+            <div class="card p-4">
+                <h3 class="card-title mb-3">行动建议</h3>
+                <ol>
+                    <li><strong>重点攻坚核心异常</strong>：组织专项小组分析「薛通知取消重下的」异常的触发场景，优化订单变更流程或系统功能，降低该类型异常占比</li>
+                    <li><strong>巩固优化成果</strong>：保持「一直未扫描」异常的管控措施，定期复盘确保成效持续</li>
+                    <li><strong>监控次要异常</strong>：对「无法加工」异常进行跟进排查，明确上升原因并制定针对性解决方案</li>
+                    <li><strong>建立异常预警机制</strong>：针对总异常量增长趋势，设置异常阈值预警，提前介入管控</li>
+                </ol>
+                <h3 class="card-title mt-4">结论</h3>
+                <p>过去一年内部异常规模显著增长，但异常结构发生积极变化：高占比的传统异常得到有效控制，新的核心异常凸显。需聚焦核心异常根源，巩固已有优化成果，同时建立长效管控机制，平衡业务增长与异常控制的关系。</p>
+            </div>
+        </section>
+    </div>
+
+    <!-- JavaScript 代码 -->
+    <script>
+        // 数据准备
+        const labels = [
+            "薛通知取消重下的", "扫不进无法流转", "重复单", 
+            "无法加工", "一直未扫描", "总检确认个性", 
+            "发货夹坏", "镜片底色不一致", "漏扫"
+        ];
+
+        const data2025Quantity = [165, 45, 8, 4, 92, 10, 2, 1, 2];
+        const data2026Quantity = [563, 47, 16, 10, 5, 6, 4, 1, 0];
+        const data2025Percentage = [50.2, 13.7, 2.4, 1.2, 28.0, 3.0, 0.6, 0.3, 0.6];
+        const data2026Percentage = [86.3, 7.2, 2.5, 1.5, 0.8, 0.9, 0.6, 0.2, 0];
+        const changeRate = [72.2, -47.3, 0.9, 26.2, -97.3, -69.7, 0.9, -49.5, null];
+
+        // 数量对比柱状图
+        new Chart(document.getElementById('quantityChart'), {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: '2025.5 数量',
+                        data: data2025Quantity,
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: '2026.5 数量',
+                        data: data2026Quantity,
+                        backgroundColor: 'rgba(255, 159, 64, 0.6)',
+                        borderColor: 'rgba(255, 159, 64, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '异常数量'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: '异常类型'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: '2025.5 vs 2026.5 各异常类型数量对比'
+                    }
+                }
+            }
+        });
+
+        // 2025年占比饼图
+        new Chart(document.getElementById('pieChart2025'), {
+            type: 'pie',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: '占比 (%)',
+                    data: data2025Percentage,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.7)',
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 206, 86, 0.7)',
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(153, 102, 255, 0.7)',
+                        'rgba(255, 159, 64, 0.7)',
+                        'rgba(201, 203, 207, 0.7)',
+                        'rgba(102, 255, 102, 0.7)',
+                        'rgba(255, 102, 204, 0.7)'
+                    ],
+                    borderColor: '#fff',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                    },
+                    title: {
+                        display: true,
+                        text: '2025.5 内部异常类型占比分布'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.label}: ${context.parsed}%`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 2026年占比饼图
+        new Chart(document.getElementById('pieChart2026'), {
+            type: 'pie',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: '占比 (%)',
+                    data: data2026Percentage,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.7)',
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 206, 86, 0.7)',
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(153, 102, 255, 0.7)',
+                        'rgba(255, 159, 64, 0.7)',
+                        'rgba(201, 203, 207, 0.7)',
+                        'rgba(102, 255, 102, 0.7)',
+                        'rgba(255, 102, 204, 0.7)'
+                    ],
+                    borderColor: '#fff',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                    },
+                    title: {
+                        display: true,
+                        text: '2026.5 内部异常类型占比分布'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.label}: ${context.parsed}%`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 变化率柱状图
+        // 过滤掉无数据的项
+        const filteredLabels = labels.filter((_, idx) => changeRate[idx] !== null);
+        const filteredChangeRate = changeRate.filter(val => val !== null);
+
+        // 生成颜色数组：上升为绿色，下降为红色
+        const changeColors = filteredChangeRate.map(val => val >= 0 ? 'rgba(75, 192, 192, 0.6)' : 'rgba(255, 99, 132, 0.6)');
+
+        new Chart(document.getElementById('changeRateChart'), {
+            type: 'bar',
+            data: {
+                labels: filteredLabels,
+                datasets: [{
+                    label: '占比变化率 (%)',
+                    data: filteredChangeRate,
+                    backgroundColor: changeColors,
+                    borderColor: filteredChangeRate.map(val => val >= 0 ? 'rgba(75, 192, 192, 1)' : 'rgba(255, 99, 132, 1)'),
+                    borderWidth: 1
+                }]
+            },
