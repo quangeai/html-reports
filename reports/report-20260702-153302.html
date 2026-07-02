@@ -1,0 +1,323 @@
+# 使用Python实现一个简单的区块链
+
+下面是一个简单的区块链实现，包含基本的区块链结构、工作量证明机制和交易功能。
+
+```python
+import hashlib
+import json
+from time import time
+from typing import List, Dict, Any
+from uuid import uuid4
+
+class Blockchain:
+    def __init__(self):
+        self.chain = []
+        self.current_transactions = []
+        self.nodes = set()
+        
+        # 创建创世区块
+        self.new_block(previous_hash='1', proof=100)
+    
+    def new_block(self, proof: int, previous_hash: str = None) -> Dict[str, Any]:
+        """
+        创建一个新区块并添加到链中
+        :param proof: 工作量证明
+        :param previous_hash: 前一个区块的哈希值
+        :return: 新区块
+        """
+        block = {
+            'index': len(self.chain) + 1,
+            'timestamp': time(),
+            'transactions': self.current_transactions,
+            'proof': proof,
+            'previous_hash': previous_hash or self.hash(self.chain[-1]) if self.chain else '1',
+        }
+        
+        # 重置当前交易列表
+        self.current_transactions = []
+        
+        self.chain.append(block)
+        return block
+    
+    def new_transaction(self, sender: str, recipient: str, amount: float) -> int:
+        """
+        创建一个新交易，将添加到下一个待挖掘的区块中
+        :param sender: 发送者地址
+        :param recipient: 接收者地址
+        :param amount: 金额
+        :return: 包含此交易的区块索引
+        """
+        self.current_transactions.append({
+            'sender': sender,
+            'recipient': recipient,
+            'amount': amount,
+            'timestamp': time()
+        })
+        
+        return self.last_block['index'] + 1
+    
+    @staticmethod
+    def hash(block: Dict[str, Any]) -> str:
+        """
+        创建区块的SHA-256哈希值
+        :param block: 区块
+        :return: 哈希字符串
+        """
+        # 确保字典是有序的，否则哈希会不一致
+        block_string = json.dumps(block, sort_keys=True).encode()
+        return hashlib.sha256(block_string).hexdigest()
+    
+    @property
+    def last_block(self) -> Dict[str, Any]:
+        """返回链中的最后一个区块"""
+        return self.chain[-1]
+    
+    def proof_of_work(self, last_proof: int) -> int:
+        """
+        简单的工作量证明算法:
+        找到一个数字p'，使得hash(pp')以4个0开头，其中p是上一个证明
+        :param last_proof: 上一个证明
+        :return: 新的证明
+        """
+        proof = 0
+        while self.valid_proof(last_proof, proof) is False:
+            proof += 1
+        
+        return proof
+    
+    @staticmethod
+    def valid_proof(last_proof: int, proof: int) -> bool:
+        """
+        验证证明：hash(last_proof, proof)是否以4个0开头
+        :param last_proof: 上一个证明
+        :param proof: 当前证明
+        :return: 如果验证通过返回True，否则返回False
+        """
+        guess = f'{last_proof}{proof}'.encode()
+        guess_hash = hashlib.sha256(guess).hexdigest()
+        return guess_hash[:4] == "0000"
+    
+    def register_node(self, address: str) -> None:
+        """
+        向网络中添加一个新节点
+        :param address: 节点地址，例如 'http://192.168.0.5:5000'
+        """
+        self.nodes.add(address)
+    
+    def valid_chain(self, chain: List[Dict]) -> bool:
+        """
+        检查给定的区块链是否有效
+        :param chain: 区块链
+        :return: 如果有效返回True，否则返回False
+        """
+        last_block = chain[0]
+        current_index = 1
+        
+        while current_index < len(chain):
+            block = chain[current_index]
+            
+            # 检查区块的哈希是否正确
+            if block['previous_hash'] != self.hash(last_block):
+                return False
+            
+            # 检查工作量证明是否正确
+            if not self.valid_proof(last_block['proof'], block['proof']):
+                return False
+            
+            last_block = block
+            current_index += 1
+        
+        return True
+    
+    def resolve_conflicts(self) -> bool:
+        """
+        共识算法：用网络中最长的链替换当前链
+        :return: 如果链被替换返回True，否则返回False
+        """
+        neighbours = self.nodes
+        new_chain = None
+        
+        # 只寻找比当前链长的链
+        max_length = len(self.chain)
+        
+        # 从所有网络节点中获取链并验证
+        for node in neighbours:
+            # 这里应该发送HTTP请求获取节点的链
+            # 为了简化，我们假设有一个get_chain方法
+            # response = requests.get(f'http://{node}/chain')
+            # if response.status_code == 200:
+            #     length = response.json()['length']
+            #     chain = response.json()['chain']
+            
+            # 模拟获取到的链
+            # 在实际应用中，这里应该从节点获取真实的链数据
+            # 为了演示，我们假设所有节点都有相同的链
+            chain = self.chain
+            length = len(chain)
+            
+            # 检查链是否更长且有效
+            if length > max_length and self.valid_chain(chain):
+                max_length = length
+                new_chain = chain
+        
+        # 如果找到新的有效链，替换当前链
+        if new_chain:
+            self.chain = new_chain
+            return True
+        
+        return False
+
+
+# 创建一个简单的Web API来与区块链交互
+from flask import Flask, jsonify, request
+import requests
+
+app = Flask(__name__)
+
+# 为节点生成一个全局唯一地址
+node_identifier = str(uuid4()).replace('-', '')
+
+# 实例化区块链
+blockchain = Blockchain()
+
+@app.route('/mine', methods=['GET'])
+def mine():
+    """挖矿端点"""
+    # 运行工作量证明算法来获取下一个证明
+    last_block = blockchain.last_block
+    last_proof = last_block['proof']
+    proof = blockchain.proof_of_work(last_proof)
+    
+    # 由于找到了证明，我们获得一个奖励
+    # 发送者为"0"表示这是挖矿奖励
+    blockchain.new_transaction(
+        sender="0",
+        recipient=node_identifier,
+        amount=1.0,
+    )
+    
+    # 将新区块添加到链中
+    previous_hash = blockchain.hash(last_block)
+    block = blockchain.new_block(proof, previous_hash)
+    
+    response = {
+        'message': "新区块已创建",
+        'index': block['index'],
+        'transactions': block['transactions'],
+        'proof': block['proof'],
+        'previous_hash': block['previous_hash'],
+    }
+    return jsonify(response), 200
+
+@app.route('/transactions/new', methods=['POST'])
+def new_transaction():
+    """创建新交易的端点"""
+    values = request.get_json()
+    
+    # 检查所需字段是否在POST数据中
+    required = ['sender', 'recipient', 'amount']
+    if not all(k in values for k in required):
+        return '缺少必要字段', 400
+    
+    # 创建新交易
+    index = blockchain.new_transaction(values['sender'], values['recipient'], values['amount'])
+    
+    response = {'message': f'交易将被添加到区块 {index}'}
+    return jsonify(response), 201
+
+@app.route('/chain', methods=['GET'])
+def full_chain():
+    """返回完整区块链的端点"""
+    response = {
+        'chain': blockchain.chain,
+        'length': len(blockchain.chain),
+    }
+    return jsonify(response), 200
+
+@app.route('/nodes/register', methods=['POST'])
+def register_nodes():
+    """注册新节点的端点"""
+    values = request.get_json()
+    
+    nodes = values.get('nodes')
+    if nodes is None:
+        return "错误：请提供有效的节点列表", 400
+    
+    for node in nodes:
+        blockchain.register_node(node)
+    
+    response = {
+        'message': '新节点已添加',
+        'total_nodes': list(blockchain.nodes),
+    }
+    return jsonify(response), 201
+
+@app.route('/nodes/resolve', methods=['GET'])
+def consensus():
+    """共识算法端点，解决冲突"""
+    replaced = blockchain.resolve_conflicts()
+    
+    if replaced:
+        response = {
+            'message': '链已被替换',
+            'new_chain': blockchain.chain
+        }
+    else:
+        response = {
+            'message': '当前链是权威的',
+            'chain': blockchain.chain
+        }
+    
+    return jsonify(response), 200
+
+if __name__ == '__main__':
+    from argparse import ArgumentParser
+    
+    parser = ArgumentParser()
+    parser.add_argument('-p', '--port', default=5000, type=int, help='端口号')
+    args = parser.parse_args()
+    
+    app.run(host='0.0.0.0', port=args.port)
+```
+
+## 如何使用这个区块链
+
+### 1. 安装依赖
+```bash
+pip install Flask requests
+```
+
+### 2. 运行区块链节点
+```bash
+python blockchain.py -p 5000
+```
+
+### 3. 在另一个终端运行第二个节点（可选）
+```bash
+python blockchain.py -p 5001
+```
+
+### 4. 使用API与区块链交互
+
+#### 查看区块链
+```bash
+curl http://localhost:5000/chain
+```
+
+#### 创建新交易
+```bash
+curl -X POST -H "Content-Type: application/json" -d '{
+ "sender": "my_address",
+ "recipient": "someone_else_address",
+ "amount": 5
+}' http://localhost:5000/transactions/new
+```
+
+#### 挖矿（创建新区块）
+```bash
+curl http://localhost:5000/mine
+```
+
+#### 注册节点（用于分布式网络）
+```bash
+curl -X
