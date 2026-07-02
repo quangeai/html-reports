@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <title>鸟类分布地图</title>
+    <script src='https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js'><\/script>
+    <style>
+        body { margin: 0; padding: 0; background: #f0f4f8; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: 'Microsoft YaHei', sans-serif; }
+        #map-container { width: 100vw; height: 100vh; background: #fff; }
+        .title { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10; font-size: 28px; font-weight: bold; color: #1a3c5e; text-shadow: 0 2px 8px rgba(255,255,255,0.8); background: rgba(255,255,255,0.7); padding: 12px 30px; border-radius: 16px; backdrop-filter: blur(4px); }
+        .legend { position: absolute; bottom: 30px; right: 30px; z-index: 10; background: rgba(255,255,255,0.9); padding: 16px 24px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); font-size: 14px; color: #333; }
+        .legend-color { display: inline-block; width: 20px; height: 20px; background: #ff6b6b; border-radius: 4px; margin-right: 8px; vertical-align: middle; }
+    </style>
+</head>
+<body>
+    <div class='title'>🐦 鸟类分布区域</div>
+    <div id='map-container'></div>
+    <div class='legend'><span class='legend-color'></span> 高亮区域：该鸟主要分布省份</div>
+    <script>
+        (function() {
+            var highlightData = ['黑龙江', '辽宁', '山东', '江苏'];
+            
+            var nameMap = {
+                '北京': '北京市', '上海': '上海市', '天津': '天津市', '重庆': '重庆市',
+                '河北': '河北省', '山西': '山西省', '辽宁': '辽宁省', '吉林': '吉林省',
+                '黑龙江': '黑龙江省', '江苏': '江苏省', '浙江': '浙江省', '安徽': '安徽省',
+                '福建': '福建省', '江西': '江西省', '山东': '山东省', '河南': '河南省',
+                '湖北': '湖北省', '湖南': '湖南省', '广东': '广东省', '海南': '海南省',
+                '四川': '四川省', '贵州': '贵州省', '云南': '云南省', '陕西': '陕西省',
+                '甘肃': '甘肃省', '青海': '青海省', '台湾': '台湾省', '内蒙古': '内蒙古自治区',
+                '广西': '广西壮族自治区', '西藏': '西藏自治区', '宁夏': '宁夏回族自治区',
+                '新疆': '新疆维吾尔自治区', '香港': '香港特别行政区', '澳门': '澳门特别行政区'
+            };
+            
+            var normalizedData = [];
+            var allProvinces = Object.values(nameMap);
+            
+            if (highlightData.includes('全国') || highlightData.includes('中国')) {
+                allProvinces.forEach(function(name) {
+                    normalizedData.push({ name: name, value: 100 });
+                });
+            } else if (highlightData.length === 0) {
+                allProvinces.forEach(function(name) {
+                    normalizedData.push({ name: name, value: 0 });
+                });
+            } else {
+                allProvinces.forEach(function(name) {
+                    var shouldHighlight = false;
+                    for (var i = 0; i < highlightData.length; i++) {
+                        var inputName = highlightData[i];
+                        if (name === inputName || nameMap[inputName] === name || 
+                            name.replace(/省|市|自治区|特别行政区/g, '') === inputName ||
+                            inputName === name.replace(/省|市|自治区|特别行政区/g, '')) {
+                            shouldHighlight = true;
+                            break;
+                        }
+                    }
+                    normalizedData.push({ name: name, value: shouldHighlight ? 100 : 0 });
+                });
+            }
+            
+            var chartDom = document.getElementById('map-container');
+            var myChart = echarts.init(chartDom);
+            
+            fetch('https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json')
+                .then(res => res.json())
+                .then(chinaJson => {
+                    echarts.registerMap('china', chinaJson);
+                    var option = {
+                        tooltip: {
+                            trigger: 'item',
+                            formatter: function(params) {
+                                if (params.data && params.data.value > 0) {
+                                    return params.name + '<br/>🐦 该地区有该鸟类分布';
+                                } else {
+                                    return params.name + '<br/>❌ 该地区暂无记录';
+                                }
+                            }
+                        },
+                        visualMap: {
+                            min: 0,
+                            max: 100,
+                            left: 'left',
+                            top: 'bottom',
+                            text: ['有分布', '无记录'],
+                            textStyle: { color: '#333', fontSize: 12 },
+                            inRange: { color: ['#e8e8e8', '#ff6b6b'] },
+                            show: true,
+                            calculable: true
+                        },
+                        series: [{
+                            name: '鸟类分布',
+                            type: 'map',
+                            map: 'china',
+                            roam: true,
+                            selectedMode: false,
+                            label: { show: true, color: '#333', fontSize: 10 },
+                            itemStyle: { borderColor: '#409EFF', borderWidth: 1, areaColor: '#e8e8e8' },
+                            emphasis: {
+                                label: { color: '#fff', fontSize: 14, fontWeight: 'bold' },
+                                itemStyle: { areaColor: '#ff6b6b' }
+                            },
+                            data: normalizedData
+                        }]
+                    };
+                    myChart.setOption(option);
+                    window.addEventListener('resize', function() { myChart.resize(); });
+                })
+                .catch(err => {
+                    console.error('地图数据加载失败:', err);
+                    document.getElementById('map-container').innerHTML = 
+                        '<div style="display:flex;justify-content:center;align-items:center;height:100%;font-size:18px;color:#999;">🗺️ 地图数据加载失败，请刷新重试</div>';
+                });
+        })();
+    </script>
+</body>
+</html>
