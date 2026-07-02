@@ -1,0 +1,915 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web服务器部署仿真实训</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            min-width: 1024px;
+        }
+
+        .training-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* 左侧步骤导航 */
+        .steps-container {
+            width: 320px;
+            background-color: #fff;
+            box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .step-item {
+            margin-bottom: 16px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .step-item.active {
+            border-color: #0078D4;
+            background-color: #f0f7ff;
+        }
+
+        .step-item.completed {
+            border-color: #00bfa5;
+            background-color: #f0fff4;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .step-number {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-weight: bold;
+        }
+
+        .step-item.active .step-number {
+            background-color: #0078D4;
+            color: white;
+        }
+
+        .step-item.completed .step-number {
+            background-color: #00bfa5;
+            color: white;
+        }
+
+        .step-item.completed .step-number::after {
+            content: "✓";
+        }
+
+        .step-content {
+            padding: 12px 16px;
+            background-color: white;
+            font-size: 13px;
+            line-height: 1.6;
+            display: none;
+        }
+
+        .step-item.active .step-content {
+            display: block;
+        }
+
+        /* 右侧主内容区 */
+        .main-container {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        /* 终端样式 */
+        .terminal {
+            flex: 1;
+            background-color: #1E1E1E;
+            border-radius: 8px;
+            padding: 16px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .terminal-output {
+            color: #00FF00;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .terminal-line {
+            margin-bottom: 4px;
+        }
+
+        .terminal-prompt {
+            color: #4EC9B0;
+        }
+
+        .terminal-input-line {
+            display: flex;
+            align-items: center;
+        }
+
+        .terminal-input {
+            flex: 1;
+            background-color: transparent;
+            border: none;
+            outline: none;
+            color: #00FF00;
+            font-size: 14px;
+            padding: 0;
+        }
+
+        .terminal-input::placeholder {
+            color: #666;
+        }
+
+        /* 故障排查区域 */
+        .troubleshoot-section {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .troubleshoot-section.active {
+            display: block;
+        }
+
+        .error-input-container {
+            margin-bottom: 20px;
+        }
+
+        .error-input-container label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .error-input {
+            padding: 8px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            width: 200px;
+            font-size: 14px;
+        }
+
+        .error-info {
+            margin-bottom: 20px;
+            padding: 12px;
+            background-color: #fff3cd;
+            border-radius: 4px;
+            border-left: 4px solid #ffc107;
+        }
+
+        .solution {
+            margin-bottom: 20px;
+        }
+
+        .solution h4 {
+            margin-bottom: 8px;
+            color: #dc3545;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            border: 1px solid #e0e0e0;
+            padding: 8px;
+            text-align: left;
+            font-size: 13px;
+        }
+
+        .comparison-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+
+        /* 总结页面 */
+        .summary-page {
+            background-color: white;
+            border-radius: 8px;
+            padding: 40px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+            display: none;
+        }
+
+        .summary-page.active {
+            display: block;
+        }
+
+        .summary-page h2 {
+            color: #0078D4;
+            margin-bottom: 20px;
+        }
+
+        .summary-page p {
+            font-size: 16px;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .btn-restart {
+            padding: 10px 24px;
+            background-color: #0078D4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-restart:hover {
+            background-color: #005a9e;
+        }
+
+        /* 滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="training-container">
+        <!-- 左侧步骤导航 -->
+        <div class="steps-container">
+            <div class="step-item active" data-step="1">
+                <div class="step-header">
+                    <div class="step-number">1</div>
+                    <span>环境准备</span>
+                </div>
+                <div class="step-content">
+                    <p>1. 确认Windows Server操作系统版本</p>
+                    <p>2. 检查系统更新状态</p>
+                    <p>3. 确保管理员权限</p>
+                </div>
+            </div>
+            <div class="step-item" data-step="2">
+                <div class="step-header">
+                    <div class="step-number">2</div>
+                    <span>IIS安装</span>
+                </div>
+                <div class="step-content">
+                    <p>1. 使用PowerShell安装IIS角色</p>
+                    <p>2. 安装必要的角色服务（ASP.NET、静态内容等）</p>
+                    <p>3. 验证IIS服务状态</p>
+                </div>
+            </div>
+            <div class="step-item" data-step="3">
+                <div class="step-header">
+                    <div class="step-number">3</div>
+                    <span>网站配置</span>
+                </div>
+                <div class="step-content">
+                    <p>1. 创建网站根目录</p>
+                    <p>2. 设置网站权限</p>
+                    <p>3. 配置网站绑定和应用池</p>
+                </div>
+            </div>
+            <div class="step-item" data-step="4">
+                <div class="step-header">
+                    <div class="step-number">4</div>
+                    <span>访问测试与故障排查</span>
+                </div>
+                <div class="step-content">
+                    <p>1. 访问网站测试</p>
+                    <p>2. 根据错误代码排查问题</p>
+                    <p>3. 验证解决方案效果</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧主内容区 -->
+        <div class="main-container">
+            <!-- 模拟终端 -->
+            <div class="terminal">
+                <div class="terminal-output" id="terminalOutput"></div>
+                <div class="terminal-input-line">
+                    <span class="terminal-prompt">PS C:\></span>
+                    <input type="text" class="terminal-input" id="commandInput" placeholder="输入命令..." autocomplete="off">
+                </div>
+            </div>
+
+            <!-- 故障排查区域 -->
+            <div class="troubleshoot-section" id="troubleshootSection">
+                <div class="error-input-container">
+                    <label for="errorCode">输入错误代码（如500、503、404.3）：</label>
+                    <input type="text" id="errorCode" class="error-input" placeholder="例如：500">
+                    <button onclick="checkError()" style="padding: 8px 16px; margin-left: 8px; background-color: #0078D4; color: white; border: none; border-radius: 4px; cursor: pointer;">排查故障</button>
+                </div>
+                
+                <div id="errorDetails" style="display: none;">
+                    <div class="error-info">
+                        <h4>错误分析</h4>
+                        <p id="errorAnalysis"></p>
+                    </div>
+                    
+                    <div class="solution">
+                        <h4>解决方案</h4>
+                        <p id="solutionText"></p>
+                        <pre id="solutionCommand" style="background-color: #f8f9fa; padding: 12px; border-radius: 4px; margin-top: 8px; overflow-x: auto;"></pre>
+                    </div>
+                    
+                    <div>
+                        <h4>参数对比表</h4>
+                        <table class="comparison-table" id="comparisonTable">
+                            <thead>
+                                <tr>
+                                    <th>项目</th>
+                                    <th>正确配置</th>
+                                    <th>当前配置</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 总结页面 -->
+            <div class="summary-page" id="summaryPage">
+                <h2>🎉 恭喜！</h2>
+                <p>您已成功完成Web服务器部署仿真训练</p>
+                <p>您掌握了IIS服务器的安装、配置和故障排查技能</p>
+                <button class="btn-restart" onclick="restartTraining()">重新演练</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 错误代码知识库
+        const errorDatabase = {
+            "500": {
+                analysis: "内部服务器错误，通常由于权限不足或ISAPI筛选器问题导致",
+                solution: "检查应用池标识权限，确保网站目录有足够的读写权限",
+                command: 'icacls "C:\\inetpub\\wwwroot" /grant "IIS APPPOOL\\DefaultAppPool":(OI)(CI)M',
+                comparison: [
+                    { item: "目录权限", correct: "IIS APPPOOL\\DefaultAppPool 拥有修改权限", current: "IIS APPPOOL\\DefaultAppPool 仅拥有读取权限" },
+                    { item: "应用池标识", correct: "使用 ApplicationPoolIdentity", current: "使用 LocalSystem" },
+                    { item: "ISAPI筛选器", correct: "已正确配置", current: "存在冲突的筛选器" }
+                ]
+            },
+            "503": {
+                analysis: "服务不可用，通常由于应用池崩溃或停止导致",
+                solution: "重启应用池或IIS服务",
+                command: 'Restart-WebAppPool DefaultAppPool',
+                comparison: [
+                    { item: "应用池状态", correct: "正在运行", current: "已停止" },
+                    { item: "CPU使用率", correct: "< 80%", current: "> 95%" },
+                    { item: "内存占用", correct: "< 500MB", current: "> 1GB" }
+                ]
+            },
+            "404.3": {
+                analysis: "未找到MIME类型，通常由于缺少必要的角色服务（如ASP.NET、静态内容）",
+                solution: "安装对应的Windows功能角色",
+                command: 'Install-WindowsFeature Web-ASP-NET45, Web-Static-Content',
+                comparison: [
+                    { item: "ASP.NET角色", correct: "已安装", current: "未安装" },
+                    { item: "静态内容角色", correct: "已安装", current: "未安装" },
+                    { item: "MIME类型", correct: ".html/.aspx已注册", current: ".html/.aspx未注册" }
+                ]
+            },
+            "401.2": {
+                analysis: "未授权，通常由于身份验证配置错误",
+                solution: "启用匿名身份验证，禁用不必要的身份验证方式",
+                command: 'Set-WebConfigurationProperty -filter "/system.webServer/security/authentication/anonymousAuthentication" -name enabled -value true',
+                comparison: [
+                    { item: "匿名身份验证", correct: "已启用", current: "已禁用" },
+                    { item: "Windows身份验证", correct: "已禁用", current: "已启用" },
+                    { item: "授权规则", correct: "允许所有用户", current: "仅允许特定用户" }
+                ]
+            }
+        };
+
+        // 步骤命令数据
+        const stepCommands = {
+            1: [
+                "Get-ComputerInfo | Select-Object OsName, OsVersion",
+                "Get-WindowsUpdateLog",
+                "whoami /priv"
+            ],
+            2: [
+                "Install-WindowsFeature Web-Server, Web-WebServer, Web-Common-Http, Web-Default-Doc, Web-Dir-Browsing, Web-Http-Errors, Web-Static-Content, Web-Health, Web-Http-Logging, Web-Performance, Web-Stat-Compression, Web-Dyn-Compression, Web-Security, Web-Filtering, Web-Basic-Auth, Web-Windows-Auth, Web-App-Dev, Web-Net-Ext45, Web-Asp-Net45, Web-ISAPI-Ext, Web-ISAPI-Filter, Web-Mgmt-Tools, Web-Mgmt-Console",
+                "Get-WindowsFeature | Where-Object {$_.Name -like 'Web-*' -and $_.Installed}",
+                "Start-Service W3SVC"
+            ],
+            3: [
+                "New-Item -Path 'C:\\inetpub\\wwwroot\\MySite' -ItemType Directory",
+                'icacls "C:\\inetpub\\wwwroot\\MySite" /grant "IIS APPPOOL\\DefaultAppPool":(OI)(CI)M',
+                "New-WebSite -Name 'MySite' -PhysicalPath 'C:\\inetpub\\wwwroot\\MySite' -Port 80",
+                "Get-WebSite"
+            ],
+            4: [
+                "Invoke-WebRequest -Uri 'http://localhost' -UseBasicParsing",
+                "iisreset /status"
+            ]
+        };
+
+        let currentStep = 1;
+        const terminalOutput = document```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web服务器部署仿真实训</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            min-width: 1024px;
+        }
+
+        .training-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* 左侧步骤导航 */
+        .steps-container {
+            width: 320px;
+            background-color: #fff;
+            box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .step-item {
+            margin-bottom: 16px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .step-item.active {
+            border-color: #0078D4;
+            background-color: #f0f7ff;
+        }
+
+        .step-item.completed {
+            border-color: #00bfa5;
+            background-color: #f0fff4;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .step-number {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-weight: bold;
+        }
+
+        .step-item.active .step-number {
+            background-color: #0078D4;
+            color: white;
+        }
+
+        .step-item.completed .step-number {
+            background-color: #00bfa5;
+            color: white;
+        }
+
+        .step-item.completed .step-number::after {
+            content: "✓";
+        }
+
+        .step-content {
+            padding: 12px 16px;
+            background-color: white;
+            font-size: 13px;
+            line-height: 1.6;
+            display: none;
+        }
+
+        .step-item.active .step-content {
+            display: block;
+        }
+
+        /* 右侧主内容区 */
+        .main-container {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        /* 终端样式 */
+        .terminal {
+            flex: 1;
+            background-color: #1E1E1E;
+            border-radius: 8px;
+            padding: 16px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .terminal-output {
+            color: #00FF00;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .terminal-line {
+            margin-bottom: 4px;
+        }
+
+        .terminal-prompt {
+            color: #4EC9B0;
+        }
+
+        .terminal-input-line {
+            display: flex;
+            align-items: center;
+        }
+
+        .terminal-input {
+            flex: 1;
+            background-color: transparent;
+            border: none;
+            outline: none;
+            color: #00FF00;
+            font-size: 14px;
+            padding: 0;
+        }
+
+        .terminal-input::placeholder {
+            color: #666;
+        }
+
+        /* 故障排查区域 */
+        .troubleshoot-section {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .troubleshoot-section.active {
+            display: block;
+        }
+
+        .error-input-container {
+            margin-bottom: 20px;
+        }
+
+        .error-input-container label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .error-input {
+            padding: 8px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            width: 200px;
+            font-size: 14px;
+        }
+
+        .error-info {
+            margin-bottom: 20px;
+            padding: 12px;
+            background-color: #fff3cd;
+            border-radius: 4px;
+            border-left: 4px solid #ffc107;
+        }
+
+        .solution {
+            margin-bottom: 20px;
+        }
+
+        .solution h4 {
+            margin-bottom: 8px;
+            color: #dc3545;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            border: 1px solid #e0e0e0;
+            padding: 8px;
+            text-align: left;
+            font-size: 13px;
+        }
+
+        .comparison-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+
+        /* 总结页面 */
+        .summary-page {
+            background-color: white;
+            border-radius: 8px;
+            padding: 40px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+            display: none;
+        }
+
+        .summary-page.active {
+            display: block;
+        }
+
+        .summary-page h2 {
+            color: #0078D4;
+            margin-bottom: 20px;
+        }
+
+        .summary-page p {
+            font-size: 16px;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .btn-restart {
+            padding: 10px 24px;
+            background-color: #0078D4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-restart:hover {
+            background-color: #005a9e;
+        }
+
+        /* 滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="training-container">
+        <!-- 左侧步骤导航 -->
+        <div class="steps-container">
+            <div class="step-item active" data-step="1">
+                <div class="step-header">
+                    <div class="step-number">1</div>
+                    <span>环境准备</span>
+                </div>
+                <div class="step-content">
+                    <p>1. 确认Windows Server操作系统版本</p>
+                    <p>2. 检查系统更新状态</p>
+                    <p>3. 确保管理员权限</p>
+                </div>
+            </div>
+            <div class="step-item" data-step="2">
+                <div class="step-header">
+                    <div class="step-number">2</div>
+                    <span>IIS安装</span>
+                </div>
+                <div class="step-content">
+                    <p>1. 使用PowerShell安装IIS角色</p>
+                    <p>2. 安装必要的角色服务（ASP.NET、静态内容等）</p>
+                    <p>3. 验证IIS服务状态</p>
+                </div>
+            </div>
+            <div class="step-item" data-step="3">
+                <div class="step-header">
+                    <div class="step-number">3</div>
+                    <span>网站配置</span>
+                </div>
+                <div class="step-content">
+                    <p>1. 创建网站根目录</p>
+                    <p>2. 设置网站权限</p>
+                    <p>3. 配置网站绑定和应用池</p>
+                </div>
+            </div>
+            <div class="step-item" data-step="4">
+                <div class="step-header">
+                    <div class="step-number">4</div>
+                    <span>访问测试与故障排查</span>
+                </div>
+                <div class="step-content">
+                    <p>1. 访问网站测试</p>
+                    <p>2. 根据错误代码排查问题</p>
+                    <p>3. 验证解决方案效果</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧主内容区 -->
+        <div class="main-container">
+            <!-- 模拟终端 -->
+            <div class="terminal">
+                <div class="terminal-output" id="terminalOutput"></div>
+                <div class="terminal-input-line">
+                    <span class="terminal-prompt">PS C:\></span>
+                    <input type="text" class="terminal-input" id="commandInput" placeholder="输入命令..." autocomplete="off">
+                </div>
+            </div>
+
+            <!-- 故障排查区域 -->
+            <div class="troubleshoot-section" id="troubleshootSection">
+                <div class="error-input-container">
+                    <label for="errorCode">输入错误代码（如500、503、404.3）：</label>
+                    <input type="text" id="errorCode" class="error-input" placeholder="例如：500">
+                    <button onclick="checkError()" style="padding: 8px 16px; margin-left: 8px; background-color: #0078D4; color: white; border: none; border-radius: 4px; cursor: pointer;">排查故障</button>
+                </div>
+                
+                <div id="errorDetails" style="display: none;">
+                    <div class="error-info">
+                        <h4>错误分析</h4>
+                        <p id="errorAnalysis"></p>
+                    </div>
+                    
+                    <div class="solution">
+                        <h4>解决方案</h4>
+                        <p id="solutionText"></p>
+                        <pre id="solutionCommand" style="background-color: #f8f9fa; padding: 12px; border-radius: 4px; margin-top: 8px; overflow-x: auto;"></pre>
+                    </div>
+                    
+                    <div>
+                        <h4>参数对比表</h4>
+                        <table class="comparison-table" id="comparisonTable">
+                            <thead>
+                                <tr>
+                                    <th>项目</th>
+                                    <th>正确配置</th>
+                                    <th>当前配置</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 总结页面 -->
+            <div class="summary-page" id="summaryPage">
+                <h2>🎉 恭喜！</h2>
+                <p>您已成功完成Web服务器部署仿真训练</p>
+                <p>您掌握了IIS服务器的安装、配置和故障排查技能</p>
+                <button class="btn-restart" onclick="restartTraining()">重新演练</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 错误代码知识库
+        const errorDatabase = {
+            "500": {
+                analysis: "内部服务器错误，通常由于权限不足或ISAPI筛选器问题导致",
+                solution: "检查应用池标识权限，确保网站目录有足够的读写权限",
+                command: 'icacls "C:\\inetpub\\wwwroot" /grant "IIS APPPOOL\\DefaultAppPool":(OI)(CI)M',
+                comparison: [
+                    { item: "目录权限", correct: "IIS APPPOOL\\DefaultAppPool 拥有修改权限", current: "IIS APPPOOL\\DefaultAppPool 仅拥有读取权限" },
+                    { item: "应用池标识", correct: "使用 ApplicationPoolIdentity", current: "使用 LocalSystem" },
+                    { item: "ISAPI筛选器", correct: "已正确配置", current: "存在冲突的筛选器" }
+                ]
+            },
+            "503": {
+                analysis: "服务不可用，通常由于应用池崩溃或停止导致",
+                solution: "重启应用池或IIS服务",
+                command: 'Restart-WebAppPool DefaultAppPool',
+                comparison: [
+                    { item: "应用池状态", correct: "正在运行", current: "已停止" },
+                    { item: "CPU使用率", correct: "< 80%", current: "> 95%" },
+                    { item: "内存占用", correct: "< 500MB", current: "> 1GB" }
+                ]
+            },
+            "404.3": {
+                analysis: "未找到MIME类型，通常由于缺少必要的角色服务（如ASP.NET、静态内容）",
+                solution: "安装对应的Windows功能角色",
+                command: 'Install-WindowsFeature Web-ASP-NET45, Web-Static-Content',
+                comparison: [
+                    { item: "ASP.NET角色", correct: "已安装", current: "未安装" },
+                    { item: "静态内容角色", correct: "已安装", current: "未安装" },
+                    { item: "MIME类型", correct: ".html/.aspx已注册", current: ".html/.aspx未注册" }
+                ]
+            },
+            "401.2": {
+                analysis: "未授权，通常由于身份验证配置错误",
+                solution: "启用匿名身份验证，禁用不必要的身份验证方式",
+                command: 'Set-WebConfigurationProperty -filter "/system.webServer/security/authentication/anonymousAuthentication" -name enabled -value true',
+                comparison: [
+                    { item: "匿名身份验证", correct: "已启用", current: "已禁用" },
+                    { item: "Windows身份验证", correct: "已禁用", current: "已启用" },
+                    { item: "授权规则", correct: "允许所有用户", current: "仅允许特定用户" }
+                ]
+            }
+        };
+
+        // 步骤命令数据
+        const stepCommands = {
+            1: [
+                "Get-ComputerInfo | Select-Object OsName, OsVersion",
+                "Get-WindowsUpdateLog",
+                "whoami /priv"
+            ],
+            2: [
+                "Install-WindowsFeature Web-Server, Web-WebServer, Web-Common-Http, Web-Default-Doc, Web-Dir-Browsing, Web-Http-Errors, Web-Static-Content, Web-Health, Web-Http-Logging, Web-Performance, Web-Stat-Compression, Web-Dyn-Compression, Web-Security, Web-Filtering, Web-Basic-Auth, Web-Windows-Auth, Web-App-Dev, Web-Net-Ext45, Web-Asp-Net45, Web-ISAPI-Ext, Web-ISAPI-Filter, Web-Mgmt-Tools, Web-Mgmt-Console",
+                "Get-WindowsFeature | Where-Object {$_.Name -like 'Web-*' -and $_.Installed}",
+                "Start-Service W3SVC"
+            ],
+            3: [
+                "New-Item -Path 'C:\\inetpub\\wwwroot\\MySite' -ItemType Directory",
+                'icacls "C:\\inetpub\\wwwroot\\MySite" /grant "IIS APPPOOL\\DefaultAppPool":(OI)(CI)M',
+                "New-WebSite -Name 'MySite' -PhysicalPath 'C:\\inetpub\\wwwroot\\MySite' -Port 80",
+                "Get-WebSite"
+            ],
+            4: [
+                "Invoke-WebRequest -Uri 'http://localhost' -UseBasicParsing",
+                "iisreset /status"
+            ]
+        };
+
+        let currentStep = 1;
+        const terminalOutput = document
