@@ -1,0 +1,396 @@
+以下是一个完整的HTML数据分析报告，包含PDF下载功能。报告使用Bootstrap进行样式设计，Chart.js创建交互式图表，并通过jsPDF和html2canvas实现PDF下载功能。
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>内部异常订单数据分析报告</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .report-header {
+            background-color: #0d6efd;
+            color: white;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        .card {
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 2rem;
+        }
+        .metric-card {
+            text-align: center;
+            padding: 1.5rem;
+        }
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #0d6efd;
+        }
+        .metric-label {
+            font-size: 1rem;
+            color: #6c757d;
+        }
+        .download-btn {
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 报告头部 -->
+        <div class="report-header">
+            <h1 class="display-5">内部异常订单数据分析报告</h1>
+            <p class="lead">报告时间：2026-07-02</p>
+            <button id="download-pdf" class="btn btn-light download-btn">下载PDF报告</button>
+        </div>
+
+        <!-- 执行摘要 -->
+        <div class="card">
+            <div class="card-header">
+                <h2>执行摘要</h2>
+            </div>
+            <div class="card-body">
+                <p>本报告分析了2024年至2026年内部异常订单数据，揭示了以下关键发现：</p>
+                <ul>
+                    <li>2026年上半年内部异常订单总量达6909单，已达到2025年全年总量的175.36%</li>
+                    <li>4月份异常订单数量激增，达到3828单，占2026年上半年总量的55.4%</li>
+                    <li>与2025年同期相比，2026年1-5月异常订单数量增长显著，尤其是4月份增长了3806.1%</li>
+                    <li>2月份异常订单数量同比下降33.3%，是唯一出现下降的月份</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 关键指标展示 -->
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card metric-card">
+                    <div class="metric-value">9,946</div>
+                    <div class="metric-label">2024年全年异常订单总量</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card metric-card">
+                    <div class="metric-value">3,940</div>
+                    <div class="metric-label">2025年全年异常订单总量</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card metric-card">
+                    <div class="metric-value">6,909</div>
+                    <div class="metric-label">2026年上半年异常订单总量</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 年度总量对比 -->
+        <div class="card">
+            <div class="card-header">
+                <h2>年度异常订单总量对比</h2>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="yearlyTotalChart"></canvas>
+                </div>
+                <p>2026年上半年异常订单总量已远超2025年全年水平，显示内部异常订单数量呈上升趋势。需要重点关注4月份异常订单激增的原因。</p>
+            </div>
+        </div>
+
+        <!-- 月度趋势分析 -->
+        <div class="card">
+            <div class="card-header">
+                <h2>月度异常订单趋势分析</h2>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="monthlyTrendChart"></canvas>
+                </div>
+                <p>各年度异常订单数量分布不均，2024年9月和2026年4月出现明显峰值。2026年1-5月整体呈上升趋势，尤其是4月份异常订单数量激增。</p>
+            </div>
+        </div>
+
+        <!-- 同比变化分析 -->
+        <div class="card">
+            <div class="card-header">
+                <h2>2026年vs2025年同比变化</h2>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="changeChart"></canvas>
+                </div>
+                <p>与2025年同期相比，2026年1-5月异常订单数量整体呈增长趋势，其中4月份增长最为显著，达到3806.1%。只有2月份出现同比下降，降幅为33.3%。</p>
+            </div>
+        </div>
+
+        <!-- 异常订单占比分析 -->
+        <div class="card">
+            <div class="card-header">
+                <h2>各年度异常订单月度占比</h2>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="chart-container">
+                            <canvas id="2024PieChart"></canvas>
+                        </div>
+                        <h5 class="text-center">2024年</h5>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="chart-container">
+                            <canvas id="2025PieChart"></canvas>
+                        </div>
+                        <h5 class="text-center">2025年</h5>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="chart-container">
+                            <canvas id="2026PieChart"></canvas>
+                        </div>
+                        <h5 class="text-center">2026年上半年</h5>
+                    </div>
+                </div>
+                <p>2024年异常订单主要集中在9月，占全年总量的48.6%；2025年分布相对均匀，10月占比最高为32.8%；2026年异常订单高度集中在4月，占上半年总量的55.4%。</p>
+            </div>
+        </div>
+
+        <!-- 详细数据表格 -->
+        <div class="card">
+            <div class="card-header">
+                <h2>详细数据表格</h2>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>月份</th>
+                                <th colspan="2">2024年</th>
+                                <th colspan="2">2025年</th>
+                                <th colspan="2">2026年</th>
+                                <th colspan="2">2026年 VS 2025年</th>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <th>内部异常订单数量</th>
+                                <th>%</th>
+                                <th>内部异常订单数量</th>
+                                <th>%</th>
+                                <th>内部异常订单数量</th>
+                                <th>%</th>
+                                <th>CHANG +/-</th>
+                                <th>CHANGE %</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1月</td>
+                                <td>2347</td>
+                                <td>23.6</td>
+                                <td>307</td>
+                                <td>7.9</td>
+                                <td>1345</td>
+                                <td>19.5</td>
+                                <td>1038</td>
+                                <td>338.1</td>
+                            </tr>
+                            <tr>
+                                <td>2月</td>
+                                <td>423</td>
+                                <td>4.3</td>
+                                <td>363</td>
+                                <td>9.2</td>
+                                <td>242</td>
+                                <td>3.5</td>
+                                <td>-121</td>
+                                <td>-33.3</td>
+                            </tr>
+                            <tr>
+                                <td>3月</td>
+                                <td>694</td>
+                                <td>7.0</td>
+                                <td>341</td>
+                                <td>8.8</td>
+                                <td>842</td>
+                                <td>12.2</td>
+                                <td>501</td>
+                                <td>146.9</td>
+                            </tr>
+                            <tr>
+                                <td>4月</td>
+                                <td>265</td>
+                                <td>2.7</td>
+                                <td>98</td>
+                                <td>2.5</td>
+                                <td>3828</td>
+                                <td>55.4</td>
+                                <td>3730</td>
+                                <td>3806.1</td>
+                            </tr>
+                            <tr>
+                                <td>5月</td>
+                                <td>136</td>
+                                <td>1.4</td>
+                                <td>329</td>
+                                <td>8.4</td>
+                                <td>652</td>
+                                <td>9.4</td>
+                                <td>323</td>
+                                <td>98.2</td>
+                            </tr>
+                            <tr>
+                                <td>6月</td>
+                                <td>113</td>
+                                <td>1.1</td>
+                                <td>72</td>
+                                <td>1.8</td>
+                                <td></td>
+                                <td>0.0</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>7月</td>
+                                <td>344</td>
+                                <td>3.5</td>
+                                <td>108</td>
+                                <td>2.8</td>
+                                <td></td>
+                                <td>0.0</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>8月</td>
+                                <td>181</td>
+                                <td>1.8</td>
+                                <td>242</td>
+                                <td>6.2</td>
+                                <td></td>
+                                <td>0.0</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>9月</td>
+                                <td>4838</td>
+                                <td>48.6</td>
+                                <td>119</td>
+                                <td>2.2</td>
+                                <td></td>
+                                <td>0.0</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10月</td>
+                                <td>344</td>
+                                <td>3.5</td>
+                                <td>1276</td>
+                                <td>32.8</td>
+                                <td></td>
+                                <td>0.0</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>11月</td>
+                                <td>118</td>
+                                <td>1.2</td>
+                                <td>450</td>
+                                <td>11.6</td>
+                                <td></td>
+                                <td>0.0</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>12月</td>
+                                <td>143</td>
+                                <td>1.4</td>
+                                <td>235</td>
+                                <td>5.9</td>
+                                <td></td>
+                                <td>0.0</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr class="table-primary">
+                                <td>Total</td>
+                                <td>9946</td>
+                                <td>100</td>
+                                <td>3940</td>
+                                <td></td>
+                                <td>6909</td>
+                                <td>100.0</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 建议和结论 -->
+        <div class="card">
+            <div class="card-header">
+                <h2>建议和结论</h2>
+            </div>
+            <div class="card-body">
+                <h4>结论</h4>
+                <p>内部异常订单数量在2026年呈现显著上升趋势，尤其是4月份出现爆发式增长，需要引起高度重视。各年度异常订单分布不均，存在明显的季节性或事件性因素影响。</p>
+                
+                <h4>建议</h4>
+                <ol>
+                    <li>深入调查2026年4月份异常订单激增的原因，识别根本问题并采取针对性措施</li>
+                    <li>建立异常订单预警机制，及时发现异常增长趋势</li>
+                    <li>分析2月份异常订单下降的原因，总结成功经验并推广到其他月份</li>
+                    <li>加强内部流程管控，减少异常订单的产生</li>
+                    <li>定期监控异常订单数据，跟踪改善措施的效果</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 年度总量对比图表
+        const yearlyTotalCtx = document.getElementById('yearlyTotalChart').getContext('2d');
+        new Chart(yearlyTotalCtx, {
+            type: 'bar',
+            data: {
+                labels: ['2024年', '2025年', '2026年上半年'],
+                datasets: [{
+                    label: '异常订单总量',
+                    data: [9946, 3940, 6909],
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(75, 192, 192, 0.6)',
+                        'rgba(255, 159, 64, 0.6)'
+                    ],
+                    borderColor: [
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '订单数量'
