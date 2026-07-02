@@ -1,0 +1,244 @@
+# 公司财务报表分析报告
+
+我将根据提供的财务报表数据创建一个专业、美观的HTML分析报告。以下是我的分析思路和报告设计方案：
+
+## 分析思路
+1. 资产负债表分析：资产结构、负债状况、财务杠杆
+2. 利润表分析：收入趋势、盈利能力、成本控制
+3. 现金流量表分析：现金流健康状况、各活动现金流贡献
+4. 综合财务比率分析：偿债能力、盈利能力、运营效率
+
+## 报告设计
+- 使用Bootstrap实现响应式布局
+- Chart.js创建交互式可视化图表
+- 协调的配色方案（蓝色系为主）
+- 清晰的分节导航和专业分析洞察
+
+下面是完整的HTML报告代码：
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>公司财务报表分析报告</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- 自定义样式 -->
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #27ae60;
+            --light-bg: #f8f9fa;
+            --border-color: #dee2e6;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f9f9f9;
+        }
+        
+        .report-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2.5rem 0;
+            margin-bottom: 2rem;
+            border-bottom: 5px solid var(--accent-color);
+        }
+        
+        .section-title {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            font-weight: 600;
+        }
+        
+        .kpi-box {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            height: 100%;
+        }
+        
+        .kpi-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
+        }
+        
+        .positive {
+            color: var(--success-color);
+        }
+        
+        .negative {
+            color: var(--accent-color);
+        }
+        
+        .insight-box {
+            background-color: #e8f4fc;
+            border-left: 4px solid var(--secondary-color);
+            padding: 1.25rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .table-custom {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+        
+        .table-custom thead {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .navbar-report {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1.5rem 0;
+            margin-top: 3rem;
+        }
+        
+        .scroll-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <!-- 返回顶部按钮 -->
+    <button class="scroll-top" id="scrollTopBtn">↑</button>
+    
+    <!-- 报告头部 -->
+    <header class="report-header">
+        <div class="container">
+            <h1 class="display-4 fw-bold">公司财务报表分析报告</h1>
+            <p class="lead">基于2021-2023年度财务数据的综合分析</p>
+            <p class="mb-0">报告生成日期：2026年3月15日</p>
+        </div>
+    </header>
+    
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-report sticky-top">
+        <div class="container">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#reportNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="reportNavbar">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item"><a class="nav-link" href="#executive-summary">执行摘要</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#key-metrics">关键指标</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#balance-sheet">资产负债表</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#income-statement">利润表</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#cash-flow">现金流量表</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#trend-analysis">趋势分析</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#conclusion">结论建议</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <!-- 执行摘要 -->
+        <section id="executive-summary" class="mb-5">
+            <h2 class="section-title">执行摘要</h2>
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header">总体财务状况概述</div>
+                        <div class="card-body">
+                            <p>本报告分析了公司2021年至2023年的财务状况。数据显示公司在这三年间经历了显著的财务变化：</p>
+                            <ul>
+                                <li><strong>收入波动剧烈</strong>：2022年收入达到峰值739,983，但2023年大幅下降至222,782</li>
+                                <li><strong>盈利能力恶化</strong>：净利润从2021年的88,193.6转为2023年的-507,845.6，出现严重亏损</li>
+                                <li><strong>负债增加</strong>：总负债从2021年的1,489,383增长到2023年的2,249,132.2，增长51%</li>
+                                <li><strong>资产结构变化</strong>：固定资产大幅减少，从762,260降至187,863</li>
+                                <li><strong>现金流表现不一</strong>：经营活动现金流波动，但整体净现金流呈下降趋势</li>
+                            </ul>
+                            <div class="insight-box">
+                                <h5><i class="fas fa-lightbulb"></i> 关键洞察</h5>
+                                <p class="mb-0">公司面临严重的盈利能力挑战，尽管现金流状况尚可，但高负债和持续亏损需要立即关注。资产处置可能影响了短期现金流，但损害了长期生产能力。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-header">财务健康评分</div>
+                        <div class="card-body text-center">
+                            <div class="mb-4">
+                                <div class="kpi-value negative">4.2/10</div>
+                                <p class="text-muted">综合财务健康度</p>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="kpi-box">
+                                        <div class="kpi-value negative">2.5</div>
+                                        <small>盈利能力</small>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="kpi-box">
+                                        <div class="kpi-value">5.8</div>
+                                        <small>现金流状况</small>
+                                    </div>
+                                </div>
