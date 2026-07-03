@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>销售数据分析报告</title>
+    <style>
+        :root {
+            /* 颜色变量定义 */
+            --primary-color: #3b82f6;
+            --secondary-color: #64748b;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-sub: #475569;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px - -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --radius: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 2rem 1rem;
+        }
+
+        /* 布局容器 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* 头部样式 */
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeInDown 0.6s ease-out;
+        }
+
+        header h1 {
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.025em;
+        }
+
+        header .divider {
+            height: 4px;
+            width: 60px;
+            background-color: var(--primary-color);
+            margin: 0 auto;
+            border-radius: 2px;
+        }
+
+        /* 网格布局 */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* 卡片样式 */
+        .chart-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .card-header h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-header h2::before {
+            content: '';
+            display: block;
+            width: 6px;
+            height: 24px;
+            background-color: var(--primary-color);
+            border-radius: 4px;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* 图片容器 */
+        .image-container {
+            width: 100%;
+            background-color: #f8fafc;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 250px; /* 防止图片加载前塌陷 */
+        }
+
+        .image-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: contain;
+        }
+
+        /* 说明文字样式 */
+        .description-box {
+            background-color: #eff6ff;
+            border-left: 4px solid var(--primary-color);
+            padding: 1rem;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .description-box h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .description-box p {
+            font-size: 0.95rem;
+            color: var(--text-sub);
+            text-align: justify;
+        }
+
+        /* 底部状态栏 */
+        .status-footer {
+            text-align: center;
+            padding: 1.5rem;
+            background-color: #ecfdf5;
+            color: #047857;
+            border-radius: var(--radius);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: var(--shadow-sm);
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .status-icon {
+            width: 20px;
+            height: 20px;
+            background-color: #10b981;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .status-icon::after {
+            content: '✓';
+            color: white;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* 动画 */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.75rem;
+            }
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- 页面标题 -->
+        <header>
+            <h1>图表生成结果</h1>
+            <div class="divider"></div>
+        </header>
+
+        <!-- 主要内容区域 -->
+        <main class="dashboard-grid">
+            
+            <!-- 图表 1 -->
+            <article class="chart-card">
+                <div class="card-header">
+                    <h2>分渠道销量对比柱状图</h2>
+                </div>
+                <div class="card-body">
+                    <div class="image-container">
+                        <img src="https://cozeio-attachment.oss-cn-hongkong.aliyuncs.com/19138f00-3f35-4677-9a33-b873122f037b.png" alt="分渠道销量对比柱状图">
+                    </div>
+                    <div class="description-box">
+                        <h3>图表说明</h3>
+                        <p>X轴为三个销售渠道（抖音短视频、小红书、直播间），Y轴为累计有效成交订单量。从数据可以看出，抖音短视频是核心出单渠道，累计有效订单量达到158单，其次是直播间（108单），小红书销量最低，仅为57单，清晰体现了核心出单渠道与小红书的销量差距。</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 图表 2 -->
+            <article class="chart-card">
+                <div class="card-header">
+                    <h2>分产品规格销量对比柱状图</h2>
+                </div>
+                <div class="card-body">
+                    <div class="image-container">
+                        <img src="https://cozeio-attachment.oss-cn-hongkong.aliyuncs.com/tmpcjbbgdxb.png" alt="分产品规格销量对比柱状图">
+                    </div>
+                    <div class="description-box">
+                        <h3>图表说明</h3>
+                        <p>X轴为四类产品规格，Y轴为累计成交订单量。数据显示不同单品销量存在不均衡现象：空气炸锅4L基础款销量最高，达到114单；破壁机标准款和刀具五件套销量持平，均为91单；破壁机Pro升级款销量最低，仅27单，直观体现了当前单品销量不均衡的问题。</p>
+                    </div>
+                </div>
+            </article>
+
+        </main>
+
+        <!-- 底部状态 -->
+        <footer class="status-footer">
+            <div class="status-icon"></div>
+            <span>两个柱状图均已成功生成，符合需求展示要求。</span>
+        </footer>
+    </div>
+
+</body>
+</html>
