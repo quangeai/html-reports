@@ -1,0 +1,510 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>食品界大事件速览 - 小红书风格</title>
+    <!-- 引入 html2canvas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #f5f6f8;
+            --card-bg: #ffffff;
+            --primary-color: #ff2442; /* 小红书红 */
+            --text-main: #333333;
+            --text-sub: #666666;
+            --text-light: #999999;
+            --shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+            --radius: 20px;
+            --spacing: 24px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding-bottom: 100px; /* 留出按钮空间 */
+        }
+
+        /* 模拟手机容器 */
+        .container {
+            width: 100%;
+            max-width: 414px; /* iPhone Max width */
+            padding: 20px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* 卡片通用样式 */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 32px 24px;
+            overflow: hidden;
+            position: relative;
+            width: 100%;
+            min-height: 500px; /* 保证截图高度一致 */
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        /* 装饰元素 */
+        .decor-circle {
+            position: absolute;
+            border-radius: 50%;
+            z-index: 0;
+        }
+        .decor-1 {
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            top: -50px;
+            right: -50px;
+            opacity: 0.2;
+        }
+        .decor-2 {
+            width: 150px;
+            height: 150px;
+            background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+            bottom: -30px;
+            left: -30px;
+            opacity: 0.15;
+        }
+
+        /* 排版组件 */
+        .content-wrapper {
+            position: relative;
+            z-index: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 12px;
+            color: var(--text-main);
+        }
+
+        h2 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        h2::before {
+            content: '';
+            display: block;
+            width: 4px;
+            height: 20px;
+            background-color: var(--primary-color);
+            border-radius: 2px;
+        }
+
+        p.subtitle {
+            font-size: 16px;
+            color: var(--text-sub);
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        .tags {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            font-size: 12px;
+            color: var(--primary-color);
+            background-color: rgba(255, 36, 66, 0.08);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        /* 列表样式 */
+        .news-item {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed #eee;
+        }
+
+        .news-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .news-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            line-height: 1.4;
+            color: #2c2c2c;
+        }
+
+        .news-desc {
+            font-size: 14px;
+            color: var(--text-sub);
+            line-height: 1.6;
+            text-align: justify;
+        }
+
+        .highlight {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .emoji-icon {
+            margin-right: 6px;
+        }
+
+        /* 封面图 */
+        .cover-img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            background-color: #eee;
+        }
+
+        /* 底部互动区 */
+        .footer-cta {
+            margin-top: auto;
+            text-align: center;
+            padding-top: 20px;
+        }
+        
+        .footer-box {
+            background: #fff0f2;
+            padding: 16px;
+            border-radius: 12px;
+        }
+
+        .footer-text {
+            font-size: 14px;
+            color: var(--text-main);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .footer-sub {
+            font-size: 12px;
+            color: var(--text-sub);
+        }
+
+        .page-number {
+            position: absolute;
+            bottom: 16px;
+            right: 20px;
+            font-size: 12px;
+            color: #ddd;
+            font-weight: 600;
+        }
+
+        /* 悬浮下载按钮 */
+        .action-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 16px 20px;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .btn-download {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(255, 36, 66, 0.3);
+            transition: transform 0.2s;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .btn-download:active {
+            transform: scale(0.98);
+        }
+        
+        .btn-download:disabled {
+            background-color: #ccc;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        /* 提示框 */
+        #toast {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            z-index: 200;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- 第1页：封面 -->
+        <div class="card" id="card-1">
+            <div class="decor-circle decor-1"></div>
+            <div class="content-wrapper">
+                <img src="https://picsum.photos/seed/foodnews/600/360" alt="Food News" class="cover-img">
+                <h1>🍔 食品界大事件速览</h1>
+                <p class="subtitle">从毒油风暴到股市震荡，这一周食品行业发生了什么？</p>
+                <div class="tags">
+                    <span class="tag">#食品安全</span>
+                    <span class="tag">#行业动态</span>
+                    <span class="tag">#避坑指南</span>
+                </div>
+                
+                <div style="margin-top: auto;">
+                    <div style="background: #f8f9fa; padding: 16px; border-radius: 12px;">
+                        <p style="font-size: 14px; color: #555; line-height: 1.6;">
+                            <strong>本期看点：</strong><br>
+                            ⚠️ 毒油风暴延烧，哪些大厂受影响？<br>
+                            📉 港股食品饮料板块下跌<br>
+                            🥤 7-11 & CoCo 7月优惠汇总
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="page-number">P.1</div>
+        </div>
+
+        <!-- 第2页：食品安全与负面 -->
+        <div class="card" id="card-2">
+            <div class="content-wrapper">
+                <h2>⚠️ 食品安全预警</h2>
+                
+                <div class="news-item">
+                    <div class="news-title"><span class="emoji-icon">🛢️</span>毒油风暴延烧！食品大厂也受害</div>
+                    <div class="news-desc">
+                        因应中联油脂大豆油验出致癌物超标，<span class="highlight">联华食品</span>紧急发声，旗下2款冷冻商品受波及，已停售回收。可樂果等休閒食品未受影響。
+                    </div>
+                </div>
+
+                <div class="news-item">
+                    <div class="news-title"><span class="emoji-icon">🥬</span>知名超市农药残留超标</div>
+                    <div class="news-desc">
+                        深圳市市监局发布通告，<span class="highlight">沃尔玛、小象超市、永辉超市</span>等知名超市因部分食品农药残留超标被检出不合格。买菜需擦亮眼！
+                    </div>
+                </div>
+
+                <div class="news-item">
+                    <div class="news-title"><span class="emoji-icon">🛡️</span>福寿启动预防性回收</div>
+                    <div class="news-desc">
+                        受上游供应商中联油脂特定批号大豆原料检出致癌物超标波及，<span class="highlight">福寿</span>第一时间启动食安应变机制，针对旗下特定油品执行预防性下架与回收。
+                    </div>
+                </div>
+            </div>
+            <div class="page-number">P.2</div>
+        </div>
+
+        <!-- 第3页：股市与业绩 -->
+        <div class="card" id="card-3">
+            <div class="content-wrapper">
+                <h2>📈 资本市场动态</h2>
+                
+                <div class="news-item">
+                    <div class="news-title"><span class="emoji-icon">📊</span>养殖业概念震荡走强</div>
+                    <div class="news-desc">
+                        养殖业概念股表现震荡走强，其中<span class="highlight">天邦食品</span>与<span class="highlight">益生股份</span>双双涨停。市场情绪回暖明显。
+                    </div>
+                </div>
+
+                <div class="news-item">
+                    <div class="news-title"><span class="emoji-icon">📉</span>港股：食品饮料板块下跌</div>
+                    <div class="news-desc">
+                        港股收评显示恒生科技指数涨近2%，半导体板块全天爆发，而有色金属及<span class="highlight">食品饮料板块下跌</span>。
+                    </div>
+                </div>
+
+                <div class="news-item">
+                    <div class="news-title"><span class="emoji-icon">💰</span>阿波罗食品业绩创新高</div>
+                    <div class="news-desc">
+                        得益于本土市场重组上市策略，阿波罗食品全年营业额创历史新高，净利录得3450万令吉，并宣布派发<span class="highlight">每股30仙</span>的中期股息。
+                    </div>
+                </div>
+            </div>
+            <div class="page-number">P.3</div>
+        </div>
+
+        <!-- 第4页：优惠与综合 -->
+        <div class="card" id="card-4">
+            <div class="content-wrapper">
+                <h2>🥤 优惠与综合资讯</h2>
+                
+                <div class="news-item">
+                    <div class="news-title"><span class="emoji-icon">🎉</span>7月饮品消暑优惠</div>
+                    <div class="news-desc">
+                        7月饮品优惠活动开始！<span class="highlight">7-11推出咖啡买7送7</span>，CoCo珍奶买一送一，还有水果茶买2送2及哈根达斯优惠。夏日快乐水get！
+                    </div>
+                </div>
+
+                <div class="news-item">
+                    <div class="news-title"><span class="emoji-icon">🌏</span>全球能源动荡推高食品价</div>
+                    <div class="news-desc">
+                        马来西亚官员表示，全球能源市场的动荡将导致<span class="highlight">食品价格上涨</span>。未来物价走势需持续关注。
+                    </div>
+                </div>
+
+                <div class="news-item">
+                    <div class="news-title"><span class="emoji-icon">🕯️</span>老牌食品大厂独董辞世</div>
+                    <div class="news-desc">
+                        烘焙餐饮原料大厂<span class="highlight">德麦食品</span>证实，担任独立董事超过10年的杨蒂敏不幸辞世，后续缺额将按规定补选。
+                    </div>
+                </div>
+            </div>
+            <div class="page-number">P.4</div>
+        </div>
+
+        <!-- 第5页：结尾 -->
+        <div class="card" id="card-5">
+            <div class="decor-circle decor-2"></div>
+            <div class="content-wrapper" style="justify-content: center; align-items: center; text-align: center;">
+                <div style="font-size: 48px; margin-bottom: 16px;">🍱🥗🥘</div>
+                <h1 style="margin-bottom: 16px;">民以食为天<br>食以安为先</h1>
+                <p class="subtitle" style="margin-bottom: 40px;">
+                    关注食品安全，理性看待市场波动。<br>
+                    无论是投资还是日常买菜，都要擦亮眼睛！
+                </p>
+
+                <div class="footer-cta">
+                    <div class="footer-box">
+                        <div class="footer-text">关注我，获取更多资讯 👇</div>
+                        <div class="footer-sub">点赞 · 收藏 · 评论</div>
+                    </div>
+                </div>
+            </div>
+            <div class="page-number">P.5</div>
+        </div>
+    </div>
+
+    <div class="action-bar">
+        <button class="btn-download" id="downloadBtn" onclick="downloadAll()">📸 一键生成并下载所有图片</button>
+    </div>
+
+    <div id="toast">正在生成图片...</div>
+
+    <script>
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.style.opacity = '1';
+            setTimeout(() => {
+                toast.style.opacity = '0';
+            }, 2000);
+        }
+
+        async function downloadCard(cardId, index) {
+            const card = document.getElementById(cardId);
+            const btn = document.getElementById('downloadBtn');
+            
+            try {
+                // 配置 html2canvas
+                const canvas = await html2canvas(card, {
+                    scale: 3, // 高清
+                    useCORS: true, // 允许跨域图片
+                    backgroundColor: '#ffffff', // 确保背景不透明
+                    logging: false,
+                    windowWidth: 414,
+                    width: card.offsetWidth,
+                    height: card.offsetHeight
+                });
+
+                // 转换为图片数据
+                const imgData = canvas.toDataURL('image/png');
+
+                // 创建下载链接
+                const link = document.createElement('a');
+                link.href = imgData;
+                link.download = `food-news-${index}.png`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+            } catch (err) {
+                console.error('生成失败:', err);
+                showToast(`第 ${index} 页生成失败`);
+                throw err;
+            }
+        }
+
+        async function downloadAll() {
+            const btn = document.getElementById('downloadBtn');
+            const originalText = btn.innerText;
+            
+            btn.disabled = true;
+            btn.innerText = '正在生成中... (1/5)';
+            showToast('开始生成图片，请稍候...');
+
+            try {
+                // 按顺序下载，避免浏览器同时处理过多请求卡顿
+                const cards = ['card-1', 'card-2', 'card-3', 'card-4', 'card-5'];
+                
+                for (let i = 0; i < cards.length; i++) {
+                    btn.innerText = `正在生成中... (${i + 1}/${cards.length})`;
+                    await downloadCard(cards[i], i + 1);
+                    // 稍微延迟，避免浏览器阻止连续下载
+                    await new Promise(r => setTimeout(r, 500)); 
+                }
+
+                btn.innerText = '✅ 下载完成！';
+                showToast('所有图片已下载');
+                
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                }, 2000);
+
+            } catch (error) {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
+```
