@@ -1,0 +1,956 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>综合故障排错仿真系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+        }
+
+        body {
+            background-color: #0a0a0a;
+            color: #b0b0b0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 左侧步骤导航 */
+        .step-sidebar {
+            width: 200px;
+            background-color: #1a1a1a;
+            border-right: 1px solid #333;
+            padding: 20px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .step-btn {
+            background-color: #1e1e1e;
+            color: #b0b0b0;
+            border: 1px solid #333;
+            padding: 12px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .step-btn.active {
+            background-color: #5e1a1a;
+            border-color: #cc3333;
+            box-shadow: 0 0 8px rgba(204, 51, 51, 0.5);
+        }
+
+        .step-btn.active .step-number {
+            color: #ffaa00;
+            font-weight: bold;
+        }
+
+        .step-btn.completed {
+            color: #6a9955;
+            border-color: #3c6e3c;
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 24px;
+            text-align: center;
+            margin-right: 8px;
+        }
+
+        /* 右侧主操作区 */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* 拓扑图 */
+        .topology-container {
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 4px;
+            padding: 20px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            position: relative;
+        }
+
+        .topology-node {
+            width: 120px;
+            height: 80px;
+            background-color: #2d2d2d;
+            border: 2px solid #333;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .topology-node.fault {
+            background-color: #5e1a1a;
+            border-color: #cc3333;
+            box-shadow: 0 0 10px rgba(204, 51, 51, 0.6);
+        }
+
+        .topology-arrow {
+            font-size: 24px;
+            color: #666;
+        }
+
+        .topology-legend {
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            font-size: 12px;
+        }
+
+        .legend-red {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background-color: #5e1a1a;
+            border: 1px solid #cc3333;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+
+        /* 仿真终端 */
+        .terminal-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .terminal-output {
+            background-color: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 4px;
+            padding: 15px;
+            flex: 1;
+            overflow-y: auto;
+            max-height: 300px;
+            font-size: 14px;
+            line-height: 1.4;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .terminal-input-area {
+            display: flex;
+            gap: 10px;
+        }
+
+        #command-input {
+            flex: 1;
+            background-color: #1e1e1e;
+            border: 1px solid #333;
+            border-radius: 4px;
+            padding: 10px;
+            color: #b0b0b0;
+            font-size: 14px;
+        }
+
+        #command-input:focus {
+            outline: none;
+            border-color: #cc3333;
+            box-shadow: 0 0 5px rgba(204, 51, 51, 0.5);
+        }
+
+        .btn {
+            background-color: #1e1e1e;
+            border: 1px solid #333;
+            border-radius: 4px;
+            padding: 10px 20px;
+            color: #b0b0b0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #2d2d2d;
+            border-color: #555;
+        }
+
+        .btn.primary {
+            background-color: #5e1a1a;
+            border-color: #cc3333;
+        }
+
+        .btn.primary:hover {
+            background-color: #7a2a2a;
+            box-shadow: 0 0 8px rgba(204, 51, 51, 0.4);
+        }
+
+        /* 终端文字颜色 */
+        .error-text { color: #cc3333; }
+        .success-text { color: #6a9955; }
+        .warn-text { color: #cc9933; }
+        .system-text { color: #569cd6; }
+
+        /* 滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="step-sidebar">
+        <button class="step-btn active" data-step="1">
+            <span class="step-number">①</span>场景复现
+        </button>
+        <button class="step-btn" data-step="2">
+            <span class="step-number">②</span>查看日志
+        </button>
+        <button class="step-btn" data-step="3">
+            <span class="step-number">③</span>端口检测
+        </button>
+        <button class="step-btn" data-step="4">
+            <span class="step-number">④</span>DNS核对
+        </button>
+        <button class="step-btn" data-step="5">
+            <span class="step-number">⑤</span>校验案例
+        </button>
+    </div>
+
+    <div class="main-content">
+        <!-- 拓扑图 -->
+        <div class="topology-container">
+            <div class="topology-node" id="client-node">客户端</div>
+            <div class="topology-arrow">→</div>
+            <div class="topology-node" id="fw-node">防火墙</div>
+            <div class="topology-arrow">→</div>
+            <div class="topology-node" id="web-node">Web服务器</div>
+            <div style="position: absolute; top: 20px; right: 50px;">
+                <div class="topology-node" id="dns-node">DNS服务器</div>
+            </div>
+            <div class="topology-legend">
+                <span class="legend-red"></span>红色节点表示存在故障
+            </div>
+        </div>
+
+        <!-- 仿真终端 -->
+        <div class="terminal-container">
+            <div class="terminal-output" id="terminal-output"></div>
+            <div class="terminal-input-area">
+                <input type="text" id="command-input" placeholder="输入命令... 例如: show faults, check logs, fix">
+                <button class="btn primary" id="execute-btn">执行</button>
+                <button class="btn" id="regenerate-btn">重新生成故障</button>
+                <button class="btn" id="verify-btn">自动校验</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM元素
+        const stepBtns = document.querySelectorAll('.step-btn');
+        const terminalOutput = document.getElementById('terminal-output');
+        const commandInput = document.getElementById('command-input');
+        const executeBtn = document.getElementById('execute-btn');
+        const regenerateBtn = document.getElementById('regenerate-btn');
+        const verifyBtn = document.getElementById('verify-btn');
+        
+        // 拓扑节点
+        const clientNode = document.getElementById('client-node');
+        const fwNode = document.getElementById('fw-node');
+        const webNode = document.getElementById('web-node');
+        const dnsNode = document.getElementById('dns-node');
+
+        // 故障池
+        const faultPool = {
+            svc: {
+                name: "Web服务未启动",
+                log: "[IIS] Service status: STOPPED - W3SVC not running",
+                node: webNode
+            },
+            fw: {
+                name: "防火墙80端口拦截",
+                log: "[Firewall] Inbound rule missing for port 80",
+                node: fwNode
+            },
+            dns: {
+                name: "DNS解析记录错误",
+                log: "[DNS] A record for www.example.com missing",
+                node: dnsNode
+            }
+        };
+
+        // 当前故障列表
+        let currentFaults = [];
+        // 已完成步骤
+        let completedSteps = new Set();
+
+        // 初始化
+        function init() {
+            // 生成随机故障
+            generateRandomFaults();
+            // 更新拓扑图
+            updateTopology();
+            // 初始化终端
+            clearTerminal();
+            addToTerminal("综合故障仿真已启动，请按左侧步骤排查。", "system-text");
+            addToTerminal("
+当前故障列表：", "warn-text");
+            currentFaults.forEach(fault => {
+                addToTerminal(`- ${faultPool[fault].name}`, "warn-text");
+            });
+            addToTerminal("
+可用命令：show faults, check logs, netstat, nslookup, fix", "system-text");
+            
+            // 重置步骤状态
+            stepBtns.forEach(btn => {
+                btn.classList.remove('active', 'completed');
+            });
+            stepBtns[0].classList.add('active');
+            completedSteps.clear();
+        }
+
+        // 生成随机故障（2-3个）
+        function generateRandomFaults() {
+            const faultKeys = Object.keys(faultPool);
+            const faultCount = Math.floor(Math.random() * 2) + 2; // 2或3个故障
+            currentFaults = [];
+            
+            // 随机选择不重复的故障
+            while (currentFaults.length < faultCount) {
+                const randomIndex = Math.floor(Math.random() * faultKeys.length);
+                const faultKey = faultKeys[randomIndex];
+                if (!currentFaults.includes(faultKey)) {
+                    currentFaults.push(faultKey);
+                }
+            }
+        }
+
+        // 更新拓扑图故障节点
+        function updateTopology() {
+            // 重置所有节点
+            [clientNode, fwNode, webNode, dnsNode].forEach(node => {
+                node.classList.remove('fault');
+            });
+            
+            // 标记故障节点
+            currentFaults.forEach(fault => {
+                faultPool[fault].node.classList.add('fault');
+            });
+        }
+
+        // 添加内容到终端
+        function addToTerminal(text, className = "") {
+            const div = document.createElement('div');
+            div.textContent = text;
+            if (className) {
+                div.classList.add(className);
+            }
+            terminalOutput.appendChild(div);
+            // 自动滚动到底部
+            terminalOutput.scrollTop = terminalOutput.scrollHeight;
+        }
+
+        // 清除终端内容
+        function clearTerminal() {
+            terminalOutput.innerHTML = '';
+        }
+
+        // 切换步骤
+        function switchStep(stepNumber) {
+            // 更新按钮状态
+            stepBtns.forEach((btn, index) => {
+                btn.classList.remove('active');
+                if (index + 1 === stepNumber) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // 显示对应步骤提示
+            const stepTexts = [
+                "场景复现：用户反馈无法访问www.example.com网站，请进行故障排查。",
+                "查看日志：使用check logs命令查看系统日志，定位故障原因。",
+                "端口检测：使用netstat或test-port命令检测80端口连通性。",
+                "DNS核对：使用nslookup或check-dns命令检测DNS解析是否正常。",
+                "校验案例：点击自动校验按钮验证故障是否已修复，并查看拓展案例。"
+            ];
+            
+            addToTerminal(`
+[步骤${stepNumber}] ${stepTexts[stepNumber-1]}`, "system-text");
+        }
+
+        // 执行命令
+        function executeCommand(command) {
+            addToTerminal(`
+> ${command}`);
+            
+            const cmd = command.trim().toLowerCase();
+            
+            switch(true) {
+                case cmd === 'show faults' || cmd === '故障':
+                    addToTerminal("
+当前故障列表：", "warn-text");
+                    if (currentFaults.length === 0) {
+                        addToTerminal("- 无故障", "success-text");
+                    } else {
+                        currentFaults.forEach(fault => {
+                            addToTerminal(`- ${faultPool[fault].name}`, "warn-text");
+                        });
+                    }
+                    break;
+                
+                case cmd === 'check logs' || cmd === '查看日志' || cmd === 'iis日志':
+                    addToTerminal("
+=== 系统日志 ===", "system-text");
+                    if (currentFaults.length === 0) {
+                        addToTerminal("所有系统服务运行正常", "success-text");
+                    } else {
+                        currentFaults.forEach(fault => {
+                            addToTerminal(faultPool[fault].log, "error-text");
+                        });
+                    }
+                    // 标记步骤2完成
+                    completedSteps.add(2);
+                    stepBtns[1].classList.add('completed');
+                    break;
+                
+                case cmd === 'netstat' || cmd === 'test-port' || cmd === '端口':
+                    addToTerminal("
+=== 端口检测结果 ===", "system-text");
+                    if (currentFaults.includes('fw')) {
+                        addToTerminal("错误：防火墙拦截了80端口的入站连接", "error-text");
+                    } else if (currentFaults.includes('svc')) {
+                        addToTerminal("错误：Web服务未启动，80端口未监听", "error-text");
+                    } else {
+                        addToTerminal("80端口监听正常，连通性良好", "success-text");
+                    }
+                    // 标记步骤3完成
+                    completedSteps.add(3);
+                    stepBtns[2].classList.add('completed');
+                    break;
+                
+                case cmd === 'nslookup' || cmd === 'check-dns' || cmd === 'dns':
+                    addToTerminal("
+=== DNS解析检测 ===", "system-text");
+                    if (currentFaults.includes('dns')) {
+                        addToTerminal("错误：无法找到www.example.com的A记录", "error-text");
+                    } else {
+                        addToTerminal("DNS解析正常：www.example.com -> 192.168.1.100", "success-text");
+                    }
+                    // 标记步骤4完成
+                    completedSteps.add(4);
+                    stepBtns[3].classList.add('completed');
+                    break;
+                
+                case cmd === 'fix' || cmd === '修复':
+                    addToTerminal("
+=== 执行修复操作 ===", "system-text");
+                    currentFaults.forEach(fault => {
+                        switch(fault) {
+                            case 'svc':
+                                addToTerminal("执行：Start-Service W3SVC", "success-text");
+                                addToTerminal("Web服务已启动", "success-text");
+                               ```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>综合故障排错仿真系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+        }
+
+        body {
+            background-color: #0a0a0a;
+            color: #b0b0b0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 左侧步骤导航 */
+        .step-sidebar {
+            width: 200px;
+            background-color: #1a1a1a;
+            border-right: 1px solid #333;
+            padding: 20px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .step-btn {
+            background-color: #1e1e1e;
+            color: #b0b0b0;
+            border: 1px solid #333;
+            padding: 12px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .step-btn.active {
+            background-color: #5e1a1a;
+            border-color: #cc3333;
+            box-shadow: 0 0 8px rgba(204, 51, 51, 0.5);
+        }
+
+        .step-btn.active .step-number {
+            color: #ffaa00;
+            font-weight: bold;
+        }
+
+        .step-btn.completed {
+            color: #6a9955;
+            border-color: #3c6e3c;
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 24px;
+            text-align: center;
+            margin-right: 8px;
+        }
+
+        /* 右侧主操作区 */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* 拓扑图 */
+        .topology-container {
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 4px;
+            padding: 20px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            position: relative;
+        }
+
+        .topology-node {
+            width: 120px;
+            height: 80px;
+            background-color: #2d2d2d;
+            border: 2px solid #333;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .topology-node.fault {
+            background-color: #5e1a1a;
+            border-color: #cc3333;
+            box-shadow: 0 0 10px rgba(204, 51, 51, 0.6);
+        }
+
+        .topology-arrow {
+            font-size: 24px;
+            color: #666;
+        }
+
+        .topology-legend {
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            font-size: 12px;
+        }
+
+        .legend-red {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background-color: #5e1a1a;
+            border: 1px solid #cc3333;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+
+        /* 仿真终端 */
+        .terminal-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .terminal-output {
+            background-color: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 4px;
+            padding: 15px;
+            flex: 1;
+            overflow-y: auto;
+            max-height: 300px;
+            font-size: 14px;
+            line-height: 1.4;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .terminal-input-area {
+            display: flex;
+            gap: 10px;
+        }
+
+        #command-input {
+            flex: 1;
+            background-color: #1e1e1e;
+            border: 1px solid #333;
+            border-radius: 4px;
+            padding: 10px;
+            color: #b0b0b0;
+            font-size: 14px;
+        }
+
+        #command-input:focus {
+            outline: none;
+            border-color: #cc3333;
+            box-shadow: 0 0 5px rgba(204, 51, 51, 0.5);
+        }
+
+        .btn {
+            background-color: #1e1e1e;
+            border: 1px solid #333;
+            border-radius: 4px;
+            padding: 10px 20px;
+            color: #b0b0b0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #2d2d2d;
+            border-color: #555;
+        }
+
+        .btn.primary {
+            background-color: #5e1a1a;
+            border-color: #cc3333;
+        }
+
+        .btn.primary:hover {
+            background-color: #7a2a2a;
+            box-shadow: 0 0 8px rgba(204, 51, 51, 0.4);
+        }
+
+        /* 终端文字颜色 */
+        .error-text { color: #cc3333; }
+        .success-text { color: #6a9955; }
+        .warn-text { color: #cc9933; }
+        .system-text { color: #569cd6; }
+
+        /* 滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="step-sidebar">
+        <button class="step-btn active" data-step="1">
+            <span class="step-number">①</span>场景复现
+        </button>
+        <button class="step-btn" data-step="2">
+            <span class="step-number">②</span>查看日志
+        </button>
+        <button class="step-btn" data-step="3">
+            <span class="step-number">③</span>端口检测
+        </button>
+        <button class="step-btn" data-step="4">
+            <span class="step-number">④</span>DNS核对
+        </button>
+        <button class="step-btn" data-step="5">
+            <span class="step-number">⑤</span>校验案例
+        </button>
+    </div>
+
+    <div class="main-content">
+        <!-- 拓扑图 -->
+        <div class="topology-container">
+            <div class="topology-node" id="client-node">客户端</div>
+            <div class="topology-arrow">→</div>
+            <div class="topology-node" id="fw-node">防火墙</div>
+            <div class="topology-arrow">→</div>
+            <div class="topology-node" id="web-node">Web服务器</div>
+            <div style="position: absolute; top: 20px; right: 50px;">
+                <div class="topology-node" id="dns-node">DNS服务器</div>
+            </div>
+            <div class="topology-legend">
+                <span class="legend-red"></span>红色节点表示存在故障
+            </div>
+        </div>
+
+        <!-- 仿真终端 -->
+        <div class="terminal-container">
+            <div class="terminal-output" id="terminal-output"></div>
+            <div class="terminal-input-area">
+                <input type="text" id="command-input" placeholder="输入命令... 例如: show faults, check logs, fix">
+                <button class="btn primary" id="execute-btn">执行</button>
+                <button class="btn" id="regenerate-btn">重新生成故障</button>
+                <button class="btn" id="verify-btn">自动校验</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM元素
+        const stepBtns = document.querySelectorAll('.step-btn');
+        const terminalOutput = document.getElementById('terminal-output');
+        const commandInput = document.getElementById('command-input');
+        const executeBtn = document.getElementById('execute-btn');
+        const regenerateBtn = document.getElementById('regenerate-btn');
+        const verifyBtn = document.getElementById('verify-btn');
+        
+        // 拓扑节点
+        const clientNode = document.getElementById('client-node');
+        const fwNode = document.getElementById('fw-node');
+        const webNode = document.getElementById('web-node');
+        const dnsNode = document.getElementById('dns-node');
+
+        // 故障池
+        const faultPool = {
+            svc: {
+                name: "Web服务未启动",
+                log: "[IIS] Service status: STOPPED - W3SVC not running",
+                node: webNode
+            },
+            fw: {
+                name: "防火墙80端口拦截",
+                log: "[Firewall] Inbound rule missing for port 80",
+                node: fwNode
+            },
+            dns: {
+                name: "DNS解析记录错误",
+                log: "[DNS] A record for www.example.com missing",
+                node: dnsNode
+            }
+        };
+
+        // 当前故障列表
+        let currentFaults = [];
+        // 已完成步骤
+        let completedSteps = new Set();
+
+        // 初始化
+        function init() {
+            // 生成随机故障
+            generateRandomFaults();
+            // 更新拓扑图
+            updateTopology();
+            // 初始化终端
+            clearTerminal();
+            addToTerminal("综合故障仿真已启动，请按左侧步骤排查。", "system-text");
+            addToTerminal("
+当前故障列表：", "warn-text");
+            currentFaults.forEach(fault => {
+                addToTerminal(`- ${faultPool[fault].name}`, "warn-text");
+            });
+            addToTerminal("
+可用命令：show faults, check logs, netstat, nslookup, fix", "system-text");
+            
+            // 重置步骤状态
+            stepBtns.forEach(btn => {
+                btn.classList.remove('active', 'completed');
+            });
+            stepBtns[0].classList.add('active');
+            completedSteps.clear();
+        }
+
+        // 生成随机故障（2-3个）
+        function generateRandomFaults() {
+            const faultKeys = Object.keys(faultPool);
+            const faultCount = Math.floor(Math.random() * 2) + 2; // 2或3个故障
+            currentFaults = [];
+            
+            // 随机选择不重复的故障
+            while (currentFaults.length < faultCount) {
+                const randomIndex = Math.floor(Math.random() * faultKeys.length);
+                const faultKey = faultKeys[randomIndex];
+                if (!currentFaults.includes(faultKey)) {
+                    currentFaults.push(faultKey);
+                }
+            }
+        }
+
+        // 更新拓扑图故障节点
+        function updateTopology() {
+            // 重置所有节点
+            [clientNode, fwNode, webNode, dnsNode].forEach(node => {
+                node.classList.remove('fault');
+            });
+            
+            // 标记故障节点
+            currentFaults.forEach(fault => {
+                faultPool[fault].node.classList.add('fault');
+            });
+        }
+
+        // 添加内容到终端
+        function addToTerminal(text, className = "") {
+            const div = document.createElement('div');
+            div.textContent = text;
+            if (className) {
+                div.classList.add(className);
+            }
+            terminalOutput.appendChild(div);
+            // 自动滚动到底部
+            terminalOutput.scrollTop = terminalOutput.scrollHeight;
+        }
+
+        // 清除终端内容
+        function clearTerminal() {
+            terminalOutput.innerHTML = '';
+        }
+
+        // 切换步骤
+        function switchStep(stepNumber) {
+            // 更新按钮状态
+            stepBtns.forEach((btn, index) => {
+                btn.classList.remove('active');
+                if (index + 1 === stepNumber) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // 显示对应步骤提示
+            const stepTexts = [
+                "场景复现：用户反馈无法访问www.example.com网站，请进行故障排查。",
+                "查看日志：使用check logs命令查看系统日志，定位故障原因。",
+                "端口检测：使用netstat或test-port命令检测80端口连通性。",
+                "DNS核对：使用nslookup或check-dns命令检测DNS解析是否正常。",
+                "校验案例：点击自动校验按钮验证故障是否已修复，并查看拓展案例。"
+            ];
+            
+            addToTerminal(`
+[步骤${stepNumber}] ${stepTexts[stepNumber-1]}`, "system-text");
+        }
+
+        // 执行命令
+        function executeCommand(command) {
+            addToTerminal(`
+> ${command}`);
+            
+            const cmd = command.trim().toLowerCase();
+            
+            switch(true) {
+                case cmd === 'show faults' || cmd === '故障':
+                    addToTerminal("
+当前故障列表：", "warn-text");
+                    if (currentFaults.length === 0) {
+                        addToTerminal("- 无故障", "success-text");
+                    } else {
+                        currentFaults.forEach(fault => {
+                            addToTerminal(`- ${faultPool[fault].name}`, "warn-text");
+                        });
+                    }
+                    break;
+                
+                case cmd === 'check logs' || cmd === '查看日志' || cmd === 'iis日志':
+                    addToTerminal("
+=== 系统日志 ===", "system-text");
+                    if (currentFaults.length === 0) {
+                        addToTerminal("所有系统服务运行正常", "success-text");
+                    } else {
+                        currentFaults.forEach(fault => {
+                            addToTerminal(faultPool[fault].log, "error-text");
+                        });
+                    }
+                    // 标记步骤2完成
+                    completedSteps.add(2);
+                    stepBtns[1].classList.add('completed');
+                    break;
+                
+                case cmd === 'netstat' || cmd === 'test-port' || cmd === '端口':
+                    addToTerminal("
+=== 端口检测结果 ===", "system-text");
+                    if (currentFaults.includes('fw')) {
+                        addToTerminal("错误：防火墙拦截了80端口的入站连接", "error-text");
+                    } else if (currentFaults.includes('svc')) {
+                        addToTerminal("错误：Web服务未启动，80端口未监听", "error-text");
+                    } else {
+                        addToTerminal("80端口监听正常，连通性良好", "success-text");
+                    }
+                    // 标记步骤3完成
+                    completedSteps.add(3);
+                    stepBtns[2].classList.add('completed');
+                    break;
+                
+                case cmd === 'nslookup' || cmd === 'check-dns' || cmd === 'dns':
+                    addToTerminal("
+=== DNS解析检测 ===", "system-text");
+                    if (currentFaults.includes('dns')) {
+                        addToTerminal("错误：无法找到www.example.com的A记录", "error-text");
+                    } else {
+                        addToTerminal("DNS解析正常：www.example.com -> 192.168.1.100", "success-text");
+                    }
+                    // 标记步骤4完成
+                    completedSteps.add(4);
+                    stepBtns[3].classList.add('completed');
+                    break;
+                
+                case cmd === 'fix' || cmd === '修复':
+                    addToTerminal("
+=== 执行修复操作 ===", "system-text");
+                    currentFaults.forEach(fault => {
+                        switch(fault) {
+                            case 'svc':
+                                addToTerminal("执行：Start-Service W3SVC", "success-text");
+                                addToTerminal("Web服务已启动", "success-text");
