@@ -1,0 +1,453 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教育强国新蓝图 - 小红书风格排版</title>
+    <!-- 引入 html2canvas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #ff2442; /* 小红书红 */
+            --bg-color: #f6f6f6;
+            --card-bg: #ffffff;
+            --text-main: #333333;
+            --text-sub: #666666;
+            --text-light: #999999;
+            --shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+            --radius: 20px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background-color: #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+
+        /* 模拟移动端容器 */
+        .app-container {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            padding: 0 10px;
+        }
+
+        /* 卡片基础样式 */
+        .card {
+            background-color: var(--card-bg);
+            width: 100%;
+            min-height: 600px; /* 保证截图高度 */
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 卡片内部通用布局 */
+        .card-content {
+            padding: 32px 24px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 封面页样式 */
+        .cover-card {
+            background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%);
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .cover-tag {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        .cover-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--text-main);
+            line-height: 1.3;
+            margin-bottom: 16px;
+        }
+
+        .cover-subtitle {
+            font-size: 18px;
+            color: var(--text-sub);
+            margin-bottom: 40px;
+            font-weight: 500;
+        }
+
+        .cover-deco {
+            width: 60px;
+            height: 6px;
+            background-color: var(--primary-color);
+            border-radius: 3px;
+            margin-bottom: 30px;
+        }
+
+        .tags-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .tag-item {
+            color: var(--primary-color);
+            background: rgba(255, 36, 66, 0.1);
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* 内容页样式 */
+        .page-header {
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px dashed #eee;
+        }
+
+        .page-num {
+            font-size: 12px;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .page-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .news-item {
+            margin-bottom: 24px;
+        }
+
+        .news-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .news-title::before {
+            content: attr(data-icon);
+            margin-right: 8px;
+            font-size: 18px;
+        }
+
+        .news-desc {
+            font-size: 14px;
+            color: var(--text-sub);
+            line-height: 1.6;
+            text-align: justify;
+        }
+
+        .highlight {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .source-box {
+            margin-top: 8px;
+            font-size: 12px;
+            color: #bbb;
+            font-style: italic;
+        }
+
+        /* 结尾页样式 */
+        .end-card {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .end-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .end-text {
+            font-size: 14px;
+            color: #ccc;
+            line-height: 1.6;
+            margin-bottom: 40px;
+            max-width: 80%;
+        }
+
+        .cta-box {
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 16px 32px;
+            border-radius: 50px;
+            background: rgba(255,255,255,0.05);
+        }
+
+        .cta-text {
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 2px;
+        }
+
+        /* 底部控制栏 */
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .btn-download {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 14px 40px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(255, 36, 66, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-download:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(255, 36, 66, 0.4);
+        }
+
+        .btn-download:active {
+            transform: translateY(0);
+        }
+
+        .status-msg {
+            font-size: 14px;
+            color: #666;
+            min-height: 20px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <!-- 卡片 1：封面 -->
+        <div class="card cover-card" id="card-1">
+            <div class="card-content">
+                <div class="cover-tag">教育热点</div>
+                <div class="cover-deco"></div>
+                <h1 class="cover-title">教育强国<br>“十五五”新蓝图</h1>
+                <p class="cover-subtitle">10条重磅新闻 · 深度解读</p>
+                <div class="tags-group">
+                    <span class="tag-item">#教育规划</span>
+                    <span class="tag-item">#干货满满</span>
+                    <span class="tag-item">#未来趋势</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 卡片 2：国家政策篇 -->
+        <div class="card" id="card-2">
+            <div class="card-content">
+                <div class="page-header">
+                    <div class="page-num">Page 01</div>
+                    <div class="page-title">国家战略部署</div>
+                </div>
+
+                <div class="news-item">
+                    <div class="news-title" data-icon="📢">“十五五”规划印发</div>
+                    <div class="news-desc">
+                        国务院印发《教育发展“十五五”规划》，着力提升学生能力素养。推进<span class="highlight">人工智能全学段教育</span>，加强科学素养与批判性思维培养。
+                    </div>
+                    <div class="source-box">来源：东方财富</div>
+                </div>
+
+                <div class="news-item">
+                    <div class="news-title" data-icon="🎯">2030目标确立</div>
+                    <div class="news-desc">
+                        规划提出，到2030年，教育强国建设取得显著成效，<span class="highlight">高质量教育体系基本建成</span>。
+                    </div>
+                    <div class="source-box">来源：东方财富</div>
+                </div>
+
+                <div class="news-item">
+                    <div class="news-title" data-icon="🏫">基础教育新变化</div>
+                    <div class="news-desc">
+                        探索延长义务教育年限，统筹设计基础教育<span class="highlight">十二年课程体系</span>。未来五年，中小学教育将有重大调整。
+                    </div>
+                    <div class="source-box">来源：新浪财经</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 卡片 3：地方与人文篇 -->
+        <div class="card" id="card-3">
+            <div class="card-content">
+                <div class="page-header">
+                    <div class="page-num">Page 02</div>
+                    <div class="page-title">地方实践与变迁</div>
+                </div>
+
+                <div class="news-item">
+                    <div class="news-title" data-icon="🏔️">西藏15年公费教育</div>
+                    <div class="news-desc">
+                        西藏率先实行15年公费教育，实现从学前到高中全免费。“受教育权得到了前所未有的保障”，这是人权答卷的生动体现。
+                    </div>
+                    <div class="source-box">来源：搜狐新闻</div>
+                </div>
+
+                <div class="news-item">
+                    <div class="news-title" data-icon="👨‍👩‍👧‍👦">三代人的教育故事</div>
+                    <div class="news-desc">
+                        西藏田野观察：记录三代人经历的教育变迁，见证知识如何改变命运，教育如何跨越式发展。
+                    </div>
+                    <div class="source-box">来源：新都市报</div>
+                </div>
+
+                <div class="news-item">
+                    <div class="news-title" data-icon="🏆">高校党建表彰</div>
+                    <div class="news-desc">
+                        省委教育工委表彰“两优一先”，广州新华学院曹颖男、吴翔及数智管理学院党委等荣获表彰，树立先锋榜样。
+                    </div>
+                    <div class="source-box">来源：广东教育在线</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 卡片 4：行业数据与思考 -->
+        <div class="card" id="card-4">
+            <div class="card-content">
+                <div class="page-header">
+                    <div class="page-num">Page 03</div>
+                    <div class="page-title">数据与深度思考</div>
+                </div>
+
+                <div class="news-item">
+                    <div class="news-title" data-icon="📈">高等教育迈入普及化</div>
+                    <div class="news-desc">
+                        高等教育毛入学率升至<span class="highlight">60.8%</span>，全面迈入普及化阶段。“十四五”期间累计输送5500万名高素质人才。
+                    </div>
+                    <div class="source-box">来源：光明网</div>
+                </div>
+
+                <div class="news-item">
+                    <div class="news-title" data-icon="⚖️">教育现场的平衡</div>
+                    <div class="news-desc">
+                        每逢学期结束，成绩、毕业、招生交织。在学生权利与教师尊严之间，教育需要重新找回平衡。
+                    </div>
+                    <div class="source-box">来源：联合报</div>
+                </div>
+
+                <div class="news-item">
+                    <div class="news-title" data-icon="🌏">海外关注</div>
+                    <div class="news-desc">
+                        董教总要求候选人就母语教育立场表态，并针对教育课题公开辩论，引发社会对教育政策的广泛关注。
+                    </div>
+                    <div class="source-box">来源：当今大马</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 卡片 5：结尾 -->
+        <div class="card end-card" id="card-5">
+            <div class="card-content">
+                <div class="end-title">教育是国之大计</div>
+                <p class="end-text">
+                    从国家顶层设计到基层生动实践，<br>
+                    每一项政策都关乎孩子的未来，<br>
+                    也关乎民族的复兴。
+                </p>
+                <div class="cta-box">
+                    <div class="cta-text">关注 收藏 点赞</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 操作区域 -->
+    <div class="controls">
+        <button class="btn-download" onclick="downloadAllCards()">一键生成图片</button>
+        <div class="status-msg" id="statusMsg">准备就绪，点击按钮开始下载</div>
+    </div>
+
+    <script>
+        async function downloadAllCards() {
+            const cards = document.querySelectorAll('.card');
+            const statusMsg = document.getElementById('statusMsg');
+            const btn = document.querySelector('.btn-download');
+            
+            btn.disabled = true;
+            btn.textContent = "生成中...";
+            btn.style.opacity = "0.7";
+
+            for (let i = 0; i < cards.length; i++) {
+                const card = cards[i];
+                statusMsg.textContent = `正在生成第 ${i + 1} / ${cards.length} 页...`;
+                
+                try {
+                    // 等待一小段时间确保UI更新
+                    await new Promise(resolve => setTimeout(resolve, 100));
+
+                    const canvas = await html2canvas(card, {
+                        scale: 2, // 提高清晰度
+                        backgroundColor: '#ffffff', // 确保背景不透明
+                        useCORS: true, // 允许跨域图片
+                        logging: false,
+                        windowWidth: 400 // 模拟视口宽度
+                    });
+
+                    // 转换为图片并下载
+                    const image = canvas.toDataURL("image/png");
+                    const link = document.createElement('a');
+                    link.download = `education-note-${i + 1}.png`;
+                    link.href = image;
+                    link.click();
+
+                } catch (error) {
+                    console.error(`生成第 ${i + 1} 页失败:`, error);
+                    statusMsg.textContent = `第 ${i + 1} 页生成失败，请重试`;
+                }
+            }
+
+            statusMsg.textContent = "✅ 所有图片已生成并下载！";
+            btn.textContent = "再次下载";
+            btn.disabled = false;
+            btn.style.opacity = "1";
+        }
+    </script>
+</body>
+</html>
+```
