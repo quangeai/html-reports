@@ -1,0 +1,309 @@
+以下是完整的宏观经济学名词解释消消乐游戏网页代码，满足所有需求：
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>宏观经济学名词解释消消乐</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background-color: #e6f9e6; /* 淡绿色背景 */
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            color: #2c5f2d;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        #game-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .bubble {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background-color: var(--bubble-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 15px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            transform: perspective(1000px) rotateY(0deg);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1), inset 0 -5px 10px rgba(0,0,0,0.05);
+            color: #333;
+        }
+
+        .bubble:hover {
+            transform: perspective(1000px) rotateY(5deg) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+
+        .bubble.selected {
+            border: 3px solid #ff6b6b;
+            transform: perspective(1000px) rotateY(10deg) scale(1.05);
+            box-shadow: 0 15px 30px rgba(255,107,107,0.3);
+            background-color: #fff3f3;
+        }
+
+        #success-msg {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 30px 50px;
+            border-radius: 15px;
+            font-size: 2em;
+            font-weight: bold;
+            color: #2c5f2d;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            z-index: 1000;
+            display: none;
+            text-align: center;
+        }
+
+        #firework-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+            display: none;
+        }
+
+        .firework-particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            animation: firework 1s ease-out forwards;
+        }
+
+        @keyframes firework {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--end-x), var(--end-y)) scale(0);
+                opacity: 0;
+            }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .bubble {
+                width: 150px;
+                height: 150px;
+                font-size: 1em;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>名词解释消消乐</h1>
+    <div id="game-container"></div>
+    <div id="success-msg">恭喜挑战成功🎉</div>
+    <div id="firework-container"></div>
+
+    <script>
+        // 名词与释义配对数据
+        const data = [
+            { term: "边际消费倾向（MPC）", definition: "增加的消费与增加的可支配收入的比率。" },
+            { term: "潜在GDP", definition: "经济资源充分利用时所能达到的最大产出水平。" },
+            { term: "挤出效应", definition: "政府支出增加导致私人投资减少的现象。" },
+            { term: "IS-LM模型", definition: "分析产品市场与货币市场同时均衡的宏观经济模型。" },
+            { term: "国内生产总值（GDP）", definition: "衡量一国或地区一定时期内生产的最终产品总价值的核心指标。" },
+            { term: "自然失业率", definition: "无货币因素干扰，劳动力市场均衡时的失业率。" },
+            { term: "菲利普斯曲线", definition: "描述失业率与通货膨胀率短期反向关系的曲线。" },
+            { term: "乘数效应", definition: "总需求变动引起国民收入倍数变动的效应。" }
+        ];
+
+        // 生成打乱的泡泡数组
+        function createBubbleList() {
+            const bubbles = [];
+            data.forEach(item => {
+                bubbles.push({ type: 'term', content: item.term, match: item.definition });
+                bubbles.push({ type: 'definition', content: item.definition, match: item.term });
+            });
+            // 打乱数组
+            return bubbles.sort(() => Math.random() - 0.5);
+        }
+
+        // 创建泡泡元素
+        function renderBubbles() {
+            const gameContainer = document.getElementById('game-container');
+            const bubbles = createBubbleList();
+            
+            // 浅色泡泡颜色池
+            const lightColors = [
+                '#f8f9fa', '#e9ecef', '#dee2e6', '#ced4da', 
+                '#adb5bd', '#f0f8ff', '#e6f7ff', '#f5f5dc'
+            ];
+
+            bubbles.forEach(bubble => {
+                const bubbleEl = document.createElement('div');
+                bubbleEl.className = 'bubble';
+                bubbleEl.textContent = bubble.content;
+                // 随机选择浅色
+                bubbleEl.style.setProperty('--bubble-color', lightColors[Math.floor(Math.random() * lightColors.length)]);
+                // 存储匹配信息
+                bubbleEl.dataset.match = bubble.match;
+                bubbleEl.addEventListener('click', handleBubbleClick);
+                gameContainer.appendChild(bubbleEl);
+            });
+        }
+
+        // 泡泡点击事件处理
+        let selectedBubble = null;
+        function handleBubbleClick(e) {
+            const currentBubble = e.target;
+            
+            // 取消当前选中
+            if (currentBubble === selectedBubble) {
+                currentBubble.classList.remove('selected');
+                selectedBubble = null;
+                return;
+            }
+
+            // 已有选中泡泡，进行匹配判断
+            if (selectedBubble) {
+                // 检查是否匹配
+                if (selectedBubble.dataset.match === currentBubble.textContent) {
+                    // 匹配成功，动画消失
+                    selectedBubble.style.transition = 'opacity 0.3s ease';
+                    currentBubble.style.transition = 'opacity 0.3s ease';
+                    selectedBubble.style.opacity = '0';
+                    currentBubble.style.opacity = '0';
+                    
+                    setTimeout(() => {
+                        selectedBubble.remove();
+                        currentBubble.remove();
+                        
+                        // 检查是否全部消除
+                        if (document.getElementById('game-container').children.length === 0) {
+                            showSuccess();
+                        }
+                    }, 300);
+                } else {
+                    // 匹配失败，取消选中
+                    selectedBubble.classList.remove('selected');
+                }
+                selectedBubble = null;
+            } else {
+                // 选中当前泡泡
+                currentBubble.classList.add('selected');
+                selectedBubble = currentBubble;
+            }
+        }
+
+        // 显示成功信息和烟花
+        function showSuccess() {
+            const successMsg = document.getElementById('success-msg');
+            successMsg.style.display = 'block';
+            createFireworks();
+            
+            // 3秒后自动隐藏成功提示
+            setTimeout(() => {
+                successMsg.style.display = 'none';
+            }, 3000);
+        }
+
+        // 生成烟花效果
+        function createFireworks() {
+            const fireworkContainer = document.getElementById('firework-container');
+            fireworkContainer.style.display = 'block';
+            
+            // 生成100个烟花粒子
+            for (let i = 0; i < 100; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'firework-particle';
+                
+                // 随机颜色
+                const hue = Math.floor(Math.random() * 360);
+                particle.style.backgroundColor = `hsl(${hue}, 70%, 50%)`;
+                
+                // 随机中心位置
+                const centerX = window.innerWidth / 2;
+                const centerY = window.innerHeight / 2;
+                particle.style.left = `${centerX + (Math.random() - 0.5) * 150}px`;
+                particle.style.top = `${centerY + (Math.random() - 0.5) * 150}px`;
+                
+                // 随机扩散方向和距离
+                const angle = Math.random() * Math.PI * 2;
+                const distance = Math.random() * 200 + 100;
+                const endX = Math.cos(angle) * distance;
+                const endY = Math.sin(angle) * distance;
+                
+                particle.style.setProperty('--end-x', `${endX}px`);
+                particle.style.setProperty('--end-y', `${endY}px`);
+                particle.style.animationDelay = `${Math.random() * 0.5}s`;
+                
+                fireworkContainer.appendChild(particle);
+                
+                // 动画结束后移除粒子
+                setTimeout(() => particle.remove(), 1000);
+            }
+            
+            // 2秒后隐藏烟花容器
+            setTimeout(() => {
+                fireworkContainer.style.display = 'none';
+            }, 2000);
+        }
+
+        // 页面加载完成后渲染游戏
+        window.addEventListener('load', renderBubbles);
+    </script>
+</body>
+</html>
+```
+
+### 游戏特点说明：
+1. **视觉设计**：
+   - 淡绿色背景营造舒适学习氛围
+   - 3D立体泡泡效果，带有阴影和旋转动画
+   - 随机浅色泡泡，避免视觉疲劳
+   - 响应式设计，适配移动端和桌面端
+
+2. **游戏功能**：
+   - 点击泡泡会高亮显示，再次点击取消选中
+   - 选中两个泡泡时自动判断是否匹配，匹配则平滑消失，不匹配则取消选中
+   - 所有泡泡匹配完成后，显示成功提示并触发烟花动画
+   - 名词和释义严格一一对应，无重复内容
+
+3. **交互体验**：
+   - 泡泡点击有反馈动画，悬停时轻微放大旋转
+   - 匹配成功时有渐隐动画，提升视觉体验
+   - 烟花效果随机生成，增加成功后的成就感
+
+你可以直接将这段代码保存为HTML文件，用浏览器打开即可开始游戏！
