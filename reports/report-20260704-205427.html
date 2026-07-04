@@ -1,0 +1,329 @@
+### 宏观经济学名词解释消消乐游戏
+
+根据您的需求，我设计了一个视觉吸引力强、交互体验流畅的消消乐游戏。游戏采用了3D立体泡泡效果，随机浅色配色，以及流畅的动画过渡。玩家需要将宏观经济学名词与其对应的解释进行匹配，全部匹配成功后会显示庆祝动画。
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>宏观经济学名词解释消消乐</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <!-- Tailwind配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4ade80',
+                        secondary: '#22c55e',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <!-- 自定义工具类 -->
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .bubble-shadow {
+                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            }
+            .bubble-hover {
+                transform: translateY(-5px) scale(1.05);
+                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            }
+            .bubble-selected {
+                transform: translateY(-5px) scale(1.1);
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            }
+            .fade-out {
+                opacity: 0;
+                transform: scale(0.8) translateY(20px);
+            }
+        }
+    </style>
+    
+    <style>
+        body {
+            background-color: #dcfce7;
+            background-image: radial-gradient(#bbf7d0 0.5px, transparent 0.5px), radial-gradient(#bbf7d0 0.5px, #dcfce7 0.5px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+        }
+        
+        .bubble {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+        
+        .bubble::before {
+            content: '';
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            width: 80%;
+            height: 80%;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.8), rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translateZ(10px);
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .float-animation:nth-child(2n) {
+            animation-delay: 0.5s;
+        }
+        
+        .float-animation:nth-child(3n) {
+            animation-delay: 1s;
+        }
+        
+        .float-animation:nth-child(4n) {
+            animation-delay: 1.5s;
+        }
+    </style>
+</head>
+<body class="min-h-screen font-sans">
+    <!-- 顶部标题 -->
+    <header class="py-6 px-4 text-center">
+        <h1 class="text-[clamp(2rem,5vw,3.5rem)] font-bold text-secondary drop-shadow-md">
+            <i class="fa fa-gamepad mr-3"></i>名词解释消消乐
+        </h1>
+        <p class="mt-2 text-lg text-gray-700 max-w-2xl mx-auto">
+            点击名词和对应的解释进行配对，全部配对成功即可挑战成功！
+        </p>
+    </header>
+    
+    <!-- 游戏主区域 -->
+    <main class="container mx-auto px-4 pb-16">
+        <div id="game-container" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
+            <!-- 泡泡将通过JavaScript动态生成 -->
+        </div>
+        
+        <!-- 成功提示 -->
+        <div id="success-message" class="hidden fixed inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50 z-50">
+            <div class="bg-white rounded-2xl p-8 max-w-md text-center shadow-2xl transform transition-all scale-100">
+                <h2 class="text-3xl font-bold text-secondary mb-4">恭喜挑战成功！</h2>
+                <p class="text-gray-600 mb-6">您已经成功匹配所有宏观经济学名词解释</p>
+                <button id="restart-btn" class="bg-secondary hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full transition-all transform hover:scale-105">
+                    重新开始
+                </button>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        // 定义名词和解释数据
+        const terms = [
+            { id: 1, text: "国民生产净值", type: "term", matchId: 1 },
+            { id: 2, text: "国内生产总值", type: "term", matchId: 2 },
+            { id: 3, text: "个人可支配收入", type: "term", matchId: 3 },
+            { id: 4, text: "国内生产净值", type: "term", matchId: 4 },
+            { id: 5, text: "国民生产总值", type: "term", matchId: 5 },
+            { id: 6, text: "GNP扣除折旧后的社会净产值", type: "definition", matchId: 1 },
+            { id: 7, text: "一国境内一定时期内生产的最终产品和劳务的市场价值总和", type: "definition", matchId: 2 },
+            { id: 8, text: "个人缴纳税费后可自由支配的收入", type: "definition", matchId: 3 },
+            { id: 9, text: "GDP扣除折旧后的社会净产值", type: "definition", matchId: 4 },
+            { id: 10, text: "一国国民一定时期内生产的最终产品和劳务的市场价值总和", type: "definition", matchId: 5 }
+        ];
+        
+        // 游戏状态
+        let selectedBubble = null;
+        let matchedPairs = 0;
+        const totalPairs = 5;
+        
+        // 随机颜色生成函数（浅色）
+        function getRandomLightColor() {
+            const colors = [
+                '#fef3c7', '#dbeafe', '#fce7f3', '#d1fae5', '#e0e7ff',
+                '#fef2f2', '#fef3c7', '#ecfccb', '#dcfce7', '#dbeafe'
+            ];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+        
+        // 初始化游戏
+        function initGame() {
+            const gameContainer = document.getElementById('game-container');
+            gameContainer.innerHTML = '';
+            
+            // 打乱数组
+            const shuffledTerms = [...terms].sort(() => Math.random() - 0.5);
+            
+            // 创建泡泡元素
+            shuffledTerms.forEach(term => {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble float-animation bubble-shadow rounded-full flex items-center justify-center p-4 md:p-6 cursor-pointer overflow-hidden relative';
+                bubble.style.backgroundColor = getRandomLightColor();
+                
+                // 添加内容
+                const content = document.createElement('div');
+                content.className = 'text-center font-bold text-gray-800 z-10 px-2';
+                content.textContent = term.text;
+                content.style.fontSize = window.innerWidth < 768 ? '14px' : '16px';
+                
+                // 设置数据属性
+                bubble.dataset.id = term.id;
+                bubble.dataset.type = term.type;
+                bubble.dataset.matchId = term.matchId;
+                
+                // 添加点击事件
+                bubble.addEventListener('click', handleBubbleClick);
+                
+                bubble.appendChild(content);
+                gameContainer.appendChild(bubble);
+            });
+            
+            // 重置游戏状态
+            selectedBubble = null;
+            matchedPairs = 0;
+            document.getElementById('success-message').classList.add('hidden');
+        }
+        
+        // 处理泡泡点击事件
+        function handleBubbleClick(e) {
+            const clickedBubble = e.currentTarget;
+            
+            // 如果泡泡已经被匹配，不处理点击
+            if (clickedBubble.classList.contains('matched')) return;
+            
+            // 如果点击的是同一个泡泡，取消选择
+            if (selectedBubble === clickedBubble) {
+                clickedBubble.classList.remove('bubble-selected', 'ring-4', 'ring-secondary');
+                selectedBubble = null;
+                return;
+            }
+            
+            // 如果已经有一个选中的泡泡
+            if (selectedBubble) {
+                // 检查是否匹配
+                const isMatch = selectedBubble.dataset.matchId === clickedBubble.dataset.matchId &&
+                               selectedBubble.dataset.type !== clickedBubble.dataset.type;
+                
+                if (isMatch) {
+                    // 匹配成功，泡泡消失
+                    selectedBubble.classList.add('fade-out', 'matched');
+                    clickedBubble.classList.add('fade-out', 'matched');
+                    
+                    setTimeout(() => {
+                        selectedBubble.style.display = 'none';
+                        clickedBubble.style.display = 'none';
+                    }, 300);
+                    
+                    matchedPairs++;
+                    
+                    // 检查是否所有配对都完成
+                    if (matchedPairs === totalPairs) {
+                        setTimeout(() => {
+                            showSuccessMessage();
+                        }, 500);
+                    }
+                } else {
+                    // 匹配失败，短暂高亮后取消选择
+                    clickedBubble.classList.add('bubble-selected', 'ring-4', 'ring-red-500');
+                    setTimeout(() => {
+                        selectedBubble.classList.remove('bubble-selected', 'ring-4', 'ring-secondary');
+                        clickedBubble.classList.remove('bubble-selected', 'ring-4', 'ring-red-500');
+                    }, 1000);
+                }
+                
+                selectedBubble = null;
+            } else {
+                // 选择第一个泡泡
+                selectedBubble = clickedBubble;
+                clickedBubble.classList.add('bubble-selected', 'ring-4', 'ring-secondary');
+            }
+        }
+        
+        // 显示成功信息
+        function showSuccessMessage() {
+            document.getElementById('success-message').classList.remove('hidden');
+            
+            // 触发烟花效果
+            setTimeout(() => {
+                launchConfetti();
+            }, 300);
+        }
+        
+        // 烟花效果
+        function launchConfetti() {
+            const duration = 5 * 1000;
+            const end = Date.now() + duration;
+            
+            (function frame() {
+                confetti({
+                    particleCount: 10,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: ['#4ade80', '#22c55e', '#fbbf24', '#ef4444', '#8b5cf6']
+                });
+                confetti({
+                    particleCount: 10,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: ['#4ade80', '#22c55e', '#fbbf24', '#ef4444', '#8b5cf6']
+                });
+                
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+        }
+        
+        // 重新开始按钮事件
+        document.getElementById('restart-btn').addEventListener('click', initGame);
+        
+        // 页面加载完成后初始化游戏
+        document.addEventListener('DOMContentLoaded', initGame);
+        
+        // 添加悬停效果
+        document.addEventListener('mouseover', function(e) {
+            if (e.target.classList.contains('bubble') && !e.target.classList.contains('matched')) {
+                e.target.classList.add('bubble-hover');
+            }
+        });
+        
+        document.addEventListener('mouseout', function(e) {
+            if (e.target.classList.contains('bubble')) {
+                e.target.classList.remove('bubble-hover');
+            }
+        });
+    </script>
+</body>
+</html>
+```
+
+游戏特点：
+
+1. **视觉设计**：采用淡绿色背景，搭配随机浅色泡泡，营造轻松愉悦的学习氛围。泡泡具有3D立体效果和浮动动画，增强视觉吸引力。
+
+2. **交互体验**：点击泡泡时有高亮效果，匹配成功时泡泡会平滑消失，匹配失败时有错误提示动画。
+
+3. **游戏机制**：玩家需要点击名词和对应的解释进行配对，全部配对成功后显示庆祝信息和烟花效果。
+
+4. **响应式设计**：适配不同屏幕尺寸，在手机和平板上都能获得良好的游戏体验。
+
+5. **动画效果**：泡泡具有浮动动画，点击时有缩放效果，匹配成功时有淡出动画，成功时有烟花庆祝效果。
+
+这个游戏不仅能帮助学生巩固宏观经济学知识，还通过有趣的交互方式提高学习兴趣和记忆效果。
