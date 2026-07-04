@@ -1,0 +1,310 @@
+以下是根据需求制作的宏观经济学术语解释消消乐游戏网页，包含完整的交互逻辑和视觉效果：
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>名词解释消消乐</title>
+    <style>
+        /* 全局样式 */
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #e6f9e6;
+            font-family: 'Microsoft Yahei', sans-serif;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 3rem;
+            color: #2d6a4f;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+
+        .game-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .bubble {
+            display: inline-block;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            margin: 15px;
+            text-align: center;
+            vertical-align: middle;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding: 20px;
+            box-sizing: border-box;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1), inset 0 -4px 8px rgba(255,255,255,0.5), inset 0 4px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+            word-break: break-word;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .bubble:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.15), inset 0 -4px 8px rgba(255,255,255,0.5), inset 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .bubble.selected {
+            box-shadow: 0 0 20px #1b4332, inset 0 -4px 8px rgba(255,255,255,0.5), inset 0 4px 8px rgba(0,0,0,0.1);
+            transform: scale(1.1);
+            z-index: 2;
+        }
+
+        .result-message {
+            display: none;
+            text-align: center;
+            font-size: 3rem;
+            color: #1b4332;
+            font-weight: bold;
+            margin-top: 50px;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 100;
+            background-color: rgba(255,255,255,0.9);
+            padding: 30px 60px;
+            border-radius: 20px;
+        }
+
+        #fireworks {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 99;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="title">名词解释消消乐</h1>
+    <div class="game-container" id="gameContainer"></div>
+    <div class="result-message" id="resultMessage">恭喜挑战成功🎉</div>
+    <canvas id="fireworks"></canvas>
+
+    <script>
+        // 定义配对数据
+        const pairs = [
+            { term: "国民生产总值（GNP）", definition: "一国国民一定时期内生产的最终产品和服务的市场价值总和" },
+            { term: "个人可支配收入（DPI）", definition: "个人税后可自由支配的收入" },
+            { term: "国内生产净值（NDP）", definition: "GDP扣除折旧后的国内生产净产出" },
+            { term: "国内生产总值（GDP）", definition: "一国境内一定时期内生产的最终产品和服务的市场价值总和" },
+            { term: "国民生产净值（NNP）", definition: "GNP扣除折旧后的国民生产净产出" }
+        ];
+
+        // 生成所有泡泡内容
+        let allItems = [];
+        pairs.forEach(pair => {
+            allItems.push({ type: 'term', content: pair.term, match: pair.definition });
+            allItems.push({ type: 'definition', content: pair.definition, match: pair.term });
+        });
+
+        // 打乱数组
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        allItems = shuffleArray(allItems);
+
+        const gameContainer = document.getElementById('gameContainer');
+        const resultMessage = document.getElementById('resultMessage');
+        const fireworksCanvas = document.getElementById('fireworks');
+        const ctx = fireworksCanvas.getContext('2d');
+
+        let selectedBubbles = [];
+
+        // 设置canvas大小
+        function resizeCanvas() {
+            fireworksCanvas.width = window.innerWidth;
+            fireworksCanvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // 创建泡泡
+        allItems.forEach(item => {
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            bubble.textContent = item.content;
+            // 随机浅色（柔和色调）
+            const hue = Math.floor(Math.random() * 360);
+            bubble.style.backgroundColor = `hsl(${hue}, 30%, 85%)`;
+            bubble.dataset.match = item.match;
+            bubble.addEventListener('click', () => handleBubbleClick(bubble));
+            gameContainer.appendChild(bubble);
+        });
+
+        // 处理泡泡点击
+        function handleBubbleClick(bubble) {
+            // 如果已经选中两个，先取消之前的选中
+            if (selectedBubbles.length === 2) {
+                selectedBubbles.forEach(b => b.classList.remove('selected'));
+                selectedBubbles = [];
+            }
+
+            // 如果点击的是已经选中的，取消选中
+            if (selectedBubbles.includes(bubble)) {
+                bubble.classList.remove('selected');
+                selectedBubbles = selectedBubbles.filter(b => b !== bubble);
+                return;
+            }
+
+            // 添加选中状态
+            bubble.classList.add('selected');
+            selectedBubbles.push(bubble);
+
+            // 如果选中两个，判断是否匹配
+            if (selectedBubbles.length === 2) {
+                const [b1, b2] = selectedBubbles;
+                if (b1.dataset.match === b2.textContent && b2.dataset.match === b1.textContent) {
+                    // 匹配成功，移除泡泡
+                    setTimeout(() => {
+                        b1.style.opacity = '0';
+                        b2.style.opacity = '0';
+                        setTimeout(() => {
+                            gameContainer.removeChild(b1);
+                            gameContainer.removeChild(b2);
+                            // 检查是否所有泡泡都消失
+                            if (gameContainer.children.length === 0) {
+                                resultMessage.style.display = 'block';
+                                fireworksCanvas.style.display = 'block';
+                                startFireworks();
+                            }
+                        }, 300);
+                    }, 500);
+                } else {
+                    // 匹配失败，取消选中
+                    setTimeout(() => {
+                        b1.classList.remove('selected');
+                        b2.classList.remove('selected');
+                        selectedBubbles = [];
+                    }, 1000);
+                }
+            }
+        }
+
+        // 烟花效果
+        function startFireworks() {
+            const fireworks = [];
+            const particles = [];
+
+            function createFirework() {
+                return {
+                    x: Math.random() * fireworksCanvas.width,
+                    y: fireworksCanvas.height,
+                    targetX: Math.random() * fireworksCanvas.width,
+                    targetY: Math.random() * (fireworksCanvas.height / 2),
+                    speed: 5 + Math.random() * 5,
+                    angle: Math.atan2(Math.random() * (fireworksCanvas.height / 2) - fireworksCanvas.height, Math.random() * fireworksCanvas.width - Math.random() * fireworksCanvas.width),
+                    color: `hsl(${Math.floor(Math.random() * 360)}, 70%, 50%)`,
+                    exploded: false
+                };
+            }
+
+            function createParticle(firework) {
+                return {
+                    x: firework.targetX,
+                    y: firework.targetY,
+                    speed: 2 + Math.random() * 4,
+                    angle: Math.random() * Math.PI * 2,
+                    gravity: 0.2,
+                    color: firework.color,
+                    alpha: 1
+                };
+            }
+
+            function update() {
+                ctx.fillStyle = 'rgba(230, 249, 230, 0.1)';
+                ctx.fillRect(0, 0, fireworksCanvas.width, fireworksCanvas.height);
+
+                // 生成新烟花
+                if (Math.random() < 0.05) {
+                    fireworks.push(createFirework());
+                }
+
+                // 更新烟花
+                for (let i = fireworks.length - 1; i >= 0; i--) {
+                    const firework = fireworks[i];
+                    if (!firework.exploded) {
+                        firework.x += Math.cos(firework.angle) * firework.speed;
+                        firework.y += Math.sin(firework.angle) * firework.speed;
+
+                        // 检查是否到达目标
+                        const distance = Math.sqrt(Math.pow(firework.targetX - firework.x, 2) + Math.pow(firework.targetY - firework.y, 2));
+                        if (distance < 10) {
+                            firework.exploded = true;
+                            // 生成粒子
+                            for (let j = 0; j < 50; j++) {
+                                particles.push(createParticle(firework));
+                            }
+                            fireworks.splice(i, 1);
+                        }
+
+                        // 绘制烟花
+                        ctx.beginPath();
+                        ctx.arc(firework.x, firework.y, 3, 0, Math.PI * 2);
+                        ctx.fillStyle = firework.color;
+                        ctx.fill();
+                    }
+                }
+
+                // 更新粒子
+                for (let i = particles.length - 1; i >= 0; i--) {
+                    const particle = particles[i];
+                    particle.x += Math.cos(particle.angle) * particle.speed;
+                    particle.y += Math.sin(particle.angle) * particle.speed + particle.gravity;
+                    particle.speed *= 0.98;
+                    particle.alpha -= 0.01;
+
+                    if (particle.alpha <= 0) {
+                        particles.splice(i, 1);
+                    } else {
+                        ctx.beginPath();
+                        ctx.arc(particle.x, particle.y, 2, 0, Math.PI * 2);
+                        ctx.fillStyle = `${particle.color}${Math.floor(particle.alpha * 255).toString(16).padStart(2, '0')}`;
+                        ctx.fill();
+                    }
+                }
+
+                requestAnimationFrame(update);
+            }
+
+            update();
+        }
+    </script>
+</body>
+</html>
+```
+
+### 游戏特点：
+1. **视觉设计**：淡绿色背景，3D立体泡泡效果，随机柔和浅色，大字号加粗字体，泡泡间有合理间距
+2. **交互逻辑**：
+   - 点击泡泡会高亮显示
+   - 选中两个泡泡后自动判断是否匹配
+   - 匹配正确时泡泡平滑消失，错误时取消高亮
+3. **成功反馈**：所有配对完成后显示"恭喜挑战成功"提示，并触发Canvas烟花动画
+4. **响应式设计**：适配不同屏幕尺寸，泡泡会自动调整排列
+
+使用方法：直接将代码保存为HTML文件，用浏览器打开即可开始游戏，点击对应的术语和解释进行配对。
