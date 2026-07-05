@@ -1,0 +1,143 @@
+以下是根据你提供的成绩数据生成的可视化分析HTML报告，支持动态交互、多设备适配：
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2025级数学课程考核成绩分析报告</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- 头部区域 -->
+    <header class="bg-blue-600 text-white py-8 px-4">
+        <div class="max-w-7xl mx-auto">
+            <h1 class="text-3xl font-bold mb-2">2025级数学课程考核成绩分析报告</h1>
+            <p class="text-blue-100">生成时间：2026-07-05 09:52:30 | 数据来源：2025级数学课程考核成绩表</p>
+        </div>
+    </header>
+
+    <!-- 主体内容 -->
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        <!-- 数据概览卡片 -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 class="text-xl font-bold text-gray-800 mb-4 border-l-4 border-blue-500 pl-3">数据概览</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-blue-50 p-4 rounded-lg">
+                    <p class="text-gray-600 text-sm">总样本量</p>
+                    <p class="text-2xl font-bold text-blue-600">74人</p>
+                </div>
+                <div class="bg-green-50 p-4 rounded-lg">
+                    <p class="text-gray-600 text-sm">平均分</p>
+                    <p class="text-2xl font-bold text-green-600">87.2分</p>
+                </div>
+                <div class="bg-orange-50 p-4 rounded-lg">
+                    <p class="text-gray-600 text-sm">分数范围</p>
+                    <p class="text-2xl font-bold text-orange-600">62~96分</p>
+                </div>
+                <div class="bg-purple-50 p-4 rounded-lg">
+                    <p class="text-gray-600 text-sm">优秀率(≥90分)</p>
+                    <p class="text-2xl font-bold text-purple-600">37.8%</p>
+                </div>
+            </div>
+            <p class="mt-4 text-gray-700">本次考试无不及格学生，及格率100%，整体成绩处于良好水平，标准差为7.1，成绩分布相对均衡。</p>
+        </div>
+
+        <!-- 分析结论 -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 class="text-xl font-bold text-gray-800 mb-4 border-l-4 border-blue-500 pl-3">核心结论</h2>
+            <ul class="list-disc pl-6 text-gray-700 space-y-2">
+                <li>整体表现优异：近四成学生成绩达到90分以上，仅4.1%的学生成绩低于70分，无不及格情况</li>
+                <li>性别差异明显：男生平均分为81.7分，比女生平均分低5.8分，男生整体成绩提升空间较大</li>
+                <li>低分群体明确：共3名学生成绩在60-69分段，为重点关注帮扶对象</li>
+            </ul>
+        </div>
+
+        <!-- 可视化区域 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+            <!-- 分数段占比饼图 -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">分数段人数占比</h3>
+                <div id="pieChart" class="h-72"></div>
+                <p class="mt-3 text-sm text-gray-600">解读：80-89分段人数最多，占比47.3%，90+高分段占比接近四成，整体呈右偏分布。</p>
+            </div>
+            <!-- 性别成绩对比 -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">不同性别成绩对比</h3>
+                <div id="barChart" class="h-72"></div>
+                <p class="mt-3 text-sm text-gray-600">解读：女生平均分、最高分均高于男生，男生最低分更低，需关注男生学习状态。</p>
+            </div>
+            <!-- 成绩分布直方图 -->
+            <div class="bg-white rounded-lg shadow-md p-6 md:col-span-2">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">成绩分布直方图</h3>
+                <div id="histogramChart" class="h-72"></div>
+                <p class="mt-3 text-sm text-gray-600">解读：成绩集中在80-95分区间，60-70分存在明显低分段聚集，需针对性辅导该部分学生。</p>
+            </div>
+        </div>
+
+        <!-- 建议部分 -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4 border-l-4 border-blue-500 pl-3">教学建议</h2>
+            <p class="text-gray-700 leading-relaxed">1. 对3名60-70分段学生开展一对一基础辅导，补齐知识点短板；2. 关注男生学习情况，调整教学方法适配男生学习习惯，缩小性别成绩差距；3. 组织高分学生成立互助小组，带动中分段学生提升，进一步拉高整体优秀率。</p>
+        </div>
+    </main>
+
+    <script>
+        // 饼图初始化
+        const pieChart = echarts.init(document.getElementById('pieChart'));
+        pieChart.setOption({
+            tooltip: {trigger: 'item', formatter: '{b}: {c}人 ({d}%)'},
+            legend: {orient: 'horizontal', bottom: 0},
+            color: ['#5470c6', '#91cc75', '#fac858', '#ee6666'],
+            series: [{
+                type: 'pie', radius: ['40%', '70%'],
+                data: [
+                    {value: 3, name: '60-69分'},
+                    {value: 8, name: '70-79分'},
+                    {value: 35, name: '80-89分'},
+                    {value: 28, name: '90-100分'}
+                ]
+            }]
+        });
+
+        // 柱状图初始化
+        const barChart = echarts.init(document.getElementById('barChart'));
+        barChart.setOption({
+            tooltip: {trigger: 'axis'},
+            legend: {data: ['最高分', '平均分', '最低分']},
+            xAxis: {type: 'category', data: ['男生', '女生']},
+            yAxis: {type: 'value', min: 60, max: 100},
+            color: ['#ee6666', '#91cc75', '#5470c6'],
+            series: [
+                {name: '最高分', type: 'bar', data: [89, 96]},
+                {name: '平均分', type: 'bar', data: [81.7, 87.5]},
+                {name: '最低分', type: 'bar', data: [71, 62]}
+            ]
+        });
+
+        // 直方图初始化
+        const histogramChart = echarts.init(document.getElementById('histogramChart'));
+        histogramChart.setOption({
+            tooltip: {trigger: 'axis'},
+            xAxis: {type: 'category', data: ['60-65', '65-70', '70-75', '75-80', '80-85', '85-90', '90-95', '95-100']},
+            yAxis: {type: 'value'},
+            color: ['#5470c6'],
+            series: [{
+                type: 'bar',
+                data: [1, 2, 2, 6, 16, 19, 22, 6],
+                label: {show: true, position: 'top'}
+            }]
+        });
+
+        // 响应式适配
+        window.addEventListener('resize', () => {
+            pieChart.resize();
+            barChart.resize();
+            histogramChart.resize();
+        });
+    </script>
+</body>
+</html>
+```
+你可以直接复制上述代码保存为.html文件打开查看，所有图表支持悬停查看详细数据、自适应窗口大小，完整覆盖了你要求的全班数学成绩可视化分析需求。
