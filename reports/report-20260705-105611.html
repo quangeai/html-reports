@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>名词解释消消乐</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        body {
+            background-color: #e8f5e9;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        h1 {
+            font-size: 48px;
+            color: #2e7d32;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        #game {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            justify-content: center;
+            perspective: 1000px;
+            max-width: 1200px;
+        }
+        .bubble {
+            width: 220px;
+            height: 220px;
+            background-color: hsl(calc(var(--hue) * 1deg), 20%, 85%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #2d3436;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            transform-style: preserve-3d;
+            transform: translateZ(20px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15), inset 0 -5px 10px rgba(255,255,255,0.5);
+        }
+        .bubble:hover {
+            transform: translateZ(30px) scale(1.05);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2), inset 0 -5px 10px rgba(255,255,255,0.5);
+        }
+        .bubble.selected {
+            border: 4px solid #2e7d32;
+            transform: translateZ(30px) scale(1.1);
+            box-shadow: 0 20px 40px rgba(46,125,50,0.3), inset 0 -5px 10px rgba(255,255,255,0.5);
+        }
+        #success {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 60px;
+            font-weight: bold;
+            color: #2e7d32;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.2);
+            z-index: 100;
+        }
+        #fireworks {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 99;
+        }
+        .firework {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: firework 2s ease-out forwards;
+        }
+        @keyframes firework {
+            0% {
+                transform: translateY(100vh) scale(0);
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(calc(50vh - 100px)) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(calc(50vh - 200px)) scale(2);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>名词解释消消乐</h1>
+    <div id="game"></div>
+    <div id="success">恭喜挑战成功</div>
+    <div id="fireworks"></div>
+
+    <script>
+        const pairs = [
+            { term: "乘数效应", definition: "自发总需求变动所引起的国民收入变动的倍数；" },
+            { term: "菲利普斯曲线", definition: "表明失业率与通货膨胀率之间短期交替关系的曲线；" },
+            { term: "国内生产总值（GDP）", definition: "一国或地区在一定时期内生产的全部最终产品和服务的市场价值总和；" },
+            { term: "自动稳定器", definition: "无需政府主动干预，随经济波动自动调节收支的财政政策工具；" },
+            { term: "IS曲线", definition: "表示产品市场均衡时，利率与国民收入之间反向关系的曲线；" }
+        ];
+
+        let allItems = [];
+        pairs.forEach(pair => {
+            allItems.push({ type: 'term', content: pair.term, match: pair.definition });
+            allItems.push({ type: 'definition', content: pair.definition, match: pair.term });
+        });
+
+        allItems.sort(() => Math.random() - 0.5);
+
+        const gameContainer = document.getElementById('game');
+        let selectedBubble = null;
+
+        allItems.forEach(item => {
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            bubble.style.setProperty('--hue', Math.random() * 360);
+            bubble.textContent = item.content;
+            bubble.dataset.match = item.match;
+            bubble.addEventListener('click', () => handleBubbleClick(bubble));
+            gameContainer.appendChild(bubble);
+        });
+
+        function handleBubbleClick(bubble) {
+            if (bubble.classList.contains('selected')) {
+                bubble.classList.remove('selected');
+                selectedBubble = null;
+                return;
+            }
+
+            if (!selectedBubble) {
+                selectedBubble = bubble;
+                bubble.classList.add('selected');
+            } else {
+                if (selectedBubble.dataset.match === bubble.textContent) {
+                    selectedBubble.remove();
+                    bubble.remove();
+                    selectedBubble = null;
+                    checkGameComplete();
+                } else {
+                    selectedBubble.classList.remove('selected');
+                    selectedBubble = null;
+                }
+            }
+        }
+
+        function checkGameComplete() {
+            if (gameContainer.children.length === 0) {
+                document.getElementById('success').style.display = 'block';
+                createFireworks();
+            }
+        }
+
+        function createFireworks() {
+            const fireworksContainer = document.getElementById('fireworks');
+            for (let i = 0; i < 30; i++) {
+                const firework = document.createElement('div');
+                firework.className = 'firework';
+                firework.style.left = `${Math.random() * 100}%`;
+                firework.style.backgroundColor = `hsl(${Math.random() * 360}, 70%, 60%)`;
+                firework.style.animationDelay = `${Math.random() * 2}s`;
+                fireworksContainer.appendChild(firework);
+            }
+            setTimeout(() => {
+                fireworksContainer.innerHTML = '';
+            }, 4000);
+        }
+    </script>
+</body>
+</html>
