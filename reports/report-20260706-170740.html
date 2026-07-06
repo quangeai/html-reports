@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学生成绩分析报告</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+        .report-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin: 0 auto;
+            max-width: 1200px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+        }
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 20px 0;
+        }
+        .section-title {
+            color: #4a5568;
+            border-left: 5px solid #667eea;
+            padding-left: 15px;
+            margin: 30px 0 20px 0;
+        }
+        .highlight {
+            background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="report-container">
+        <!-- 头部信息 -->
+        <div class="header">
+            <h1>一年级1班学生成绩分析报告</h1>
+            <p class="lead">报告生成日期：2024年1月 | 班主任：张啼</p>
+        </div>
+
+        <!-- 学生基本信息 -->
+        <div class="card">
+            <div class="card-body">
+                <h3 class="text-primary">学生基本信息</h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>姓名：</strong>文嘉懿</p>
+                        <p><strong>年级班级：</strong>一年级1班</p>
+                        <p><strong>学号：</strong>520527200000000000</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>语文老师：</strong>王若婕</p>
+                        <p><strong>数学老师：</strong>张啼</p>
+                        <p><strong>考号：</strong>2212501029</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 数据概览 -->
+        <h2 class="section-title">成绩数据概览</h2>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card metric-card">
+                    <h4>三次月考平均分</h5>
+                    <h2>196.8分</h2>
+                    <p>总分表现稳定</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card metric-card">
+                    <h4>班级排名</h5>
+                    <h2>第3名</h2>
+                    <p>保持稳定优异</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card metric-card">
+                    <h4>学校排名</h5>
+                    <h2>第3名</h2>
+                    <p>全校顶尖水平</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 成绩趋势图表 -->
+        <h2 class="section-title">成绩趋势分析</h2>
+        <div class="card">
+            <div class="card-body">
+                <h4>三次月考总分趋势</h4>
+                <div class="chart-container">
+                    <canvas id="scoreTrendChart"></canvas>
+                </div>
+                <p class="text-muted">学生总分保持稳定，在196-198分之间波动，表现优异。</p>
+            </div>
+        </div>
+
+        <!-- 科目对比分析 -->
+        <h2 class="section-title">科目成绩分析</h2>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5>语文成绩分析</h5>
+                        <div class="chart-container">
+                            <canvas id="chineseScoreChart"></canvas>
+                        </div>
+                        <p class="text-success">
+                            <strong>优秀表现：</strong>语文成绩稳定在96-100分，班级排名第1-4名
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5>数学成绩分析</h5>
+                        <div class="chart-container">
+                            <canvas id="mathScoreChart"></canvas>
+                        </div>
+                        <p class="text-success">
+                            <strong>优秀表现：</strong>数学成绩稳定在98-100分，班级排名第1-4名
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 排名分析 -->
+        <h2 class="section-title">排名情况分析</h2>
+        <div class="card">
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="rankingChart"></canvas>
+                </divdiv>
+                <p class="text-info">学生在班级和学校排名中 consistently 保持前3名，表现非常稳定。</p>
+            </div>
+        </div>
+
+        <!-- 分析洞察 -->
+        <h2 class="section-title">关键发现</h2>
+        <div class="highlight">
+            <h4>🎯 优秀表现</h4>
+            <ul>
+                <li>总分稳定在196分以上，属于顶尖水平</li>
+                <li>班级排名始终保持第3名，表现稳定</li>
+                <li>学校排名保持第3名，全校领先</li>
+                <li>语文数学双科均衡发展，无偏科现象</li>
+            </ul>
+        </div>
+
+        <!-- 提升建议 -->
+        <h2 class="section-title">学习建议</h2>
+        <div class="card">
+            <div class="card-body">
+                <h4>📚 保持优异表现的建议</h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="alert alert-success">
+                            <strong>巩固优势：</strong>
+                            <ul>
+                                <li>继续保持当前的学习节奏和方法</li>
+                                <li>发挥语文数学双科均衡的优势</li>
+                                <li>保持稳定的考试心态</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="alert alert-info">
+                            <strong>进一步提升：</strong>
+                            <ul>
+                                <li>尝试挑战更高难度的学习内容</li>
+                                <li>培养学科特长，参加学科竞赛</li>
+                                <li>帮助其他同学共同进步</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 总结 -->
+        <div class="text-center mt-5">
+            <div class="alert alert-primary">
+                <h4>总体评价：优秀</h4>
+                <p>文嘉懿同学在学习上表现优异，成绩稳定，是班级的佼佼者。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 成绩趋势图表
+        const trendCtx = document.getElementById('scoreTrendChart').getContext('2d');
+        new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: ['第一次月考', '第二次月考', '第三次月考'],
+                datasets: [{
+                    label: '总分',
+                    data: [196, 198, 196.5],
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: '三次月考总分趋势'
+                    }
+                }
+            }
+        });
+
+        // 语文成绩图表
+        const chineseCtx = document.getElementById('chineseScoreChart').getContext('2d');
+        new Chart(chineseCtx, {
+            type: 'bar',
+            data: {
+                labels: ['第一次', '第二次', '第三次'],
+                datasets: [{
+                    label: '语文分数',
+                    data: [97, 100, 96.5],
+                    backgroundColor: 'rgba(255, 99, 132, 0.6)'
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 95
+                    }
+                }
+            }
+        });
+
+        // 数学成绩图表
+        const mathCtx = document.getElementById('mathScoreChart').getContext('2d');
+        new Chart(mathCtx, {
+            type: 'bar',
+            data: {
+                labels: ['第一次', '第二次', '第三次'],
+                datasets: [{
+                    label: '数学分数',
+                    data: [99, 98, 100],
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)'
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 95
+                    }
+                }
+            }
+        });
+
+        // 排名图表
+        const rankingCtx = document.getElementById('rankingChart').getContext('2d');
+        new Chart(rankingCtx, {
+            type: 'line',
+            data: {
+                labels: ['第一次月考', '第二次月考', '第三次月考'],
+                datasets: [
+                    {
+                        label: '班级排名',
+                        data: [3, 3, 3],
+                        borderColor: '#ff6384',
+                        tension: 0.3
+                    },
+                    {
+                        label: '学校排名',
+                        data: [3, 3, 3],
+                        borderColor: '#36a2eb',
+                        tension: 0.3
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        reverse: true,
+                        min: 1,
+                        max: 10
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
