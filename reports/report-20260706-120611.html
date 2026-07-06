@@ -1,0 +1,444 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>成都旅游资讯 - 小红书风格</title>
+    <!-- 引入 html2canvas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --primary: #FF2442; /* 小红书红 */
+            --bg-app: #F5F5F5;
+            --bg-card: #FFFFFF;
+            --text-main: #333333;
+            --text-sub: #666666;
+            --text-light: #999999;
+            --radius: 20px;
+            --shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-app);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px 0 100px 0; /* 底部留白给按钮 */
+        }
+
+        /* 模拟手机容器 */
+        .app-container {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* 卡片通用样式 */
+        .card {
+            background: var(--bg-card);
+            width: 100%;
+            min-height: 600px; /* 保证有足够高度 */
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            position: relative;
+            padding: 32px 24px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 封面页样式 */
+        .card.cover {
+            justify-content: space-between;
+            padding: 0;
+        }
+
+        .cover-img {
+            width: 100%;
+            height: 50%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .cover-content {
+            padding: 32px 24px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .tag-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            background: rgba(255, 36, 66, 0.1);
+            color: var(--primary);
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 100px;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-main);
+            line-height: 1.3;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: var(--text-sub);
+            line-height: 1.5;
+            font-weight: 500;
+        }
+
+        /* 内容页样式 */
+        .card-header {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .page-num {
+            font-size: 14px;
+            color: var(--text-light);
+            font-weight: 400;
+        }
+
+        .news-item {
+            margin-bottom: 28px;
+        }
+
+        .news-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .news-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+        }
+
+        .news-desc {
+            font-size: 14px;
+            color: var(--text-sub);
+            line-height: 1.6;
+            text-align: justify;
+        }
+
+        .highlight {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .source {
+            margin-top: 6px;
+            font-size: 12px;
+            color: var(--text-light);
+            display: block;
+        }
+
+        /* 结尾页样式 */
+        .card.end {
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .end-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .end-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .end-text {
+            font-size: 15px;
+            color: var(--text-sub);
+            line-height: 1.6;
+            margin-bottom: 32px;
+            padding: 0 20px;
+        }
+
+        .cta-box {
+            background: #FFF0F2;
+            padding: 20px;
+            border-radius: 16px;
+            width: 100%;
+        }
+
+        .cta-text {
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* 底部操作栏 */
+        .action-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 16px 20px;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .btn-download {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 40px;
+            border-radius: 100px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(255, 36, 66, 0.3);
+            transition: transform 0.2s;
+        }
+
+        .btn-download:active {
+            transform: scale(0.96);
+        }
+
+        /* 装饰元素 */
+        .dot-pattern {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background-image: radial-gradient(#E0E0E0 2px, transparent 2px);
+            background-size: 8px 8px;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container" id="capture-area">
+        
+        <!-- 卡片 1：封面 -->
+        <div class="card cover">
+            <img src="https://picsum.photos/seed/chengdu1/400/300" alt="Chengdu Travel" class="cover-img" crossorigin="anonymous">
+            <div class="cover-content">
+                <div class="tag-row">
+                    <span class="tag">#成都旅游</span>
+                    <span class="tag">#暑期攻略</span>
+                    <span class="tag">#干货</span>
+                </div>
+                <h1>成都旅游大爆发🔥<br>暑期新玩法全解析</h1>
+                <p class="subtitle">新航线复航、离境退税暴涨、10条微度假线路发布...这波羊毛必须薅！</p>
+            </div>
+        </div>
+
+        <!-- 卡片 2：新闻 1 & 2 -->
+        <div class="card">
+            <div class="dot-pattern"></div>
+            <div class="card-header">
+                <span>热门资讯</span>
+                <span class="page-num">1/3</span>
+            </div>
+
+            <div class="news-item">
+                <div class="news-title">
+                    <span>🔥</span>
+                    <span>暑运首日成都有多热？</span>
+                </div>
+                <div class="news-desc">
+                    国内机票预订超<span class="highlight">1580万张</span>，成都位列国内游“第一方阵”。中转旅客量身定制了<span class="highlight">10条成都“微度假”线路</span>，酒店预订量稳居全国前列。
+                </div>
+                <span class="source">来源：红星新闻</span>
+            </div>
+
+            <div style="height: 1px; background: #f0f0f0; margin: 20px 0;"></div>
+
+            <div class="news-item">
+                <div class="news-title">
+                    <span>✈️</span>
+                    <span>飞抵成都有新玩法！</span>
+                </div>
+                <div class="news-desc">
+                    成都天府机场联合相关单位正式发布<span class="highlight">10条航旅精品线路</span>。升级“云端+地面”服务，为旅客提供省心、地道的全域游玩选择。
+                </div>
+                <span class="source">来源：红星新闻</span>
+            </div>
+        </div>
+
+        <!-- 卡片 3：新闻 3 & 6 -->
+        <div class="card">
+            <div class="dot-pattern"></div>
+            <div class="card-header">
+                <span>航线动态</span>
+                <span class="page-num">2/3</span>
+            </div>
+
+            <div class="news-item">
+                <div class="news-title">
+                    <span>🇨🇳</span>
+                    <span>成都⇌台中直飞复航</span>
+                </div>
+                <div class="news-desc">
+                    中断多年的成都至台中往返直飞航线正式复航！首航班机已平稳降落，赴川旅行团已预约至年底，两岸交流更加便利。
+                </div>
+                <span class="source">来源：中新网</span>
+            </div>
+
+            <div style="height: 1px; background: #f0f0f0; margin: 20px 0;"></div>
+
+            <div class="news-item">
+                <div class="news-title">
+                    <span>🌏</span>
+                    <span>台中机场增3条航线</span>
+                </div>
+                <div class="news-desc">
+                    暑假旺季，台中机场新增直飞<span class="highlight">成都、青岛、冲绳</span>航线。东航、山航、华航纷纷增开航班，为中部旅客带来更多元便利的选择。
+                </div>
+                <span class="source">来源：联合报</span>
+            </div>
+        </div>
+
+        <!-- 卡片 4：新闻 4 & 5 -->
+        <div class="card">
+            <div class="dot-pattern"></div>
+            <div class="card-header">
+                <span>出行福利</span>
+                <span class="page-num">3/3</span>
+            </div>
+
+            <div class="news-item">
+                <div class="news-title">
+                    <span>💰</span>
+                    <span>离境退税暴涨近4倍</span>
+                </div>
+                <div class="news-desc">
+                    随着免签“朋友圈”扩容及入境游热度攀升，上半年成都海关累计验核离境退税申请单<span class="highlight">2.59万票</span>。成都统筹推进离境退税2.0政策，买买买更爽了！
+                </div>
+                <span class="source">来源：中新网</span>
+            </div>
+
+            <div style="height: 1px; background: #f0f0f0; margin: 20px 0;"></div>
+
+            <div class="news-item">
+                <div class="news-title">
+                    <span>🚀</span>
+                    <span>7月1日起航线上新</span>
+                </div>
+                <div class="news-desc">
+                    成都直飞航线持续上新！更多国内外目的地即将开通，暑期出行选择更加丰富。
+                </div>
+                <span class="source">来源：澎湃新闻</span>
+            </div>
+        </div>
+
+        <!-- 卡片 5：结尾 -->
+        <div class="card end">
+            <div class="end-icon">🐼</div>
+            <div class="end-title">成都，一座来了就不想走的城市</div>
+            <div class="end-text">
+                无论是地道美食，还是便捷的交通，成都都在用行动欢迎每一位游客。
+            </div>
+            <div class="cta-box">
+                <div class="cta-text">❤️ 点赞收藏，出发不迷路</div>
+                <div style="margin-top: 8px; font-size: 12px; color: #999;">关注我，获取更多成都旅游资讯</div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="action-bar">
+        <button class="btn-download" onclick="downloadCards()">下载所有图片</button>
+    </div>
+
+    <script>
+        async function downloadCards() {
+            const cards = document.querySelectorAll('.card');
+            const btn = document.querySelector('.btn-download');
+            
+            btn.textContent = '生成中...';
+            btn.disabled = true;
+            btn.style.opacity = '0.7';
+
+            for (let i = 0; i < cards.length; i++) {
+                const card = cards[i];
+                try {
+                    // 临时调整样式以确保截图完整
+                    const originalTransform = card.style.transform;
+                    card.style.transform = 'none'; 
+
+                    const canvas = await html2canvas(card, {
+                        scale: 3, // 高清
+                        useCORS: true, // 允许跨域图片
+                        backgroundColor: '#FFFFFF', // 确保背景不透明
+                        logging: false,
+                        windowWidth: 400
+                    });
+
+                    // 恢复样式
+                    card.style.transform = originalTransform;
+
+                    // 转换为图片并下载
+                    const image = canvas.toDataURL("image/png");
+                    const link = document.createElement('a');
+                    link.download = `chengdu-travel-note-${i + 1}.png`;
+                    link.href = image;
+                    link.click();
+
+                    // 稍作延迟避免浏览器阻塞
+                    await new Promise(resolve => setTimeout(resolve, 500));
+
+                } catch (err) {
+                    console.error(`Card ${i+1} failed:`, err);
+                    alert(`第 ${i+1} 张卡片生成失败，请重试`);
+                }
+            }
+
+            btn.textContent = '下载完成';
+            setTimeout(() => {
+                btn.textContent = '下载所有图片';
+                btn.disabled = false;
+                btn.style.opacity = '1';
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
+```
