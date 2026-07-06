@@ -1,0 +1,156 @@
+我现在需要把用户给的红烧狮子头菜谱替换到提供的HTML模板里。首先，先看各个部分：
+
+首先是标题，原来的是香煎三文鱼，现在要换成“火遍全网的红烧狮子头”，还有图片，找一个合适的图片，比如用picsum里的相关id？或者找红烧狮子头的图，比如picsum.photos/id/292/1200/400？这个id的图看起来像红烧肉类的，合适。
+
+然后是描述部分，替换成用户给的【小贴士】那段内容。
+
+接下来是制作步骤，用户给了13步，要把每一步对应到原来的步骤结构里，每个步骤都是flex，带数字的圆形背景。
+
+然后右侧的食材列表，用户分了主食材、料汁、干料，所以在食材准备里要分这三个部分，每个部分用小标题区分，比如主食材用h4，然后下面的li。
+
+营养成分部分，用户给的是四条描述，不是那种热量蛋白质的数值，所以要把原来的营养成分列表换成用户给的四条，每条作为一个li，或者段落？不对，原来的模板是ul，所以把每条营养说明做成li，去掉原来的那种键值对，改成每条都是完整的描述。
+
+现在开始一步步替换：
+
+首先，head里的title改成“火遍全网的红烧狮子头 - 简易食谱”。
+
+然后主内容里的图片，src换成"https://picsum.photos/id/292/1200/400"，alt改成“火遍全网的红烧狮子头”。
+
+h2标题改成“火遍全网的红烧狮子头”。
+
+菜谱介绍部分的p替换成用户给的描述：【小贴士】（内容来源互联网分享,如有疑问或侵权请及时联系我们.）
+
+制作步骤部分，把原来的5步换成13步，每一步对应用户给的步骤内容，数字从1到13。
+
+然后右侧的食材准备，原来的ul要改成分三个部分：主食材、料汁、干料。比如先加h4 class="font-medium text-gray-800 mb-2"主食材，然后下面的li是主食材的每一项；然后h4料汁，下面的li是料汁的每一项；然后h4干料，下面的li是干料的每一项。每个li还是flex justify-between，不过有些食材没有明确分量的，比如葱姜蒜片适量，就左边是名称，右边是分量。
+
+营养成分部分，原来的ul里的li换成用户给的四条营养描述，每条作为一个li，不需要justify-between，就是普通的li，因为是描述性的内容，不是键值对。
+
+现在把这些整合起来，确保HTML结构正确，Tailwind的类都保留，样式一致。
+
+现在开始写代码：
+
+首先，title部分：<title>火遍全网的红烧狮子头 - 简易食谱</title>
+
+图片部分：<img src="https://picsum.photos/id/292/1200/400" alt="火遍全网的红烧狮子头" class="w-full h-48 md:h-64 object-cover rounded-lg mb-4">
+
+标题h2：<h2 class="text-2xl md:text-3xl font-bold mb-2">火遍全网的红烧狮子头</h2>
+
+菜谱介绍的p：<p class="text-gray-700">【小贴士】（内容来源互联网分享,如有疑问或侵权请及时联系我们.）</p>
+
+制作步骤部分，把每一步都写出来，比如：
+
+<div class="flex gap-3">
+  <span class="bg-primary text-white w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0">1</span>
+  <p>食材备好，藕冼净切末倒入肉馅中，开水泡花椒葱姜水，另葱姜蒜片切好，干料备好。</p>
+</div>
+然后依次到13步。
+
+食材准备部分：
+
+<section class="bg-white p-5 rounded-lg shadow-sm">
+  <h3 class="text-lg font-bold mb-3 text-primary">食材准备</h3>
+  <div class="space-y-4">
+    <div>
+      <h4 class="font-medium text-gray-800 mb-2">主食材</h4>
+      <ul class="space-y-2">
+        <li class="flex justify-between pb-2 border-b border-gray-100">
+          <span>五花肉末</span>
+          <span>500克</span>
+        </li>
+        <li class="flex justify-between pb-2 border-b border-gray-100">
+          <span>葱姜蒜片</span>
+          <span>适量</span>
+        </li>
+        <li class="flex justify-between pb-2 border-b border-gray-100">
+          <span>藕</span>
+          <span>1节</span>
+        </li>
+        <li class="flex justify-between pb-2 border-b border-gray-100">
+          <span>花椒</span>
+          <span>适量</span>
+        </li>
+        <li class="flex justify-between pb-2 border-b border-gray-100">
+          <span>鸡蛋</span>
+          <span>1个</span>
+        </li>
+        <li class="flex justify-between pb-2 border-b border-gray-100">
+          <span>淀粉</span>
+          <span>适量</span>
+        </li>
+        <li class="flex justify-between">
+          <span>食用油</span>
+          <span>适量</span>
+        </li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="font-medium text-gray-800 mb-2">料汁</h4>
+      <ul class="space-y-2">
+        <li class="flex justify-between pb-2 border-b border-gray-100">
+          <span>蚝油（调馅用）</span>
+          <span>2勺</span>
+        </li>
+        <li class="flex justify-between pb-2 border-b border-gray-100">
+          <span>味极鲜酱油</span>
+          <span>3勺</span>
+        </li>
+        <li class="flex justify-between pb-2 border-b border-gray-100">
+          <span>料酒</span>
+          <span>1勺</span>
+        </li>
+        <li class="flex justify-between pb-2 border-b border-gray-100">
+          <span>白胡椒粉</span>
+          <span>1勺</span>
+        </li>
+        <li class="flex justify-between pb-2 border-b border-gray-100">
+          <span>蚝油（炖煮用）</span>
+          <span>1勺</span>
+        </li>
+        <li class="flex justify-between pb-2 border-b border-gray-100">
+          <span>生抽</span>
+          <span>2勺</span>
+        </li>
+        <li class="flex justify-between pb-2 border-b border-gray-100">
+          <span>醋</span>
+          <span>1勺</span>
+        </li>
+        <li class="flex justify-between">
+          <span>盐</span>
+          <span>适量</span>
+        </li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="font-medium text-gray-800 mb-2">干料</h4>
+      <ul class="space-y-2">
+        <li class="flex justify-between pb-2 border-b border-gray-100">
+          <span>八角</span>
+          <span>2个</span>
+        </li>
+        <li class="flex justify-between pb-2 border-b border-gray-100">
+          <span>香叶</span>
+          <span>几片</span>
+        </li>
+        <li class="flex justify-between">
+          <span>小茴香</span>
+          <span>适量</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+然后营养成分部分：
+
+<section class="bg-white p-5 rounded-lg shadow-sm">
+  <h3 class="text-lg font-bold mb-3 text-primary">营养成分</h3>
+  <ul class="space-y-3 text-sm text-gray-700">
+    <li class="pb-2 border-b border-gray-100">富含优质蛋白质与脂肪，能为人体提供充足能量，满足日常代谢需求</li>
+    <li class="pb-2 border-b border-gray-100">藕含有丰富膳食纤维、维生素C及矿物质，可促进肠道蠕动，增强免疫力</li>
+    <li class="pb-2 border-b border-gray-100">搭配多种香辛料，既提升风味，又能起到开胃健脾的作用</li>
+    <li>营养结构均衡，适合作为正餐搭配主食食用</li>
+  </ul>
+</section>
+
+现在把所有这些整合到原来的HTML模板里，确保结构正确，没有语法错误。这样应该就完成了优化后的HTML菜谱。
