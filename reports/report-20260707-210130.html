@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>泌尿外科手卫生数据可视化</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            margin: 20px;
+            color: #333;
+        }
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            margin: 20px 0;
+            background-color: white;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .summary {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .summary h3 {
+            color: #1377eb;
+            margin-top: 0;
+        }
+        .suggestion-item {
+            margin: 10px 0;
+            padding-left: 10px;
+            border-left: 3px solid #1377eb;
+        }
+    </style>
+</head>
+<body>
+    <h2 style="text-align: center; color: #1377eb;">泌尿外科手卫生数据统计</h2>
+
+    <div class="chart-container" id="scoreBar"></div>
+    <div class="chart-container" id="problemPie"></div>
+
+    <div class="summary">
+        <h3>数据汇总与整改建议</h3>
+        <p><strong>科室平均分：</strong>13.33分</p>
+        <p><strong>最高分护士：</strong>小红、小妮（15分）</p>
+        <p><strong>最低分护士：</strong>小晓（10分）</p>
+        
+        <h4>低分问题整改建议：</h4>
+        <div class="suggestion-item">
+            <p><strong>接触患者周边环境后未执行手卫生：</strong>加强护士对"接触患者周边环境后"这一手卫生时刻的认知，制定时刻提醒卡，放置在病房显眼位置。</p>
+        </div>
+        <div class="suggestion-item">
+            <p><strong>清洁/无菌操作前未执行手卫生：</strong>在操作台前张贴醒目标语，操作前由搭档或自我核查手卫生执行情况，纳入日常考核。</p>
+        </div>
+        <div class="suggestion-item">
+            <p><strong>接触患者前未执行手卫生：</strong>开展情景模拟培训，强化护士在接触患者前的手卫生意识，每日早会强调关键时刻执行要求。</p>
+        </div>
+        <div class="suggestion-item">
+            <p><strong>揉搓时间小于15秒：</strong>在洗手池旁设置计时器，培训护士掌握标准揉搓步骤，定期抽查揉搓时长并记录。</p>
+        </div>
+        <div class="suggestion-item">
+            <p><strong>卫生手消毒步骤不完整：</strong>组织标准手消毒步骤的实操演练，录制教学视频供护士随时学习，考核通过后方可上岗。</p>
+        </div>
+        <div class="suggestion-item">
+            <p><strong>接触患者后未执行手卫生：</strong>在病历夹上粘贴手卫生提示贴，每次接触患者后及时提醒执行手卫生，护士长不定期抽查。</p>
+        </div>
+        <div class="suggestion-item">
+            <p><strong>暴露患者体液风险后未执行手卫生：</strong>针对高风险操作制定专项流程，操作后必须执行手卫生，纳入不良事件上报机制。</p>
+        </div>
+    </div>
+
+    <script>
+        // 初始化柱状图
+        var scoreChart = echarts.init(document.getElementById('scoreBar'));
+        var scoreOption = {
+            title: { text: '护士手卫生得分排名', left: 'center' },
+            xAxis: { type: 'category', data: ['小晓', '小红', '小妮'] },
+            yAxis: { type: 'value', name: '得分', min: 0, max: 25 },
+            series: [{
+                name: '手卫生得分',
+                type: 'bar',
+                data: [10, 15, 15],
+                itemStyle: { color: '#1377eb' }
+            }],
+            tooltip: { trigger: 'axis' }
+        };
+        scoreChart.setOption(scoreOption);
+
+        // 初始化饼图
+        var problemChart = echarts.init(document.getElementById('problemPie'));
+        var problemOption = {
+            title: { text: '手卫生未执行问题分布', left: 'center' },
+            tooltip: { trigger: 'item' },
+            series: [{
+                name: '问题频次',
+                type: 'pie',
+                radius: ['40%', '70%'],
+                data: [
+                    { value: 1, name: '接触患者周边环境后未执行' },
+                    { value: 1, name: '清洁/无菌操作前未执行' },
+                    { value: 1, name: '接触患者前未执行' },
+                    { value: 1, name: '揉搓时间小于15秒' },
+                    { value: 1, name: '卫生手消毒步骤不完整' },
+                    { value: 1, name: '接触患者后未执行' },
+                    { value: 1, name: '暴露患者体液风险后未执行' }
+                ],
+                itemStyle: {
+                    color: function(params) {
+                        var colors = ['#1377eb', '#36cbcb', '#52c41a', '#faad14', '#f5222d', '#722ed1', '#eb2f96'];
+                        return colors[params.dataIndex % colors.length];
+                    }
+                }
+            }]
+        };
+        problemChart.setOption(problemOption);
+
+        // 适配窗口大小变化
+        window.addEventListener('resize', function() {
+            scoreChart.resize();
+            problemChart.resize();
+        });
+    </script>
+</body>
+</html>
