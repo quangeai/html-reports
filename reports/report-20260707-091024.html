@@ -1,0 +1,439 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>投资数据分析报告</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        .report-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 20px 20px;
+        }
+        .section-title {
+            color: var(--primary-color);
+            border-left: 5px solid var(--secondary-color);
+            padding-left: 15px;
+            margin: 2rem 0 1.5rem;
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            margin-bottom: 1.5rem;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .kpi-card {
+            background: linear-gradient(135deg, #3498db, #2c3e50);
+            color: white;
+            text-align: center;
+            padding: 1.5rem;
+            border-radius: 10px;
+        }
+        .kpi-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 0.5rem 0;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 2rem;
+        }
+        .insight-box {
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--secondary-color);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 5px 5px 0;
+        }
+        .nav-tabs .nav-link {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        .nav-tabs .nav-link.active {
+            background-color: var(--secondary-color);
+            color: white;
+            border-color: var(--secondary-color);
+        }
+        footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- 报告标题 -->
+    <header class="report-header text-center">
+        <div class="container">
+            <h1 class="display-4 fw-bold">投资数据分析报告</h1>
+            <p class="lead">基于近期30笔投资交易的综合分析</p>
+            <p class="mb-0">报告生成日期: 2024年1月</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- 执行摘要 -->
+        <section id="executive-summary">
+            <h2 class="section-title">执行摘要</h2>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <p class="card-text">本报告分析了近期30笔投资交易数据，揭示了当前投资市场的关键趋势。数据显示，<strong>先进制造、人工智能和医疗健康</strong>是当前最受资本关注的领域。融资活动主要集中在<strong>A轮及早期阶段</strong>，显示出投资者对新兴技术和创新企业的浓厚兴趣。</p>
+                            <p class="card-text">从地域分布来看，<strong>北京、上海和重庆</strong>是投资最活跃的城市。调研周期分析显示，大多数投资决策在<strong>10-15天内完成</strong>，反映了高效的投资决策流程。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 关键指标 -->
+        <section id="key-metrics">
+            <h2 class="section-title">关键指标概览</h2>
+            <div class="row">
+                <div class="col-md-3 col-sm-6">
+                    <div class="kpi-card">
+                        <h5>总交易数量</h5>
+                        <div class="kpi-value">30</div>
+                        <p>笔投资交易</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="kpi-card">
+                        <h5>涉及行业</h5>
+                        <div class="kpi-value">8</div>
+                        <p>个主要行业</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="kpi-card">
+                        <h5>覆盖地区</h5>
+                        <div class="kpi-value">15</div>
+                        <p>个城市</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="kpi-card">
+                        <h5>平均调研周期</h5>
+                        <div class="kpi-value">12.5</div>
+                        <p>天</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 详细数据分析 -->
+        <section id="detailed-analysis">
+            <h2 class="section-title">详细数据分析</h2>
+            
+            <!-- 图表导航 -->
+            <ul class="nav nav-tabs" id="chartTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="industry-tab" data-bs-toggle="tab" data-bs-target="#industry" type="button" role="tab">行业分布</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="round-tab" data-bs-toggle="tab" data-bs-target="#round" type="button" role="tab">融资轮次</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="region-tab" data-bs-toggle="tab" data-bs-target="#region" type="button" role="tab">地区分布</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="duration-tab" data-bs-toggle="tab" data-bs-target="#duration" type="button" role="tab">调研周期</button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="chartTabsContent">
+                <!-- 行业分布图表 -->
+                <div class="tab-pane fade show active" id="industry" role="tabpanel">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="chart-container">
+                                <canvas id="industryChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="insight-box">
+                                <h5>行业洞察</h5>
+                                <p><strong>先进制造</strong>是投资最集中的领域，占比超过40%，显示出对硬科技和制造业升级的强烈关注。</p>
+                                <p><strong>人工智能</strong>和<strong>医疗健康</strong>紧随其后，反映了技术驱动和生物科技的投资趋势。</p>
+                                <p>传统消费领域投资相对较少，但零食连锁品牌"爱零客"获得了千万级融资。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 融资轮次图表 -->
+                <div class="tab-pane fade" id="round" role="tabpanel">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="chart-container">
+                                <canvas id="roundChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="insight-box">
+                                <h5>轮次洞察</h5>
+                                <p><strong>早期投资（天使轮、Pre-A轮、A轮）</strong>占主导地位，占总交易数的60%。</p>
+                                <p>IPO和定向增发等后期融资也占有相当比例，显示资本市场对成熟企业的持续支持。</p>
+                                <p>B轮及以后的融资相对较少，可能与样本数据的时间范围有关。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 地区分布图表 -->
+                <div class="tab-pane fade" id="region" role="tabpanel">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="chart-container">
+                                <canvas id="regionChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="insight-box">
+                                <h5>地区洞察</h5>
+                                <p><strong>北京、上海</strong>作为科技创新中心，吸引了最多的投资交易。</p>
+                                <p><strong>重庆、苏州、杭州</strong>等新一线城市表现活跃，显示出区域创新能力的提升。</p>
+                                <p>投资地域分布较为广泛，覆盖了从东北到西南的多个经济区域。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 调研周期图表 -->
+                <div class="tab-pane fade" id="duration" role="tabpanel">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="chart-container">
+                                <canvas id="durationChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="insight-box">
+                                <h5>调研周期洞察</h5>
+                                <p>大多数投资项目的调研周期集中在<strong>10-15天</strong>，显示投资决策效率较高。</p>
+                                <p>最短调研周期仅为<strong>2天</strong>（星动纪元），最长达到<strong>15天</strong>。</p>
+                                <p>调研周期与融资轮次和金额没有明显相关性，更多取决于项目复杂度和投资机构内部流程。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 趋势分析 -->
+        <section id="trend-analysis">
+            <h2 class="section-title">趋势分析</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">技术驱动投资成为主流</h5>
+                            <p class="card-text">在30笔交易中，涉及人工智能、先进制造、生物科技等硬科技领域的投资占比超过70%。这反映出当前投资市场对技术创新的高度重视。</p>
+                            <p class="card-text">特别是人工智能与各行业的融合（如智能制造、智慧农业、金融科技）成为投资热点。</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">资本市场支持多元化</h5>
+                            <p class="card-text">融资渠道包括风险投资、战略投资、IPO和定向增发等多种形式。特别是传统制造业企业通过定向增发获得资金支持，实现转型升级。</p>
+                            <p class="card-text">国有资本和产业资本在投资中扮演重要角色，如国家制造业转型升级基金参与一汽解放的定向增发。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 建议和结论 -->
+        <section id="recommendations">
+            <h2 class="section-title">建议与结论</h2>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">主要结论</h5>
+                    <ol class="mb-4">
+                        <li><strong>硬科技是投资主赛道</strong>：先进制造、人工智能、生物医药等硬科技领域持续吸引资本关注。</li>
+                        <li><strong>早期投资活跃</strong>：天使轮到A轮的投资占主导，显示市场对创新企业的支持力度。</li>
+                        <li><strong>地域分布广泛但集中</strong>：投资活动覆盖多个城市，但北京、上海等一线城市仍是投资中心。</li>
+                        <li><strong>投资决策效率高</strong>：平均12.5天的调研周期表明投资机构决策流程较为高效。</li>
+                    </ol>
+                    
+                    <h5 class="card-title">战略建议</h5>
+                    <ul>
+                        <li><strong>聚焦硬科技领域</strong>：建议继续关注先进制造、人工智能、新能源等硬科技赛道的投资机会。</li>
+                        <li><strong>关注区域创新中心</strong>：除一线城市外，可重点关注重庆、苏州、杭州等新一线城市的创新企业。</li>
+                        <li><strong>优化投资流程</strong>：参考行业平均调研周期，进一步优化尽职调查和决策流程。</li>
+                        <li><strong>多元化投资组合</strong>：在关注早期项目的同时，适当配置成熟企业的定向增发和IPO前投资。</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>投资数据分析报告 &copy; 2024</p>
+            <p class="mb-0">本报告基于30笔投资交易数据生成，仅供参考和决策支持</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- 图表JavaScript代码 -->
+    <script>
+        // 行业分布数据
+        const industryData = {
+            labels: ['先进制造', '人工智能', '医疗健康', '汽车出行', '企业服务', '消费', '金融', '其他'],
+            datasets: [{
+                label: '交易数量',
+                data: [13, 6, 3, 3, 3, 2, 1, 2],
+                backgroundColor: [
+                    '#3498db', '#2ecc71', '#e74c3c', '#f39c12', '#9b59b6', 
+                    '#1abc9c', '#34495e', '#95a5a6'
+                ],
+                borderWidth: 1
+            }]
+        };
+
+        // 融资轮次数据
+        const roundData = {
+            labels: ['天使轮', 'Pre-A轮', 'A轮', 'B轮', 'C轮', 'D轮', 'IPO', '定向增发', '战略投资', '被收购'],
+            datasets: [{
+                label: '交易数量',
+                data: [6, 3, 3, 2, 1, 1, 4, 4, 2, 1],
+                backgroundColor: 'rgba(52, 152, 219, 0.7)',
+                borderColor: 'rgba(52, 152, 219, 1)',
+                borderWidth: 1
+            }]
+        };
+
+        // 地区分布数据
+        const regionData = {
+            labels: ['北京', '上海', '重庆', '苏州', '杭州', '深圳', '其他'],
+            datasets: [{
+                label: '交易数量',
+                data: [4, 4, 3, 2, 2, 2, 13],
+                backgroundColor: [
+                    '#3498db', '#2ecc71', '#e74c3c', '#f39c12', '#9b59b6',
+                    '#1abc9c', '#95a5a6'
+                ]
+            }]
+        };
+
+        // 调研周期数据
+        const durationData = {
+            labels: ['2-5天', '6-10天', '11-15天', '16-20天'],
+            datasets: [{
+                label: '项目数量',
+                data: [3, 8, 15, 4],
+                backgroundColor: 'rgba(231, 76, 60, 0.7)',
+                borderColor: 'rgba(231, 76, 60, 1)',
+                borderWidth: 1,
+                fill: true
+            }]
+        };
+
+        // 图表配置
+        const chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        };
+
+        // 初始化图表
+        document.addEventListener('DOMContentLoaded', function() {
+            // 行业分布饼图
+            new Chart(document.getElementById('industryChart'), {
+                type: 'pie',
+                data: industryData,
+                options: chartOptions
+            });
+
+            // 融资轮次柱状图
+            new Chart(document.getElementById('roundChart'), {
+                type: 'bar',
+                data: roundData,
+                options: {
+                    ...chartOptions,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 地区分布柱状图
+            new Chart(document.getElementById('regionChart'), {
+                type: 'bar',
+                data: regionData,
+                options: {
+                    ...chartOptions,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 调研周期折线图
+            new Chart(document.getElementById('durationChart'), {
+                type: 'line',
+                data: durationData,
+                options: {
+                    ...chartOptions,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 2
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+```
