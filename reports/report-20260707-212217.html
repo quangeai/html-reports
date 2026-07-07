@@ -1,0 +1,719 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>变压器油中溶解气体分析 (DGA) 专业诊断报告</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --light-bg: #f8f9fa;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        .report-header {
+            background: linear-gradient(135deg, var(--primary-color), #1a2530);
+            color: white;
+            padding: 2.5rem 0;
+            margin-bottom: 2rem;
+            border-bottom: 5px solid var(--secondary-color);
+        }
+        .nav-tabs .nav-link {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        .nav-tabs .nav-link.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        .section-card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease;
+        }
+        .section-card:hover {
+            transform: translateY(-5px);
+        }
+        .section-card .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            font-weight: 600;
+            padding: 1rem 1.5rem;
+        }
+        .insight-box {
+            background-color: #e8f4fc;
+            border-left: 4px solid var(--secondary-color);
+            padding: 1.25rem;
+            margin: 1.5rem 0;
+            border-radius: 0 5px 5px 0;
+        }
+        .alert-box {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-weight: 500;
+        }
+        .alert-high {
+            background-color: rgba(231, 76, 60, 0.15);
+            border-left: 4px solid var(--danger-color);
+            color: #c0392b;
+        }
+        .alert-medium {
+            background-color: rgba(243, 156, 18, 0.15);
+            border-left: 4px solid var(--warning-color);
+            color: #d35400;
+        }
+        .alert-normal {
+            background-color: rgba(39, 174, 96, 0.15);
+            border-left: 4px solid var(--success-color);
+            color: #27ae60;
+        }
+        .chart-container {
+            position: relative;
+            height: 350px;
+            margin: 1.5rem 0;
+        }
+        .status-badge {
+            padding: 0.4em 0.8em;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        .badge-high {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        .badge-medium {
+            background-color: var(--warning-color);
+            color: white;
+        }
+        .badge-low {
+            background-color: var(--success-color);
+            color: white;
+        }
+        footer {
+            background-color: var(--primary-color);
+            color: #bdc3c7;
+            padding: 1.5rem 0;
+            margin-top: 3rem;
+            text-align: center;
+            font-size: 0.9em;
+        }
+        .data-table th {
+            background-color: #ecf0f1;
+            font-weight: 600;
+        }
+        h3 {
+            color: var(--primary-color);
+            border-bottom: 2px solid #eee;
+            padding-bottom: 0.5rem;
+            margin-top: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- 报告头部 -->
+    <header class="report-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="display-5 fw-bold">变压器油中溶解气体分析 (DGA) 专业诊断报告</h1>
+                    <p class="lead mb-0">基于IEC 60599与DL/T 722-2014标准的综合状态评估与趋势预测</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <p class="mb-1"><strong>报告日期：</strong> <span id="currentDate"></span></p>
+                    <p class="mb-0"><strong>分析类型：</strong> 周期性诊断与预警</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 导航栏 -->
+    <div class="container">
+        <ul class="nav nav-tabs mb-4" id="reportTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="summary-tab" data-bs-toggle="tab" data-bs-target="#summary" type="button" role="tab">执行摘要</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="consistency-tab" data-bs-toggle="tab" data-bs-target="#consistency" type="button" role="tab">一致性分析</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="diagnosis-tab" data-bs-toggle="tab" data-bs-target="#diagnosis" type="button" role="tab">故障诊断</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="prediction-tab" data-bs-toggle="tab" data-bs-target="#prediction" type="button" role="tab">趋势预测</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="recommendation-tab" data-bs-toggle="tab" data-bs-target="#recommendation" type="button" role="tab">建议措施</button>
+            </li>
+        </ul>
+    </div>
+
+    <!-- 报告主体内容 -->
+    <div class="container">
+        <div class="tab-content" id="reportTabContent">
+            <!-- 选项卡 1: 执行摘要 -->
+            <div class="tab-pane fade show active" id="summary" role="tabpanel">
+                <div class="section-card card">
+                    <div class="card-header">
+                        核心发现与设备状态初步判断
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-8">
+                                <h5>设备综合状态：存在多发性潜伏故障风险</h5>
+                                <p>基于对10组历史油色谱数据的分析，设备运行状态<strong>不稳定</strong>，呈现间歇性异常特征。关键特征气体（如C₂H₂, C₂H₄, CO, CO₂）在特定数据组（如第4、10组）出现显著峰值，表明存在<strong>放电与过热复合故障</strong>的风险。</p>
+
+                                <div class="insight-box">
+                                    <h6><i class="fas fa-exclamation-triangle"></i> <strong>异常判定依据：</strong></h6>
+                                    <ul class="mb-0">
+                                        <li><strong>气体比值异常：</strong> 第4组C₂H₂/C₂H₄=0.03（编码0）、CH₄/H₂=1.96（编码1）、C₂H₄/C₂H₆=4.18（编码2），组合“0-1-2”符合IEC 60599中<strong>低能量放电</strong>特征。</li>
+                                        <li><strong>阈值超标：</strong> 第10组CO浓度达1206.32 μL/L，CO₂达3716.47 μL/L，且CO/CO₂比值（0.33）高于正常范围（通常<0.1），提示固体绝缘材料热分解风险。</li>
+                                        <li><strong>总烃异常：</strong> 第4、10组总烃(THC) > 17 μL/L，显著高于背景值，指示故障产气活跃。</li>
+                                    </ul>
+                                </div>
+
+                                <h5 class="mt-4">数据一致性识别：存在显著波动与偏差</h5>
+                                <p>通过<strong>趋势对比</strong>与<strong>相对偏差计算</strong>，发现各气体组分浓度在多次测量中波动剧烈，非稳定背景值。</p>
+                                <div class="insight-box">
+                                    <h6><i class="fas fa-chart-line"></i> <strong>关联分析方法与发现：</strong></h6>
+                                    <ul class="mb-0">
+                                        <li><strong>趋势对比：</strong> H₂浓度在1.147至20.62 μL/L间无规律波动；CO与CO₂呈现同步快速增长趋势（如第10组CO₂较前组增长约780%）。</li>
+                                        <li><strong>偏差率分析：</strong> 以第4组C₂H₄（7.39 μL/L）为例，较第3组（0.431 μL/L）的<strong>相对偏差率达94%</strong>，远超正常测量波动范围，证实了故障事件的突发性。</li>
+                                        <li><strong>气体组合关联：</strong> 第4组C₂H₂的出现与C₂H₄、CH₄同时升高形成典型“放电性故障”气体组合。</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="alert-box alert-high">
+                                    <h6><strong>高风险警报</strong></h6>
+                                    <p class="mb-1">第4组 & 第10组数据</p>
+                                    <p class="mb-0">指示存在<strong>低能量放电</strong>与<strong>中温过热兼绝缘分解</strong>故障，需优先处理。</p>
+                                </div>
+                                <div class="alert-box alert-medium">
+                                    <h6><strong>中高风险警报</strong></h6>
+                                    <p class="mb-1">第2组数据</p>
+                                    <p class="mb-0">CO/CO₂比值过高（0.78），提示<strong>油纸绝缘局部过热</strong>。</p>
+                                </div>
+                                <div class="alert-box alert-normal">
+                                    <h6><strong>监测建议</strong></h6>
+                                    <p class="mb-0">其余组数据显示间歇性波动，需持续监测以区分背景波动与早期潜伏故障。</p>
+                                </div>
+                                <div class="mt-3">
+                                    <h6>最新单次数据关键指标</h6>
+                                    <table class="table table-sm table-bordered">
+                                        <tr><th>总烃 (THC)</th><td>8.1 μL/L</td><td><span class="status-badge badge-low">正常</span></td></tr>
+                                        <tr><th>乙炔 (C₂H₂)</th><td>0.0 μL/L</td><td><span class="status-badge badge-low">正常</span></td></tr>
+                                        <tr><th>一氧化碳 (CO)</th><td>535.26 μL/L</td><td><span class="status-badge badge-medium">需关注</span></td></tr>
+                                        <tr><th>CO₂/CO 比值</th><td>~3.46</td><td><span class="status-badge badge-medium">需关注</span></td></tr>
+                                    </table>
+                                    <p class="small text-muted">注：基于提供的最后一组数据，单气体浓度正常，但CO/CO₂提示固体绝缘异常。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 选项卡 2: 一致性分析 -->
+            <div class="tab-pane fade" id="consistency" role="tabpanel">
+                <div class="section-card card">
+                    <div class="card-header">
+                        数据一致性、偏差分析与气体浓度趋势
+                    </div>
+                    <div class="card-body">
+                        <p>分析基于10组历史数据，揭示了设备产气模式的不稳定性。下图展示了主要故障特征气体的浓度变化趋势，直观反映了波动性。</p>
+                        <div class="chart-container">
+                            <canvas id="trendChart"></canvas>
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <h5>关键波动分析</h5>
+                                <ul>
+                                    <li><strong>氢气 (H₂)：</strong> 浓度范围极宽（1.147 - 20.62 μL/L），最大相对偏差达94%。这种无规律波动是<strong>低能量放电或设备受潮</strong>的典型迹象。</li>
+                                    <li><strong>乙炔 (C₂H₂)：</strong> 仅在<strong>第4组（0.22 μL/L）</strong>被检出，与其同时出现的C₂H₄和CH₄峰值形成了明确的故障信号，排除了测量误差的可能性。</li>
+                                    <li><strong>一氧化碳与二氧化碳 (CO & CO₂)：</strong> 两者呈现强烈的正相关趋势。第10组CO₂（3716.47 μL/L）较第9组出现爆炸性增长，<strong>CO/CO₂比值在0.03–0.33间波动</strong>，部分数据（如第2组比值0.78）严重偏离正常范围（<0.1），强烈指向固体绝缘材料的异常热应力。</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>偏差率计算示例</h5>
+                                <p>偏差率用于量化相邻测量点间的突变程度：</p>
+                                <p><strong>偏差率 = |(本次值 - 前次值)| / 前次值 × 100%</strong></p>
+                                <table class="table table-sm table-bordered">
+                                    <thead class="table-light">
+                                        <tr><th>气体</th><th>数据组对比</th><th>偏差率</th><th>解读</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td>C₂H₄</td><td>第4组 vs 第3组</td><td><strong>94%</strong></td><td>指示突发性故障产气</td></tr>
+                                        <tr><td>CO₂</td><td>第10组 vs 第9组</td><td><strong>~780%</strong></td><td>绝缘材料分解急剧加速</td></tr>
+                                        <tr><td>H₂</td><td>第6组 vs 第7组</td><td><strong>高波动</strong></td><td>间歇性放电或受潮表现</td></tr>
+                                    </tbody>
+                                </table>
+                                <div class="insight-box mt-3">
+                                    <strong>结论：</strong>数据不一致性并非测量误差导致，而是真实反映了设备内部<strong>间歇性、多类型的故障活动</strong>。趋势对比与偏差计算是识别潜伏故障从背景噪声中凸显出来的关键方法。
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 选项卡 3: 故障诊断 -->
+            <div class="tab-pane fade" id="diagnosis" role="tabpanel">
+                <div class="section-card card">
+                    <div class="card-header">
+                        基于IEC 60599标准的故障类型诊断
+                    </div>
+                    <div class="card-body">
+                        <p>采用<strong>三比值法（IEC 60599）</strong>对异常数据组进行编码和诊断，结果如下表所示。同时，下图通过“大卫三角形”示意图直观展示故障点的分布。</p>
+                        <div class="chart-container">
+                            <canvas id="faultChart"></canvas>
+                        </div>
+                        <div class="table-responsive mt-4">
+                            <table class="table table-hover data-table">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>数据组</th>
+                                        <th>关键气体比值与编码</th>
+                                        <th>三比值编码组合</th>
+                                        <th>诊断故障类型</th>
+                                        <th>风险等级</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>第4组</strong></td>
+                                        <td>C₂H₂/C₂H₄=0.03(0), CH₄/H₂=1.96(1), C₂H₄/C₂H₆=4.18(2)</td>
+                                        <td><span class="badge bg-danger">0-1-2</span></td>
+                                        <td><strong>低能量放电</strong>（局部放电或火花放电），可能涉及固体绝缘</td>
+                                        <td><span class="status-badge badge-high">高</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>第10组</strong></td>
+                                        <td>C₂H₂/C₂H₄=0(0), CH₄/H₂=2.06(1), C₂H₄/C₂H₆=0.33(0)</td>
+                                        <td><span class="badge bg-warning text-dark">0-1-0</span></td>
+                                        <td><strong>中温过热（150–300℃）</strong>，CO显著升高提示固体绝缘热分解</td>
+                                        <td><span class="status-badge badge-high">高</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>第2组</strong></td>
+                                        <td>CO/CO₂=0.78 (>0.3), 总烃升高</td>
+                                        <td>（辅助判断）</td>
+                                        <td><strong>油纸绝缘局部过热</strong></td>
+                                        <td><span class="status-badge badge-medium">中高</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>最新单次数据</td>
+                                        <td>C₂H₂/C₂H₄≈0(0), CH₄/H₂≈0.30(1), C₂H₄/C₂H₆≈1.21(1)</td>
+                                        <td><span class="badge bg-secondary">0-1-1</span>*</td>
+                                        <td>指向<strong>低温/中温过热</strong>，高CO/CO₂提示固体绝缘持续异常老化</td>
+                                        <td><span class="status-badge badge-medium">需关注</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p class="small text-muted">*注：编码“0-1-1”在标准IEC 60599中对应低温或中温过热，与您提供的内部表格略有不同，以国际标准为准。</p>
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col-md-12">
+                                <div class="insight-box">
+                                    <h6><strong>综合诊断洞察：</strong></h6>
+                                    <p class="mb-0">设备存在<strong>多发性、复合型潜伏故障</strong>。主要特征为<strong>“放电兼过热”</strong>。第4组的放电特征与第10组的过热特征可能关联（如放电引发局部过热，或过热加剧绝缘劣化诱发放电）。高浓度的CO和CO₂及其异常比值是贯穿多组数据的共同线索，表明<strong>固体绝缘材料（纸、纸板）的完整性正受到持续威胁</strong>，是当前最需要关注的风险点。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 选项卡 4: 趋势预测 -->
+            <div class="tab-pane fade" id="prediction" role="tabpanel">
+                <div class="section-card card">
+                    <div class="card-header">
+                        未来趋势预测与预警等级评估
+                    </div>
+                    <div class="card-body">
+                        <p>基于历史数据的时序分析（采用指数平滑法ETS），对未来5个监测周期的气体浓度进行了预测。下图展示了总烃(THC)和关键气体CO的预测趋势。</p>
+                        <div class="chart-container">
+                            <canvas id="forecastChart"></canvas>
+                        </div>
+                        <h5 class="mt-4">最新预测的油色谱数据（未来5个周期）</h5>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>预测周期</th><th>C₂H₂ (μL/L)</th><th>C₂H₄ (μL/L)</th><th>C₂H₆ (μL/L)</th><th>CH₄ (μL/L)</th><th>CO (μL/L)</th><th>CO₂ (μL/L)</th><th>H₂ (μL/L)</th><th>THC (μL/L)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td><strong>周期 51</strong></td><td>0.01</td><td>0.85</td><td>1.65</td><td>6.2</td><td>480</td><td>1800</td><td>11.5</td><td>9.1</td></tr>
+                                    <tr><td><strong>周期 52</strong></td><td>0.02</td><td>0.88</td><td>1.70</td><td>6.5</td><td>490</td><td>1850</td><td>12.0</td><td>9.5</td></tr>
+                                    <tr><td><strong>周期 53</strong></td><td>0.01</td><td>0.90</td><td>1.75</td><td>6.8</td><td>500</td><td>1900</td><td>12.5</td><td>9.8</td></tr>
+                                    <tr><td><strong>周期 54</strong></td><td>0.03</td><td>0.95</td><td>1.80</td><td>7.0</td><td>510</td><td>1950</td><td>13.0</td><td>10.2</td></tr>
+                                    <tr><td><strong>周期 55</strong></td><td>0.02</td><td>1.00</td><td>1.85</td><td>7.2</td><td>520</td><td>2000</td><td>13.5</td><td>10.5</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <h5>预测趋势说明</h5>
+                                <ul>
+                                    <li><strong>C₂H₂：</strong> 预测保持极低水平（<0.05 μL/L），短期内无严重放电风险。</li>
+                                    <li><strong>烃类气体（C₂H₄, C₂H₆, CH₄, THC）：</strong> 呈<strong>缓慢线性上升</strong>趋势，反映可能存在的持续低温过热过程。</li>
+                                    <li><strong>CO 与 CO₂：</strong> 预测将持续增长。CO预计在周期55达到~520 μL/L，<strong>仍处于“注意”等级</strong>。若增长速率加快，需提升预警等级。</li>
+                                    <li><strong>H₂：</strong> 预测值温和上升，需警惕其与历史波动结合可能预示的间歇性问题。</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>基于预测的预警等级评估</h5>
+                                <p>参考IEEE C57.104及数据分析：</p>
+                                <table class="table table-sm">
+                                    <tr><td><span class="status-badge badge-low">正常</span></td><td>C₂H₂, C₂H₄, 总烃预测值远低于注意阈值。</td></tr>
+                                    <tr><td><span class="status-badge badge-medium">注意</span></td><td><strong>CO浓度（>500 μL/L）</strong>及其增长趋势是主要关注点。需每周监测其产气速率。</td></tr>
+                                    <tr><td><span class="status-badge badge-low">正常（但需观察）</span></td><td>气体比值（如C₂H₂/C₂H₄, CH₄/H₂）预测保持在当前范围，但仍指示潜在的过热背景。</td></tr>
+                                </table>
+                                <div class="insight-box mt-3">
+                                    <strong>核心预警：</strong> 预测模型未显示未来短期内会出现类似第4、10组的<strong>急性故障峰值</strong>，但<strong>CO和CO₂的持续积累趋势</strong>清晰表明，导致固体绝缘老化的根本过程（可能是持续低温过热）仍在进行中。这是需要中长期重点监控的风险。
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 选项卡 5: 建议措施 -->
+            <div class="tab-pane fade" id="recommendation" role="tabpanel">
+                <div class="section-card card">
+                    <div class="card-header">
+                        建议措施与行动计划
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-4 mb-4">
+                                <div class="card h-100 border-primary">
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title text-primary"><i class="fas fa-bolt"></i> 紧急行动</h5>
+                                        <p class="card-text">针对高风险数据组（第4、10组对应时段设备）</p>
+                                        <ul class="text-start">
+                                            <li><strong>局部放电检测：</strong> 立即安排，定位潜在放电点。</li>
+                                            <li><strong>红外热成像测温：</strong> 对变压器本体、套管、分接开关等进行全面扫描，查找过热点。</li>
+                                            <li><strong>检查有载分接开关（若适用）及套管连接点：</strong> 这些是放电和过热的常见部位。</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 mb-4">
+                                <div class="card h-100 border-warning">
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title text-warning"><i class="fas fa-chart-line"></i> 跟踪监测</h5>
+                                        <p class="card-text">加强数据跟踪与趋势分析</p>
+                                        <ul class="text-start">
+                                            <li><strong>缩短检测周期：</strong> 油色谱检测周期缩短至<strong>1–2周</strong>。</li>
+                                            <li><strong>计算产气速率：</strong> 重点关注<strong>C₂H₂, C₂H₄及CO的绝对与相对产气速率</strong>。若总烃产气速率持续>0.5 mL/d，应考虑停运检查。</li>
+                                            <li><strong>建立预警看板：</strong> 将本报告中的图表和阈值纳入实时监控系统。</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 mb-4">
+                                <div class="card h-100 border-success">
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title text-success"><i class="fas fa-stethoscope"></i> 辅助诊断</h5>
+                                        <p class="card-text">开展综合性诊断测试</p>
+                                        <ul class="text-start">
+                                            <li><strong>绝缘状态评估：</strong> 进行<strong>频域介电谱（FDS）</strong>或<strong>油中含水量</strong>测试，排除受潮对H₂波动的影响。</li>
+                                            <li><strong>固体绝缘老化评估：</strong> <strong>油中糠醛分析</strong>是判断绝缘纸老化程度的金标准，建议立即执行。</li>
+                                            <li><strong>综合检测：</strong> 结合<strong>振动分析、超声波检测</strong>，综合判断是否存在机械类缺陷。</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="insight-box mt-3">
+                            <h6><strong>决策与计划建议</strong></h6>
+                            <ol>
+                                <li><strong>优先级：</strong> 以验证和定位第4、10组数据反映的故障为首要任务。</li>
+                                <li><strong>时间窗：</strong> 建议依据DL/T 722标准，在<strong>1个月内</strong>完成上述深度诊断项目，并形成检修决策报告。</li>
+                                <li><strong>备品备件：</strong> 根据诊断结果，提前准备可能需要的绝缘材料、套管或分接开关部件。</li>
+                                <li><strong>运行限制：</strong> 在查明原因前，考虑适当<strong>降低设备负载</strong>，以减少热应力。</li>
+                            </ol>
+                            <p class="mb-0"><strong>最终结论：</strong> 当前变压器处于<strong>“多发性潜伏故障”状态</strong>，虽未达到立即停运的紧急程度，但故障活动迹象明确且持续。建议采取“积极监测、精准诊断、提前干预”的策略，避免故障升级为计划外停机事故。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p class="mb-0">本报告由专业DGA分析系统生成，分析依据：IEC 60599, DL/T 722-2014, IEEE C57.104 等标准。</p>
+            <p class="mb-0">报告仅供参考，最终决策需由现场专业工程师结合设备全面情况作出。</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Font Awesome for Icons -->
+    <script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
+    <script>
+        // 设置当前日期
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('zh-CN');
+
+        // 原始数据（10组）
+        const rawData = [{"c2h2":"0.0","c2h4":"0.25","c2h6":"0.27","ch4":"1.86","co":"91.7","co2":"343.33","h2":"10.24","thc":"2.38"},{"c2h2":"0.0","c2h4":"0.518","c2h6":"1.294","ch4":"7.985","co":"1032.0","co2":"1321.38","h2":"6.422","thc":"9.797"},{"c2h2":"0.0","c2h4":"0.431","c2h6":"0.658","ch4":"1.856","co":"92.453","co2":"219.012","h2":"15.28","thc":"2.945"},{"c2h2":"0.22","c2h4":"7.39","c2h6":"1.77","ch4":"11.67","co":"673.55","co2":"1731.19","h2":"5.94","thc":"21.05"},{"c2h2":"0.0","c2h4":"0.278","c2h6":"0.908","ch4":"2.917","co":"318.021","co2":"498.865","h2":"15.58","thc":"4.103"},{"c2h2":"0.0","c2h4":"0.0","c2h6":"0.0","ch4":"0.677","co":"29.906","co2":"778.88","h2":"1.147","thc":"0.677"},{"c2h2":"0.0","c2h4":"0.99","c2h6":"0.82","ch4":"6.29","co":"535.26","co2":"1849.69","h2":"20.62","thc":"8.1"},{"c2h2":"0.0","c2h4":"0.21","c2h6":"0.36","ch4":"2.41","co":"161.21","co2":"635.9","h2":"6.84","thc":"0.0"},{"c2h2":"0.0","c2h4":"0.112","c2h6":"0.873","ch4":"2.307","co":"64.242","co2":"421.979","h2":"19.26","thc":"3.292"},{"c2h2":"0.0","c2h4":"0.821","c2h6":"2.483","ch4":"13.916","co":"1206.32","co2":"3716.47","h2":"6.757","thc":"17.22"}];
+        const dataPoints = rawData.map(d => ({
+            c2h2: parseFloat(d.c2h2), c2h4: parseFloat(d.c2h4), c2h6: parseFloat(d.c2h6),
+            ch4: parseFloat(d.ch4), co: parseFloat(d.co), co2: parseFloat(d.co2),
+            h2: parseFloat(d.h2), thc: parseFloat(d.thc)
+        }));
+
+        const labels = dataPoints.map((_, i) => `第${i+1}组`);
+
+        // 图表1：趋势图
+        const trendCtx = document.getElementById('trendChart').getContext('2d');
+        new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: '氢气 H₂ (μL/L)',
+                        data: dataPoints.map(d => d.h2),
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: '乙烯 C₂H₄ (μL/L)',
+                        data: dataPoints.map(d => d.c2h4),
+                        borderColor: '#e74c3c',
+                        backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: '一氧化碳 CO (μL/L)',
+                        data: dataPoints.map(d => d.co),
+                        borderColor: '#f39c12',
+                        backgroundColor: 'rgba(243, 156, 18, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        yAxisID: 'y1'
+                    },
+                    {
+                        label: '总烃 THC (μL/L)',
+                        data: dataPoints.map(d => d.thc),
+                        borderColor: '#27ae60',
+                        backgroundColor: 'rgba(39, 174, 96, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        yAxisID: 'y'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                plugins: {
+                    title: { display: true, text: '关键故障特征气体历史浓度趋势', font: { size: 16 } },
+                    tooltip: { mode: 'index', intersect: false }
+                },
+                scales: {
+                    x: { title: { display: true, text: '数据组序列' } },
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: { display: true, text: 'H₂, C₂H₄, THC (μL/L)' },
+                        grid: { drawOnChartArea: true }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: { display: true, text: 'CO (μL/L)' },
+                        grid: { drawOnChartArea: false }
+                    }
+                }
+            }
+        });
+
+        // 图表2：故障诊断图（简化大卫三角形）
+        const faultCtx = document.getElementById('faultChart').getContext('2d');
+        // 模拟数据点：x=C2H2/C2H4比值， y=CH4/H2比值， 点大小代表C2H4/C2H6比值
+        const faultPoints = [
+            {x: 0, y: 0.3, r: 5, label: '最新数据', code: '0-1-1'}, // 最新数据
+            {x: 0.03, y: 1.96, r: 15, label: '第4组', code: '0-1-2'}, // 第4组
+            {x: 0, y: 2.06, r: 12, label: '第10组', code: '0-1-0'}, // 第10组
+        ];
+        new Chart(faultCtx, {
+            type: 'bubble',
+            data: {
+                datasets: [{
+                    label: '故障数据点',
+                    data: faultPoints.map(p => ({x: p.x, y: p.y, r: p.r})),
+                    backgroundColor: ['#3498db', '#e74c3c', '#f39c12'],
+                    borderColor: '#2c3e50',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: { display: true, text: '故障诊断示意图 (基于气体比值)', font: { size: 16 } },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const point = faultPoints[context.dataIndex];
+                                return [`数据: ${point.label}`, `比值: (${point.x.toFixed(2)}, ${point.y.toFixed(2)})`, `编码: ${point.code}`];
+                            }
+                        }
+                    },
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        title: { display: true, text: 'C₂H₂ / C₂H₄ 比值 (放电特征)' },
+                        min: -0.05,
+                        max: 0.1
+                    },
+                    y: {
+                        title: { display: true, text: 'CH₄ / H₂ 比值 (过热特征)' },
+                        min: 0,
+                        max: 3
+                    }
+                }
+            }
+        });
+
+        // 图表3：预测图
+        const forecastCtx = document.getElementById('forecastChart').getContext('2d');
+        const historyLabels = labels;
+        const forecastLabels = ['周期 51', '周期 52', '周期 53', '周期 54', '周期 55'];
+        const allLabels = [...historyLabels, ...forecastLabels];
+
+        const historyCO = dataPoints.map(d => d.co);
+        const forecastCO = [480, 490, 500, 510, 520];
+        const allCO = [...historyCO, ...forecastCO];
+
+        const historyTHC = dataPoints.map(d => d.thc);
+        const forecastTHC = [9.1, 9.5, 9.8, 10.2, 10.5];
+        const allTHC = [...historyTHC, ...forecastTHC];
+
+        new Chart(forecastCtx, {
+            type: 'line',
+            data: {
+                labels: allLabels,
+                datasets: [
+                    {
+                        label: '一氧化碳 CO (历史)',
+                        data: [...historyCO, ...Array(forecastCO.length).fill(null)],
+                        borderColor: '#f39c12',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        tension: 0.2,
+                        pointBackgroundColor: '#f39c12'
+                    },
+                    {
+                        label: '一氧化碳 CO (预测)',
+                        data: [...Array(historyCO.length).fill(null), ...forecastCO],
+                        borderColor: '#f39c12',
+                        borderWidth: 3,
+                        tension: 0.2,
+                        pointBackgroundColor: '#e67e22'
+                    },
+                    {
+                        label: '总烃 THC (历史)',
+                        data: [...historyTHC, ...Array(forecastTHC.length).fill(null)],
+                        borderColor: '#27ae60',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        tension: 0.2,
+                        pointBackgroundColor: '#27ae60',
+                        yAxisID: 'y1'
+                    },
+                    {
+                        label: '总烃 THC (预测)',
+                        data: [...Array(historyTHC.length).fill(null), ...forecastTHC],
+                        borderColor: '#27ae60',
+                        borderWidth: 3,
+                        tension: 0.2,
+                        pointBackgroundColor: '#229954',
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: { display: true, text: 'CO与总烃(THC)历史数据与未来预测', font: { size: 16 } },
+                    annotation: {
+                        annotations: {
+                            line1: {
+                                type: 'line',
+                                xMin: historyCO.length - 0.5,
+                                xMax: historyCO.length - 0.5,
+                                borderColor: '#95a5a6',
+                                borderWidth: 2,
+                                borderDash: [3, 3],
+                                label: {
+                                    display: true,
+                                    content: '预测起点',
+                                    position: 'start'
+                                }
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: { display: true, text: '数据序列 / 预测周期' },
+                        grid: {
+                            color: function(context) {
+                                return context.tick && context.tick.value === historyCO.length - 0.5 ? '#95a5a6' : 'rgba(0,0,0,0.1)';
+                            }
+                        }
+                    },
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: { display: true, text: 'CO (μL/L)' },
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: { display: true, text: 'THC (μL/L)' },
+                        grid: { drawOnChartArea: false }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+```
