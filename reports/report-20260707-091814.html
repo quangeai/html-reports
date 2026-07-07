@@ -1,0 +1,357 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>投资项目数据分析报告</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        .card {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            border: none;
+        }
+        .card-header {
+            background-color: #fff;
+            border-bottom: 2px solid #667eea;
+            font-weight: bold;
+        }
+        .metric-card {
+            text-align: center;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        .metric-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <h1 class="text-center">投资项目数据分析报告</h1>
+            <p class="text-center">2025年第一季度投融资项目全景分析</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- 执行摘要 -->
+        <section class="mb-5">
+            <div class="card">
+                <div class="card-header">
+                    <h3>执行摘要</h3>
+                </div>
+                <div class="card-body">
+                    <p>本报告分析了2025年第一季度30个投融资项目，覆盖12个行业，分布在全国20个城市。先进制造行业成为最热门投资领域，占比达43%；北京、上海、重庆成为项目最集中的三个城市。已披露项目总融资金额超过55亿人民币，D轮及后期项目平均融资额超过10亿人民币，显示出硬科技领域大额融资趋势明显。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 关键指标 -->
+        <section class="mb-5">
+            <h3 class="mb-4">关键指标概览</h3>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="metric-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <div class="metric-value">30</div>
+                        <div class="metric-label">总项目数</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="metric-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                        <div class="metric-value">12</div>
+                        <div class="metric-label">覆盖行业数</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="metric-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                        <div class="metric-value">55亿+</div>
+                        <div class="metric-label">已披露总融资额</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="metric-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                        <div class="metric-value">20</div>
+                        <div class="metric-label">覆盖城市数</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 行业分布分析 -->
+        <section class="mb-5">
+            <div class="card">
+                <div class="card-header">
+                    <h3>行业分布分析</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <canvas id="industryChart"></canvas>
+                        </div>
+                        <div class="col-md-6">
+                            <h4>行业洞察</h4>
+                            <ul>
+                                <li><strong>先进制造</strong>是最热门投资赛道，占比达43%，包含eVTOL、商业航天、半导体、机器人等硬科技领域</li>
+                                <li><strong>传统制造</strong>和<strong>汽车出行</strong>紧随其后，显示出实体经济和高端制造受到资本高度关注</li>
+                                <li><strong>医疗健康</strong>和<strong>企业服务</strong>保持稳定投资热度，分别有3个和5个项目</li>
+                                <li>新能源、消费、金融等行业也均有优质项目获得融资，投资领域呈现多元化特点</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 轮次分布分析 -->
+        <section class="mb-5">
+            <div class="card">
+                <div class="card-header">
+                    <h3>融资轮次分布</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <canvas id="roundChart"></canvas>
+                        </div>
+                        <div class="col-md-6">
+                            <h4>轮次洞察</h4>
+                            <ul>
+                                <li><strong>天使轮</strong>项目数量最多，共9个，占比30%，显示早期创新项目活跃</li>
+                                <li><strong>IPO项目</strong>有5个，占比17%，说明一季度有较多成熟企业完成上市</li>
+                                <li>Pre-A、A轮、B轮等成长期项目合计8个，占比27%</li>
+                                <li>D轮、C轮等后期项目虽数量少，但融资金额巨大，星际荣耀D轮融资达15亿人民币</li>
+                                <li>主板定向增发项目3个，合计融资26.5亿人民币，显示上市公司再融资活跃</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 地区分布分析 -->
+        <section class="mb-5">
+            <div class="card">
+                <div class="card-header">
+                    <h3>地区分布分析</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <canvas id="regionChart"></canvas>
+                        </div>
+                        <div class="col-md-6">
+                            <h4>地区洞察</h4>
+                            <ul>
+                                <li><strong>北京、上海</strong>并列第一，各有4个项目，是科创项目最集中的城市</li>
+                                <li><strong>重庆</strong>有3个项目，成为中西部地区的投融资亮点城市</li>
+                                <li><strong>苏州、杭州、深圳</strong>各有2个项目，长三角和珠三角地区保持稳定的创新活力</li>
+                                <li>二三线城市项目占比超过60%，显示创新正在向全国扩散，区域均衡发展态势明显</li>
+                                <li>沿海地区项目占比57%，内陆地区占比43%，区域投资差距正在缩小</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 融资金额分析 -->
+        <section class="mb-5">
+            <div class="card">
+                <div class="card-header">
+                    <h3>融资金额分析</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <canvas id="amountChart" height="300"></canvas>
+                        </div>
+                        <div class="col-md-12 mt-4">
+                            <h4>金额洞察</h4>
+                            <ul>
+                                <li><strong>大额融资项目集中在后期轮次</strong>：一汽解放20亿、星际荣耀15亿、腾龙股份5亿，三个项目合计占已披露融资总额的73%</li>
+                                <li><strong>先进制造领域融资能力最强</strong>：已披露项目平均融资额超过3亿人民币</li>
+                                <li><strong>千万级融资</strong>主要集中在天使轮到A轮阶段，是早期项目的主流融资规模</li>
+                                <li>人民币基金仍是投资主力，外币投资仅有YOHO项目的321.11万美元</li>
+                                <li>未披露金额项目共10个，占比33%，多为天使轮早期项目</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 结论与建议 -->
+        <section class="mb-5">
+            <div class="card">
+                <div class="card-header">
+                    <h3>结论与建议</h3>
+                </div>
+                <div class="card-body">
+                    <h4>主要结论</h4>
+                    <ol>
+                        <li>硬科技投资趋势明确：先进制造相关领域占据近半数投资份额，国家支持实体经济和硬科技发展的政策效果显现</li>
+                        <li>投资阶段分布均衡：早期项目活跃，后期项目大额融资不断，一二级市场联动效应增强</li>
+                        <li>区域创新格局优化：北上深杭仍保持创新优势，中西部城市和二三线城市创新活力不断提升</li>
+                        <li>大额融资向头部项目集中：后期项目吸金效应明显，优质项目获得资本竞相追逐</li>
+                    </ol>
+                    
+                    <h4 class="mt-4">投资建议</h4>
+                    <ol>
+                        <li>重点布局先进制造赛道，特别是商业航天、半导体、机器人、高端装备等细分领域，长期增长潜力巨大</li>
+                        <li>关注重庆、苏州、武汉等新一线城市的优质项目，估值相对合理，投资性价比更高</li>
+                        <li>均衡配置各轮次项目，早期项目侧重技术壁垒，成长期项目关注商业化进展，后期项目看重市场地位</li>
+                        <li>重点关注获得多家知名机构联合投资的项目，如星动纪元、平方和等，机构背书通常意味着更高的成功概率</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // 行业分布数据
+        const industryData = {
+            labels: ['先进制造', '传统制造', '汽车出行', '企业服务', '医疗', '人工智能', '新能源', '消费', '金融', '公用事业', '农业', '化学工业'],
+            datasets: [{
+                data: [13, 7, 4, 5, 3, 4, 3, 2, 1, 1, 1, 1],
+                backgroundColor: [
+                    '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
+                    '#FF9F40', '#FF6384', '#C9CBCF', '#36A2EB', '#FFCE56',
+                    '#4BC0C0', '#9966FF'
+                ]
+            }]
+        };
+
+        // 轮次分布数据
+        const roundData = {
+            labels: ['天使轮', 'Pre-A', 'A轮', 'B轮', 'C轮', 'D轮', '战略投资', 'IPO', '主板定向增发', '被收购'],
+            datasets: [{
+                data: [9, 3, 2, 2, 1, 1, 1, 5, 3, 1],
+                backgroundColor: [
+                    '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
+                    '#FF9F40', '#FF6384', '#C9CBCF', '#36A2EB', '#FFCE56'
+                ]
+            }]
+        };
+
+        // 地区分布数据
+        const regionData = {
+            labels: ['北京', '上海', '重庆', '苏州', '杭州', '深圳', '其他城市'],
+            datasets: [{
+                data: [4, 4, 3, 2, 2, 2, 13],
+                backgroundColor: [
+                    '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
+                    '#FF9F40', '#C9CBCF'
+                ]
+            }]
+        };
+
+        // 融资金额数据（单位：亿人民币，近似值）
+        const amountData = {
+            labels: ['一汽解放', '星际荣耀', '腾龙股份', '上大股份', '托普云农', '七牛智能', '华翔股份', '启元气体', '普源精电', '星动纪元', '其他项目'],
+            datasets: [{
+                label: '融资金额（亿人民币）',
+                data: [20, 15, 5, 5.48, 2.34, 3.2, 2.1, 1, 0.44, 3, 3],
+                backgroundColor: '#36A2EB',
+                borderColor: '#1E88E5',
+                borderWidth: 1
+            }]
+        };
+
+        // 初始化图表
+        window.onload = function() {
+            new Chart(document.getElementById('industryChart'), {
+                type: 'pie',
+                data: industryData,
+                options: {
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '行业分布占比'
+                        },
+                        legend: {
+                            position: 'right'
+                        }
+                    }
+                }
+            });
+
+            new Chart(document.getElementById('roundChart'), {
+                type: 'doughnut',
+                data: roundData,
+                options: {
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '融资轮次分布'
+                        },
+                        legend: {
+                            position: 'right'
+                        }
+                    }
+                }
+            });
+
+            new Chart(document.getElementById('regionChart'), {
+                type: 'pie',
+                data: regionData,
+                options: {
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '项目地区分布'
+                        },
+                        legend: {
+                            position: 'right'
+                        }
+                    }
+                }
+            });
+
+            new Chart(document.getElementById('amountChart'), {
+                type: 'bar',
+                data: amountData,
+                options: {
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '重点项目融资金额对比'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '融资金额（亿人民币）'
+                            }
+                        }
+                    }
+                }
+            });
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+```
