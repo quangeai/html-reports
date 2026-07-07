@@ -1,0 +1,599 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>变压器油色谱数据分析报告</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        .report-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2.5rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .nav-tabs .nav-link {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        .nav-tabs .nav-link.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            font-weight: 600;
+        }
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        .status-normal {
+            background-color: var(--success-color);
+            color: white;
+        }
+        .status-attention {
+            background-color: var(--warning-color);
+            color: white;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 1.5rem;
+        }
+        .insight-box {
+            background-color: #e8f4fc;
+            border-left: 4px solid var(--secondary-color);
+            padding: 1rem;
+            margin: 1.5rem 0;
+            border-radius: 0 5px 5px 0;
+        }
+        .data-table {
+            font-size: 0.9rem;
+        }
+        .footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1.5rem 0;
+            margin-top: 3rem;
+            text-align: center;
+        }
+        h3, h4, h5 {
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- 报告头部 -->
+    <header class="report-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="display-5 fw-bold">变压器油色谱数据分析报告</h1>
+                    <p class="lead mb-0">基于DL/T 722-2014标准的专业诊断与可视化洞察</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <div class="status-badge status-normal d-inline-block">设备状态：正常</div>
+                    <p class="mt-2 mb-0">报告日期：<span id="currentDate"></span></p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- 导航标签 -->
+        <ul class="nav nav-tabs mb-4" id="reportTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="summary-tab" data-bs-toggle="tab" data-bs-target="#summary" type="button" role="tab">执行摘要</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="data-tab" data-bs-toggle="tab" data-bs-target="#data" type="button" role="tab">数据概览</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="analysis-tab" data-bs-toggle="tab" data-bs-target="#analysis" type="button" role="tab">深度分析</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="prediction-tab" data-bs-toggle="tab" data-bs-target="#prediction" type="button" role="tab">趋势预测</button>
+            </li>
+        </ul>
+
+        <!-- 标签内容 -->
+        <div class="tab-content" id="reportTabsContent">
+            <!-- 执行摘要标签页 -->
+            <div class="tab-pane fade show active" id="summary" role="tabpanel">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="card">
+                            <div class="card-header">核心发现与状态判定</div>
+                            <div class="card-body">
+                                <h5 class="card-title text-success">✅ 设备当前处于正常稳定运行状态</h5>
+                                <p class="card-text">
+                                    基于提供的两组完全一致的油色谱数据，所有关键气体浓度（H₂, CH₄, C₂H₂, C₂H₄, C₂H₆, CO, CO₂, THC）均保持稳定，无增长趋势。依据《DL/T 722-2014》标准进行判定：
+                                </p>
+                                <ul>
+                                    <li><strong>无超限气体</strong>：所有特征气体浓度均远低于标准注意值（如C₂H₂为0.0 μL/L，注意值1 μL/L；总烃8.6 μL/L，注意值150 μL/L）。</li>
+                                    <li><strong>三比值法结果正常</strong>：计算得出比值编码为(0, 0, 0)，对应“无故障”状态，表明设备处于正常老化或稳定运行阶段。</li>
+                                    <li><strong>数据一致性极高</strong>：采用趋势对比法分析，两次检测数据完全一致，表明设备运行工况极其稳定，无气体浓度突变风险。</li>
+                                </ul>
+                                <div class="insight-box">
+                                    <strong>📈 分析依据：</strong> 设备状态判定主要依据气体浓度绝对值与标准注意值的对比，以及国际通用的三比值法（C₂H₂/C₂H₄, CH₄/H₂, C₂H₄/C₂H₆）对故障类型的诊断。数据一致性通过计算偏差率（当前为0%）和直观趋势对比进行验证。
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="card">
+                            <div class="card-header">关键指标速览</div>
+                            <div class="card-body text-center">
+                                <div class="chart-container">
+                                    <canvas id="summaryPieChart"></canvas>
+                                </div>
+                                <p class="small text-muted">基于气体浓度与注意值的比较</p>
+                                <hr>
+                                <div class="row text-start">
+                                    <div class="col-6">
+                                        <p class="mb-1"><strong>数据一致性</strong></p>
+                                        <p class="mb-1"><strong>三比值编码</strong></p>
+                                        <p class="mb-1"><strong>预警等级</strong></p>
+                                    </div>
+                                    <div class="col-6 text-end">
+                                        <p class="mb-1 text-success">100%</p>
+                                        <p class="mb-1">0-0-0</p>
+                                        <p class="mb-1"><span class="badge bg-success">正常</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">初步结论与建议</div>
+                            <div class="card-body">
+                                <p>设备运行稳定，油中溶解气体数据无任何异常，<strong>无需采取干预措施</strong>。</p>
+                                <p><strong>建议：</strong></p>
+                                <ol>
+                                    <li>按常规监测周期（如6个月）继续跟踪油色谱数据。</li>
+                                    <li>关注气体浓度的长期趋势，特别是CO₂/CO比值（当前为3.2，略低，提示需留意固体绝缘的长期老化趋势，但无即时风险）。</li>
+                                    <li>若未来出现任何气体（尤其是H₂或总烃）月增长率超过10%，需加强监测频率。</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 数据概览标签页 -->
+            <div class="tab-pane fade" id="data" role="tabpanel">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-header">气体浓度与注意值对比</div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="concentrationBarChart"></canvas>
+                                </div>
+                                <p class="small text-muted">柱状图展示了各气体当前浓度（蓝色）与DL/T 722-2014标准注意值（橙色）的对比。所有气体均远低于注意值。</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-header">两次检测数据一致性</div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="consistencyLineChart"></canvas>
+                                </div>
+                                <p class="small text-muted">折线图显示两次检测的各气体浓度完全重叠，偏差率为0%，证明数据高度一致，设备运行稳定。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">详细数据表</div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover data-table">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>气体组分</th>
+                                                <th>单位</th>
+                                                <th>检测值 1</th>
+                                                <th>检测值 2</th>
+                                                <th>平均值</th>
+                                                <th>标准注意值</th>
+                                                <th>状态</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="dataTableBody">
+                                            <!-- 数据由JS动态填充 -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 深度分析标签页 -->
+            <div class="tab-pane fade" id="analysis" role="tabpanel">
+                <div class="row">
+                    <div class="col-lg-5">
+                        <div class="card">
+                            <div class="card-header">三比值法分析</div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="ratioRadarChart"></canvas>
+                                </div>
+                                <p class="small text-muted">雷达图展示了三比值法中三个关键比值的计算结果。所有比值均落在编码“0”的区间内。</p>
+                                <hr>
+                                <h6>比值计算：</h6>
+                                <ul>
+                                    <li><strong>C₂H₂/C₂H₄</strong>: 0.0 / 0.57 = <strong>0.0</strong> (编码 0)</li>
+                                    <li><strong>CH₄/H₂</strong>: 6.61 / 19.4 ≈ <strong>0.34</strong> (编码 0)</li>
+                                    <li><strong>C₂H₄/C₂H₆</strong>: 0.57 / 1.42 ≈ <strong>0.40</strong> (编码 0)</li>
+                                </ul>
+                                <p><strong>编码组合：0-0-0</strong>，对应“无故障”状态。</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-7">
+                        <div class="card">
+                            <div class="card-header">关联分析与洞察</div>
+                            <div class="card-body">
+                                <h5>一致性分析</h5>
+                                <p><strong>方法：趋势对比与偏差率计算</strong></p>
+                                <p>对两次检测的8种气体浓度进行逐项对比，计算绝对偏差和相对偏差率。结果显示所有气体浓度的偏差均为0，偏差率为0%。</p>
+                                <p><strong>结论：</strong> 数据具有完美的一致性，表明采样、检测过程可靠，且设备在两次检测间期运行状态未发生任何变化。</p>
+                                <hr>
+                                <h5>关键气体与风险提示</h5>
+                                <ul>
+                                    <li><strong>乙炔(C₂H₂)为0</strong>：这是设备内部<strong>未发生放电性故障</strong>的最有力证据。</li>
+                                    <li><strong>总烃(THC)含量极低(8.6 μL/L)</strong>：表明油中可燃性烃类气体总量很少，热故障风险极低。</li>
+                                    <li><strong>CO与CO₂分析</strong>：CO含量为410.85 μL/L，CO₂/CO比值约为3.2。该比值处于正常范围下限，提示需关注固体绝缘（纸和纸板）的长期老化趋势，但结合其他气体数据，<strong>无当前过热风险</strong>。</li>
+                                </ul>
+                                <div class="insight-box">
+                                    <strong>💡 核心洞察：</strong> 本次分析的核心依据是《DL/T 722-2014》标准中的阈值（注意值）和比值法（三比值）。数据的绝对一致性（偏差率0%）通过简单的数值比较和趋势线重叠得以验证，增强了“状态稳定”结论的可信度。
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 趋势预测标签页 -->
+            <div class="tab-pane fade" id="prediction" role="tabpanel">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="card">
+                            <div class="card-header">未来浓度预测（基于移动平均法）</div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="predictionLineChart"></canvas>
+                                </div>
+                                <p class="small text-muted">展示了历史两次检测数据及基于简单移动平均法预测的下一时间点数据。由于历史数据完全一致，预测值等于历史值，趋势线保持水平。</p>
+                                <h6>预测方法说明：</h6>
+                                <p>由于历史数据仅有两组且完全相同，无法应用复杂时序模型。采用<strong>简单移动平均法</strong>，取最近两次数据的平均值作为预测值。在此特例下，预测值等于历史值，表明预计下一检测周期内气体浓度将保持稳定。</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="card">
+                            <div class="card-header">预测数据表</div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>气体</th>
+                                                <th>预测值 (ppm)</th>
+                                                <th>趋势</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="predictionTableBody">
+                                            <!-- 数据由JS动态填充 -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <hr>
+                                <h6>预警等级评估</h6>
+                                <p>基于预测的稳定数据：</p>
+                                <div class="alert alert-success" role="alert">
+                                    <h6 class="alert-heading"><i class="bi bi-check-circle"></i> 当前预警状态：正常</h6>
+                                    <p class="mb-0">所有气体浓度稳定，无增长趋势，符合“正常”等级的所有标准（浓度在基线内，无异常增长）。</p>
+                                </div>
+                                <p class="small text-muted">预警等级参考了IEC 60599及DL/T 722标准，基于浓度变化率、绝对值及气体组合进行划分。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p class="mb-0">© 2023 电力设备状态监测分析中心 | 本报告基于专业分析，仅供参考，最终决策需结合现场综合情况。</p>
+            <p class="small mt-2">报告生成时间: <span id="reportTime"></span></p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // 设置报告日期
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('zh-CN');
+        document.getElementById('reportTime').textContent = new Date().toLocaleString('zh-CN');
+
+        // 原始数据
+        const rawData = [{"c2h2":"0.0","c2h4":"0.57","c2h6":"1.42","ch4":"6.61","co":"410.85","co2":"1324.66","h2":"19.4","thc":"8.6"},{"c2h2":"0.0","c2h4":"0.57","c2h6":"1.42","ch4":"6.61","co":"410.85","co2":"1324.66","h2":"19.4","thc":"8.6"}];
+        const attentionValues = {
+            'H₂': 150, 'CH₄': 120, 'C₂H₂': 5, 'C₂H₄': 50, 'C₂H₆': 65, 'CO': null, 'CO₂': null, 'THC': 150
+        };
+        const gasLabels = ['H₂', 'CH₄', 'C₂H₂', 'C₂H₄', 'C₂H₆', 'CO', 'CO₂', 'THC'];
+        const gasKeys = ['h2', 'ch4', 'c2h2', 'c2h4', 'c2h6', 'co', 'co2', 'thc'];
+        const gasUnits = ['ppm', 'ppm', 'ppm', 'ppm', 'ppm', 'ppm', 'ppm', 'ppm'];
+
+        // 处理数据：计算平均值，准备图表数据
+        let averageValues = [];
+        let attentionArray = [];
+        for (let i = 0; i < gasLabels.length; i++) {
+            let key = gasKeys[i];
+            let val1 = parseFloat(rawData[0][key]);
+            let val2 = parseFloat(rawData[1][key]);
+            let avg = (val1 + val2) / 2;
+            averageValues.push(avg);
+            attentionArray.push(attentionValues[gasLabels[i]] || 0); // 没有注意值的设为0，图表中不显示
+        }
+
+        // 1. 摘要页饼图 - 状态概览
+        const summaryCtx = document.getElementById('summaryPieChart').getContext('2d');
+        new Chart(summaryCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['正常指标', '需关注指标'],
+                datasets: [{
+                    data: [8, 0], // 所有8种气体均正常，无关注项（基于CO/CO2比值提示，但不作为异常）
+                    backgroundColor: [ '#27ae60', '#f39c12'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    tooltip: { callbacks: { label: ctx => `${ctx.label}: ${ctx.raw}项气体` } }
+                }
+            }
+        });
+
+        // 2. 数据页柱状图 - 浓度与注意值对比
+        const barCtx = document.getElementById('concentrationBarChart').getContext('2d');
+        new Chart(barCtx, {
+            type: 'bar',
+            data: {
+                labels: gasLabels,
+                datasets: [
+                    {
+                        label: '当前浓度 (ppm)',
+                        data: averageValues,
+                        backgroundColor: 'rgba(52, 152, 219, 0.7)',
+                        borderColor: 'rgba(52, 152, 219, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: '标准注意值 (ppm)',
+                        data: attentionArray,
+                        backgroundColor: 'rgba(243, 156, 18, 0.5)',
+                        borderColor: 'rgba(243, 156, 18, 1)',
+                        borderWidth: 1,
+                        type: 'line',
+                        fill: false,
+                        tension: 0
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: '浓度 (ppm)' }
+                    }
+                },
+                plugins: {
+                    tooltip: { mode: 'index', intersect: false }
+                }
+            }
+        });
+
+        // 3. 数据页折线图 - 数据一致性
+        const lineCtx = document.getElementById('consistencyLineChart').getContext('2d');
+        new Chart(lineCtx, {
+            type: 'line',
+            data: {
+                labels: gasLabels,
+                datasets: [
+                    {
+                        label: '检测值 1',
+                        data: gasKeys.map(k => parseFloat(rawData[0][k])),
+                        borderColor: 'rgba(52, 152, 219, 1)',
+                        backgroundColor: 'transparent',
+                        borderWidth: 2,
+                        tension: 0.1
+                    },
+                    {
+                        label: '检测值 2',
+                        data: gasKeys.map(k => parseFloat(rawData[1][k])),
+                        borderColor: 'rgba(46, 204, 113, 1)',
+                        backgroundColor: 'transparent',
+                        borderWidth: 2,
+                        tension: 0.1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: true, title: { display: true, text: '浓度 (ppm)' } }
+                },
+                plugins: {
+                    tooltip: { mode: 'index', intersect: false }
+                }
+            }
+        });
+
+        // 4. 分析页雷达图 - 三比值
+        const ratioCtx = document.getElementById('ratioRadarChart').getContext('2d');
+        // 计算比值
+        const c2h2_c2h4 = averageValues[2] / averageValues[3]; // ~0
+        const ch4_h2 = averageValues[1] / averageValues[0]; // ~0.34
+        const c2h4_c2h6 = averageValues[3] / averageValues[4]; // ~0.40
+        new Chart(ratioCtx, {
+            type: 'radar',
+            data: {
+                labels: ['C₂H₂/C₂H₄', 'CH₄/H₂', 'C₂H₄/C₂H₆'],
+                datasets: [{
+                    label: '计算比值',
+                    data: [c2h2_c2h4, ch4_h2, c2h4_c2h6],
+                    backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                    borderColor: 'rgba(52, 152, 219, 1)',
+                    pointBackgroundColor: 'rgba(52, 152, 219, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(52, 152, 219, 1)'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        ticks: { display: false }
+                    }
+                },
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+
+        // 5. 预测页折线图
+        const predCtx = document.getElementById('predictionLineChart').getContext('2d');
+        // 为每个气体创建数据集
+        let predictionDatasets = [];
+        const timeLabels = ['T-1', 'T', 'T+1 (预测)'];
+        const colors = ['#2c3e50', '#3498db', '#27ae60', '#e74c3c', '#9b59b6', '#f39c12', '#1abc9c', '#d35400'];
+        gasLabels.forEach((gas, idx) => {
+            let key = gasKeys[idx];
+            let val = averageValues[idx];
+            predictionDatasets.push({
+                label: gas,
+                data: [val, val, val], // 历史两次和预测一次值相同
+                borderColor: colors[idx % colors.length],
+                backgroundColor: 'transparent',
+                borderWidth: 2,
+                tension: 0,
+                pointRadius: 4
+            });
+        });
+        new Chart(predCtx, {
+            type: 'line',
+            data: {
+                labels: timeLabels,
+                datasets: predictionDatasets
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: false, title: { display: true, text: '浓度 (ppm)' } }
+                },
+                plugins: {
+                    tooltip: { mode: 'index', intersect: false },
+                    legend: { position: 'top' }
+                }
+            }
+        });
+
+        // 填充数据表格
+        const dataTableBody = document.getElementById('dataTableBody');
+        gasLabels.forEach((gas, idx) => {
+            let key = gasKeys[idx];
+            let val1 = parseFloat(rawData[0][key]).toFixed(2);
+            let val2 = parseFloat(rawData[1][key]).toFixed(2);
+            let avg = averageValues[idx].toFixed(2);
+            let attn = attentionValues[gas] ? attentionValues[gas].toFixed(0) : 'N/A';
+            let status = (attentionValues[gas] && averageValues[idx] < attentionValues[gas]) ? '<span class="badge bg-success">正常</span>' : '<span class="badge bg-secondary">N/A</span>';
+            let row = `<tr>
+                <td><strong>${gas}</strong></td>
+                <td>${gasUnits[idx]}</td>
+                <td>${val1}</td>
+                <td>${val2}</td>
+                <td>${avg}</td>
+                <td>${attn}</td>
+                <td>${status}</td>
+            </tr>`;
+            dataTableBody.innerHTML += row;
+        });
+
+        // 填充预测数据表
+        const predTableBody = document.getElementById('predictionTableBody');
+        gasLabels.forEach((gas, idx) => {
+            let predVal = averageValues[idx].toFixed(2);
+            let row = `<tr>
+                <td>${gas}</td>
+                <td>${predVal}</td>
+                <td><span class="badge bg-secondary">稳定</span></td>
+            </tr>`;
+            predTableBody.innerHTML += row;
+        });
+    </script>
+</body>
+</html>
+```
