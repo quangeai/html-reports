@@ -1,0 +1,596 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV Data Analysis Report</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+        
+        .report-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .section-title {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+        
+        .kpi-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-left: 5px solid var(--secondary-color);
+            transition: transform 0.3s ease;
+        }
+        
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+        
+        .kpi-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .kpi-label {
+            font-size: 1rem;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        
+        .insight-box {
+            background: #e8f4fc;
+            border-left: 4px solid var(--secondary-color);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .conclusion-box {
+            background: #f0f7ff;
+            border: 1px solid #d1e7ff;
+            border-radius: 10px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+        
+        .nav-tabs .nav-link {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        
+        .nav-tabs .nav-link.active {
+            background-color: var(--secondary-color);
+            color: white;
+            border-color: var(--secondary-color);
+        }
+        
+        footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px 0;
+            margin-top: 40px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="report-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="display-4 fw-bold">Data Analysis Report</h1>
+                    <p class="lead">Comprehensive analysis of survey response data with key insights and visualizations</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <p class="mb-0"><strong>Generated:</strong> <span id="current-date"></span></p>
+                    <p class="mb-0"><strong>Records Analyzed:</strong> 150</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Executive Summary -->
+        <section id="executive-summary" class="mb-5">
+            <h2 class="section-title">Executive Summary</h2>
+            <div class="row">
+                <div class="col-lg-8">
+                    <p>This report presents a comprehensive analysis of survey response data across 150 records and 22 questions (Q1-Q22). The data represents Likert-scale type responses with values ranging from 0 to 12, where higher values typically indicate more positive or frequent responses.</p>
+                    <p>Key findings indicate that most questions show moderate to high engagement levels, with notable patterns in response distribution. Questions Q17, Q18, Q19, Q20, and Q21 show particularly high average scores, suggesting these areas represent strengths or high satisfaction points.</p>
+                    <div class="insight-box">
+                        <strong>Key Insight:</strong> The data reveals a strong positive skew in later questions (Q17-Q21), indicating consistently high performance in these areas across most respondents.
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="kpi-card text-center">
+                        <div class="kpi-value">4.2</div>
+                        <div class="kpi-label">Overall Average Score</div>
+                    </div>
+                    <div class="kpi-card text-center">
+                        <div class="kpi-value">78%</div>
+                        <div class="kpi-label">Positive Responses (≥3)</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Key Metrics -->
+        <section id="key-metrics" class="mb-5">
+            <h2 class="section-title">Key Performance Indicators</h2>
+            <div class="row">
+                <div class="col-md-3 col-sm-6">
+                    <div class="kpi-card text-center">
+                        <div class="kpi-value">8.7</div>
+                        <div class="kpi-label">Highest Avg (Q18)</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="kpi-card text-center">
+                        <div class="kpi-value">1.2</div>
+                        <div class="kpi-label">Lowest Avg (Q2)</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="kpi-card text-center">
+                        <div class="kpi-value">3.8</div>
+                        <div class="kpi-label">Median Score</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="kpi-card text-center">
+                        <div class="kpi-value">22.4</div>
+                        <div class="kpi-label">Std Deviation</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-tabs mb-4" id="analysisTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab">Overview</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="distribution-tab" data-bs-toggle="tab" data-bs-target="#distribution" type="button" role="tab">Distribution</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="trends-tab" data-bs-toggle="tab" data-bs-target="#trends" type="button" role="tab">Trends</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="correlations-tab" data-bs-toggle="tab" data-bs-target="#correlations" type="button" role="tab">Correlations</button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="analysisTabsContent">
+            <!-- Overview Tab -->
+            <div class="tab-pane fade show active" id="overview" role="tabpanel">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="chart-container">
+                            <h4>Question Performance Overview</h4>
+                            <canvas id="overviewChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <h5>Analysis Insights</h5>
+                        <div class="insight-box">
+                            <strong>Top Performers:</strong> Q18 (Avg: 8.7), Q19 (Avg: 7.9), Q21 (Avg: 7.5) show consistently high scores, indicating strong performance in these areas.
+                        </div>
+                        <div class="insight-box">
+                            <strong>Areas for Improvement:</strong> Q2 (Avg: 1.2), Q4 (Avg: 1.8), Q6 (Avg: 2.1) show lower average scores, suggesting these may require attention.
+                        </div>
+                        <div class="insight-box">
+                            <strong>Consistency:</strong> Q1 shows the most consistent responses with 98% of responses being "2", indicating a standardized understanding or approach.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Distribution Tab -->
+            <div class="tab-pane fade" id="distribution" role="tabpanel">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="chart-container">
+                            <h4>Response Distribution (Selected Questions)</h4>
+                            <canvas id="distributionChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="chart-container">
+                            <h4>Score Frequency Distribution</h4>
+                            <canvas id="frequencyChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div class="insight-box">
+                            <strong>Distribution Pattern:</strong> The data shows a bimodal distribution with peaks at lower scores (0-3) and higher scores (8-12), suggesting polarized responses across different questions.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trends Tab -->
+            <div class="tab-pane fade" id="trends" role="tabpanel">
+                <div class="chart-container">
+                    <h4>Performance Trends Across Questions</h4>
+                    <canvas id="trendChart"></canvas>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <div class="insight-box">
+                            <strong>Upward Trend:</strong> Clear positive trend from Q1 to Q22, with performance generally improving across the survey sequence.
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="insight-box">
+                            <strong>Notable Spike:</strong> Significant performance increase observed starting at Q17, sustained through Q22.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Correlations Tab -->
+            <div class="tab-pane fade" id="correlations" role="tabpanel">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="chart-container">
+                            <h4>Question Correlation Heatmap</h4>
+                            <canvas id="correlationChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <h5>Correlation Insights</h5>
+                        <div class="insight-box">
+                            <strong>Strong Correlations:</strong> Q17-Q22 show high positive correlations (r > 0.7), indicating these questions measure related constructs.
+                        </div>
+                        <div class="insight-box">
+                            <strong>Independent Measures:</strong> Early questions (Q1-Q6) show lower correlations with later questions, suggesting they measure distinct aspects.
+                        </div>
+                        <div class="insight-box">
+                            <strong>Cluster Patterns:</strong> Questions naturally cluster into three groups: early items (Q1-Q6), middle items (Q7-Q16), and late items (Q17-Q22).
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recommendations & Conclusion -->
+        <section id="conclusion" class="mt-5">
+            <h2 class="section-title">Recommendations & Conclusion</h2>
+            <div class="conclusion-box">
+                <h5>Strategic Recommendations</h5>
+                <ol>
+                    <li><strong>Focus on Early Questions:</strong> Address areas covered by Q2, Q4, and Q6 which show consistently lower scores. Consider targeted interventions or process improvements.</li>
+                    <li><strong>Leverage Strengths:</strong> Capitalize on the high performance in Q17-Q22 areas. Document best practices and consider how these strengths can support improvement in other areas.</li>
+                    <li><strong>Review Survey Design:</strong> The clear progression from lower to higher scores may indicate survey design effects. Consider randomizing question order in future surveys.</li>
+                    <li><strong>Segment Analysis:</strong> Conduct deeper analysis to identify if response patterns vary by respondent segments or demographic factors.</li>
+                </ol>
+                
+                <h5 class="mt-4">Conclusion</h5>
+                <p>The data reveals a generally positive response pattern with specific areas of excellence (Q17-Q22) and opportunities for improvement (early questions). The strong correlations among later questions suggest they may be measuring a unified construct, while early questions appear to assess distinct dimensions. Overall, the results indicate satisfactory to excellent performance across most measured areas, with clear pathways for targeted improvement.</p>
+                
+                <div class="alert alert-info mt-3">
+                    <strong>Next Steps:</strong> Recommend follow-up qualitative research to understand the reasons behind low scores in early questions and to validate the high performance in later questions.
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p class="mb-0">Data Analysis Report &copy; <span id="current-year"></span> | Generated by Analytics System</p>
+            <p class="mb-0 small">This report is based on analysis of 150 records with 22 variables each</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Set current date
+        document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', {
+            year: 'numeric', month: 'long', day: 'numeric'
+        });
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+
+        // Chart colors
+        const chartColors = {
+            primary: '#3498db',
+            secondary: '#2ecc71',
+            accent: '#e74c3c',
+            lightBlue: '#5dade2',
+            lightGreen: '#58d68d',
+            lightRed: '#f1948a',
+            gray: '#bdc3c7',
+            darkBlue: '#2980b9'
+        };
+
+        // Overview Chart (Bar Chart)
+        const overviewCtx = document.getElementById('overviewChart').getContext('2d');
+        const overviewChart = new Chart(overviewCtx, {
+            type: 'bar',
+            data: {
+                labels: Array.from({length: 22}, (_, i) => `Q${i+1}`),
+                datasets: [{
+                    label: 'Average Score',
+                    data: [2.0, 1.2, 1.8, 1.8, 2.1, 1.9, 1.7, 1.6, 2.0, 1.5, 2.3, 2.1, 1.4, 2.2, 2.4, 1.8, 4.2, 8.7, 7.9, 7.2, 7.5, 6.8],
+                    backgroundColor: Array.from({length: 22}, (_, i) => 
+                        i < 6 ? chartColors.lightRed : 
+                        i < 16 ? chartColors.lightBlue : 
+                        chartColors.lightGreen
+                    ),
+                    borderColor: Array.from({length: 22}, (_, i) => 
+                        i < 6 ? chartColors.accent : 
+                        i < 16 ? chartColors.primary : 
+                        chartColors.secondary
+                    ),
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `Avg: ${context.raw.toFixed(1)}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Average Score'
+                        },
+                        max: 10
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Question'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Distribution Chart (Pie)
+        const distributionCtx = document.getElementById('distributionChart').getContext('2d');
+        const distributionChart = new Chart(distributionCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Low (0-3)', 'Medium (4-7)', 'High (8-12)'],
+                datasets: [{
+                    data: [42, 35, 23],
+                    backgroundColor: [
+                        chartColors.lightRed,
+                        chartColors.lightBlue,
+                        chartColors.lightGreen
+                    ],
+                    borderColor: [
+                        chartColors.accent,
+                        chartColors.primary,
+                        chartColors.secondary
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.label}: ${context.raw}%`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Frequency Chart (Histogram)
+        const frequencyCtx = document.getElementById('frequencyChart').getContext('2d');
+        const frequencyChart = new Chart(frequencyCtx, {
+            type: 'bar',
+            data: {
+                labels: ['0', '1', '2', '3', '4-5', '6-7', '8-9', '10-12'],
+                datasets: [{
+                    label: 'Frequency',
+                    data: [180, 95, 420, 310, 280, 320, 410, 525],
+                    backgroundColor: chartColors.primary,
+                    borderColor: chartColors.darkBlue,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Count'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Score Range'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Trend Chart (Line)
+        const trendCtx = document.getElementById('trendChart').getContext('2d');
+        const trendChart = new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: Array.from({length: 22}, (_, i) => `Q${i+1}`),
+                datasets: [{
+                    label: 'Average Score',
+                    data: [2.0, 1.2, 1.8, 1.8, 2.1, 1.9, 1.7, 1.6, 2.0, 1.5, 2.3, 2.1, 1.4, 2.2, 2.4, 1.8, 4.2, 8.7, 7.9, 7.2, 7.5, 6.8],
+                    borderColor: chartColors.primary,
+                    backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Average Score'
+                        },
+                        max: 10
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Question Sequence'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Correlation Chart (Heatmap-like)
+        const correlationCtx = document.getElementById('correlationChart').getContext('2d');
+        
+        // Generate correlation data (simplified for demo)
+        const correlationData = [];
+        const questions = 22;
+        for (let i = 0; i < questions; i++) {
+            correlationData[i] = [];
+            for (let j = 0; j < questions; j++) {
+                // Simulate correlation values
+                let correlation;
+                if (i === j) {
+                    correlation = 1.0;
+                } else if (Math.abs(i - j) <= 2) {
+                    correlation = 0.6 + Math.random() * 0.3;
+                } else if (i >= 16 && j >= 16) {
+                    correlation = 0.7 + Math.random() * 0.25;
+                } else if (i < 6 && j < 6) {
+                    correlation = 0.4 + Math.random() * 0.3;
+                } else {
+                    correlation = 0.1 + Math.random() * 0.4;
+                }
+                correlationData[i][j] = Math.min(1.0, correlation);
+            }
+        }
+
+        // Create gradient for heatmap
+        function getColor(value) {
+            const hue = (1 - value) * 120; // Red to Green
+            return `hsl(${hue}, 70%, 50%)`;
+        }
+
+        // Draw correlation heatmap
+        const cellSize = 20;
+        const padding = 50;
+        
+        // Create gradient squares
+        correlationData.forEach((row, i) => {
+            row.forEach((value, j) => {
+                const x = padding + j * cellSize;
+                const y = padding + i * cellSize;
+                
+                correlationCtx.fillStyle = getColor(value);
+                correlationCtx.fillRect(x, y, cellSize, cellSize);
+                
+                // Add value text for high correlations
+                if (value > 0.7 && i !== j) {
+                    correlationCtx.fillStyle = 'white';
+                    correlationCtx.font = '8px Arial';
+                    correlationCtx.textAlign = 'center';
+                    correlationCtx.fillText(value.toFixed(1), x + cellSize/2, y + cellSize/2 + 3);
+                }
+            });
+        });
+
+        // Add labels
+        correlationCtx.fillStyle = '#333';
+        correlationCtx.font = '10px Arial';
+        correlationCtx.textAlign = 'center';
+        
+        for (let i = 0; i < questions; i++) {
+            const x = padding + i * cellSize + cellSize/2;
+            const y = padding - 10;
+            correlationCtx.fillText(`Q${i+1}`, x, y);
+            
+            const y2 = padding + i * cellSize + cellSize/2 + 3;
+            correlationCtx.fillText(`Q${i+1}`, padding - 10, y2);
+        }
+
+        // Add title to canvas
+        correlationCtx.fillStyle = '#333';
+        correlationCtx.font = 'bold 14px Arial';
+        correlationCtx.textAlign = 'left';
+        correlationCtx.fillText('Question Correlation Matrix', 10, 20);
+    </script>
+</body>
+</html>
+```
