@@ -1,8 +1,6 @@
-# 学生成绩数据分析报告
+# 学生成绩多维度分析报告
 
-我将创建一个专业、美观且具有洞察力的HTML分析报告，展示学生成绩数据的关键趋势和洞察。
-
-下面是完整的HTML代码实现：
+我将根据您提供的Excel数据，创建一个专业、美观且具有洞察力的HTML分析报告。以下是完整的HTML代码，包含数据可视化、分析和业务洞察。
 
 ```html
 <!DOCTYPE html>
@@ -10,24 +8,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>学生成绩数据分析报告</title>
-    <!-- 引入 Bootstrap 5 CSS -->
+    <title>学生成绩多维度分析报告</title>
+    
+    <!-- 引入Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- 引入 Chart.js -->
+    
+    <!-- 引入Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- 自定义CSS样式 -->
     <style>
         :root {
             --primary-color: #2c3e50;
             --secondary-color: #3498db;
             --accent-color: #e74c3c;
             --success-color: #27ae60;
-            --light-bg: #f8f9fa;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
         }
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #333;
             line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
         }
         
         .report-header {
@@ -36,165 +40,184 @@
             padding: 2.5rem 0;
             margin-bottom: 2rem;
             border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
         
         .section-title {
             color: var(--primary-color);
-            border-bottom: 2px solid var(--secondary-color);
-            padding-bottom: 0.5rem;
-            margin-bottom: 1.5rem;
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 10px;
+            margin-bottom: 25px;
             font-weight: 600;
         }
         
         .card {
             border: none;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
             transition: transform 0.3s ease;
-            margin-bottom: 1.5rem;
+            margin-bottom: 25px;
         }
         
         .card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
         }
         
         .card-header {
             background-color: var(--primary-color);
             color: white;
+            border-radius: 10px 10px 0 0 !important;
             font-weight: 600;
+        }
+        
+        .kpi-card {
+            text-align: center;
+            padding: 20px 15px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .kpi-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            margin: 10px 0;
+        }
+        
+        .kpi-label {
+            font-size: 1rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         
         .insight-box {
-            background-color: var(--light-bg);
-            border-left: 4px solid var(--secondary-color);
-            padding: 1rem;
-            margin: 1.5rem 0;
-            border-radius: 0 5px 5px 0;
-        }
-        
-        .highlight {
-            color: var(--accent-color);
-            font-weight: 600;
-        }
-        
-        .stat-card {
-            text-align: center;
-            padding: 1.5rem;
-            border-radius: 8px;
-            color: white;
-            margin-bottom: 1rem;
-        }
-        
-        .stat-card-1 {
-            background: linear-gradient(to right, #3498db, #2c3e50);
-        }
-        
-        .stat-card-2 {
-            background: linear-gradient(to right, #2ecc71, #27ae60);
-        }
-        
-        .stat-card-3 {
-            background: linear-gradient(to right, #e74c3c, #c0392b);
-        }
-        
-        .stat-card-4 {
-            background: linear-gradient(to right, #9b59b6, #8e44ad);
+            background-color: #f8f9fa;
+            border-left: 5px solid var(--secondary-color);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
         }
         
         .chart-container {
             position: relative;
-            height: 300px;
-            margin-bottom: 1.5rem;
+            height: 400px;
+            width: 100%;
         }
         
-        .navbar-custom {
+        .nav-tabs .nav-link {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        
+        .nav-tabs .nav-link.active {
             background-color: var(--primary-color);
-            box-shadow: 0 2px 4px rgba(0,0,0,.1);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .table-custom {
+            border-collapse: separate;
+            border-spacing: 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .table-custom thead th {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 15px;
+        }
+        
+        .table-custom tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
         }
         
         .footer {
             background-color: var(--primary-color);
             color: white;
-            padding: 1.5rem 0;
-            margin-top: 2rem;
+            padding: 30px 0;
+            margin-top: 50px;
+            text-align: center;
+        }
+        
+        .highlight {
+            background-color: rgba(52, 152, 219, 0.1);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 600;
         }
         
         @media (max-width: 768px) {
             .chart-container {
-                height: 250px;
+                height: 300px;
+            }
+            
+            .kpi-value {
+                font-size: 2rem;
             }
         }
     </style>
 </head>
 <body>
-    <!-- 导航栏 -->
-    <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
-        <div class="container">
-            <a class="navbar-brand text-white fw-bold" href="#">成绩分析报告</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon text-white">☰</span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="#overview">报告概述</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="#metrics">核心指标</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="#analysis">多维解析</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="#trends">趋势识别</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="#recommendations">策略建议</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <!-- 报告标题区域 -->
+    <!-- 报告头部 -->
     <header class="report-header">
         <div class="container">
-            <h1 class="display-4 fw-bold">学生成绩数据分析报告</h1>
-            <p class="lead">基于10名学生六门科目的成绩数据进行多维度分析与可视化</p>
-            <p class="mb-0">报告生成日期：<span id="current-date"></span></p>
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="display-5 fw-bold">学生成绩多维度分析报告</h1>
+                    <p class="lead">基于10名学生六门学科成绩的深度分析与可视化洞察</p>
+                    <p class="mb-0">报告生成日期: <span id="current-date"></span></p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <div class="bg-white text-dark d-inline-block p-3 rounded">
+                        <h5 class="mb-1">数据样本</h5>
+                        <p class="mb-0">10名学生 × 6门学科 = 60个数据点</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </header>
 
     <div class="container">
         <!-- 报告概述 -->
         <section id="overview" class="mb-5">
-            <h2 class="section-title">1. 报告概述</h2>
+            <h2 class="section-title">报告概述</h2>
             <div class="row">
                 <div class="col-lg-8">
-                    <div class="card">
-                        <div class="card-header">分析背景与目的</div>
-                        <div class="card-body">
-                            <p>本报告基于10名学生在语文、数学、英语、物理、化学、生物六门科目的考试成绩数据，旨在通过多维度分析揭示学生成绩分布特征、学科表现差异以及个体学习特点，为教育决策提供数据支持。</p>
-                            <div class="insight-box">
-                                <h5>📊 数据概览</h5>
-                                <ul>
-                                    <li><span class="highlight">样本规模：</span>10名学生，6门学科，共计60个数据点</li>
-                                    <li><span class="highlight">数据完整性：</span>所有学生均有完整的六科成绩记录</li>
-                                    <li><span class="highlight">分析维度：</span>学科表现对比、学生个体分析、成绩分布特征</li>
-                                </ul>
-                            </div>
-                        </div>
+                    <p>本报告基于10名学生在语文、数学、英语、物理、化学、生物六门学科的成绩数据，通过多维度统计分析、可视化呈现和深度解读，旨在识别学生整体表现特征、学科优劣势分布以及个体差异模式，为教育决策提供数据支持。</p>
+                    <div class="insight-box">
+                        <h5><i class="fas fa-lightbulb me-2"></i>核心发现</h5>
+                        <p class="mb-0">学生整体表现呈现明显的学科差异，<span class="highlight">数学和英语成绩波动最大</span>，而理科科目（物理、化学、生物）成绩相对集中。赵雪晴同学在多个学科中表现突出，而陈思远同学则需要重点关注与支持。</p>
                     </div>
                 </div>
                 <div class="col-lg-4">
                     <div class="card">
-                        <div class="card-header">关键发现摘要</div>
+                        <div class="card-header">
+                            数据基本信息
+                        </div>
                         <div class="card-body">
-                            <ul>
-                                <li><strong>数学</strong>和<strong>英语</strong>科目成绩波动最大</li>
-                                <li><strong>赵雪晴</strong>同学综合表现最佳</li>
-                                <li><strong>陈思远</strong>同学各科成绩均偏低</li>
-                                <li>理科科目(物理、化学、生物)成绩相对集中</li>
-                                <li>存在明显的文理科成绩差异模式</li>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>学生数量</span>
+                                    <span class="fw-bold">10人</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>学科数量</span>
+                                    <span class="fw-bold">6门</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>数据总量</span>
+                                    <span class="fw-bold">60个</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>分析维度</span>
+                                    <span class="fw-bold">5个</span>
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -203,47 +226,30 @@
         </section>
 
         <!-- 核心指标总览 -->
-        <section id="metrics" class="mb-5">
-            <h2 class="section-title">2. 核心指标总览</h2>
+        <section id="kpi-overview" class="mb-5">
+            <h2 class="section-title">核心指标总览</h2>
             <div class="row">
-                <div class="col-md-3 col-sm-6">
-                    <div class="stat-card stat-card-1">
-                        <h4>85.7</h4>
-                        <p>平均分</p>
-                        <small>所有科目平均成绩</small>
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="kpi-card">
+                        <div class="kpi-label">平均总分</div>
+                        <div class="kpi-value" id="avg-total">0</div>
+                        <div>所有学生六科平均总分</div>
                     </div>
                 </div>
-                <div class="col-md-3 col-sm-6">
-                    <div class="stat-card stat-card-2">
-                        <h4>19.8</h4>
-                        <p>极差</p>
-                        <small>最高分与最低分差距</small>
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="kpi-card">
+                        <div class="kpi-label">最高总分</div>
+                        <div class="kpi-value" id="max-total">0</div>
+                        <div>赵雪晴: 661分</div>
                     </div>
                 </div>
-                <div class="col-md-3 col-sm-6">
-                    <div class="stat-card stat-card-3">
-                        <h4>数学</h4>
-                        <p>波动最大科目</p>
-                        <small>标准差：22.3</small>
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="kpi-card">
+                        <div class="kpi-label">最低总分</div>
+                        <div class="kpi-value" id="min-total">0</div>
+                        <div>陈思远: 441分</div>
                     </div>
                 </div>
-                <div class="col-md-3 col-sm-6">
-                    <div class="stat-card stat-card-4">
-                        <h4>赵雪晴</h4>
-                        <p>综合最优</p>
-                        <small>平均分：110.2</small>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="row mt-4">
-                <div class="col-lg-6">
-                    <div class="card">
-                        <div class="card-header">各科目平均分对比</div>
-                        <div class="card-body">
-                            <div class="chart-container">
-                                <canvas id="subjectAvgChart"></canvas>
-                            </div>
-                            <div class="insight-box">
-                                <h6>📈 洞察分析</h6>
-                                <p><span class="highlight">英语科目</span>平均分最高(106.8分)，<span class="highlight">化学科目</span>平均分最低(
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="kpi-card">
+                        <div class="kpi-label">成绩标准差</div>
