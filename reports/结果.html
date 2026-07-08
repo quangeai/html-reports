@@ -1,6 +1,6 @@
-# 学生成绩多维度分析报告
+# 学生成绩数据分析报告
 
-我将根据您提供的Excel数据，创建一个专业、美观且具有洞察力的HTML分析报告。以下是完整的HTML代码，包含数据可视化、分析和业务洞察。
+我将根据您提供的Excel数据，创建一个专业、美观且具有洞察力的交互式HTML分析报告。以下是完整的HTML代码，可以直接运行。
 
 ```html
 <!DOCTYPE html>
@@ -8,30 +8,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>学生成绩多维度分析报告</title>
-    
-    <!-- 引入Bootstrap CSS -->
+    <title>学生成绩数据分析报告</title>
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- 引入Chart.js -->
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <!-- 自定义CSS样式 -->
     <style>
         :root {
             --primary-color: #2c3e50;
             --secondary-color: #3498db;
             --accent-color: #e74c3c;
             --success-color: #27ae60;
-            --light-color: #ecf0f1;
-            --dark-color: #2c3e50;
+            --light-bg: #f8f9fa;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
             color: #333;
-            background-color: #f8f9fa;
+            background-color: #f9f9f9;
+            line-height: 1.6;
         }
         
         .report-header {
@@ -40,28 +36,27 @@
             padding: 2.5rem 0;
             margin-bottom: 2rem;
             border-radius: 0 0 10px 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--card-shadow);
         }
         
         .section-title {
             color: var(--primary-color);
             border-bottom: 3px solid var(--secondary-color);
-            padding-bottom: 10px;
-            margin-bottom: 25px;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
             font-weight: 600;
         }
         
         .card {
             border: none;
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s ease;
-            margin-bottom: 25px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s;
         }
         
         .card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
         }
         
         .card-header {
@@ -71,40 +66,54 @@
             font-weight: 600;
         }
         
+        .insight-box {
+            background-color: #f0f7ff;
+            border-left: 4px solid var(--secondary-color);
+            padding: 1.25rem;
+            margin: 1.5rem 0;
+            border-radius: 0 5px 5px 0;
+        }
+        
         .kpi-card {
             text-align: center;
-            padding: 20px 15px;
-            background-color: white;
+            padding: 1.5rem;
+            background: white;
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            box-shadow: var(--card-shadow);
         }
         
         .kpi-value {
             font-size: 2.5rem;
             font-weight: 700;
-            color: var(--secondary-color);
-            margin: 10px 0;
+            color: var(--primary-color);
         }
         
         .kpi-label {
             font-size: 1rem;
             color: #666;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            margin-top: 0.5rem;
         }
         
-        .insight-box {
-            background-color: #f8f9fa;
-            border-left: 5px solid var(--secondary-color);
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 0 8px 8px 0;
+        .subject-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
         }
         
-        .chart-container {
-            position: relative;
-            height: 400px;
-            width: 100%;
+        .table-custom {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .table-custom thead th {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
         }
         
         .nav-tabs .nav-link {
@@ -118,47 +127,27 @@
             border-color: var(--primary-color);
         }
         
-        .table-custom {
-            border-collapse: separate;
-            border-spacing: 0;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-        }
-        
-        .table-custom thead th {
+        footer {
             background-color: var(--primary-color);
             color: white;
-            border: none;
-            padding: 15px;
-        }
-        
-        .table-custom tbody tr:nth-child(even) {
-            background-color: #f8f9fa;
-        }
-        
-        .footer {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 30px 0;
-            margin-top: 50px;
+            padding: 1.5rem 0;
+            margin-top: 3rem;
             text-align: center;
         }
         
-        .highlight {
-            background-color: rgba(52, 152, 219, 0.1);
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-weight: 600;
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 1.5rem;
         }
         
         @media (max-width: 768px) {
-            .chart-container {
-                height: 300px;
-            }
-            
             .kpi-value {
                 font-size: 2rem;
+            }
+            
+            .chart-container {
+                height: 250px;
             }
         }
     </style>
@@ -167,56 +156,46 @@
     <!-- 报告头部 -->
     <header class="report-header">
         <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-8">
-                    <h1 class="display-5 fw-bold">学生成绩多维度分析报告</h1>
-                    <p class="lead">基于10名学生六门学科成绩的深度分析与可视化洞察</p>
-                    <p class="mb-0">报告生成日期: <span id="current-date"></span></p>
-                </div>
-                <div class="col-md-4 text-md-end">
-                    <div class="bg-white text-dark d-inline-block p-3 rounded">
-                        <h5 class="mb-1">数据样本</h5>
-                        <p class="mb-0">10名学生 × 6门学科 = 60个数据点</p>
-                    </div>
-                </div>
-            </div>
+            <h1 class="display-4 fw-bold">学生成绩数据分析报告</h1>
+            <p class="lead">基于10名学生六科成绩的深度分析与可视化</p>
+            <p class="mb-0">报告生成日期: <span id="current-date"></span></p>
         </div>
     </header>
 
     <div class="container">
         <!-- 报告概述 -->
-        <section id="overview" class="mb-5">
+        <section class="mb-5">
             <h2 class="section-title">报告概述</h2>
             <div class="row">
-                <div class="col-lg-8">
-                    <p>本报告基于10名学生在语文、数学、英语、物理、化学、生物六门学科的成绩数据，通过多维度统计分析、可视化呈现和深度解读，旨在识别学生整体表现特征、学科优劣势分布以及个体差异模式，为教育决策提供数据支持。</p>
-                    <div class="insight-box">
-                        <h5><i class="fas fa-lightbulb me-2"></i>核心发现</h5>
-                        <p class="mb-0">学生整体表现呈现明显的学科差异，<span class="highlight">数学和英语成绩波动最大</span>，而理科科目（物理、化学、生物）成绩相对集中。赵雪晴同学在多个学科中表现突出，而陈思远同学则需要重点关注与支持。</p>
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">分析背景与目的</h5>
+                            <p>本报告对10名学生的语文、数学、英语、物理、化学、生物六科成绩进行多维度分析，旨在识别学生的学习优势与薄弱环节，发现学科间的关联性，为教学优化和学生个性化指导提供数据支持。</p>
+                            <p>分析维度包括：整体成绩分布、各科表现对比、学生个体差异、学科相关性等。通过可视化图表和关键指标，呈现数据背后的洞察与趋势。</p>
+                        </div>
                     </div>
                 </div>
-                <div class="col-lg-4">
+                <div class="col-md-4">
                     <div class="card">
-                        <div class="card-header">
-                            数据基本信息
-                        </div>
                         <div class="card-body">
+                            <h5 class="card-title">数据概览</h5>
                             <ul class="list-group list-group-flush">
                                 <li class="list-group-item d-flex justify-content-between">
-                                    <span>学生数量</span>
+                                    <span>学生人数</span>
                                     <span class="fw-bold">10人</span>
                                 </li>
                                 <li class="list-group-item d-flex justify-content-between">
-                                    <span>学科数量</span>
-                                    <span class="fw-bold">6门</span>
+                                    <span>科目数量</span>
+                                    <span class="fw-bold">6科</span>
                                 </li>
                                 <li class="list-group-item d-flex justify-content-between">
                                     <span>数据总量</span>
-                                    <span class="fw-bold">60个</span>
+                                    <span class="fw-bold">60个成绩点</span>
                                 </li>
                                 <li class="list-group-item d-flex justify-content-between">
-                                    <span>分析维度</span>
-                                    <span class="fw-bold">5个</span>
+                                    <span>分析时间</span>
+                                    <span class="fw-bold" id="analysis-time"></span>
                                 </li>
                             </ul>
                         </div>
@@ -226,30 +205,57 @@
         </section>
 
         <!-- 核心指标总览 -->
-        <section id="kpi-overview" class="mb-5">
+        <section class="mb-5">
             <h2 class="section-title">核心指标总览</h2>
             <div class="row">
                 <div class="col-md-3 col-sm-6 mb-4">
                     <div class="kpi-card">
-                        <div class="kpi-label">平均总分</div>
                         <div class="kpi-value" id="avg-total">0</div>
-                        <div>所有学生六科平均总分</div>
+                        <div class="kpi-label">平均总分</div>
                     </div>
                 </div>
                 <div class="col-md-3 col-sm-6 mb-4">
                     <div class="kpi-card">
-                        <div class="kpi-label">最高总分</div>
-                        <div class="kpi-value" id="max-total">0</div>
-                        <div>赵雪晴: 661分</div>
+                        <div class="kpi-value" id="avg-score">0</div>
+                        <div class="kpi-label">平均分(单科)</div>
                     </div>
                 </div>
                 <div class="col-md-3 col-sm-6 mb-4">
                     <div class="kpi-card">
-                        <div class="kpi-label">最低总分</div>
-                        <div class="kpi-value" id="min-total">0</div>
-                        <div>陈思远: 441分</div>
+                        <div class="kpi-value" id="top-subject">-</div>
+                        <div class="kpi-label">优势学科</div>
                     </div>
                 </div>
                 <div class="col-md-3 col-sm-6 mb-4">
                     <div class="kpi-card">
-                        <div class="kpi-label">成绩标准差</div>
+                        <div class="kpi-value" id="weak-subject">-</div>
+                        <div class="kpi-label">薄弱学科</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="insight-box">
+                <h5><i class="fas fa-lightbulb"></i> 核心洞察</h5>
+                <p class="mb-0">整体成绩表现良好，平均总分达到<span id="insight-avg-total">0</span>分。数学科目平均分最高，成为学生的优势学科；物理科目平均分最低，是需要重点关注的教学领域。学生个体差异明显，最高分与最低分相差<span id="score-range">0</span>分，体现了学习能力的多样性。</p>
+            </div>
+        </section>
+
+        <!-- 多维度数据解析 -->
+        <section class="mb-5">
+            <h2 class="section-title">多维度数据解析</h2>
+            
+            <!-- 各科成绩对比 -->
+            <div class="card mb-4">
+                <div class="card-header">各科成绩对比分析</div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="subjectComparisonChart"></canvas>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <h6>学科表现排名</h6>
+                            <div id="subjectRanking"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="insight-box">
+                                h
