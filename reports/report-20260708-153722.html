@@ -1,0 +1,728 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>佛山市赛普飞特科技有限公司信用风险分析报告</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #27ae60;
+            --light-bg: #f8f9fa;
+            --dark-bg: #343a40;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f7fa;
+        }
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary-color) !important;
+        }
+        .report-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 20px 20px;
+        }
+        .section-title {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
+            margin-bottom: 25px;
+            height: 100%;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            font-weight: 600;
+        }
+        .key-metric {
+            text-align: center;
+            padding: 20px;
+        }
+        .key-metric .value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+        }
+        .key-metric .label {
+            font-size: 1rem;
+            color: #666;
+            margin-top: 10px;
+        }
+        .risk-low {
+            color: var(--success-color);
+            font-weight: 700;
+        }
+        .risk-moderate {
+            color: #f39c12;
+            font-weight: 700;
+        }
+        .risk-high {
+            color: var(--accent-color);
+            font-weight: 700;
+        }
+        .insight-box {
+            background-color: #e8f4fc;
+            border-left: 5px solid var(--secondary-color);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 30px;
+        }
+        .footer {
+            background-color: var(--dark-bg);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            text-align: center;
+        }
+        .nav-pills .nav-link.active {
+            background-color: var(--secondary-color) !important;
+        }
+        .table-hover tbody tr:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+        .badge-risk {
+            font-size: 0.9em;
+            padding: 5px 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <img src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/icons/bar-chart-line.svg" alt="Logo" width="30" height="30" class="d-inline-block align-text-top me-2">
+                企业信用分析报告
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#executive-summary">执行摘要</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#key-metrics">关键指标</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#detailed-analysis">详细分析</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#trends">趋势分析</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#recommendations">建议与结论</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 报告标题 -->
+    <header class="report-header">
+        <div class="container">
+            <h1 class="display-4 fw-bold">佛山市赛普飞特科技有限公司</h1>
+            <p class="lead">信用状况与合作风险分析报告</p>
+            <p class="mb-0">报告生成时间：2026年07月08日 | 数据来源：天眼查专业版</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- 执行摘要 -->
+        <section id="executive-summary" class="mb-5">
+            <h2 class="section-title">执行摘要</h2>
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">核心评估</h5>
+                            <p class="card-text">
+                                本报告对<strong>佛山市赛普飞特科技有限公司</strong>（以下简称“赛普飞特”）的信用状况及潜在合作风险进行了全面分析。该公司成立于2012年，是一家专注于陶瓷机械、智能设备研发制造的高新技术企业。
+                            </p>
+                            <div class="insight-box">
+                                <h6><i class="bi bi-lightbulb"></i> 核心洞察</h6>
+                                <p class="mb-0">
+                                    赛普飞特整体信用状况<strong class="risk-low">良好</strong>，具备较强的技术创新能力和稳定的经营基础。公司股权结构清晰，拥有上市公司（广东道氏技术股份有限公司）作为战略股东。税务信用连续多年为A级，无重大经营异常或严重违法记录。然而，需关注其历史及当前存在的法律诉讼（共13起），以及2024年对子公司（佛山市赛普飞特智能设备有限公司）提起的强制清算申请，这可能暗示其内部管理或投资决策存在一定风险。
+                                </p>
+                            </div>
+                            <p>
+                                总体合作风险评级：<span class="badge bg-success bg-gradient badge-risk">低至中度风险</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">快照信息</h5>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>企业状态：</span>
+                                    <span class="fw-bold text-success">存续</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>成立时间：</span>
+                                    <span>2012-12-26</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>注册资本：</span>
+                                    <span>588.24万人民币</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>人员规模：</span>
+                                    <span>50-99人</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>参保人数(2025)：</span>
+                                    <span>89人</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>高新技术企业：</span>
+                                    <span class="text-success">是</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 关键指标 -->
+        <section id="key-metrics" class="mb-5">
+            <h2 class="section-title">关键风险与信用指标</h2>
+            <div class="row g-4">
+                <div class="col-md-3 col-sm-6">
+                    <div class="card text-center h-100">
+                        <div class="card-body key-metric">
+                            <div class="value">13</div>
+                            <div class="label">司法案件总数</div>
+                            <p class="small text-muted mt-2">历史累计，需关注涉诉情况</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="card text-center h-100">
+                        <div class="card-body key-metric">
+                            <div class="value risk-low">0</div>
+                            <div class="label">经营异常记录</div>
+                            <p class="small text-muted mt-2">无经营异常，运营合规</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="card text-center h-100">
+                        <div class="card-body key-metric">
+                            <div class="value risk-low">A级</div>
+                            <div class="label">税务信用评级</div>
+                            <p class="small text-muted mt-2">连续多年A级，纳税信用优秀</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="card text-center h-100">
+                        <div class="card-body key-metric">
+                            <div class="value">107</div>
+                            <div class="label">专利数量</div>
+                            <p class="small text-muted mt-2">技术创新能力突出</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header">风险维度分布</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="riskDistributionChart"></canvas>
+                            </div>
+                            <p class="small text-muted">图示：公司在法律诉讼方面存在一定风险点，但无严重失信或经营异常。</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header">股东持股比例</div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="shareholderChart"></canvas>
+                            </div>
+                            <p class="small text-muted">图示：股权相对分散，刘辉龙与唐君并列第一大股东，上市公司道氏技术持股15%。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 详细数据分析 -->
+        <section id="detailed-analysis" class="mb-5">
+            <h2 class="section-title">详细数据分析</h2>
+            <ul class="nav nav-pills mb-4" id="analysisTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="legal-tab" data-bs-toggle="tab" data-bs-target="#legal" type="button">法律与诉讼</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="finance-tab" data-bs-toggle="tab" data-bs-target="#finance" type="button">经营与财务</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="ip-tab" data-bs-toggle="tab" data-bs-target="#ip" type="button">知识产权</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="operation-tab" data-bs-toggle="tab" data-bs-target="#operation" type="button">运营动态</button>
+                </li>
+            </ul>
+            <div class="tab-content" id="analysisTabContent">
+                <!-- 法律与诉讼 -->
+                <div class="tab-pane fade show active" id="legal" role="tabpanel">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="card h-100">
+                                <div class="card-header">司法案件分析</div>
+                                <div class="card-body">
+                                    <h6>案件概览 (共13起)</h6>
+                                    <ul>
+                                        <li><strong>案件身份：</strong>53.33%为被告，46.67%为原告</li>
+                                        <li><strong>主要案由：</strong>侵害实用新型专利权纠纷 (33.33%)</li>
+                                        <li><strong>案件类型：</strong>民事案件为主 (66.67%)</li>
+                                        <li><strong>最新动态：</strong>2024年作为申请人，对子公司“佛山市赛普飞特智能设备有限公司”提起强制清算申请。</li>
+                                    </ul>
+                                    <div class="alert alert-warning">
+                                        <small><strong>风险提示：</strong>存在一定数量的历史诉讼，尤其是知识产权纠纷，反映其所在行业竞争激烈及技术保护需求。对子公司的强制清算申请需特别关注，可能涉及投资失败或内部管理问题。</small>
+                                    </div>
+                                    <p><strong>积极信号：</strong>无失信被执行人、限制消费令、被执行人记录，表明无未履行的重大生效判决。</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card h-100">
+                                <div class="card-header">行政处罚与环保</div>
+                                <div class="card-body">
+                                    <h6>环保处罚 (2起)</h6>
+                                    <p>2017年因“违反环境影响评价制度”被罚款共计约1.66万元。此后无新增环保处罚记录。</p>
+                                    <div class="alert alert-success">
+                                        <small><strong>合规性改善：</strong>近十年无新增行政处罚，表明公司合规意识有所提升。</small>
+                                    </div>
+                                    <h6 class="mt-4">其他风险项</h6>
+                                    <p><strong class="text-success">无记录：</strong>经营异常、严重违法、税收违法、欠税公告、股权冻结等。</p>
+                                    <p>这表明公司在市场监管、税务、劳动等方面的基本合规性较好。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 经营与财务 -->
+                <div class="tab-pane fade" id="finance" role="tabpanel">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="card h-100">
+                                <div class="card-header">财务与税务健康度</div>
+                                <div class="card-body">
+                                    <h6>税务信用</h6>
+                                    <p>2016年至2025年，<strong>连续多年税务信用评级为A级</strong>，是纳税信用优秀的体现，极大增强了其商业信誉。</p>
+                                    <h6>财务数据透明度</h6>
+                                    <p>在近年年报中，企业资产状况信息（如资产总额、营业收入、净利润）均选择不公示。这是许多中小企业的常见做法，但也导致对其具体财务实力和盈利能力的直接评估存在困难。</p>
+                                    <h6>社保缴纳</h6>
+                                    <p>参保人数从2024年的79人增长至2025年的89人，增长12.7%，显示人员规模稳中有升，用工相对规范。</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card h-100">
+                                <div class="card-header">经营资质与许可</div>
+                                <div class="card-body">
+                                    <h6>核心资质</h6>
+                                    <ul>
+                                        <li><strong>高新技术企业：</strong>资格有效（GR202444010392，2024-2027）</li>
+                                        <li><strong>质量管理体系认证：</strong>有效 (ISO9001)</li>
+                                        <li><strong>环境管理体系认证：</strong>有效 (ISO14001)</li>
+                                        <li><strong>知识产权管理体系认证：</strong>曾获得（已过期）</li>
+                                        <li><strong>医疗器械经营备案：</strong>具备（第二类医疗器械）</li>
+                                        <li><strong>排污许可证：</strong>有效（至2029年）</li>
+                                    </ul>
+                                    <p>资质齐全，特别是在质量、环境和知识产权管理方面有体系认证，符合现代制造业企业的规范要求。</p>
+                                    <h6>行政许可</h6>
+                                    <p>拥有包括环境影响评价、特种设备使用登记、排水许可等在内的13项许可，经营活动合法合规。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 知识产权 -->
+                <div class="tab-pane fade" id="ip" role="tabpanel">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="card h-100">
+                                <div class="card-header">知识产权总览</div>
+                                <div class="card-body">
+                                    <div class="row text-center mb-3">
+                                        <div class="col-4">
+                                            <div class="display-6 fw-bold">107</div>
+                                            <div class="text-muted">专利</div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="display-6 fw-bold">7</div>
+                                            <div class="text-muted">商标</div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="display-6 fw-bold">4</div>
+                                            <div class="text-muted">软件著作权</div>
+                                        </div>
+                                    </div>
+                                    <p><strong>专利类型分布：</strong>以实用新型和发明专利为主，是其技术创新和研发投入的直观证明。</p>
+                                    <p><strong>专利状态：</strong>大部分处于“授权”或“实质审查”状态，专利布局活跃。</p>
+                                    <p><strong>技术领域：</strong>紧密围绕陶瓷机械、布料设备、喷釉技术、硅碳负极材料生产设备等核心业务。</p>
+                                    <div class="insight-box">
+                                        <p class="mb-0"><strong>优势：</strong>强大的知识产权储备构成了公司的核心竞争壁垒，与其“高新技术企业”、“创新型中小企业”的标签相符。这也是其曾发生专利纠纷的原因之一。</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="patentTypeChart"></canvas>
+                                    </div>
+                                    <p class="small text-muted mt-3">专利公开年份趋势显示，公司在2020-2026年期间专利申请和公开活动非常活跃，尤其在2024-2026年达到高峰，表明近期研发投入和技术产出力度大。</p>
+                                    <h6>标准制定</h6>
+                                    <p>参与制定了13项企业及行业标准（如JC/T 2916-2025《陶瓷砖(板)布料机》），体现了其在细分领域的技术领导力和话语权。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 运营动态 -->
+                <div class="tab-pane fade" id="operation" role="tabpanel">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="card h-100">
+                                <div class="card-header">近期动态与投资</div>
+                                <div class="card-body">
+                                    <h6>对外投资</h6>
+                                    <ul>
+                                        <li><strong>佛山市赛普飞特智能设备有限公司 (持股60%)：</strong>2023年成立，但2024年已被赛普飞特提起强制清算申请，存在投资风险。</li>
+                                        <li><strong>佛山市赛普飞特技术有限公司 (持股100%)：</strong>2026年新设，显示业务拓展或技术分拆意图。</li>
+                                    </ul>
+                                    <h6>融资历程</h6>
+                                    <p>2020年获得上市公司<strong>广东道氏技术股份有限公司</strong>的股权融资。引入战略投资者有助于提升公司资源与信誉。</p>
+                                    <h6>招投标与项目</h6>
+                                    <p>2024年有多个“建设项目”相关公示，包括分布式光伏发电项目，表明公司可能有产能扩张或绿色升级计划。</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card h-100">
+                                <div class="card-header">变更记录分析</div>
+                                <div class="card-body">
+                                    <p>公司历史上有<strong>48次变更记录</strong>，显示其发展过程中调整频繁。</p>
+                                    <h6>关键变更：</h6>
+                                    <ul>
+                                        <li><strong>2024年5月：</strong>地址变更（从禅城区迁至南海区），同时经营范围大幅调整，剔除了“口罩机”、“医疗器械”等疫情相关业务，更加聚焦于“陶瓷、玻璃生产专用设备制造”等核心智能制造领域。</li>
+                                        <li><strong>2020年：</strong>注册资本从103万增至588.24万，同时引入新股东（道氏技术等），是公司发展的重要节点。</li>
+                                        <li><strong>2019年：</strong>公司名称从“机械有限公司”变更为“科技有限公司”，反映了向技术驱动型企业的战略转型。</li>
+                                    </ul>
+                                    <p>变更主线清晰：聚焦主业、增资扩股、战略升级。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 趋势分析 -->
+        <section id="trends" class="mb-5">
+            <h2 class="section-title">趋势与模式分析</h2>
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header">发展路径与风险趋势</div>
+                        <div class="card-body">
+                            <h6>积极趋势：</h6>
+                            <ol>
+                                <li><strong>技术驱动转型成功：</strong>从“机械”到“科技”的更名，以及持续增长的专利数量，标志着公司已成功转型为技术创新型企业。</li>
+                                <li><strong>合规性持续改善：</strong>自2017年环保处罚后，再无行政处罚记录；税务信用保持A级；无经营异常。显示公司治理水平提升。</li>
+                                <li><strong>业务聚焦与升级：</strong>近期经营范围调整，剥离非核心业务，更加专注于高端陶瓷装备和新能源材料设备（硅碳负极）的研发制造，符合产业升级方向。</li>
+                                <li><strong>资源获取能力增强：</strong>引入上市公司作为股东，提升了资本和产业资源获取能力。</li>
+                            </ol>
+                            <h6>需警惕的趋势：</h6>
+                            <ol>
+                                <li><strong>法律纠纷常态化：</strong>作为技术密集型企业，专利诉讼可能成为其经营环境的一部分，需持续关注相关风险。</li>
+                                <li><strong>投资风险显现：</strong>对2023年投资的子公司短时间内即申请强制清算，暴露出其在投资决策或投后管理上可能存在不足。</li>
+                                <li><strong>财务不透明：</strong>选择不公示关键财务数据，虽不违规，但增加了外部对其真实财务状况评估的难度。</li>
+                            </ol>
+                            <div class="chart-container">
+                                <canvas id="litigationTrendChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="card h-100">
+                        <div class="card-header">风险关联网络</div>
+                        <div class="card-body">
+                            <p>通过“疑似关系”分析，公司电话与邮箱关联了多家其他企业，包括投资合伙企业、管理咨询公司等。这属于中小企业常见的资源共享现象，但提示了潜在的关联方交易或复杂股权网络的可能性。</p>
+                            <p><strong>实际控制人：</strong>陈锦（持股21.25%），控制链条清晰简单。</p>
+                            <div class="alert alert-info">
+                                <small><strong>分析提示：</strong>未发现与高风险企业（如严重失信企业）的强关联。关联网络主要用于理解其商业生态，目前未见异常。</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 建议和结论 -->
+        <section id="recommendations" class="mb-5">
+            <h2 class="section-title">结论与合作建议</h2>
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card h-100">
+                        <div class="card-header">综合信用评估结论</div>
+                        <div class="card-body">
+                            <p><strong>佛山市赛普飞特科技有限公司</strong>是一家处于成长阶段的、以技术创新为核心驱动力的制造业企业。</p>
+                            <p><span class="badge bg-success bg-gradient me-1">优势</span> 技术实力雄厚，资质齐全，税务信用优秀，无严重违法失信记录，战略股东背景加分。</p>
+                            <p><span class="badge bg-warning bg-gradient me-1">关注点</span> 存在一定数量的历史法律诉讼；对子公司投资出现风险；财务数据不透明。</p>
+                            <p><span class="badge bg-primary bg-gradient me-1">趋势</span> 业务向高端智能制造和新能源材料设备领域聚焦，发展前景与产业政策契合度高。</p>
+                            <div class="text-center mt-4 p-3 border rounded bg-light">
+                                <h4 class="risk-low">总体合作风险：<strong>低至中度</strong></h4>
+                                <p class="mb-0">在陶瓷机械、智能装备领域，可作为<strong>值得考虑的合作方或供应商</strong>。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card h-100">
+                        <div class="card-header">风险缓释与合作建议</div>
+                        <div class="card-body">
+                            <h6>针对不同合作场景的建议：</h6>
+                            <div class="list-group">
+                                <div class="list-group-item">
+                                    <h6 class="mb-1">1. 作为供应商（采购其设备）</h6>
+                                    <small class="text-muted">建议：进行标准的供应商评审。重点关注其设备专利权的完整性，在合同中明确知识产权瑕疵担保条款。可要求提供近期主要客户的合作案例作为参考。</small>
+                                </div>
+                                <div class="list-group-item">
+                                    <h6 class="mb-1">2. 作为客户（销售产品/服务给它）</h6>
+                                    <small class="text-muted">建议：信用风险可控。可给予适度的信用账期，但建议关注其子公司清算案的进展，以及后续是否还有其他异常诉讼发生。定期复查其天眼查信用报告。</small>
+                                </div>
+                                <div class="list-group-item">
+                                    <h6 class="mb-1">3. 技术合作或投资</h6>
+                                    <small class="text-muted">建议：深度尽职调查。必须对其核心专利的法律状态、权属清晰度进行核实。需详细了解其子公司投资失败的原因及内部治理结构。财务方面，可尝试通过协商获取更详细的财务数据。</small>
+                                </div>
+                            </div>
+                            <div class="insight-box mt-3">
+                                <p class="mb-0"><strong>核心建议：</strong>合作前期，建议就“佛山市赛普飞特智能设备有限公司强制清算案”的背景与现状进行友好沟通，了解其官方解释，以判断此事件是孤立个案还是系统性问题。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <p class="mb-2">本报告基于公开信息分析生成，仅供参考，不构成任何投资或决策的唯一依据。</p>
+            <p class="mb-0">佛山市赛普飞特科技有限公司信用风险分析报告 © 2026</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- 图表数据与初始化 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. 风险分布图
+            const riskCtx = document.getElementById('riskDistributionChart').getContext('2d');
+            new Chart(riskCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['法律诉讼 (风险点)', '经营异常 (无)', '行政处罚 (历史/轻微)', '严重违法 (无)', '税务失信 (无)'],
+                    datasets: [{
+                        data: [13, 0, 2, 0, 0],
+                        backgroundColor: [
+                            'rgba(231, 76, 60, 0.8)',
+                            'rgba(46, 204, 113, 0.8)',
+                            'rgba(243, 156, 18, 0.8)',
+                            'rgba(46, 204, 113, 0.8)',
+                            'rgba(46, 204, 113, 0.8)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) label += ': ';
+                                    label += context.raw + ' 项记录';
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 2. 股东持股比例图
+            const shareholderCtx = document.getElementById('shareholderChart').getContext('2d');
+            new Chart(shareholderCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['刘辉龙 25.5%', '唐君 25.5%', '陈锦 21.25%', '广东道氏技术 15%', '赛普创研合伙 7.75%', '吴小玲 5%'],
+                    datasets: [{
+                        data: [25.5, 25.5, 21.25, 15, 7.75, 5],
+                        backgroundColor: [
+                            '#3498db', '#2ecc71', '#9b59b6', '#e74c3c', '#f1c40f', '#1abc9c'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+
+            // 3. 专利类型分布图
+            const patentCtx = document.getElementById('patentTypeChart').getContext('2d');
+            new Chart(patentCtx, {
+                type: 'bar',
+                data: {
+                    // 基于报告数据估算：发明专利、实用新型为主，少量外观
+                    labels: ['2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025', '2026'],
+                    datasets: [
+                        {
+                            label: '发明专利',
+                            data: [2, 3, 5, 8, 10, 12, 15, 18, 5], // 示例数据
+                            backgroundColor: 'rgba(52, 152, 219, 0.7)',
+                            borderColor: 'rgba(52, 152, 219, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: '实用新型',
+                            data: [5, 6, 8, 10, 12, 15, 20, 22, 10], // 示例数据
+                            backgroundColor: 'rgba(46, 204, 113, 0.7)',
+                            borderColor: 'rgba(46, 204, 113, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '专利数量（估算）'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: '公开年份'
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '专利公开年份趋势（示例）'
+                        }
+                    }
+                }
+            });
+
+            // 4. 诉讼趋势图
+            const litigationCtx = document.getElementById('litigationTrendChart').getContext('2d');
+            new Chart(litigationCtx, {
+                type: 'line',
+                data: {
+                    // 基于报告中的13个案件日期分布估算
+                    labels: ['2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024'],
+                    datasets: [{
+                        label: '年度新增司法案件数',
+                        data: [1, 2, 2, 3, 2, 1, 1, 0, 0, 1], // 示例数据，反映历史诉讼集中在2016-2019，2024年有1起新案
+                        borderColor: 'rgba(231, 76, 60, 1)',
+                        backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            },
+                            title: {
+                                display: true,
+                                text: '案件数量'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: '年份'
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '司法案件年度趋势（示例）'
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+```
