@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>成都旅游资讯 - 小红书风格排版</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #ff5e3a; /* 柔和低饱和橙红 */
+            --text-main: #333333;
+            --text-sub: #666666;
+            --text-light: #999999;
+            --bg-page: #f0f2f5;
+            --bg-card: #ffffff;
+            --card-width: 390px;
+            --card-radius: 20px;
+            --spacing-base: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-page);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+
+        /* 顶部工具说明 */
+        .tool-header {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--text-sub);
+            font-size: 14px;
+        }
+
+        /* 滚动容器 */
+        .scroll-container {
+            display: flex;
+            gap: 24px;
+            overflow-x: auto;
+            padding: 24px 40px; /* 两侧留白，方便截图 */
+            width: 100%;
+            max-width: 100%;
+            justify-content: flex-start;
+            scroll-behavior: smooth;
+        }
+
+        /* 隐藏滚动条但保留功能 */
+        .scroll-container::-webkit-scrollbar {
+            height: 6px;
+        }
+        .scroll-container::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 3px;
+        }
+
+        /* 卡片基础样式 */
+        .card {
+            width: var(--card-width);
+            min-height: 600px; /* 保证高度统一 */
+            background-color: var(--bg-card);
+            border-radius: var(--card-radius);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+            padding: 32px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 顶部装饰条 */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: var(--primary-color);
+            opacity: 0.8;
+        }
+
+        /* 排版样式 */
+        .card-title {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 12px;
+            line-height: 1.3;
+            letter-spacing: -0.5px;
+        }
+
+        .card-subtitle {
+            font-size: 16px;
+            color: var(--text-sub);
+            margin-bottom: 32px;
+            font-weight: 400;
+        }
+
+        .content-block {
+            flex: 1;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin: 24px 0 12px 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 16px;
+            background: var(--primary-color);
+            margin-right: 8px;
+            border-radius: 2px;
+        }
+
+        .text-paragraph {
+            font-size: 15px;
+            line-height: 1.6;
+            color: var(--text-main);
+            margin-bottom: 12px;
+            text-align: justify;
+        }
+
+        .list-item {
+            font-size: 15px;
+            line-height: 1.6;
+            color: var(--text-main);
+            margin-bottom: 10px;
+            padding-left: 10px;
+            position: relative;
+        }
+
+        .list-item::before {
+            content: '•';
+            position: absolute;
+            left: -6px;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .highlight {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .bold {
+            font-weight: 600;
+        }
+
+        /* 标签样式 */
+        .tags-container {
+            margin-top: auto; /* 推到底部 */
+            padding-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            font-size: 12px;
+            color: var(--primary-color);
+            background-color: rgba(255, 94, 58, 0.08);
+            padding: 4px 10px;
+            border-radius: 4px;
+        }
+
+        /* 底部互动区 */
+        .footer-cta {
+            margin-top: auto;
+            text-align: center;
+            padding-top: 40px;
+        }
+        
+        .footer-cta p {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+
+        .emoji-btn {
+            font-size: 24px;
+            display: inline-block;
+            margin: 0 5px;
+        }
+
+        /* 控制区域样式 */
+        .controls {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+            max-width: 800px;
+            padding: 0 20px;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            box-shadow: 0 4px 10px rgba(255, 94, 58, 0.3);
+            min-width: 100px;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .btn-outline {
+            background-color: white;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+
+        .status-msg {
+            font-size: 12px;
+            color: var(--text-sub);
+            height: 20px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="tool-header">
+        <p>左右滑动预览 · 点击下方按钮生成图片</p>
+    </div>
+
+    <div class="scroll-container">
+        <!-- 卡片 1：封面 -->
+        <div class="card" id="card-1">
+            <div class="content-block">
+                <div class="card-title">成都旅游大爆发</div>
+                <div class="card-subtitle">暑期出行必看攻略，航线与政策全面利好</div>
+                
+                <div class="text-paragraph">
+                    今年夏天，成都再次成为国内游的“顶流”目的地。无论是机票预订量，还是新开的国际航线，都显示出这座城市的超强吸引力。
+                </div>
+                <div class="text-paragraph">
+                    <span class="highlight">✓ 机票预订超1580万张</span><br>
+                    <span class="highlight">✓ 台中直飞正式复航</span><br>
+                    <span class="highlight">✓ 离境退税增长近4倍</span>
+                </div>
+            </div>
+            <div class="tags-container">
+                <span class="tag">#成都旅游</span>
+                <span class="tag">#暑期出行</span>
+                <span class="tag">#直飞航线</span>
+                <span class="tag">#退税攻略</span>
+            </div>
+        </div>
+
+        <!-- 卡片 2：暑运与新玩法 -->
+        <div class="card" id="card-2">
+            <div class="content-block">
+                <div class="card-title">01 暑期热度飙升</div>
+                
+                <div class="section-title">国内游“第一方阵”</div>
+                <div class="list-item">暑运首日，成都与上海、北京、广州一同位列国内游“第一方阵”。</div>
+                <div class="list-item">国内机票预订量超<span class="highlight">1580万张</span>，酒店预订量稳居全国前列。</div>
+                
+                <div class="section-title">10条航旅精品线路</div>
+                <div class="list-item">成都天府机场联合相关单位，正式发布<span class="highlight">10条航旅精品线路</span>。</div>
+                <div class="list-item">为旅客提供省心、地道的全域游玩选择，中转旅客也有量身定制的“微度假”方案。</div>
+            </div>
+            <div class="tags-container">
+                <span class="tag">#天府机场</span>
+                <span class="tag">#成都攻略</span>
+            </div>
+        </div>
+
+        <!-- 卡片 3：台中航线复航 -->
+        <div class="card" id="card-3">
+            <div class="content-block">
+                <div class="card-title">02 台中直飞复航</div>
+                
+                <div class="section-title">成都 ⇋ 台中</div>
+                <div class="text-paragraph">
+                    7月1日，中断多年的成都至台中往返直飞航线正式复航。东航MU828航班在成都天府国际机场平稳降落。
+                </div>
+
+                <div class="section-title">预约已至年底</div>
+                <div class="list-item">赴川旅行团需求旺盛，预约量已排至年底。</div>
+                <div class="list-item">台中机场今夏新增3条航线，为中部旅客带来更多元便利的选择。</div>
+            </div>
+            <div class="tags-container">
+                <span class="tag">#台中复航</span>
+                <span class="tag">#东航</span>
+            </div>
+        </div>
+
+        <!-- 卡片 4：离境退税 -->
+        <div class="card" id="card-4">
+            <div class="content-block">
+                <div class="card-title">03 退税政策利好</div>
+                
+                <div class="section-title">增长近4倍</div>
+                <div class="text-paragraph">
+                    随着免签“朋友圈”扩容及入境游热度攀升，今年上半年成都海关累计验核离境退税申请单<span class="highlight">2.59万票</span>。
+                </div>
+
+                <div class="section-title">购物更划算</div>
+                <div class="list-item">同比增长近4倍，显示出国际游客对成都消费市场的青睐。</div>
+                <div class="list-item">在成都购物离境可享受便捷退税服务，提升旅游体验。</div>
+            </div>
+            <div class="tags-container">
+                <span class="tag">#离境退税</span>
+                <span class="tag">#入境游</span>
+            </div>
+        </div>
+
+        <!-- 卡片 5：结尾总结 -->
+        <div class="card" id="card-5">
+            <div class="content-block">
+                <div class="card-title">总结</div>
+                
+                <div class="text-paragraph">
+                    成都暑期旅游市场全面复苏，航线网络更加密集，政策红利持续释放。无论是国内游还是入境游，成都都是今夏不可错过的目的地。
+                </div>
+
+                <div class="footer-cta">
+                    <p>整理不易，有用请收藏</p>
+                    <div class="emoji-btn">❤️</div>
+                    <div class="emoji-btn">⭐</div>
+                    <div class="emoji-btn">💬</div>
+                    <p style="margin-top: 15px; font-size: 12px; color: #ddd;">数据来源：搜狐、联合报</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <div class="status-msg" id="statusMsg">准备就绪</div>
+        <div class="btn-group">
+            <button class="btn btn-outline" onclick="downloadSingle(0)">下载封面</button>
+            <button class="btn btn-outline" onclick="downloadSingle(1)">下载P2</button>
+            <button class="btn btn-outline" onclick="downloadSingle(2)">下载P3</button>
+            <button class="btn btn-outline" onclick="downloadSingle(3)">下载P4</button>
+            <button class="btn btn-outline" onclick="downloadSingle(4)">下载P5</button>
+        </div>
+        <div class="btn-group">
+            <button class="btn" onclick="downloadAll()">一键下载全部卡片</button>
+        </div>
+    </div>
+
+    <script>
+        const cards = document.querySelectorAll('.card');
+        const statusMsg = document.getElementById('statusMsg');
+
+        function updateStatus(text) {
+            statusMsg.textContent = text;
+        }
+
+        async function generateImage(cardElement, filename) {
+            try {
+                // 临时调整样式以确保截图清晰度
+                const originalTransform = cardElement.style.transform;
+                cardElement.style.transform = 'translateZ(0)'; // 开启硬件加速
+                
+                const canvas = await html2canvas(cardElement, {
+                    scale: 2, // 高清
+                    backgroundColor: '#ffffff',
+                    useCORS: true,
+                    logging: false,
+                    windowWidth: 390,
+                    windowHeight: cardElement.scrollHeight
+                });
+
+                cardElement.style.transform = originalTransform;
+
+                // 转换为图片并下载
+                const dataUrl = canvas.toDataURL('image/png');
+                const link = document.createElement('a');
+                link.href = dataUrl;
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                return true;
+            } catch (error) {
+                console.error('生成图片失败:', error);
+                return false;
+            }
+        }
+
+        function downloadSingle(index) {
+            if (index >= cards.length) return;
+            const card = cards[index];
+            const filename = `xiaohongshu-note-${index + 1}.png`;
+            
+            updateStatus(`正在生成第 ${index + 1} 页...`);
+            generateImage(card, filename).then(success => {
+                if (success) {
+                    updateStatus(`第 ${index + 1} 页下载完成`);
+                    setTimeout(() => updateStatus('准备就绪'), 2000);
+                } else {
+                    updateStatus('下载失败，请重试');
+                }
+            });
+        }
+
+        async function downloadAll() {
+            const btn = document.querySelector('.btn-group:last-child .btn');
+            btn.disabled = true;
+            btn.textContent = '下载中...';
+
+            for (let i = 0; i < cards.length; i++) {
+                updateStatus(`正在下载第 ${i + 1}/${cards.length} 页...`);
+                const success = await generateImage(cards[i], `xiaohongshu-note-${i + 1}.png`);
+                if (!success) {
+                    updateStatus(`第 ${i + 1} 页下载失败`);
+                    btn.disabled = false;
+                    btn.textContent = '一键下载全部卡片';
+                    return;
+                }
+                // 添加延迟避免浏览器拦截
+                await new Promise(r => setTimeout(r, 500));
+            }
+
+            updateStatus('全部下载完成！');
+            btn.disabled = false;
+            btn.textContent = '一键下载全部卡片';
+            setTimeout(() => updateStatus('准备就绪'), 3000);
+        }
+    </script>
+</body>
+</html>
