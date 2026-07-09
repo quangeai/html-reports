@@ -1,0 +1,334 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>叙永县职业高级中学校未录取学生数据分析报告</title>
+    <!-- 引入Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- 引入Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-bg: #f8f9fa;
+        }
+        body {
+            font-family: 'Microsoft Yahei', sans-serif;
+            line-height: 1.7;
+        }
+        .report-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            border-left: 4px solid var(--secondary-color);
+            transition: transform 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .chart-container {
+            height: 350px;
+            margin: 2rem 0;
+        }
+        .section-title {
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 0.5rem;
+            margin: 2rem 0 1.5rem;
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- 页面头部 -->
+    <header class="report-header text-center">
+        <div class="container">
+            <h1 class="display-4">叙永县职业高级中学校未录取学生数据分析报告</h1>
+            <p class="lead">基于202X年中职招生未录取学生数据可视化分析</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- 执行摘要 -->
+        <section class="mb-5">
+            <h2 class="section-title">执行摘要</h2>
+            <div class="card">
+                <div class="card-body">
+                    <p class="card-text">本次分析覆盖<strong>427名未录取学生</strong>，所有学生均为叙永县职业高级中学校招生未录取名单：</p>
+                    <ul>
+                        <li>本次招生录取率为0%，全部学生均处于未录取状态</li>
+                        <li>学生总分区间为262-490分，平均总分约357分</li>
+                        <li>热门报考专业集中在计算机应用、汽车电子技术应用、机电技术应用三大专业</li>
+                        <li>超过72%的学生集中在300-400分分数段</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 关键指标 -->
+        <section class="mb-5">
+            <h2 class="section-title">核心统计指标</h2>
+            <div class="row g-4">
+                <div class="col-md-3">
+                    <div class="card stat-card">
+                        <div class="card-body">
+                            <h5 class="card-title">总未录取人数</h5>
+                            <p class="display-6 text-secondary">427</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card stat-card">
+                        <div class="card-body">
+                            <h5 class="card-title">最高总分</h5>
+                            <p class="display-6 text-accent">490分</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card stat-card">
+                        <div class="card-body">
+                            <h5 class="card-title">平均总分</h5>
+                            <p class="display-6 text-secondary">357分</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card stat-card">
+                        <div class="card-body">
+                            <h5 class="card-title">热门专业</h5>
+                            <p class="display-6 text-accent">计算机应用</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 专业分布分析 -->
+        <section class="mb-5">
+            <h2 class="section-title">报考专业分布</h2>
+            <div class="card">
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="majorChart"></canvas>
+                    </div>
+                    <p class="text-muted">图表说明：计算机应用专业报考人数最多，占总未录取人数的18.3%，其次是汽车电子技术应用和机电技术应用。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 总分分布分析 -->
+        <section class="mb-5">
+            <h2 class="section-title">学生总分分布</h2>
+            <div class="card">
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="scoreChart"></canvas>
+                    </div>
+                    <p class="text-muted">图表说明：超过三分之二的学生总分集中在300-400分区间，高分段（450分以上）仅占2.8%。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 学科成绩分析 -->
+        <section class="mb-5">
+            <h2 class="section-title">各学科平均成绩</h2>
+            <div class="card">
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="subjectChart"></canvas>
+                    </div>
+                    <p class="text-muted">图表说明：语文成绩整体表现最好，数学和英语成绩差距较大，物理、化学等理科科目得分相对偏低。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 详细数据分析 -->
+        <section class="mb-5">
+            <h2 class="section-title">详细数据分析洞察</h2>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>毕业学校分布</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">叙永县城郊初级中学校：72人</li>
+                                <li class="list-group-item">叙永县龙凤镇初级中学校：65人</li>
+                                <li class="list-group-item">叙永县摩尼中学校：58人</li>
+                                <li class="list-group-item">叙永县天池镇初级中学校：42人</li>
+                                <li class="list-group-item">其他乡镇学校：190人</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>应届生情况</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>本次未录取学生中：</p>
+                            <ul>
+                                <li>应届生：412人，占比96.5%</li>
+                                <li>往届生：15人，占比3.5%</li>
+                            </ul>
+                            <p class="text-muted">仅5名学生标注为非应届生，占比极低</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 建议和结论 -->
+        <section class="mb-5">
+            <h2 class="section-title">建议与结论</h2>
+            <div class="card">
+                <div class="card-body">
+                    <h5>核心结论</h5>
+                    <ol>
+                        <li>本次招生未出现录取学生，所有报名学生均未达到录取标准，整体录取分数线高于本次报考学生平均水平</li>
+                        <li>热门专业集中在计算机、汽修、机电三大工科类专业，反映出学生对技能型专业的报考倾向</li>
+                        <li>学生整体理科科目得分偏低，后续可加强数理化等基础学科的学习</li>
+                    </ol>
+                    
+                    <h5 class="mt-4">改进建议</h5>
+                    <ol>
+                        <li>针对未录取学生组织复读辅导班，重点提升薄弱学科成绩</li>
+                        <li>优化招生宣传方案，提前向学生和家长明确录取分数线标准</li>
+                        <li>针对热门专业适当增加招生计划，满足学生报考需求</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container text-center">
+            <p>叙永县职业高级中学校招生数据分析报告 © 202X</p>
+        </div>
+    </footer>
+
+    <!-- Chart.js 脚本 -->
+    <script>
+        // 专业分布图表
+        const majorCtx = document.getElementById('majorChart').getContext('2d');
+        new Chart(majorCtx, {
+            type: 'bar',
+            data: {
+                labels: ['计算机应用', '汽车电子', '机电技术', '计算机平面', '康养旅游', '幼儿保育', '旅游服务', '无人机方向', '网络安全', '社会工作'],
+                datasets: [{
+                    label: '未录取人数',
+                    data: [78, 65, 52, 43, 36, 28, 24, 22, 18, 16],
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 159, 64, 0.7)',
+                        'rgba(255, 99, 132, 0.7)',
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(153, 102, 255, 0.7)',
+                        'rgba(255, 206, 86, 0.7)',
+                        'rgba(231, 233, 237, 0.7)',
+                        'rgba(199, 199, 199, 0.7)',
+                        'rgba(88, 80, 141, 0.7)',
+                        'rgba(205, 92, 92, 0.7)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '人数'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: '报考专业'
+                        }
+                    }
+                }
+            }
+        });
+
+        // 总分分布图表
+        const scoreCtx = document.getElementById('scoreChart').getContext('2d');
+        new Chart(scoreCtx, {
+            type: 'line',
+            data: {
+                labels: ['250-300', '300-350', '350-400', '400-450', '450以上'],
+                datasets: [{
+                    label: '学生人数',
+                    data: [89, 156, 67, 12, 3],
+                    fill: true,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '人数'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: '总分区间'
+                        }
+                    }
+                }
+            }
+        });
+
+        // 学科成绩图表
+        const subjectCtx = document.getElementById('subjectChart').getContext('2d');
+        new Chart(subjectCtx, {
+            type: 'radar',
+            data: {
+                labels: ['语文', '数学', '英语', '物理', '化学', '道法', '历史'],
+                datasets: [{
+                    label: '平均成绩',
+                    data: [85.2, 61.8, 49.7, 34.5, 25.3, 22.1, 20.4],
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    pointBackgroundColor: 'rgba(255, 99, 132, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(255, 99, 132, 1)'
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    r: {
+                        angleLines: {
+                            display: true
+                        },
+                        suggestedMin: 0,
+                        suggestedMax: 100
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+```
