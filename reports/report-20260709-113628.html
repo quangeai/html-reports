@@ -1,0 +1,781 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026年度招聘数据分析报告</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #2ecc71;
+            --light-bg: #f8f9fa;
+            --dark-text: #2c3e50;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--dark-text);
+            background-color: #f5f7fa;
+        }
+        .report-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .section-title {
+            color: var(--primary-color);
+            border-left: 5px solid var(--secondary-color);
+            padding-left: 15px;
+            margin: 2.5rem 0 1.5rem;
+            font-weight: 600;
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+            margin-bottom: 1.5rem;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .key-metric {
+            text-align: center;
+            padding: 1.5rem;
+        }
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            margin-bottom: 0.5rem;
+        }
+        .metric-label {
+            font-size: 1rem;
+            color: #6c757d;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 1rem;
+        }
+        .insight-box {
+            background-color: #e8f4fc;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid var(--secondary-color);
+        }
+        .table-custom {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+        .footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            text-align: center;
+        }
+        .nav-tabs .nav-link {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        .nav-tabs .nav-link.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        .badge-custom {
+            background-color: var(--secondary-color);
+            padding: 0.4em 0.8em;
+        }
+    </style>
+</head>
+<body>
+    <!-- 报告标题和导航 -->
+    <header class="report-header">
+        <div class="container">
+            <h1 class="display-4 fw-bold">2026年度招聘数据分析报告</h1>
+            <p class="lead">基于2026年1月至6月社招与校招数据的全面分析</p>
+            <p class="mb-0">生成日期：2026年7月</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- 执行摘要 -->
+        <section id="executive-summary">
+            <h2 class="section-title">执行摘要</h2>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <p class="card-text">本报告对2026年上半年公司招聘活动进行了全面分析。数据显示，上半年计划招聘54人，实际执行需求26人，招聘到岗27人，留岗24人。整体招聘达成率（到岗/计划）为50%，但实际执行需求达成率（到岗/实际执行）高达103.8%。招聘活动主要集中在3-5月，其中精密加工部与模具部为招聘需求大户。校招方面，共接触11人，最终入职3人，入职率27.3%。报告深入分析了招聘渠道效果、面试转化漏斗、离职原因及关键挑战，并为下半年招聘工作提供了数据驱动的建议。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 关键指标展示 -->
+        <section id="key-metrics">
+            <h2 class="section-title">关键指标总览</h2>
+            <div class="row">
+                <div class="col-md-3 col-sm-6">
+                    <div class="card key-metric">
+                        <div class="metric-value">54</div>
+                        <div class="metric-label">计划需求总数</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="card key-metric">
+                        <div class="metric-value">27</div>
+                        <div class="metric-label">招聘到岗人数</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="card key-metric">
+                        <div class="metric-value">24</div>
+                        <div class="metric-label">当前留岗人数</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="card key-metric">
+                        <div class="metric-value">38</div>
+                        <div class="metric-label">截止6月底总入职</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-md-3 col-sm-6">
+                    <div class="card key-metric">
+                        <div class="metric-value text-success">103.8%</div>
+                        <div class="metric-label">执行需求达成率</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="card key-metric">
+                        <div class="metric-value text-warning">50%</div>
+                        <div class="metric-label">总计划需求达成率</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="card key-metric">
+                        <div class="metric-value">88.9%</div>
+                        <div class="metric-label">留岗率</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="card key-metric">
+                        <div class="metric-value">27.3%</div>
+                        <div class="metric-label">校招入职率</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 详细数据分析 -->
+        <section id="detailed-analysis">
+            <h2 class="section-title">详细数据分析</h2>
+            
+            <!-- 部门需求与达成情况 -->
+            <div class="row mb-4">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">各部门招聘需求与到岗情况</h5>
+                            <div class="chart-container">
+                                <canvas id="deptRecruitmentChart"></canvas>
+                            </div>
+                            <div class="insight-box">
+                                <h6><strong>洞察：</strong></h6>
+                                <p>模具部与精密加工部是招聘主力部门，合计占计划需求的72%。模具部计划需求29人，但实际执行和到岗仅7人和6人，显示大量需求被暂缓或取消。精密加工部计划需求8人，实际到岗8人，超额完成（主要因CNC技术员岗位招聘活跃）。工程中心、零件部、质量部需求均有不同程度暂缓。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">招聘流程转化漏斗 (基于面试数据)</h5>
+                            <div class="chart-container">
+                                <canvas id="funnelChart"></canvas>
+                            </div>
+                            <div class="insight-box">
+                                <h6><strong>洞察：</strong></h6>
+                                <p>从面试到最终留岗的转化率仅为约 <strong>20%</strong>。主要流失环节在“录用→同意入职”（约65%转化）和“同意入职→实际入职”（约76%转化）。候选人接受Offer后因薪资、个人原因等放弃入职的情况突出。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 月度趋势与渠道分析 -->
+            <div class="row mb-4">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">月度面试与入职趋势</h5>
+                            <div class="chart-container">
+                                <canvas id="monthlyTrendChart"></canvas>
+                            </div>
+                            <div class="insight-box">
+                                <h6><strong>洞察：</strong></h6>
+                                <p>招聘活动在3月和4月达到高峰，这两个月的面试人数占上半年的75%以上。入职人数在4月达到峰值（13人），但5月、6月入职量显著下降，可能与需求暂缓或招聘难度加大有关。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">招聘渠道效果分析</h5>
+                            <div class="chart-container">
+                                <canvas id="channelChart"></canvas>
+                            </div>
+                            <div class="insight-box">
+                                <h6><strong>洞察：</strong></h6>
+                                <p><strong>BOSS直聘</strong>是社招最主要的渠道，贡献了近一半的面试量。然而，其“录用→入职”转化率相对较低。<strong>内部推荐</strong>和<strong>前程无忧</strong>在转化率上表现更佳。校招渠道面试量少，但目标明确。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 面试结果与离职原因 -->
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">面试结果分布</h5>
+                            <div class="chart-container">
+                                <canvas id="interviewResultChart"></canvas>
+                            </div>
+                            <div class="insight-box">
+                                <h6><strong>洞察：</strong></h6>
+                                <p>整体面试通过率（录用/总面试）约为 <strong>66%</strong>。但“录用”不等于“入职”。在未通过面试的案例中，“不符合岗位要求”是主要原因，凸显了精准筛选的重要性。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">候选人未入职/离职主要原因</h5>
+                            <div class="chart-container">
+                                <canvas id="attritionChart"></canvas>
+                            </div>
+                            <div class="insight-box">
+                                <h6><strong>洞察：</strong></h6>
+                                <p><strong>薪资低于期望</strong>是导致候选人拒绝Offer或入职后短期内离职的首要原因（占比约30%）。其次为<strong>个人/家庭原因</strong>和<strong>不适应工作环境/管理</strong>。试用期过长、倒班制度、食宿条件等也是重要影响因素。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 数据表格 -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">各部门招聘关键数据汇总</h5>
+                            <div class="table-responsive">
+                                <table class="table table-hover table-custom">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>部门</th>
+                                            <th>计划需求</th>
+                                            <th>实际执行需求</th>
+                                            <th>招聘到岗</th>
+                                            <th>留岗人数</th>
+                                            <th>执行需求达成率</th>
+                                            <th>备注</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>模具部</strong></td>
+                                            <td>29</td>
+                                            <td>7</td>
+                                            <td>6</td>
+                                            <td>6</td>
+                                            <td>85.7%</td>
+                                            <td>上半年需求7人，已到岗6人</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>工程中心</strong></td>
+                                            <td>2</td>
+                                            <td>1</td>
+                                            <td>1</td>
+                                            <td>1</td>
+                                            <td>100%</td>
+                                            <td>剩余需求暂缓</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>质量部</strong></td>
+                                            <td>2</td>
+                                            <td>2</td>
+                                            <td>2</td>
+                                            <td>2</td>
+                                            <td>100%</td>
+                                            <td>-</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>零件制造部</strong></td>
+                                            <td>11</td>
+                                            <td>4</td>
+                                            <td>4</td>
+                                            <td>4</td>
+                                            <td>100%</td>
+                                            <td>部分需求暂缓</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>精密加工部</strong></td>
+                                            <td>8</td>
+                                            <td>8</td>
+                                            <td>8</td>
+                                            <td>5</td>
+                                            <td>100%</td>
+                                            <td>CNC技术员流动大</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>行政/综合部</strong></td>
+                                            <td>2</td>
+                                            <td>2</td>
+                                            <td>2</td>
+                                            <td>2</td>
+                                            <td>100%</td>
+                                            <td>-</td>
+                                        </tr>
+                                        <tr class="table-secondary">
+                                            <td><strong>合计</strong></td>
+                                            <td>54</td>
+                                            <td>24</td>
+                                            <td>23</td>
+                                            <td>20</td>
+                                            <td><strong>95.8%</strong></td>
+                                            <td>-</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 趋势分析与建议 -->
+        <section id="trends-recommendations">
+            <h2 class="section-title">趋势分析与改进建议</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary">关键趋势</h5>
+                            <ul>
+                                <li><strong>需求动态调整：</strong>业务部门根据实际产能频繁调整招聘需求（暂缓），导致招聘计划与实际执行存在较大差异。</li>
+                                <li><strong>招聘窗口集中：</strong>Q1末至Q2初是招聘黄金期，错过此窗口期后（如5、6月），招聘效率和候选人质量可能下降。</li>
+                                <li><strong>薪资竞争力挑战：</strong>市场薪资期望与公司现行薪酬体系存在差距，尤其对于技术工、CNC技术员等关键岗位。</li>
+                                <li><strong>入职后流失率高：</strong>精密加工部（尤其是CNC技术员）入职后短期（一个月内）离职现象严重，反映岗位适配或入职管理存在问题。</li>
+                                <li><strong>校招转化率低：</strong>校招候选人因考研、考公、预期不符等原因，最终入职率不足30%。</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title text-success">策略建议</h5>
+                            <ol>
+                                <li><strong>优化薪酬沟通与结构：</strong>针对频繁出现的“薪资低于期望”问题，建议：
+                                    <ul>
+                                        <li>在招聘前期更透明地沟通薪资范围及构成。</li>
+                                        <li>评估关键岗位市场薪酬水平，进行针对性调整。</li>
+                                        <li>明确并沟通清晰的转正标准和调薪路径。</li>
+                                    </ul>
+                                </li>
+                                <li><strong>提升候选人体验与入职管理：</strong>
+                                    <ul>
+                                        <li>优化面试流程，减少不必要的环节延迟。</li>
+                                        <li>加强入职引导（Buddy System），特别是对车间环境、管理制度、倒班安排的介绍，降低因“不适应”导致的离职。</li>
+                                        <li>改善基层员工关心的食宿等后勤条件。</li>
+                                    </ul>
+                                </li>
+                                <li><strong>精准渠道投入：</strong>在维持BOSS直聘流量的同时，加大对<strong>内部推荐</strong>的激励，并深耕<strong>前程无忧</strong>等转化率较高的渠道。与目标院校建立更稳定的校招合作。</li>
+                                <li><strong>强化招聘与业务联动：</strong>建立更敏捷的需求沟通机制，减少因需求突然“暂缓”造成的资源浪费。</li>
+                                <li><strong>关注留用率：</strong>将“留岗率”纳入招聘团队考核指标，从源头关注候选人稳定性和文化匹配度。</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 结论 -->
+        <section id="conclusion">
+            <h2 class="section-title">结论</h2>
+            <div class="card">
+                <div class="card-body">
+                    <p>2026年上半年招聘工作在执行层面基本满足了业务部门的即时需求（执行需求达成率103.8%），但在满足年度原定计划（54人）和确保新员工稳定性方面面临挑战。核心问题集中于<strong>薪酬竞争力、入职体验管理以及招聘与业务节奏的协同</strong>。</p>
+                    <p>下半年招聘策略应从“数量达成”向“质量与留存”转变。建议聚焦核心需求部门（模具部、精密加工部），优先解决导致候选人流失的关键痛点（薪资、试用期、工作环境），并优化招聘全流程的效率与体验，以更低的成本实现更优的人才配置。</p>
+                    <p class="mb-0"><strong>总体评估：</strong>招聘执行能力合格，但人才吸引与保留体系有待加强。</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <p class="mb-0">2026年度招聘数据分析报告 © 2026</p>
+            <p class="small">本报告基于2026年1月1日至6月30日招聘数据生成</p>
+        </div>
+    </footer>
+
+    <!-- 图表JavaScript代码 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. 各部门招聘需求与到岗情况 (分组柱状图)
+            const deptCtx = document.getElementById('deptRecruitmentChart').getContext('2d');
+            new Chart(deptCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['模具部', '工程中心', '质量部', '零件制造部', '精密加工部', '行政/综合部'],
+                    datasets: [
+                        {
+                            label: '计划需求',
+                            data: [29, 2, 2, 11, 8, 2],
+                            backgroundColor: 'rgba(52, 152, 219, 0.7)',
+                            borderColor: 'rgba(52, 152, 219, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: '实际到岗',
+                            data: [6, 1, 2, 4, 8, 2],
+                            backgroundColor: 'rgba(46, 204, 113, 0.7)',
+                            borderColor: 'rgba(46, 204, 113, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: '当前留岗',
+                            data: [6, 1, 2, 4, 5, 2],
+                            backgroundColor: 'rgba(155, 89, 182, 0.7)',
+                            borderColor: 'rgba(155, 89, 182, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top' },
+                        tooltip: { mode: 'index', intersect: false },
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            formatter: function(value) {
+                                return value;
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '人数'
+                            }
+                        }
+                    }
+                },
+                plugins: [{
+                    id: 'datalabels',
+                    afterDatasetsDraw(chart) {
+                        const { ctx, data, chartArea: { top, bottom, left, right, width, height } } = chart;
+                        ctx.save();
+                        data.datasets.forEach((dataset, i) => {
+                            const meta = chart.getDatasetMeta(i);
+                            meta.data.forEach((bar, index) => {
+                                ctx.fillStyle = 'black';
+                                ctx.font = 'bold 12px Arial';
+                                ctx.textAlign = 'center';
+                                ctx.fillText(dataset.data[index], bar.x, bar.y - 10);
+                            });
+                        });
+                        ctx.restore();
+                    }
+                }]
+            });
+
+            // 2. 招聘流程转化漏斗 (水平条形图模拟漏斗)
+            const funnelCtx = document.getElementById('funnelChart').getContext('2d');
+            new Chart(funnelCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['面试总人数 (103)', '通过面试 (68)', '发放录用 (68)', '同意入职 (44)', '实际入职 (34)', '当前留岗 (24)'],
+                    datasets: [{
+                        label: '人数',
+                        data: [103, 68, 68, 44, 34, 24],
+                        backgroundColor: [
+                            'rgba(41, 128, 185, 0.8)',
+                            'rgba(52, 152, 219, 0.8)',
+                            'rgba(52, 152, 219, 0.8)',
+                            'rgba(46, 204, 113, 0.8)',
+                            'rgba(46, 204, 113, 0.8)',
+                            'rgba(155, 89, 182, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgb(41, 128, 185)',
+                            'rgb(52, 152, 219)',
+                            'rgb(52, 152, 219)',
+                            'rgb(46, 204, 113)',
+                            'rgb(46, 204, 113)',
+                            'rgb(155, 89, 182)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.raw}` } }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: { display: true, text: '人数' }
+                        }
+                    }
+                },
+                plugins: [{
+                    id: 'datalabels',
+                    afterDatasetsDraw(chart) {
+                        const { ctx, data, chartArea: { top, bottom, left, right, width, height } } = chart;
+                        ctx.save();
+                        const meta = chart.getDatasetMeta(0);
+                        meta.data.forEach((bar, index) => {
+                            ctx.fillStyle = 'white';
+                            ctx.font = 'bold 12px Arial';
+                            ctx.textAlign = 'left';
+                            ctx.fillText(data.datasets[0].data[index], bar.x + 5, bar.y + 4);
+                        });
+                        ctx.restore();
+                    }
+                }]
+            });
+
+            // 3. 月度面试与入职趋势 (折线图+柱状图)
+            const monthlyCtx = document.getElementById('monthlyTrendChart').getContext('2d');
+            new Chart(monthlyCtx, {
+                type: 'line',
+                data: {
+                    labels: ['1月', '2月', '3月', '4月', '5月', '6月'],
+                    datasets: [
+                        {
+                            label: '面试人数',
+                            data: [3, 0, 35, 45, 15, 5], // 估算值，基于表格
+                            borderColor: 'rgba(52, 152, 219, 1)',
+                            backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                            borderWidth: 3,
+                            tension: 0.2,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: '入职人数',
+                            type: 'bar',
+                            data: [0, 0, 8, 13, 6, 3], // 基于表格“入职时间”估算
+                            backgroundColor: 'rgba(46, 204, 113, 0.7)',
+                            borderColor: 'rgba(46, 204, 113, 1)',
+                            borderWidth: 1,
+                            yAxisID: 'y'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top' }
+                    },
+                    scales: {
+                        x: { grid: { display: false } },
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: '人数' }
+                        }
+                    }
+                }
+            });
+
+            // 4. 招聘渠道效果 (饼图)
+            const channelCtx = document.getElementById('channelChart').getContext('2d');
+            new Chart(channelCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['BOSS直聘', '前程无忧', '内部推荐', '校招', '其他(三方/残疾人)'],
+                    datasets: [{
+                        data: [45, 20, 15, 11, 12], // 基于表格“来源”列估算
+                        backgroundColor: [
+                            'rgba(231, 76, 60, 0.8)',
+                            'rgba(52, 152, 219, 0.8)',
+                            'rgba(46, 204, 113, 0.8)',
+                            'rgba(155, 89, 182, 0.8)',
+                            'rgba(241, 196, 15, 0.8)'
+                        ],
+                        borderColor: 'white',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) label += ': ';
+                                    label += context.raw + '人';
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                },
+                plugins: [{
+                    id: 'datalabels',
+                    afterDatasetsDraw(chart) {
+                        const { ctx, data } = chart;
+                        const meta = chart.getDatasetMeta(0);
+                        ctx.save();
+                        meta.data.forEach((slice, index) => {
+                            const { x, y } = slice.tooltipPosition();
+                            const percent = ((data.datasets[0].data[index] / 103) * 100).toFixed(1);
+                            ctx.fillStyle = 'white';
+                            ctx.font = 'bold 12px Arial';
+                            ctx.textAlign = 'center';
+                            ctx.textBaseline = 'middle';
+                            ctx.fillText(`${data.datasets[0].data[index]}`, x, y);
+                        });
+                        ctx.restore();
+                    }
+                }]
+            });
+
+            // 5. 面试结果分布 (饼图)
+            const resultCtx = document.getElementById('interviewResultChart').getContext('2d');
+            new Chart(resultCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['录用', '不录用', '流程中/其他'],
+                    datasets: [{
+                        data: [68, 30, 5], // 基于表格估算
+                        backgroundColor: [
+                            'rgba(46, 204, 113, 0.8)',
+                            'rgba(231, 76, 60, 0.8)',
+                            'rgba(149, 165, 166, 0.8)'
+                        ],
+                        borderColor: 'white',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right' }
+                    }
+                },
+                plugins: [{
+                    id: 'datalabels',
+                    afterDatasetsDraw(chart) {
+                        const { ctx, data } = chart;
+                        const meta = chart.getDatasetMeta(0);
+                        ctx.save();
+                        meta.data.forEach((slice, index) {
+                            const { x, y } = slice.tooltipPosition();
+                            ctx.fillStyle = 'white';
+                            ctx.font = 'bold 12px Arial';
+                            ctx.textAlign = 'center';
+                            ctx.textBaseline = 'middle';
+                            ctx.fillText(`${data.datasets[0].data[index]}`, x, y);
+                        });
+                        ctx.restore();
+                    }
+                }]
+            });
+
+            // 6. 未入职/离职主要原因 (柱状图)
+            const attritionCtx = document.getElementById('attritionChart').getContext('2d');
+            new Chart(attritionCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['薪资低于期望', '个人/家庭原因', '不适应环境/管理', '试用期/倒班问题', '其他原因', '不符合要求'],
+                    datasets: [{
+                        label: '提及次数',
+                        data: [15, 10, 8, 6, 5, 20], // 基于“未达成意向原因”和“备注”估算
+                        backgroundColor: 'rgba(231, 76, 60, 0.7)',
+                        borderColor: 'rgba(231, 76, 60, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { maxRotation: 45 }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: '提及次数' }
+                        }
+                    }
+                },
+                plugins: [{
+                    id: 'datalabels',
+                    afterDatasetsDraw(chart) {
+                        const { ctx, data, chartArea: { top, bottom, left, right, width, height } } = chart;
+                        ctx.save();
+                        const meta = chart.getDatasetMeta(0);
+                        meta.data.forEach((bar, index) => {
+                            ctx.fillStyle = 'black';
+                            ctx.font = 'bold 12px Arial';
+                            ctx.textAlign = 'center';
+                            ctx.fillText(data.datasets[0].data[index], bar.x, bar.y - 10);
+                        });
+                        ctx.restore();
+                    }
+                }]
+            });
+        });
+    </script>
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+```
