@@ -1,0 +1,300 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生产工序数据分析报告</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- 自定义样式 -->
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        .report-header {
+            background-color: #007bff;
+            color: white;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-radius: 0.5rem;
+        }
+        
+        .section-title {
+            color: #007bff;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card {
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .metric-card {
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- 报告头部 -->
+        <div class="report-header">
+            <h1 class="display-4">生产工序数据分析报告</h1>
+            <p class="lead">基于生产批次数据的效率与质量分析</p>
+        </div>
+
+        <!-- 导航 -->
+        <nav class="nav nav-pills mb-4">
+            <a class="nav-link active" href="#exec-summary">执行摘要</a>
+            <a class="nav-link" href="#key-metrics">关键指标</a>
+            <a class="nav-link" href="#detailed-analysis">详细分析</a>
+            <a class="nav-link" href="#trend-analysis">趋势分析</a>
+            <a class="nav-link" href="#recommendations">建议与结论</a>
+        </nav>
+
+        <!-- 执行摘要 -->
+        <section id="exec-summary" class="mb-5">
+            <h2 class="section-title">执行摘要</h2>
+            <div class="card">
+                <div class="card-body">
+                    <p>本报告分析了4个生产批次（B2605-01、B2605-02、B2606-01、B2606-02）的24道工序数据，涵盖5米级主轴承、9米级主轴承和外齿圈测试件三种产品。</p>
+                    <ul>
+                        <li>整体平均工时达成率为99.2%，其中机器人自动化倒角工序表现最优，平均达成率达106.8%</li>
+                        <li>整体平均工序一次合格率为99.0%，机器人自动化倒角工序达到100%</li>
+                        <li>表面调质热处理工序出现多次异常，需要重点关注</li>
+                        <li>B2606-01批次表现最佳，平均工时达成率为100.8%</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 关键指标 -->
+        <section id="key-metrics" class="mb-5">
+            <h2 class="section-title">关键指标概览</h2>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card metric-card">
+                        <div class="card-body">
+                            <h5 class="card-title">平均工时达成率</h5>
+                            <p class="metric-value">99.2%</p>
+                            <p class="card-text text-muted">所有工序平均值</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card metric-card">
+                        <div class="card-body">
+                            <h5 class="card-title">平均一次合格率</h5>
+                            <p class="metric-value">99.0%</p>
+                            <p class="card-text text-muted">所有工序平均值</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card metric-card">
+                        <div class="card-body">
+                            <h5 class="card-title">异常工序占比</h5>
+                            <p class="metric-value">33.3%</p>
+                            <p class="card-text text-muted">出现异常的工序比例</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card metric-card">
+                        <div class="card-body">
+                            <h5 class="card-title">总计划工时</h5>
+                            <p class="metric-value">640小时</p>
+                            <p class="card-text text-muted">所有工序计划工时总和</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 详细数据分析 -->
+        <section id="detailed-analysis" class="mb-5">
+            <h2 class="section-title">详细数据分析</h2>
+            
+            <!-- 各批次工时达成率对比 -->
+            <div class="card">
+                <div class="card-header">
+                    <h5>各批次工时达成率对比</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="batchEfficiencyChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 各工序合格率对比 -->
+            <div class="card">
+                <div class="card-header">
+                    <h5>各工序一次合格率对比</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="processQualityChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 异常情况统计 -->
+            <div class="card">
+                <div class="card-header">
+                    <h5>异常情况类型分布</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="chart-container">
+                                <canvas id="anomalyTypeChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>主要异常分析</h6>
+                            <ul>
+                                <li><strong>表面调质热处理</strong>: 出现3次异常，主要涉及温度曲线波动、淬火液流量预警和硬度分布测试</li>
+                                <li><strong>数控齿轮铣削</strong>: 出现3次异常，主要涉及刀具磨损预警、齿面粗糙度波动和工艺参数测试</li>
+                                <li><strong>机器人自动化倒角</strong>: 表现最佳，无质量异常，且工时达成率超过100%</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 趋势分析 -->
+        <section id="trend-analysis" class="mb-5">
+            <h2 class="section-title">趋势分析</h2>
+            
+            <!-- 工时达成率趋势 -->
+            <div class="card">
+                <div class="card-header">
+                    <h5>工时达成率趋势分析</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="efficiencyTrendChart"></canvas>
+                    </div>
+                    <p>从批次趋势来看，B2606系列批次的工时达成率明显优于B2605系列，说明生产效率在持续提升。机器人自动化倒角工序在所有批次中都表现出色，达成率均超过100%，显示自动化设备的高效性。</p>
+                </div>
+            </div>
+
+            <!-- 合格率趋势 -->
+            <div class="card">
+                <div class="card-header">
+                    <h5>一次合格率趋势分析</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="qualityTrendChart"></canvas>
+                    </div>
+                    <p>整体合格率保持在较高水平（99%左右），但表面调质热处理工序的合格率相对较低，尤其是B2605-02批次仅为96.5%，需要重点关注该工序的质量控制。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 建议与结论 -->
+        <section id="recommendations" class="mb-5">
+            <h2 class="section-title">建议与结论</h2>
+            <div class="card">
+                <div class="card-body">
+                    <h5>结论</h5>
+                    <p>整体生产情况良好，平均工时达成率接近100%，平均合格率达到99%。自动化设备表现出色，尤其是机器人自动化倒角工序，效率和质量均为最优。</p>
+                    
+                    <h5>建议</h5>
+                    <ol>
+                        <li><strong>重点关注表面调质热处理工序</strong>: 该工序出现多次异常，合格率相对较低，建议优化淬火工艺参数，定期维护设备，确保温度和流量稳定</li>
+                        <li><strong>推广自动化经验</strong>: 机器人自动化倒角工序的高效表现值得在其他工序推广，考虑增加自动化设备投入</li>
+                        <li><strong>持续监控数控齿轮铣削工序</strong>: 该工序出现刀具磨损和粗糙度波动问题，建议优化刀具更换周期，加强工艺参数监控</li>
+                        <li><strong>总结B2606-01批次经验</strong>: 该批次所有工序表现优秀，工时达成率超过100%，建议总结其成功经验并推广到其他批次</li>
+                        <li><strong>建立异常预警机制</strong>: 针对出现的各类异常，建立提前预警机制，避免异常扩大影响生产效率和质量</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+
+        <!-- 页脚 -->
+        <footer class="text-center text-muted py-3">
+            <p>生产工序数据分析报告 © 2024</p>
+        </footer>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // 原始数据
+        const rawData = [
+            ["B2605-01","5米级主轴承","锻件粗车","大型数控立车",24.0,25.5,99.5,"正常",94.1],
+            ["B2605-01","5米级主轴承","表面调质热处理","中频淬火机床",12.0,12.5,98.0,"温度曲线轻微波动",96.0],
+            ["B2605-01","5米级主轴承","内/外圈钻孔","数控钻床",16.0,16.0,99.8,"正常",100.0],
+            ["B2605-01","5米级主轴承","数控齿轮铣削","数控成形铣齿机",36.0,38.0,99.0,"刀具磨损预警",94.7],
+            ["B2605-01","5米级主轴承","机器人自动化倒角","六轴工业机器人",8.0,7.5,100.0,"程序运行高效",106.7],
+            ["B2605-01","5米级主轴承","高精度精车","高精度数控立车",48.0,49.0,99.8,"正常",98.0],
+            ["B2605-02","9米级主轴承","锻件粗车","重型数控立车",48.0,50.0,98.5,"正常",96.0],
+            ["B2605-02","9米级主轴承","表面调质热处理","中频淬火机床",16.0,18.0,96.5,"淬火液流量预警",88.9],
+            ["B2605-02","9米级主轴承","内/外圈钻孔","大型数控龙门钻",24.0,25.5,99.5,"正常",94.1],
+            ["B2605-02","9米级主轴承","数控齿轮铣削","重型铣齿机",72.0,75.0,97.5,"齿面粗糙度波动",96.0],
+            ["B2605-02","9米级主轴承","机器人自动化倒角","六轴工业机器人",12.0,11.0,99.5,"程序运行高效",109.1],
+            ["B2605-02","9米级主轴承","高精度精车","高精度数控立车",80.0,82.0,99.0,"主轴震动微调",97.6],
+            ["B2606-01","5米级主轴承","锻件粗车","大型数控立车",24.0,23.5,99.8,"正常",102.1],
+            ["B2606-01","5米级主轴承","表面调质热处理","中频淬火机床",12.0,12.0,98.5,"正常",100.0],
+            ["B2606-01","5米级主轴承","内/外圈钻孔","数控钻床",16.0,15.5,99.9,"正常",103.2],
+            ["B2606-01","5米级主轴承","数控齿轮铣削","数控成形铣齿机",36.0,35.0,99.5,"正常",102.9],
+            ["B2606-01","5米级主轴承","机器人自动化倒角","六轴工业机器人",8.0,8.5,99.5,"程序微调修正",94.1],
+            ["B2606-01","5米级主轴承","高精度精车","高精度数控立车",48.0,47.0,99.9,"正常",102.1],
+            ["B2606-02","外齿圈测试件","锻件粗车","数控立车",18.0,18.0,99.0,"正常",100.0],
+            ["B2606-02","外齿圈测试件","表面调质热处理","试验用热处理炉",10.0,10.5,97.0,"硬度分布测试中",95.2],
+            ["B2606-02","外齿圈测试件","内/外圈钻孔","数控钻床",12.0,12.0,99.5,"正常",100.0],
+            ["B2606-02","外齿圈测试件","数控齿轮铣削","成形铣齿机",28.0,29.5,98.0,"工艺参数测试",94.9],
+            ["B2606-02","外齿圈测试件","机器人自动化倒角","六轴工业机器人",6.0,5.5,100.0,"自动化节拍优化",109.1],
+            ["B2606-02","外齿圈测试件","高精度精车","高精度数控立车",36.0,36.0,99.5,"正常",100.0]
+        ];
+
+        // 数据处理函数
+        function processData() {
+            // 按批次分组计算平均工时达成率
+            const batchEfficiency = {};
+            rawData.forEach(row => {
+                const batch = row[0];
+                const efficiency = row[8];
+                if (!batchEfficiency[batch]) {
+                    batchEfficiency[batch] = { sum: 0, count: 0 };
+                }
+                batchEfficiency[batch].sum += efficiency;
+                batchEfficiency[batch].count += 1;
+            });
+            
+            const batchLabels = Object.keys(batchEfficiency);
+            const batchValues = batchLabels.map(batch => 
+                (batchEfficiency[batch].sum / batchEfficiency[batch].count).toFixed(1)
+            );
+            
+            // 按工序分组计算平均合格率
+            const processQuality = {};
+            rawData.forEach(row => {
+                const process = row[2];
+                const quality =
