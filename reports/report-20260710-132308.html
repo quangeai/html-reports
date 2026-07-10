@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图书销售数据分析报告</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <style>
+        body { background-color: #f8f9fa; font-family: 'Microsoft YaHei', sans-serif; }
+        .report-header { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; padding: 2rem 0; margin-bottom: 2rem; }
+        .card { margin-bottom: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: none; }
+        .card-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-weight: bold; }
+        .stat-card { background: white; border-radius: 10px; padding: 1.5rem; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .stat-number { font-size: 2.5rem; font-weight: bold; color: #667eea; }
+        .stat-label { font-size: 1rem; color: #6c757d; margin-top: 0.5rem; }
+        .insight { background-color: #e3f2fd; border-left: 4px solid #2196f3; padding: 1rem; margin: 1rem 0; border-radius: 0 5px 5px 0; }
+        .recommendation { background-color: #e8f5e9; border-left: 4px solid #4caf50; padding: 1rem; margin: 1rem 0; border-radius: 0 5px 5px 0; }
+    </style>
+</head>
+<body>
+    <div class="report-header">
+        <div class="container">
+            <h1 class="display-4">图书销售数据分析报告</h1>
+            <p class="lead">分析周期：2018年1月 - 2018年7月</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- 执行摘要 -->
+        <section class="mb-5">
+            <h2 class="mb-4">执行摘要</h2>
+            <div class="row">
+                <div class="col-md-3 mb-4">
+                    <div class="stat-card">
+                        <div class="stat-number">198</div>
+                        <div class="stat-label">总订单数</div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <div class="stat-card">
+                        <div class="stat-number">5,515</div>
+                        <div class="stat-label">总销量（本）</div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <div class="stat-card">
+                        <div class="stat-number">27.9</div>
+                        <div class="stat-label">单订单平均销量</div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <div class="stat-card">
+                        <div class="stat-number">3</div>
+                        <div class="stat-label">合作书店数量</div>
+                    </div>
+                </div>
+            </div>
+            <div class="insight">
+                <strong>总体概况：</strong>在统计周期内，共产生198笔订单，总销量达到5515本，平均每单销量27.9本。整体销售呈现波动上升趋势，季度销量逐步增长。鼎盛书店作为核心合作伙伴贡献了最多的订单量。
+            </div>
+        </section>
+
+        <!-- 销售趋势分析 -->
+        <section class="mb-5">
+            <div class="card">
+                <div class="card-header">
+                    <h3>月度销售趋势分析</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <canvas id="monthlySalesChart" height="100"></canvas>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <div class="insight">
+                                <strong>趋势洞察：</strong>
+                                <ul>
+                                    <li>销售总量呈现<strong>先降后升</strong>趋势，1月销量最高达到685本，2月有所下滑，从3月开始逐步回升</li>
+                                    <li>5月销量达到第二个高峰，为925本，显示出销售旺季特征</li>
+                                    <li>月度平均销量为788本，整体市场需求保持稳定</li>
+                                    <li>7月虽然只统计到前25天，但销量已经达到597本，预计全月销量将保持在较高水平</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 各书店销售对比 -->
+        <section class="mb-5">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h3>各书店销量对比</h3>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="storeSalesChart"></canvas>
+                            <div class="insight mt-4">
+                                <strong>销售洞察：</strong><br>
+                                鼎盛书店以总销量2837本位居第一，占总销量的<strong>51.4%</strong>，是最重要的合作伙伴。博达书店和隆华书店分别贡献了23.8%和24.8%的销量。
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h3>各书店订单分布</h3>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="storeOrderChart"></canvas>
+                            <div class="insight mt-4">
+                                <strong>订单洞察：</strong><br>
+                                鼎盛书店订单数量最多（101单），占总订单的51%，符合其销量领先地位。鼎盛书店平均单订单销量为28.1本，与整体平均水平持平。
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 各图书销售情况 -->
+        <section class="mb-5">
+            <div class="card">
+                <div class="card-header">
+                    <h3>图书销量排名TOP10</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <canvas id="bookSalesChart" height="120"></canvas>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <div class="insight">
+                                <strong>产品分析：</strong>
+                                <ul>
+                                    <li>BK-83035总销量最高，达到353本，是最受欢迎的图书产品</li>
+                                    <li>BK-83036和BK-83026分别以352本和346本位居第二、第三名</li>
+                                    <li>销量前三甲产品占总销量的<strong>19.1%</strong>，说明头部产品贡献突出</li>
+                                    <li>BK-83021和BK-83034销量相对较低，需要关注产品生命周期和市场需求变化</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 月度销售分布 -->
+        <section class="mb-5">
+            <div class="card">
+                <div class="card-header">
+                    <h3>各书店月度销售趋势</h3>
+                </div>
+                <div class="card-body">
+                    <canvas id="monthlyByStoreChart" height="100"></canvas>
+                    <div class="insight mt-4">
+                        <strong>趋势分析：</strong>
+                        <ul>
+                            <li>鼎盛书店销量始终保持领先，且波动较小，显示出稳定的销售能力</li>
+                            <li>隆华书店销量从3月份开始明显增长，后期增长势头强劲，潜力较大</li>
+                            <li>博达书店销量相对平稳，保持在每月150-250本区间</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 建议和结论 -->
+        <section class="mb-5">
+            <h2 class="mb-4">建议和结论</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>主要结论</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="insight">
+                                <ol>
+                                    <li><strong>市场整体稳定增长：</strong><br>从1月到7月，整体销售保持良好态势，季度销量逐期增长</li>
+                                    <li><strong>头部书店效应明显：</strong><br>鼎盛书店贡献了超过一半的销量，是核心战略伙伴</li>
+                                    <li><strong>产品差异化明显：</strong><br>头部图书销量突出，TOP3产品贡献了近20%的销量</li>
+                                    <li><strong>隆华书店增长迅速：</strong><br>后期增长势头强劲，具有较大发展潜力</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>业务建议</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="recommendation">
+                                <ol>
+                                    <li><strong>加强与鼎盛书店合作：</strong><br>继续保持深度合作，优先保证货源供应</li>
+                                    <li><strong>加大隆华书店支持：</strong><br>针对其快速增长趋势，增加市场投入和推广资源</li>
+                                    <li><strong>优化产品库存结构：</strong><br>增加畅销书BK-83035、BK-83036的库存备货，减少滞销产品库存</li>
+                                    <li><strong>营销活动策划：</strong><br>针对5月销售旺季提前准备营销活动，把握销售机会</li>
+                                    <li><strong>关注低销量产品：</strong><br>对销量偏低的图书进行市场评估，考虑是否调整采购策略</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="text-center text-muted mb-5">
+            <hr>
+            <p>报告生成时间：2024年 | 数据分析基于提供的198条销售记录</p>
+        </footer>
+    </div>
+
+    <script>
+        // 月度销售数据
+        const months = ['1月', '2月', '3月', '4月', '5月', '6月', '7月'];
+        const monthlySales = [685, 622, 820, 699, 925, 667, 597];
+        
+        // 书店销量数据
+        const stores = ['鼎盛书店', '博达书店', '隆华书店'];
+        const storeSales = [2837, 1314, 1364];
+        const storeOrders = [101, 49, 48];
+        const storeColors = ['#667eea', '#764ba2', '#f093fb'];
+        
+        // 图书TOP10销量数据
+        const topBooks = ['BK-83035', 'BK-83036', 'BK-83026', 'BK-83023', 'BK-83024', 'BK-83030', 'BK-83031', 'BK-83037', 'BK-83022', 'BK-83025'];
+        const topBookSales = [353, 352, 346, 340, 320, 316, 295, 286, 271, 268];
+        
+        // 各书店月度数据
+        const dsMonthly = [369, 344, 368, 361, 408, 291, 296];
+        const bdMonthly = [182, 132, 138, 244, 196, 209, 113];
+        const lhMonthly = [134, 146, 314, 94, 321, 167, 188];
+
+        // 月度销售趋势图
+        const ctx1 = document.getElementById('monthlySalesChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: [{
+                    label: '月度销量（本）',
+                    data: monthlySales,
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 5,
+                    pointBackgroundColor: '#667eea'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: false
+                    },
+                    legend: {
+                        position: 'top',
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '销量（本）'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: '月份'
+                        }
+                    }
+                }
+            }
+        });
+
+        // 各书店销量对比
+        const ctx2 = document.getElementById('storeSalesChart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'pie',
+            data: {
+                labels: stores,
+                datasets: [{
+                    data: storeSales,
+                    backgroundColor: storeColors,
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // 各书店订单分布
+        const ctx3 = document.getElementById('storeOrderChart').getContext('2d');
+        new Chart(ctx3, {
+            type: 'doughnut',
+            data: {
+                labels: stores,
+                datasets: [{
+                    data: storeOrders,
+                    backgroundColor: storeColors,
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // 图书销量TOP10
+        const ctx4 = document.getElementById('bookSalesChart').getContext('2d');
+        new Chart(ctx4, {
+            type: 'bar',
+            data: {
+                labels: topBooks,
+                datasets: [{
+                    label: '总销量（本）',
+                    data: topBookSales,
+                    backgroundColor: 'rgba(102, 126, 234, 0.8)',
+                    borderColor: '#667eea',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '总销量（本）'
+                        }
+                    }
+                }
+            }
+        });
+
+        // 各书店月度趋势
+        const ctx5 = document.getElementById('monthlyByStoreChart').getContext('2d');
+        new Chart(ctx5, {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: [
+                    {
+                        label: '鼎盛书店',
+                        data: dsMonthly,
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.3
+                    },
+                    {
+                        label: '博达书店',
+                        data: bdMonthly,
+                        borderColor: '#764ba2',
+                        backgroundColor: 'rgba(118, 75, 162, 0.1)',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.3
+                    },
+                    {
+                        label: '隆华书店',
+                        data: lhMonthly,
+                        borderColor: '#f093fb',
+                        backgroundColor: 'rgba(240, 147, 251, 0.1)',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.3
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '销量（本）'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: '月份'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
