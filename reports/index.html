@@ -3,243 +3,206 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>love 单词讲解报告</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+    <title>生字消消乐</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#81C784',
+                        bubble1: '#B5EAD7',
+                        bubble2: '#C7CEEA',
+                        bubble3: '#FFDAC1',
+                        bubble4: '#FFB7B2',
+                        bubble5: '#E2F0CB',
+                    },
+                    fontFamily: {
+                        sans: ['Arial', 'sans-serif'],
+                    },
+                }
+            }
         }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: #fdfbf7;
-            color: #333;
-            line-height: 1.6;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        
-        header h1 {
-            color: #2c3e50;
-            font-size: 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        
-        .section-card {
-            background-color: #fff;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            padding: 25px;
-            margin-bottom: 25px;
-        }
-        
-        .section-title {
-            color: #2c3e50;
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #eee;
-        }
-        
-        .vocab-item {
-            margin-bottom: 15px;
-        }
-        
-        .vocab-item strong {
-            color: #2c3e50;
-            font-size: 1.1rem;
-        }
-        
-        .highlight-word {
-            color: #e74c3c;
-            font-weight: bold;
-        }
-        
-        ul {
-            margin-left: 25px;
-            margin-top: 10px;
-        }
-        
-        li {
-            margin-bottom: 8px;
-        }
-        
-        blockquote {
-            background-color: #f8f9fa;
-            border-left: 4px solid #e74c3c;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 0 8px 8px 0;
-            font-style: italic;
-        }
-        
-        .source {
-            font-size: 0.9rem;
-            color: #666;
-            text-align: right;
-            margin-top: 10px;
-        }
-        
-        .story-title {
-            color: #2c3e50;
-            font-size: 1.3rem;
-            margin-bottom: 15px;
-        }
-        
-        .translation-section {
-            background-color: #f8f9fa;
-            border-left: 4px solid #2c3e50;
-        }
-        
-        .translation-section h3 {
-            color: #2c3e50;
-            margin-bottom: 15px;
-        }
-        
-        .tip-section {
-            background-color: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 0 8px 8px 0;
-        }
-        
-        .tip-section h4 {
-            color: #856404;
-            margin-bottom: 10px;
-        }
-        
-        .interaction-section {
-            background-color: #d4edda;
-            border-left: 4px solid #28a745;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 0 8px 8px 0;
-        }
-        
-        .interaction-section h4 {
-            color: #155724;
-            margin-bottom: 10px;
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .bubble-3d {
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05), inset 0 -5px 15px rgba(255, 255, 255, 0.7), inset 0 5px 10px rgba(0, 0, 0, 0.1);
+                transition: all 0.3s ease;
+            }
+            .bubble-3d:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.15), 0 8px 12px -4px rgba(0, 0, 0, 0.1), inset 0 -5px 15px rgba(255, 255, 255, 0.7), inset 0 5px 10px rgba(0, 0, 0, 0.1);
+            }
+            .bubble-selected {
+                transform: scale(1.05);
+                box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.2), 0 8px 12px -4px rgba(0, 0, 0, 0.15), inset 0 -5px 15px rgba(255, 255, 255, 0.7), inset 0 5px 10px rgba(0, 0, 0, 0.1);
+                border: 3px solid #4CAF50;
+            }
+            .disappear {
+                animation: disappear 0.5s forwards;
+            }
+            @keyframes disappear {
+                0% { opacity: 1; transform: scale(1); }
+                50% { opacity: 0.5; transform: scale(1.1); }
+                100% { opacity: 0; transform: scale(0); display: none; }
+            }
+            .success-animation {
+                animation: success 1s ease-in-out;
+            }
+            @keyframes success {
+                0% { transform: scale(0.5); opacity: 0; }
+                70% { transform: scale(1.2); opacity: 1; }
+                100% { transform: scale(1); opacity: 1; }
+            }
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <header>
-            <h1>📖 love 单词讲解报告</h1>
-        </header>
-        
-        <!-- 单词讲解部分 -->
-        <section class="section-card">
-            <h2 class="section-title">📚 单词详解</h2>
-            
-            <div class="vocab-item">
-                <strong>单词:</strong> <span class="highlight-word">love</span>
-            </div>
-            
-            <div class="vocab-item">
-                <strong>音标:</strong> 英式 /lʌv/，美式 /lʌv/
-            </div>
-            
-            <div class="vocab-item">
-                <strong>词性:</strong> 动词 (v.)、名词 (n.)
-            </div>
-            
-            <div class="vocab-item">
-                <strong>释义:</strong>
-                <ul>
-                    <li>【名词】① 爱；热爱；疼爱（对人、事物的深切感情）；② 心爱的人；恋人；③ 喜爱的事物（如兴趣、爱好）</li>
-                    <li>【动词】① 爱；热爱；疼爱（某人）；② 喜欢；喜爱（做某事、某物）</li>
-                </ul>
-            </div>
-            
-            <div class="vocab-item">
-                <strong>例句:</strong>
-                <blockquote>1. （名词）My <span class="highlight-word">love</span> for painting started when I was a little kid.（我对绘画的热爱始于小时候。）</blockquote>
-                <blockquote>2. （动词）She <span class="highlight-word">loves</span> playing the piano after school.（她喜欢放学后弹钢琴。）</blockquote>
-            </div>
-            
-            <div class="source">来源：牛津高阶英汉双解词典第10版</div>
-            
-            <div class="vocab-item">
-                <strong>记忆技巧:</strong>
-                <ul>
-                    <li><strong>场景联想记忆法</strong>：把单词和日常高频场景绑定，比如每天和家人说的"I <span class="highlight-word">love</span> you"，或者想到自己最爱的食物/爱好，反复在语境中默念，轻松记住；</li>
-                    <li><strong>对比区分法</strong>：和近义词like对比，<span class="highlight-word">love</span>表达的情感程度更深（like是“喜欢”，<span class="highlight-word">love</span>是“热爱/深爱”），避免混淆。</li>
-                </ul>
-            </div>
-            
-            <div class="vocab-item">
-                <strong>易错点:</strong> 注意不要把<span class="highlight-word">love</span>的过去式loved误写为loveed，只需加d即可。
-            </div>
-            
-            <div class="vocab-item">
-                <strong>拓展内容:</strong>
-                <ul>
-                    <li>同义词：动词→adore（爱慕）、cherish（珍视）；名词→affection（喜爱）、devotion（挚爱）</li>
-                    <li>反义词：动词→hate（憎恨）、dislike（讨厌）；名词→hatred（仇恨）</li>
-                    <li>高频搭配:
-                        <ul>
-                            <li>✅ fall in <span class="highlight-word">love</span> with sb. 爱上某人</li>
-                            <li>✅ <span class="highlight-word">love</span> at first sight 一见钟情</li>
-                            <li>✅ <span class="highlight-word">love</span> doing sth. 喜欢做某事</li>
-                            <li>✅ for <span class="highlight-word">love</span> or money 无论如何</li>
-                        </ul>
-                    </li>
-                    <li>场景对话:
-                        <blockquote>A: Have you ever fallen in <span class="highlight-word">love</span> with someone at first sight?<br>
-                        B: Yes! I fell in <span class="highlight-word">love</span> with my dog the moment I saw him at the shelter.</blockquote>
-                    </li>
-                </ul>
-            </div>
-        </section>
-        
-        <!-- 英文故事部分 -->
-        <section class="section-card">
-            <h2 class="section-title">🎬 英文故事</h2>
-            
-            <h3 class="story-title">《The Stray Cat <span class="highlight-word">Love</span> Sale》</h3>
-            
-            <p>小丽的班级要帮流浪猫筹买猫粮。一开始摊位冷冷清清，老师蹲下来笑着说：“Let’s show our <span class="highlight-word">love</span> for stray cats!” 小丽拿出自己缝的猫窝：“I <span class="highlight-word">love</span> making warm beds for them!” 同学们纷纷帮忙吆喝：“Come buy! Every coin is our <span class="highlight-word">love</span>!” 路过的阿姨被打动，买了3个手工钥匙扣。最后大家筹到满满一袋猫粮，摸着流浪猫的小脑袋说：“<span class="highlight-word">Love</span> makes the world warm!”</p>
-            
-            <div class="tip-section">
-                <h4>💡 单词小贴士</h4>
-                <ul>
-                    <li><strong>记忆技巧</strong>：拼音联想“l（乐）+ove（哦喂）→乐于为他人付出的心意就是<span class="highlight-word">love</span>”；或拆分记忆：L（Loyal忠诚）+O（Optimistic乐观）+V（Valuable珍贵）+E（Enthusiastic热情）= 爱的特质</li>
-                    <li><strong>易错点</strong>：别混淆<span class="highlight-word">love</span> doing和<span class="highlight-word">love</span> to do！<span class="highlight-word">love</span> doing指长期爱好（如“I <span class="highlight-word">love</span> reading”），<span class="highlight-word">love</span> to do指当下临时意愿（如“I <span class="highlight-word">love</span> to read this comic today”）</li>
-                </ul>
-            </div>
-            
-            <div class="interaction-section">
-                <h4>💬 互动提问</h4>
-                <p>请用<span class="highlight-word">love</span>造两个句子：一个把它当动词，一个当名词。比如：</p>
-                <p>动词句：____；名词句：____</p>
-            </div>
-        </section>
-        
-        <!-- 中文翻译部分 -->
-        <section class="section-card translation-section">
-            <h2 class="section-title">📝 参考例句</h2>
-            <p><strong>动词句：</strong>I <span class="highlight-word">love</span> walking my little dog in the community every evening.</p>
-            <p><strong>名词句：</strong>The warm <span class="highlight-word">love</span> from my parents gives me lots of courage when I'm in trouble.</p>
-        </section>
+<body class="bg-primary min-h-screen flex flex-col items-center p-4">
+    <h1 class="text-[clamp(2rem,5vw,3.5rem)] font-bold text-gray-800 my-6 text-center">生字消消乐</h1>
+    
+    <div id="game-container" class="w-full max-w-4xl grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 my-8">
+        <!-- 泡泡将通过JS动态生成 -->
     </div>
+    
+    <div id="success-message" class="hidden text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-green-700 success-animation">
+        恭喜挑战成功!
+    </div>
+
+    <script>
+        // 生字和拼音数据
+        const words = [
+            { char: '老', pinyin: 'lǎo' },
+            { char: '师', pinyin: 'shī' },
+            { char: '辛', pinyin: 'xīn' },
+            { char: '苦', pinyin: 'kǔ' },
+            { char: '啦', pinyin: 'la' }
+        ];
+        
+        // 泡泡颜色类
+        const bubbleColors = ['bubble1', 'bubble2', 'bubble3', 'bubble4', 'bubble5'];
+        
+        // 游戏状态
+        let gameState = {
+            selectedBubble: null,
+            matchedPairs: 0,
+            totalPairs: words.length
+        };
+        
+        // 初始化游戏
+        function initGame() {
+            const gameContainer = document.getElementById('game-container');
+            gameContainer.innerHTML = '';
+            
+            // 创建泡泡数组
+            let bubbles = [];
+            
+            // 添加生字泡泡
+            words.forEach((word, index) => {
+                bubbles.push({
+                    type: 'char',
+                    content: word.char,
+                    pairId: index,
+                    color: bubbleColors[index % bubbleColors.length]
+                });
+            });
+            
+            // 添加拼音泡泡
+            words.forEach((word, index) => {
+                bubbles.push({
+                    type: 'pinyin',
+                    content: word.pinyin,
+                    pairId: index,
+                    color: bubbleColors[index % bubbleColors.length]
+                });
+            });
+            
+            // 随机打乱泡泡顺序
+            bubbles = shuffleArray(bubbles);
+            
+            // 创建泡泡元素
+            bubbles.forEach((bubble, index) => {
+                const bubbleElement = document.createElement('div');
+                bubbleElement.className = `bubble-3d rounded-full flex items-center justify-center p-6 cursor-pointer ${bubble.color}`;
+                bubbleElement.dataset.type = bubble.type;
+                bubbleElement.dataset.pairId = bubble.pairId;
+                bubbleElement.dataset.index = index;
+                bubbleElement.innerHTML = `<span class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-gray-800">${bubble.content}</span>`;
+                
+                bubbleElement.addEventListener('click', handleBubbleClick);
+                gameContainer.appendChild(bubbleElement);
+            });
+        }
+        
+        // 打乱数组顺序
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+        
+        // 处理泡泡点击
+        function handleBubbleClick(event) {
+            const clickedBubble = event.currentTarget;
+            
+            // 如果已经选中了一个泡泡，或者点击的是已经选中的泡泡，或者点击的是同类型的泡泡
+            if (gameState.selectedBubble && 
+                (gameState.selectedBubble.dataset.index === clickedBubble.dataset.index || 
+                 gameState.selectedBubble.dataset.type === clickedBubble.dataset.type)) {
+                return;
+            }
+            
+            // 如果已经选中了一个泡泡，现在点击第二个泡泡进行配对
+            if (gameState.selectedBubble) {
+                const firstBubble = gameState.selectedBubble;
+                const secondBubble = clickedBubble;
+                
+                // 高亮第二个泡泡
+                secondBubble.classList.add('bubble-selected');
+                
+                // 检查是否匹配
+                if (firstBubble.dataset.pairId === secondBubble.dataset.pairId) {
+                    // 匹配成功，泡泡消失
+                    setTimeout(() => {
+                        firstBubble.classList.add('disappear');
+                        secondBubble.classList.add('disappear');
+                        
+                        // 移除点击事件
+                        firstBubble.removeEventListener('click', handleBubbleClick);
+                        secondBubble.removeEventListener('click', handleBubbleClick);
+                        
+                        gameState.matchedPairs++;
+                        
+                        // 检查游戏是否结束
+                        if (gameState.matchedPairs === gameState.totalPairs) {
+                            setTimeout(() => {
+                                document.getElementById('game-container').classList.add('hidden');
+                                document.getElementById('success-message').classList.remove('hidden');
+                            }, 500);
+                        }
+                    }, 500);
+                } else {
+                    // 匹配失败，取消高亮
+                    setTimeout(() => {
+                        firstBubble.classList.remove('bubble-selected');
+                        secondBubble.classList.remove('bubble-selected');
+                    }, 1000);
+                }
+                
+                // 重置选中状态
+                gameState.selectedBubble = null;
+            } else {
+                // 选中第一个泡泡
+                gameState.selectedBubble = clickedBubble;
+                clickedBubble.classList.add('bubble-selected');
+            }
+        }
+        
+        // 页面加载时初始化游戏
+        window.addEventListener('load', initGame);
+    </script>
 </body>
 </html>
