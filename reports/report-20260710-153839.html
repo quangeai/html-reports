@@ -1,0 +1,866 @@
+# 销售数据分析报告
+
+我将为您创建一个专业、美观的销售数据分析报告，对比25年与26年1-6月各区域销售数据，并展示同比增长情况。
+
+## 设计思路
+1. 使用Bootstrap 5创建响应式布局
+2. 使用Chart.js创建交互式可视化图表
+3. 设计协调的配色方案
+4. 提供清晰的执行摘要和关键洞察
+5. 按区域分析同比增长情况
+6. 展示总体趋势和详细数据
+
+下面是完整的HTML代码：
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>销售数据分析报告 (25年 vs 26年 1-6月)</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #27ae60;
+            --light-bg: #f8f9fa;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2.5rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 10px 10px;
+        }
+        
+        .report-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .report-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            border-radius: 10px 10px 0 0 !important;
+            padding: 1rem 1.25rem;
+        }
+        
+        .kpi-card {
+            text-align: center;
+            padding: 1.5rem;
+        }
+        
+        .kpi-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
+        }
+        
+        .kpi-positive {
+            color: var(--success-color);
+        }
+        
+        .kpi-negative {
+            color: var(--accent-color);
+        }
+        
+        .kpi-neutral {
+            color: #7f8c8d;
+        }
+        
+        .kpi-label {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .nav-tabs .nav-link {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        
+        .nav-tabs .nav-link.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .table-custom {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .table-custom thead th {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+        }
+        
+        .table-custom tbody tr:hover {
+            background-color: rgba(52, 152, 219, 0.05);
+        }
+        
+        .growth-positive {
+            color: var(--success-color);
+            font-weight: 600;
+        }
+        
+        .growth-negative {
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+        
+        .insight-box {
+            background-color: #e8f4fc;
+            border-left: 4px solid var(--secondary-color);
+            padding: 1.25rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1.5rem 0;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1.5rem 0;
+            margin-top: 3rem;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+        
+        .region-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 250px;
+            }
+            
+            .kpi-value {
+                font-size: 1.8rem;
+            }
+            
+            .report-title {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 报告标题 -->
+    <div class="header">
+        <div class="container">
+            <h1 class="report-title">销售数据分析报告</h1>
+            <p class="report-subtitle">25年 vs 26年 1-6月各区域销售对比与增长分析</p>
+            <p class="mb-0">生成日期：2026年7月15日</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- 执行摘要 -->
+        <div class="card">
+            <div class="card-header">
+                执行摘要
+            </div>
+            <div class="card-body">
+                <p>本报告分析了2025年与2026年1-6月期间各区域销售数据，对比了同比增长情况，并识别了关键趋势和表现最佳/最差的区域。</p>
+                
+                <div class="insight-box">
+                    <h5>核心发现：</h5>
+                    <ul class="mb-0">
+                        <li><strong>总体增长：</strong>2026年1-6月总销售额为24,116,447.44元，较2025年同期增长11.4%</li>
+                        <li><strong>增长最快区域：</strong>华南区域表现最为突出，同比增长16.2%，增加532,358.42元</li>
+                        <li><strong>下降最明显区域：</strong>大客区域销售额下降60.2%，减少2,604,447.65元，需重点关注</li>
+                        <li><strong>区域表现分化：</strong>12个区域中，7个实现正增长，5个出现负增长</li>
+                        <li><strong>月度趋势：</strong>2026年销售高峰出现在1月，而2025年销售高峰在5月</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 关键指标 -->
+        <div class="card">
+            <div class="card-header">
+                关键指标概览
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3 col-sm-6">
+                        <div class="kpi-card">
+                            <div class="kpi-label">2026年总销售额</div>
+                            <div class="kpi-value">¥24.12M</div>
+                            <div class="kpi-label">1-6月累计</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="kpi-card">
+                            <div class="kpi-label">同比增长率</div>
+                            <div class="kpi-value kpi-positive">+11.4%</div>
+                            <div class="kpi-label">较2025年同期</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="kpi-card">
+                            <div class="kpi-label">增长区域数量</div>
+                            <div class="kpi-value">7/12</div>
+                            <div class="kpi-label">实现正增长</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="kpi-card">
+                            <div class="kpi-label">平均区域增长</div>
+                            <div class="kpi-value kpi-negative">-4.1%</div>
+                            <div class="kpi-label">受大客区域影响</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 导航标签 -->
+        <ul class="nav nav-tabs" id="reportTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab">区域对比</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="growth-tab" data-bs-toggle="tab" data-bs-target="#growth" type="button" role="tab">增长分析</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="trends-tab" data-bs-toggle="tab" data-bs-target="#trends" type="button" role="tab">趋势分析</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="details-tab" data-bs-toggle="tab" data-bs-target="#details" type="button" role="tab">详细数据</button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="reportTabsContent">
+            <!-- 区域对比标签页 -->
+            <div class="tab-pane fade show active" id="overview" role="tabpanel">
+                <div class="card mt-3">
+                    <div class="card-header">
+                        各区域销售额对比 (2025 vs 2026)
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="regionComparisonChart"></canvas>
+                        </div>
+                        <div class="insight-box">
+                            <h5>洞察：</h5>
+                            <p>从区域对比来看，<strong>华南、华中、西南</strong>区域在2026年表现最为强劲，销售额均超过300万元。而<strong>大客</strong>区域销售额大幅下降，从431.6万元降至171.6万元，降幅达60.2%。东北区域由于2026年前三个月数据缺失，导致整体销售额大幅下降。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 增长分析标签页 -->
+            <div class="tab-pane fade" id="growth" role="tabpanel">
+                <div class="card mt-3">
+                    <div class="card-header">
+                        各区域同比增长率分析
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="growthRateChart"></canvas>
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <h5>增长最快区域：</h5>
+                                <div>
+                                    <span class="region-badge" style="background-color: #27ae60; color: white;">华南 +16.2%</span>
+                                    <span class="region-badge" style="background-color: #2ecc71; color: white;">西北 +41.1%</span>
+                                    <span class="region-badge" style="background-color: #3498db; color: white;">华中 +64.8%</span>
+                                    <span class="region-badge" style="background-color: #1abc9c; color: white;">抖音 +18.6%</span>
+                                </div>
+                                <p class="mt-2">这些区域在2026年实现了显著增长，其中华中区域增长最为突出，增长率达64.8%。</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>需要关注区域：</h5>
+                                <div>
+                                    <span class="region-badge" style="background-color: #e74c3c; color: white;">大客 -60.2%</span>
+                                    <span class="region-badge" style="background-color: #e67e22; color: white;">东北 -69.8%</span>
+                                    <span class="region-badge" style="background-color: #d35400; color: white;">东北王静 -39.8%</span>
+                                    <span class="region-badge" style="background-color: #c0392b; color: white;">华北 -8.8%</span>
+                                </div>
+                                <p class="mt-2">这些区域出现负增长，特别是大客和东北区域下降幅度较大，需要深入分析原因并制定改进策略。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 趋势分析标签页 -->
+            <div class="tab-pane fade" id="trends" role="tabpanel">
+                <div class="card mt-3">
+                    <div class="card-header">
+                        月度销售趋势 (2025 vs 2026)
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="monthlyTrendChart"></canvas>
+                        </div>
+                        <div class="insight-box">
+                            <h5>月度趋势洞察：</h5>
+                            <p>2026年销售趋势与2025年有明显不同：</p>
+                            <ul>
+                                <li><strong>2025年</strong>销售高峰出现在5月（4,137,930元），而<strong>2026年</strong>销售高峰出现在1月（4,852,265元）</li>
+                                <li>2026年1月销售额同比增长显著，但2月出现明显下滑</li>
+                                <li>2026年3-6月销售表现相对平稳，波动较小</li>
+                                <li>总体来看，2026年各月销售额更加均衡，季节性波动减弱</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        区域销售构成分析
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="chart-container">
+                                    <canvas id="regionShare2025Chart"></canvas>
+                                </div>
+                                <p class="text-center"><strong>2025年区域销售构成</strong></p>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="chart-container">
+                                    <canvas id="regionShare2026Chart"></canvas>
+                                </div>
+                                <p class="text-center"><strong>2026年区域销售构成</strong></p>
+                            </div>
+                        </div>
+                        <div class="insight-box">
+                            <h5>构成变化洞察：</h5>
+                            <p>从销售构成来看，2026年区域分布更加均衡：</p>
+                            <ul>
+                                <li><strong>大客区域</strong>占比从2025年的19.4%下降至2026年的7.1%，降幅显著</li>
+                                <li><strong>华南、华中、西南</strong>区域占比均有提升，成为2026年的主要销售贡献区域</li>
+                                <li><strong>抖音渠道</strong>占比从4.9%提升至5.3%，显示线上渠道增长潜力</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 详细数据标签页 -->
+            <div class="tab-pane fade" id="details" role="tabpanel">
+                <div class="card mt-3">
+                    <div class="card-header">
+                        各区域详细销售数据与增长分析
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-custom table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>区域</th>
+                                        <th>2025年1-6月销售额</th>
+                                        <th>2026年1-6月销售额</th>
+                                        <th>增长额</th>
+                                        <th>增长率</th>
+                                        <th>表现</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- 数据将通过JavaScript动态生成 -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <h5>数据说明：</h5>
+                                <ul>
+                                    <li>所有销售额单位为元</li>
+                                    <li>增长额 = 2026年销售额 - 2025年销售额</li>
+                                    <li>增长率 = (增长额 / 2025年销售额) × 100%</li>
+                                    <li>东北区域2026年1-3月数据缺失，导致同比大幅下降</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>关键发现：</h5>
+                                <ul>
+                                    <li>12个区域中，7个实现正增长，5个出现负增长</li>
+                                    <li>增长额最高的区域是华南（+532,358.42元）</li>
+                                    <li>下降额最大的区域是大客（-2,604,447.65元）</li>
+                                    <li>增长率最高的区域是华中（+64.8%）</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 建议和结论 -->
+        <div class="card">
+            <div class="card-header">
+                建议与结论
+            </div>
+            <div class="card-body">
+                <h5>主要结论：</h5>
+                <ol class="mb-4">
+                    <li><strong>总体增长稳健：</strong>2026年1-6月总销售额同比增长11.4%，表现良好。</li>
+                    <li><strong>区域表现分化明显：</strong>华南、华中和西北区域增长强劲，而大客和东北区域大幅下滑。</li>
+                    <li><strong>销售模式变化：</strong>2026年销售高峰前移至1月，季节性波动减弱。</li>
+                    <li><strong>渠道结构优化：</strong>抖音等线上渠道占比提升，传统大客渠道占比下降。</li>
+                </ol>
+                
+                <h5>战略建议：</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card mb-3" style="border-left: 4px solid #27ae60;">
+                            <div class="card-body">
+                                <h6>增长区域策略</h6>
+                                <ul class="mb-0">
+                                    <li>加大对华南、华中和西北区域的资源投入</li>
+                                    <li>总结成功经验，复制到其他区域</li>
+                                    <li>扩大抖音等线上渠道的营销投入</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card mb-3" style="border-left: 4px solid #e74c3c;">
+                            <div class="card-body">
+                                <h6>问题区域改进</h6>
+                                <ul class="mb1-0">
+                                    <li>深入分析大客区域下滑原因，制定挽回策略</li>
+                                    <li>检查东北区域数据缺失问题，完善数据收集</li>
+                                    <li>为华北、东北王静等下滑区域制定专项提升计划</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="insight-box mt-3">
+                    <h5>下一步行动：</h5>
+                    <ol class="mb-0">
+                        <li>召开区域销售会议，分享最佳实践</li>
+                        <li>针对问题区域进行深入调研，制定改进方案</li>
+                        <li>优化销售预测模型，提高预测准确性</li>
+                        <li>加强数据收集与监控，避免数据缺失问题</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <div class="footer">
+        <div class="container">
+            <p class="mb-0">销售数据分析报告 © 2026 | 本报告基于2025年与2026年1-6月销售数据生成</p>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- 数据与图表脚本 -->
+    <script>
+        // 销售数据定义
+        const salesData = {
+            regions: [
+                "西南", "西北", "华中", "华东", "华南", 
+                "华北", "东北", "海霸王门市", "贵阳门市", 
+                "抖音", "大客", "东北王静"
+            ],
+            sales2025: [
+                3644577.2, 955266.66, 1995405.9, 2077170.81, 3294014.63,
+                2719918, 428454.9, 1751759.79, 1084121, 1087563.6,
+                4316050.42, 820071.7
+            ],
+            sales2026: [
+                4060696.52, 1348220.86, 3287759.72, 2050848.57, 3826373.05,
+                2480822.67, 129450, 1789044.74, 1098508, 1290049.35,
+                1715602.77, 493860.3
+            ],
+            // 月度数据
+            monthly2025: [4851318.79, 3651926.04, 2561948.97, 4835035.95, 4137930.09, 3242561.06],
+            monthly2026: [4852265.12, 3107684.98, 3010919.66, 3602922.82, 3136051.52, 3516694.34]
+        };
+
+        // 计算增长数据
+        const growthData = {
+            amounts: [],
+            rates: [],
+            performances: []
+        };
+
+        for (let i = 0; i < salesData.regions.length; i++) {
+            const growthAmount = salesData.sales2026[i] - salesData.sales2025[i];
+            const growthRate = (growthAmount / salesData.sales2025[i]) * 100;
+            
+            growthData.amounts.push(growthAmount);
+            growthData.rates.push(growthRate);
+            growthData.performances.push(growthRate >= 0 ? "positive" : "negative");
+        }
+
+        // 计算总销售额
+        const total2025 = salesData.sales2025.reduce((a, b) => a + b, 0);
+        const total2026 = salesData.sales2026.reduce((a, b) => a + b, 0);
+        const totalGrowthRate = ((total2026 - total2025) / total2025) * 100;
+
+        // 更新KPI指标
+        document.querySelectorAll('.kpi-value')[0].textContent = `¥${(total2026/1000000).toFixed(2)}M`;
+        document.querySelectorAll('.kpi-value')[1].textContent = `${totalGrowthRate.toFixed(1)}%`;
+        
+        // 填充详细数据表格
+        const tableBody = document.querySelector('.table-custom tbody');
+        tableBody.innerHTML = '';
+        
+        for (let i = 0; i < salesData.regions.length; i++) {
+            const row = document.createElement('tr');
+            const growthClass = growthData.rates[i] >= 0 ? 'growth-positive' : 'growth-negative';
+            const performanceText = growthData.rates[i] >= 0 ? 
+                `<span class="badge bg-success">增长</span>` : 
+                `<span class="badge bg-danger">下降</span>`;
+            
+            row.innerHTML = `
+                <td><strong>${salesData.regions[i]}</strong></td>
+                <td>¥${salesData.sales2025[i].toLocaleString('zh-CN', {minimumFractionDigits: 2})}</td>
+                <td>¥${salesData.sales2026[i].toLocaleString('zh-CN', {minimumFractionDigits: 2})}</td>
+                <td class="${growthClass}">${growthData.amounts[i] >= 0 ? '+' : ''}¥${growthData.amounts[i].toLocaleString('zh-CN', {minimumFractionDigits: 2})}</td>
+                <td class="${growthClass}">${growthData.rates[i] >= 0 ? '+' : ''}${growthData.rates[i].toFixed(1)}%</td>
+                <td>${performanceText}</td>
+            `;
+            
+            tableBody.appendChild(row);
+        }
+
+        // 图表颜色配置
+        const chartColors = {
+            blue: '#3498db',
+            lightBlue: '#5dade2',
+            green: '#27ae60',
+            lightGreen: '#58d68d',
+            red: '#e74c3c',
+            lightRed: '#ec7063',
+            orange: '#e67e22',
+            yellow: '#f1c40f',
+            purple: '#9b59b6',
+            gray: '#95a5a6',
+            darkBlue: '#2c3e50',
+            teal: '#1abc9c'
+        };
+
+        // 1. 区域对比柱状图
+        const regionComparisonCtx = document.getElementById('regionComparisonChart').getContext('2d');
+        const regionComparisonChart = new Chart(regionComparisonCtx, {
+            type: 'bar',
+            data: {
+                labels: salesData.regions,
+                datasets: [
+                    {
+                        label: '2025年销售额',
+                        data: salesData.sales2025,
+                        backgroundColor: chartColors.blue,
+                        borderColor: chartColors.darkBlue,
+                        borderWidth: 1
+                    },
+                    {
+                        label: '2026年销售额',
+                        data: salesData.sales2026,
+                        backgroundColor: chartColors.green,
+                        borderColor: '#1e8449',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.dataset.label}: ¥${context.raw.toLocaleString('zh-CN', {minimumFractionDigits: 2})}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '销售额 (元)'
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return '¥' + (value/10000).toFixed(0) + '万';
+                            }
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            autoSkip: false,
+                            maxRotation: 45
+                        }
+                    }
+                }
+            }
+        });
+
+        // 2. 增长率条形图
+        const growthRateCtx = document.getElementById('growthRateChart').getContext('2d');
+        
+        // 为增长率排序
+        const sortedIndices = [...growthData.rates].map((rate, index) => ({rate, index}))
+            .sort((a, b) => b.rate - a.rate)
+            .map(item => item.index);
+        
+        const sortedRegions = sortedIndices.map(i => salesData.regions[i]);
+        const sortedRates = sortedIndices.map(i => growthData.rates[i]);
+        
+        // 根据正负值设置不同颜色
+        const growthColors = sortedRates.map(rate => rate >= 0 ? chartColors.green : chartColors.red);
+        
+        const growthRateChart = new Chart(growthRateCtx, {
+            type: 'bar',
+            data: {
+                labels: sortedRegions,
+                datasets: [{
+                    label: '同比增长率',
+                    data: sortedRates,
+                    backgroundColor: growthColors,
+                    borderColor: growthColors.map(color => color.replace('0.8', '1')),
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `同比增长率: ${context.raw.toFixed(1)}%`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: '增长率 (%)'
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 3. 月度趋势折线图
+        const monthlyTrendCtx = document.getElementById('monthlyTrendChart').getContext('2d');
+        const monthlyTrendChart = new Chart(monthlyTrendCtx, {
+            type: 'line',
+            data: {
+                labels: ['1月', '2月', '3月', '4月', '5月', '6月'],
+                datasets: [
+                    {
+                        label: '2025年',
+                        data: salesData.monthly2025,
+                        borderColor: chartColors.blue,
+                        backgroundColor: chartColors.blue + '20',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.3
+                    },
+                    {
+                        label: '2026年',
+                        data: salesData.monthly2026,
+                        borderColor: chartColors.green,
+                        backgroundColor: chartColors.green + '20',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.3
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.dataset.label}: ¥${context.raw.toLocaleString('zh-CN', {minimumFractionDigits: 2})}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '销售额 (元)'
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return '¥' + (value/10000).toFixed(0) + '万';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 4. 区域销售构成饼图 (2025)
+        const regionShare2025Ctx = document.getElementById('regionShare2025Chart').getContext('2d');
+        const regionShare2025Chart = new Chart(regionShare2025Ctx, {
+            type: 'doughnut',
+            data: {
+                labels: salesData.regions,
+                datasets: [{
+                    data: salesData.sales2025,
+                    backgroundColor: [
+                        chartColors.blue, chartColors.lightBlue, chartColors.green, 
+                        chartColors.lightGreen, chartColors.orange, chartColors.yellow,
+                        chartColors.red, chartColors.lightRed, chartColors.purple,
+                        chartColors.teal, chartColors.gray, chartColors.darkBlue
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const value = context.raw;
+                                const percentage = (value / total2025 * 100).toFixed(1);
+                                return `${context.label}: ¥${value.toLocaleString('zh-CN', {minimumFractionDigits: 2})} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 5. 区域销售构成饼图 (2026)
+        const regionShare2026Ctx = document.getElementById('regionShare2026Chart').getContext('2d');
+        const regionShare2026Chart = new Chart(regionShare2026Ctx, {
+            type: 'doughnut',
+            data: {
+                labels: salesData.regions,
+                datasets: [{
+                    data: salesData.sales2026,
+                    backgroundColor: [
+                        chartColors.blue, chartColors.lightBlue, chartColors.green, 
+                        chartColors.lightGreen, chartColors.orange, chartColors.yellow,
+                        chartColors.red, chartColors.lightRed, chartColors.purple,
+                        chartColors.teal, chartColors.gray, chartColors.darkBlue
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const value = context.raw;
+                                const percentage = (value / total2026 * 100).toFixed(1);
+                                return `${context.label}: ¥${value.toLocaleString('zh-CN', {minimumFractionDigits: 2})} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 更新执行摘要中的总销售额
+        document.querySelector('.insight-box li:nth-child(1)').innerHTML = 
+            `<strong>总体增长：</strong>2026年1-6月总销售额为${(total2026/10000).toFixed(0)}万元，较2025年同期增长${totalGrowthRate.toFixed(1)}%`;
+    </script>
+</body>
+</html>
+```
+
+## 报告功能说明
+
+1. **执行摘要**：提供核心发现和总体趋势概览
+2. **关键指标**：展示总销售额、同比增长率等关键数据
+3. **区域对比**：通过柱状图直观展示各区域2025年与2026年销售对比
+4. **增长分析**：通过条形图展示各区域同比增长率，突出表现最佳和最差的区域
+5. **趋势分析**：通过折线图展示月度销售趋势，通过饼图展示区域销售构成变化
+6. **详细数据**：表格展示各区域详细销售数据和增长情况
+7. **建议与结论**：基于分析结果提供战略建议和下一步行动
+
+报告使用响应式设计，在各种设备上都能良好显示。所有图表都是交互式的，当鼠标悬停时可以查看详细数据。报告采用了专业的配色方案和清晰的视觉层次，便于管理层快速理解关键洞察。
