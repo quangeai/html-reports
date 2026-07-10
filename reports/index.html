@@ -12,12 +12,7 @@
                 extend: {
                     colors: {
                         primary: '#81C784',
-                        bubble1: '#B5EAD7',
-                        bubble2: '#FFDAC1',
-                        bubble3: '#C7CEEA',
-                        bubble4: '#FFB7B2',
-                        bubble5: '#E2F0CB',
-                        bubble6: '#F8F9FA',
+                        secondary: '#A5D6A7',
                     },
                     fontFamily: {
                         sans: ['Arial', 'sans-serif'],
@@ -29,16 +24,16 @@
     <style type="text/tailwindcss">
         @layer utilities {
             .bubble-3d {
-                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05), inset 0 -5px 15px rgba(255, 255, 255, 0.7), inset 0 5px 15px rgba(0, 0, 0, 0.1);
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05), inset 0 -5px 10px rgba(255, 255, 255, 0.7);
+                transform: perspective(1000px) rotateX(5deg);
                 transition: all 0.3s ease;
             }
             .bubble-3d:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04), inset 0 -5px 15px rgba(255, 255, 255, 0.7), inset 0 5px 15px rgba(0, 0, 0, 0.1);
+                transform: perspective(1000px) rotateX(5deg) scale(1.05);
             }
             .bubble-selected {
-                border: 4px solid #FF9800;
-                transform: scale(1.05);
+                box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.7), 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05), inset 0 -5px 10px rgba(255, 255, 255, 0.7);
+                transform: perspective(1000px) rotateX(5deg) scale(1.1);
             }
             .bubble-disappear {
                 animation: disappear 0.5s forwards;
@@ -47,133 +42,119 @@
                 0% { opacity: 1; transform: scale(1); }
                 100% { opacity: 0; transform: scale(0); }
             }
-            .success-animation {
-                animation: success 1s ease-in-out;
+            .celebration {
+                animation: celebrate 1s ease-in-out;
             }
-            @keyframes success {
+            @keyframes celebrate {
                 0% { transform: scale(0.5); opacity: 0; }
-                50% { transform: scale(1.2); }
+                50% { transform: scale(1.2); opacity: 1; }
                 100% { transform: scale(1); opacity: 1; }
             }
         }
     </style>
 </head>
 <body class="bg-primary min-h-screen flex flex-col items-center p-4">
-    <h1 class="text-[clamp(2rem,5vw,3.5rem)] font-bold text-white mt-6 mb-8 text-center drop-shadow-lg">生字消消乐</h1>
+    <header class="w-full text-center mb-8">
+        <h1 class="text-[clamp(2rem,5vw,3.5rem)] font-bold text-white drop-shadow-lg">生字消消乐</h1>
+    </header>
     
-    <div id="game-container" class="w-full max-w-5xl grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-6 mb-10">
-        <!-- 泡泡将通过JS动态生成 -->
-    </div>
+    <main class="w-full max-w-5xl flex-grow">
+        <div id="game-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-6">
+            <!-- 泡泡将通过JavaScript动态生成 -->
+        </div>
+        
+        <div id="success-message" class="hidden text-center mt-12 celebration">
+            <h2 class="text-[clamp(1.8rem,4vw,3rem)] font-bold text-white drop-shadow-lg">恭喜挑战成功!</h2>
+            <button id="restart-btn" class="mt-6 bg-yellow-400 hover:bg-yellow-500 text-gray-800 font-bold py-3 px-6 rounded-full shadow-lg transition duration-300">
+                再来一局
+            </button>
+        </div>
+    </main>
     
-    <div id="success-message" class="hidden text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-white text-center success-animation">
-        <i class="fa fa-trophy mr-2 text-yellow-300"></i>恭喜挑战成功!
-    </div>
+    <footer class="w-full text-center text-white mt-8 text-sm">
+        <p>点击泡泡进行配对，找到正确的生字和拼音组合</p>
+    </footer>
 
     <script>
-        // 生字数据 - 与"love"相关的中文词汇
+        // 生字数据
         const wordData = [
-            { char: "爱", pinyin: "ài" },
-            { char: "情", pinyin: "qíng" },
-            { char: "恋", pinyin: "liàn" },
-            { char: "心", pinyin: "xīn" },
-            { char: "亲", pinyin: "qīn" },
-            { char: "友", pinyin: "yǒu" },
-            { char: "喜", pinyin: "xǐ" },
-            { char: "欢", pinyin: "huān" }
+            { character: "人", pinyin: "rén" },
+            { character: "口", pinyin: "kǒu" },
+            { character: "手", pinyin: "shǒu" },
+            { character: "足", pinyin: "zú" },
+            { character: "目", pinyin: "mù" },
+            { character: "耳", pinyin: "ěr" },
+            { character: "日", pinyin: "rì" },
+            { character: "月", pinyin: "yuè" },
+            { character: "水", pinyin: "shuǐ" },
+            { character: "火", pinyin: "huǒ" },
+            { character: "山", pinyin: "shān" },
+            { character: "石", pinyin: "shí" }
         ];
-        
-        // 泡泡颜色类
-        const bubbleColors = [
-            'bg-bubble1',
-            'bg-bubble2',
-            'bg-bubble3',
-            'bg-bubble4',
-            'bg-bubble5',
-            'bg-bubble6'
-        ];
-        
-        let gameData = [];
-        let selectedBubbles = [];
+
+        let selectedBubble = null;
         let matchedPairs = 0;
-        
-        // 初始化游戏
-        function initGame() {
-            const gameContainer = document.getElementById('game-container');
-            gameContainer.innerHTML = '';
-            selectedBubbles = [];
-            matchedPairs = 0;
-            
-            // 创建游戏数据数组（包含生字和拼音）
-            gameData = [];
-            wordData.forEach(item => {
-                gameData.push({ type: 'char', value: item.char, pairId: item.char });
-                gameData.push({ type: 'pinyin', value: item.pinyin, pairId: item.char });
-            });
-            
-            // 随机打乱顺序
-            gameData.sort(() => Math.random() - 0.5);
-            
-            // 创建泡泡元素
-            gameData.forEach((item, index) => {
-                const bubble = document.createElement('div');
-                const colorClass = bubbleColors[Math.floor(Math.random() * bubbleColors.length)];
-                
-                bubble.className = `bubble-3d ${colorClass} rounded-full flex items-center justify-center p-4 aspect-square cursor-pointer`;
-                bubble.dataset.index = index;
-                bubble.dataset.pairId = item.pairId;
-                bubble.dataset.type = item.type;
-                
-                const text = document.createElement('span');
-                text.className = 'text-[clamp(1.5rem,4vw,2.5rem)] font-bold text-gray-700 text-center';
-                text.textContent = item.value;
-                
-                bubble.appendChild(text);
-                bubble.addEventListener('click', handleBubbleClick);
-                gameContainer.appendChild(bubble);
-            });
+
+        // 生成随机浅色
+        function getRandomLightColor() {
+            const hue = Math.floor(Math.random() * 360);
+            const saturation = Math.floor(Math.random() * 30) + 20; // 20-50%
+            const lightness = Math.floor(Math.random() * 20) + 70; // 70-90%
+            return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
         }
-        
+
+        // 创建泡泡元素
+        function createBubble(content, type, id) {
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble-3d rounded-full flex items-center justify-center p-4 cursor-pointer transition-all duration-300';
+            bubble.style.backgroundColor = getRandomLightColor();
+            bubble.dataset.type = type;
+            bubble.dataset.id = id;
+            bubble.innerHTML = `<span class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-gray-800">${content}</span>`;
+            
+            bubble.addEventListener('click', handleBubbleClick);
+            return bubble;
+        }
+
         // 处理泡泡点击
         function handleBubbleClick(e) {
             const bubble = e.currentTarget;
             
-            // 如果已经选中两个泡泡或当前泡泡已匹配，则不处理
-            if (selectedBubbles.length >= 2 || bubble.classList.contains('bubble-disappear')) {
+            // 如果已经选中了一个泡泡，或者点击的是已经匹配的泡泡
+            if (selectedBubble && selectedBubble !== bubble || bubble.classList.contains('bubble-disappear')) {
                 return;
             }
             
-            // 如果点击的是已经选中的泡泡，则取消选中
-            if (selectedBubbles.includes(bubble)) {
-                bubble.classList.remove('bubble-selected');
-                selectedBubbles = selectedBubbles.filter(b => b !== bubble);
-                return;
-            }
+            // 切换选中状态
+            bubble.classList.toggle('bubble-selected');
             
-            // 选中泡泡
-            bubble.classList.add('bubble-selected');
-            selectedBubbles.push(bubble);
-            
-            // 如果选中了两个泡泡，检查是否匹配
-            if (selectedBubbles.length === 2) {
-                checkMatch();
+            if (bubble.classList.contains('bubble-selected')) {
+                // 如果没有选中的泡泡，设置当前泡泡为选中
+                if (!selectedBubble) {
+                    selectedBubble = bubble;
+                } else {
+                    // 已经有选中的泡泡，检查是否匹配
+                    checkMatch(selectedBubble, bubble);
+                }
+            } else {
+                // 取消选中
+                selectedBubble = null;
             }
         }
-        
-        // 检查两个选中的泡泡是否匹配
-        function checkMatch() {
-            const [bubble1, bubble2] = selectedBubbles;
-            
-            // 防止连续点击同一个泡泡
-            if (bubble1 === bubble2) {
-                resetSelection();
+
+        // 检查匹配
+        function checkMatch(bubble1, bubble2) {
+            // 不能选择同一类型的泡泡
+            if (bubble1.dataset.type === bubble2.dataset.type) {
+                bubble1.classList.remove('bubble-selected');
+                bubble2.classList.remove('bubble-selected');
+                selectedBubble = null;
                 return;
             }
             
-            // 检查是否是生字和拼音的匹配对
-            if (bubble1.dataset.pairId === bubble2.dataset.pairId && 
-                bubble1.dataset.type !== bubble2.dataset.type) {
-                
-                // 匹配成功，泡泡消失
+            // 检查是否匹配
+            if (bubble1.dataset.id === bubble2.dataset.id) {
+                // 匹配成功
                 setTimeout(() => {
                     bubble1.classList.add('bubble-disappear');
                     bubble2.classList.add('bubble-disappear');
@@ -182,40 +163,59 @@
                     bubble1.removeEventListener('click', handleBubbleClick);
                     bubble2.removeEventListener('click', handleBubbleClick);
                     
-                    selectedBubbles = [];
                     matchedPairs++;
                     
-                    // 检查游戏是否结束
+                    // 检查是否所有都匹配成功
                     if (matchedPairs === wordData.length) {
                         setTimeout(() => {
                             document.getElementById('game-container').classList.add('hidden');
                             document.getElementById('success-message').classList.remove('hidden');
-                            
-                            // 3秒后重新开始游戏
-                            setTimeout(() => {
-                                document.getElementById('success-message').classList.add('hidden');
-                                document.getElementById('game-container').classList.remove('hidden');
-                                initGame();
-                            }, 3000);
                         }, 500);
                     }
                 }, 500);
-                
             } else {
-                // 匹配失败，取消选中状态
-                setTimeout(resetSelection, 1000);
+                // 匹配失败
+                setTimeout(() => {
+                    bubble1.classList.remove('bubble-selected');
+                    bubble2.classList.remove('bubble-selected');
+                }, 500);
             }
+            
+            selectedBubble = null;
         }
-        
-        // 重置选中状态
-        function resetSelection() {
-            selectedBubbles.forEach(bubble => {
-                bubble.classList.remove('bubble-selected');
+
+        // 初始化游戏
+        function initGame() {
+            const gameContainer = document.getElementById('game-container');
+            gameContainer.innerHTML = '';
+            gameContainer.classList.remove('hidden');
+            document.getElementById('success-message').classList.add('hidden');
+            
+            selectedBubble = null;
+            matchedPairs = 0;
+            
+            // 创建泡泡数组
+            const bubbles = [];
+            
+            // 添加生字和拼音
+            wordData.forEach((item, index) => {
+                bubbles.push(createBubble(item.character, 'character', index));
+                bubbles.push(createBubble(item.pinyin, 'pinyin', index));
             });
-            selectedBubbles = [];
+            
+            // 随机排序
+            bubbles.sort(() => Math.random() - 0.5);
+            
+            // 添加到容器
+            bubbles.forEach(bubble => {
+                gameContainer.appendChild(bubble);
+            });
         }
-        
-        // 页面加载完成后初始化游戏
+
+        // 重新开始按钮事件
+        document.getElementById('restart-btn').addEventListener('click', initGame);
+
+        // 初始化游戏
         window.addEventListener('load', initGame);
     </script>
 </body>
