@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图书销售数据分析报表</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        body { background-color: #f8f9fa; }
+        .report-header { background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%); color: white; padding: 2rem 0; margin-bottom: 2rem; }
+        .card { box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); margin-bottom: 2rem; border: none; }
+        .card-header { background-color: #34495e; color: white; font-weight: bold; }
+        .stat-card { text-align: center; padding: 1.5rem; color: white; border-radius: 8px; }
+        .stat-card h3 { font-size: 2rem; margin: 0; }
+        .stat-card p { margin: 0; opacity: 0.9; }
+        .insight { background-color: #e8f4f8; border-left: 4px solid #3498db; padding: 1rem; margin: 1rem 0; }
+    </style>
+</head>
+<body>
+    <div class="report-header">
+        <div class="container">
+            <h1 class="display-4">图书销售数据分析报表</h1>
+            <p class="lead">基于历史销售数据的全面分析与洞察</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- 执行摘要 -->
+        <section class="card">
+            <div class="card-header">
+                <h2>执行摘要</h2>
+            </div>
+            <div class="card-body">
+                <p>本报告对2017-2018年图书销售数据进行了全面分析，涵盖年度销售对比、畅销产品排行和区域销售分布三个核心维度。分析发现：</p>
+                <ul>
+                    <li>2018年总销量达到<strong>5754本</strong>，相比2017年的<strong>6218本</strong>略有下降，降幅约7.5%</li>
+                    <li>三大书店中，<strong>鼎盛书店</strong>销量最高，占据市场主导地位</li>
+                    <li>BK-83035和BK-83036是表现最好的两款产品，销量均超过600本</li>
+                    <li>销售呈现季节性波动，第二、三季度销量普遍高于其他季度</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 关键指标展示 -->
+        <section class="row">
+            <div class="col-md-3">
+                <div class="stat-card" style="background-color: #3498db;">
+                    <h4>总订单数</h4>
+                    <h3>475</h3>
+                    <p>订单数量</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card" style="background-color: #2ecc71;">
+                    <h4>总销量</h4>
+                    <h3>11972</h3>
+                    <p>累计销量(本)</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card" style="background-color: #e74c3c;">
+                    <h4>平均单量</h4>
+                    <h3>25.2</h3>
+                    <p>每订单平均销量</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card" style="background-color: #f39c12;">
+                    <h4>产品种类</h4>
+                    <h3>17</h3>
+                    <p>在售图书数量</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 年度销售对比 -->
+        <section class="card">
+            <div class="card-header">
+                <h2>年度销售对比</h2>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <canvas id="yearlyChart" height="300"></canvas>
+                    </div>
+                    <div class="col-md-4">
+                        <h4>销售变化分析</h4>
+                        <div class="insight">
+                            <strong>关键发现：</strong>2018年销量相比2017年下降了464本，降幅7.5%。需要进一步分析原因并制定应对策略。
+                        </div>
+                        <table class="table table-striped mt-3">
+                            <thead>
+                                <tr>
+                                    <th>年度</th>
+                                    <th>销量(本)</th>
+                                    <th>占比</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>2017年</td>
+                                    <td>6218</td>
+                                    <td>51.9%</td>
+                                </tr>
+                                <tr>
+                                    <td>2018年</td>
+                                    <td>5754</td>
+                                    <td>48.1%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <hr>
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <h4>月度销售趋势</h4>
+                        <canvas id="monthlyChart" height="250"></canvas>
+                    </div>
+                </div>
+                <div class="insight mt-3">
+                    <strong>趋势洞察：</strong>从月度数据可以看出，2017年销售整体呈平稳态势，下半年略有上升；2018年则呈现前高后低趋势，下半年特别是第四季度销量明显下滑，可能需要关注季节性因素和市场变化。
+                </div>
+            </div>
+        </section>
+
+        <!-- 畅销产品排行 -->
+        <section class="card">
+            <div class="card-header">
+                <h2>畅销产品排行</h2>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-7">
+                        <canvas id="productChart" height="350"></canvas>
+                    </div>
+                    <div class="col-md-5">
+                        <h4>产品销量排名</h4>
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>排名</th>
+                                    <th>产品编号</th>
+                                    <th>总销量</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>1</td><td>BK-83035</td><td>851</td></tr>
+                                <tr><td>2</td><td>BK-83036</td><td>791</td></tr>
+                                <tr><td>3</td><td>BK-83031</td><td>789</td></tr>
+                                <tr><td>4</td><td>BK-83023</td><td>765</td></tr>
+                                <tr><td>5</td><td>BK-83030</td><td>764</td></tr>
+                                <tr><td>6</td><td>BK-83022</td><td>738</td></tr>
+                                <tr><td>7</td><td>BK-83026</td><td>731</td></tr>
+                                <tr><td>8</td><td>BK-83025</td><td>720</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="insight">
+                    <strong>产品洞察：</strong>前5名产品总销量达到3960本，占全部销量的33%，说明少数爆款产品贡献了相当比例的销售额。建议保持畅销产品的库存充足，并加大推广力度；对排名靠后的产品（销量低于500本）可考虑优化库存或调整采购策略。
+                </div>
+            </div>
+        </section>
+
+        <!-- 区域销售占比 -->
+        <section class="card">
+            <div class="card-header">
+                <h2>区域销售占比</h2>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <canvas id="regionPieChart" height="300"></canvas>
+                    </div>
+                    <div class="col-md-6">
+                        <canvas id="regionBarChart" height="300"></canvas>
+                    </div>
+                </div>
+                <hr>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <h4>各区域年度销售对比</h4>
+                        <table class="table table-bordered">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>书店名称</th>
+                                    <th>2017年销量</th>
+                                    <th>2018年销量</th>
+                                    <th>总销量</th>
+                                    <th>市场占比</th>
+                                    <th>年度变化</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>鼎盛书店</td>
+                                    <td>2698</td>
+                                    <td>2738</td>
+                                    <td>5436</td>
+                                    <td>45.4%</td>
+                                    <td class="text-success">+1.5%</td>
+                                </tr>
+                                <tr>
+                                    <td>博达书店</td>
+                                    <td>1979</td>
+                                    <td>1452</td>
+                                    <td>3431</td>
+                                    <td>28.7%</td>
+                                    <td class="text-danger">-26.6%</td>
+                                </tr>
+                                <tr>
+                                    <td>隆华书店</td>
+                                    <td>1541</td>
+                                    <td>1564</td>
+                                    <td>3105</td>
+                                    <td>25.9%</td>
+                                    <td class="text-success">+1.5%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="insight">
+                    <strong>区域洞察：</strong>鼎盛书店以45.4%的市场份额占据领先地位，且销量相比上年略有增长；博达书店销量下降明显，降幅达26.6%，需要重点关注并分析原因；隆华书店保持稳定增长，市场份额逐步提升。建议针对不同区域采取差异化营销策略，帮助博达书店提升销售业绩。
+                </div>
+            </div>
+        </section>
+
+        <!-- 建议和结论 -->
+        <section class="card">
+            <div class="card-header">
+                <h2>建议和结论</h2>
+            </div>
+            <div class="card-body">
+                <h4>主要结论</h4>
+                <ol>
+                    <li><strong>整体销售：</strong>总销量略有下滑，主要受博达书店下降影响，鼎盛和隆华保持稳定增长</li>
+                    <li><strong>产品结构：</strong>畅销产品贡献突出，产品头部效应明显，SKU结构基本合理</li>
+                    <li><strong>区域格局：</strong>鼎盛书店领先优势稳固，隆华书店稳步增长，博达书店亟需改善</li>
+                    <li><strong>季节性：</strong>二、三季度为销售旺季，第四季度通常进入销售淡季</li>
+                </ol>
+
+                <h4 class="mt-4">业务建议</h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="alert alert-success">
+                            <h5>产品策略</h5>
+                            <ul class="mb-0">
+                                <li>保持畅销产品（BK-83035、BK-83036等）充足库存</li>
+                                <li>加大畅销产品营销推广，放大爆款效应</li>
+                                <li>评估滞销产品，优化产品结构</li>
+                                <li>考虑基于畅销产品特性拓展类似产品线</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="alert alert-warning">
+                            <h5>区域策略</h5>
+                            <ul class="mb-0">
+                                <li>深入分析博达书店销量下滑原因</li>
+                                <li>总结鼎盛书店成功经验并向其他门店推广</li>
+                                <li>支持隆华书店进一步扩张市场份额</li>
+                                <li>针对不同区域制定差异化销售目标</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="alert alert-info mt-3">
+                    <h5>运营建议</h5>
+                    <p class="mb-0">在销售旺季（二、三季度）提前备货，增加促销活动；淡季可开展促销清理库存，维持销售稳定。建立月度销售追踪机制，及时发现并解决销售异常问题。</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer class="bg-dark text-white text-center py-3 mt-5">
+        <p class="mb-0">图书销售数据分析报表 &copy; 2024</p>
+    </footer>
+
+    <script>
+        // 年度销售对比数据
+        const yearlyCtx = document.getElementById('yearlyChart').getContext('2d');
+        new Chart(yearlyCtx, {
+            type: 'bar',
+            data: {
+                labels: ['2017年', '2018年'],
+                datasets: [{
+                    label: '年度销量(本)',
+                    data: [6218, 5754],
+                    backgroundColor: ['#3498db', '#2ecc71'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: '年度销售量对比'
+                    }
+                }
+            }
+        });
+
+        // 月度销售趋势
+        const monthlyData2017 = [
+            550, 436, 493, 518, 530, 502, 594, 607, 669, 616, 352, 351
+        ];
+        const monthlyData2018 = [
+            711, 555, 628, 499, 680, 536, 635, 517, 339, 154, 0, 0
+        ];
+        const months = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+        
+        const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
+        new Chart(monthlyCtx, {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: [
+                    {
+                        label: '2017年月度销量',
+                        data: monthlyData2017,
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    },
+                    {
+                        label: '2018年月度销量',
+                        data: monthlyData2018,
+                        borderColor: '#e74c3c',
+                        backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: '月度销售趋势对比'
+                    }
+                }
+            }
+        });
+
+        // 畅销产品排行
+        const products = [
+            'BK-83035', 'BK-83036', 'BK-83031', 'BK-83023', 'BK-83030', 
+            'BK-83022', 'BK-83026', 'BK-83025', 'BK-83021', 'BK-83037',
+            'BK-83024', 'BK-83027', 'BK-83028', 'BK-83032', 'BK-83033',
+            'BK-83034', 'BK-83029'
+        ];
+        const productSales = [
+            851, 791, 789, 765, 764, 738, 731, 720, 635, 628,
+            606, 487, 511, 513, 412, 387, 444
+        ];
+        // 只展示前10名
+        const topProducts = products.slice(0, 10);
+        const topSales = productSales.slice(0, 10);
+        
+        const productCtx = document.getElementById('productChart').getContext('2d');
+        new Chart(productCtx, {
+            type: 'horizontalBar',
+            data: {
+                labels: topProducts,
+                datasets: [{
+                    label: '总销量(本)',
+                    data: topSales,
+                    backgroundColor: [
+                        '#e74c3c', '#e74c3c', '#3498db', '#3498db', '#3498db',
+                        '#95a5a6', '#95a5a6', '#95a5a6', '#95a5a6', '#95a5a6'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'TOP 10 畅销产品排行'
+                    }
+                }
+            }
+        });
+
+        // 区域销售占比饼图
+        const regions = ['鼎盛书店', '博达书店', '隆华书店'];
+        const regionSales = [5436, 3431, 3105];
+        const regionColors = ['#3498db', '#e74c3c', '#f39c12'];
+        
+        const regionPieCtx = document.getElementById('regionPieChart').getContext('2d');
+        new Chart(regionPieCtx, {
+            type: 'pie',
+            data: {
+                labels: regions,
+                datasets: [{
+                    data: regionSales,
+                    backgroundColor: regionColors,
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: '各书店销量占比'
+                    }
+                }
+            }
+        });
+
+        // 区域年度对比柱状图
+        const regionBarCtx = document.getElementById('regionBarChart').getContext('2d');
+        new Chart(regionBarCtx, {
+            type: 'bar',
+            data: {
+                labels: regions,
+                datasets: [
+                    {
+                        label: '2017年销量',
+                        data: [2698, 1979, 1541],
+                        backgroundColor: '#3498db'
+                    },
+                    {
+                        label: '2018年销量',
+                        data: [2738, 1452, 1564],
+                        backgroundColor: '#2ecc71'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: '各书店年度销量对比'
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
