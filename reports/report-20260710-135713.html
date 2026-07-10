@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生字消消乐</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .bubble-3d {
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05), inset 0 -5px 15px 0 rgba(255, 255, 255, 0.5), inset 0 5px 10px 0 rgba(0, 0, 0, 0.1);
+                border-radius: 50%;
+                transition: all 0.3s ease;
+            }
+            .bubble-highlight {
+                transform: scale(1.1);
+                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04), inset 0 -5px 15px 0 rgba(255, 255, 255, 0.5), inset 0 5px 10px 0 rgba(0, 0, 0, 0.1);
+            }
+            .bubble-disappear {
+                opacity: 0;
+                transform: scale(0);
+            }
+        }
+    </style>
+</head>
+<body class="bg-green-100 min-h-screen flex flex-col items-center p-4">
+    <h1 class="text-4xl md:text-5xl font-bold text-green-800 my-8">生字消消乐</h1>
+    
+    <div id="game-container" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6 w-full max-w-4xl">
+    </div>
+    
+    <div id="success-message" class="hidden fixed inset-0 bg-green-100/90 flex flex-col items-center justify-center">
+        <h2 class="text-5xl font-bold text-green-800 mb-6">恭喜挑战成功!</h2>
+        <button id="restart-btn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full text-xl transition duration-300">
+            再来一次
+        </button>
+    </div>
+
+    <script>
+        const words = [
+            { char: '老', pinyin: 'lǎo' },
+            { char: '师', pinyin: 'shī' },
+            { char: '辛', pinyin: 'xīn' },
+            { char: '苦', pinyin: 'kǔ' },
+            { char: '啦', pinyin: 'la' }
+        ];
+        
+        function getRandomLightColor() {
+            const hue = Math.floor(Math.random() * 360);
+            const saturation = Math.floor(Math.random() * 30) + 20;
+            const lightness = Math.floor(Math.random() * 30) + 60;
+            return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+        }
+        
+        function createBubble(content, type, id) {
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble-3d flex items-center justify-center aspect-square cursor-pointer';
+            bubble.style.backgroundColor = getRandomLightColor();
+            bubble.dataset.type = type;
+            bubble.dataset.id = id;
+            bubble.innerHTML = `<span class="text-3xl md:text-4xl font-bold text-gray-800">${content}</span>`;
+            return bubble;
+        }
+        
+        let selectedBubbles = [];
+        let matchedPairs = 0;
+        
+        function initGame() {
+            const gameContainer = document.getElementById('game-container');
+            gameContainer.innerHTML = '';
+            let bubbles = [];
+            
+            words.forEach((word, index) => {
+                const bubble = createBubble(word.char, 'char', index);
+                bubbles.push(bubble);
+            });
+            
+            words.forEach((word, index) => {
+                const bubble = createBubble(word.pinyin, 'pinyin', index);
+                bubbles.push(bubble);
+            });
+            
+            bubbles.sort(() => Math.random() - 0.5);
+            bubbles.forEach(bubble => gameContainer.appendChild(bubble));
+            
+            selectedBubbles = [];
+            matchedPairs = 0;
+        }
+        
+        document.getElementById('game-container').addEventListener('click', function(e) {
+            const bubble = e.target.closest('.bubble-3d');
+            if (!bubble || bubble.classList.contains('bubble-disappear')) return;
+            if (selectedBubbles.length === 2 || selectedBubbles.includes(bubble)) return;
+            
+            bubble.classList.add('bubble-highlight');
+            selectedBubbles.push(bubble);
+            
+            if (selectedBubbles.length === 2) {
+                const [bubble1, bubble2] = selectedBubbles;
+                
+                if (bubble1.dataset.type !== bubble2.dataset.type && bubble1.dataset.id === bubble2.dataset.id) {
+                    setTimeout(() => {
+                        bubble1.classList.add('bubble-disappear');
+                        bubble2.classList.add('bubble-disappear');
+                        matchedPairs++;
+                        
+                        if (matchedPairs === words.length) {
+                            document.getElementById('success-message').classList.remove('hidden');
+                        }
+                    }, 500);
+                } else {
+                    setTimeout(() => {
+                        bubble1.classList.remove('bubble-highlight');
+                        bubble2.classList.remove('bubble-highlight');
+                    }, 1000);
+                }
+                
+                setTimeout(() => selectedBubbles = [], 1000);
+            }
+        });
+        
+        document.getElementById('restart-btn').addEventListener('click', function() {
+            document.getElementById('success-message').classList.add('hidden');
+            initGame();
+        });
+        
+        initGame();
+    </script>
+</body>
+</html>
