@@ -1,0 +1,875 @@
+# 银行三年财报分析报告
+
+以下是根据提供的银行三年财报数据（资产负债表、利润表、现金流量表）生成的完整HTML分析报告。该报告包含交互式图表、详细分析和专业洞察。
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>银行三年财报分析报告 (2021-2023)</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+        
+        .navbar {
+            background-color: var(--primary-color) !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 4rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 20px 20px;
+        }
+        
+        .section-title {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 100px;
+            height: 3px;
+            background-color: var(--accent-color);
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+            margin-bottom: 20px;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            font-weight: 600;
+        }
+        
+        .key-metric {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: white;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            height: 100%;
+        }
+        
+        .metric-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+        
+        .positive {
+            color: var(--success-color);
+        }
+        
+        .negative {
+            color: var(--accent-color);
+        }
+        
+        .insight-box {
+            background-color: #e8f4fc;
+            border-left: 5px solid var(--secondary-color);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .conclusion-box {
+            background-color: #f0f7f0;
+            border-left: 5px solid var(--success-color);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 30px;
+        }
+        
+        footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+        
+        .nav-link {
+            color: rgba(255,255,255,0.8) !important;
+        }
+        
+        .nav-link:hover {
+            color: white !important;
+        }
+        
+        .table-responsive {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+        
+        .table th {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+        }
+        
+        .table td {
+            border: 1px solid #dee2e6;
+        }
+        
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(52, 152, 219, 0.05);
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">财报分析报告</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#executive-summary">执行摘要</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#key-metrics">关键指标</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#balance-sheet">资产负债表</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#income-statement">利润表</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#cash-flow">现金流量表</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#conclusions">结论建议</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 标题部分 -->
+    <header class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <h1 class="display-4 fw-bold">银行三年财报分析报告</h1>
+                    <p class="lead">2021-2023年度财务绩效综合分析</p>
+                    <p class="mb-0">基于资产负债表、利润表和现金流量表的全面评估</p>
+                </div>
+                <div class="col-lg-4 text-lg-end">
+                    <p class="mb-1">报告生成日期: <span id="current-date"></span></p>
+                    <p class="mb-0">数据周期: 2021年 - 2023年</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- 执行摘要 -->
+        <section id="executive-summary" class="mb-5">
+            <h2 class="section-title">执行摘要</h2>
+            <div class="row">
+                <div class="col-lg-8">
+                    <p class="lead">本报告分析了该银行2021年至2023年的财务表现，揭示了关键趋势和潜在风险。</p>
+                    <div class="insight-box">
+                        <h5>核心发现：</h5>
+                        <ul>
+                            <li><strong>盈利能力急剧恶化：</strong>净利润从2021年的88,193.6大幅下降至2023年的-507,845.6，三年间下降幅度达676%</li>
+                            <li><strong>资产负债结构失衡：</strong>负债总额持续增长，而股东权益始终为0，表明资本结构存在严重问题</li>
+                            <li><strong>现金流表现波动：</strong>净现金流从2021年的2,086,054下降至2023年的916,822，下降56%</li>
+                            <li><strong>成本控制失效：</strong>2022年和2023年成本超过收入，导致毛利为负</li>
+                        </ul>
+                    </div>
+                    <p>该银行面临严重的财务挑战，需要立即采取纠正措施以改善盈利能力、优化资产负债结构和加强成本控制。</p>
+                </div>
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-header">财务表现概览</div>
+                        <div class="card-body">
+                            <canvas id="summaryChart"></canvas>
+                            <p class="mt-3 small text-muted">图表显示了三年间净利润和净现金流的趋势变化。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 关键指标 -->
+        <section id="key-metrics" class="mb-5">
+            <h2 class="section-title">关键财务指标</h2>
+            <div class="row">
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="key-metric">
+                        <h6>2023年净利润</h6>
+                        <div class="metric-value negative">-507,845.6</div>
+                        <p>较2021年下降676%</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="key-metric">
+                        <h6>2023年负债总额</h6>
+                        <div class="metric-value">2,249,132.2</div>
+                        <p>较2021年增长58%</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="key-metric">
+                        <h6>2023年净现金流</h6>
+                        <div class="metric-value">916,822</div>
+                        <p>较2021年下降56%</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="key-metric">
+                        <h6>股东权益</h6>
+                        <div class="metric-value negative">0</div>
+                        <p>三年均为0，资本结构异常</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 资产负债表分析 -->
+        <section id="balance-sheet" class="mb-5">
+            <h2 class="section-title">资产负债表分析</h2>
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="chart-container">
+                        <canvas id="assetsChart"></canvas>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="chart-container">
+                        <canvas id="liabilitiesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-4">
+                <div class="col-lg-12">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>项目</th>
+                                    <th>2021年</th>
+                                    <th>2022年</th>
+                                    <th>2023年</th>
+                                    <th>三年变化</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>流动资产</strong></td>
+                                    <td>421,481</td>
+                                    <td>429,232</td>
+                                    <td>361,957</td>
+                                    <td class="negative">-14.1%</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>固定资产</strong></td>
+                                    <td>762,260</td>
+                                    <td>348,801</td>
+                                    <td>187,863</td>
+                                    <td class="negative">-75.4%</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>资产总额</strong></td>
+                                    <td>1,183,741</td>
+                                    <td>778,033</td>
+                                    <td>549,820</td>
+                                    <td class="negative">-53.6%</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>流动负债</strong></td>
+                                    <td>1,063,845</td>
+                                    <td>1,453,566</td>
+                                    <td>1,606,523</td>
+                                    <td class="positive">+51.0%</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>长期负债</strong></td>
+                                    <td>425,538</td>
+                                    <td>581,426.4</td>
+                                    <td>642,609.2</td>
+                                    <td class="positive">+51.0%</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>负债总额</strong></td>
+                                    <td>1,489,383</td>
+                                    <td>2,034,992.4</td>
+                                    <td>2,249,132.2</td>
+                                    <td class="positive">+51.0%</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>股东权益</strong></td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                    <td>0%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="insight-box mt-4">
+                <h5>资产负债分析洞察：</h5>
+                <ul>
+                    <li><strong>资产严重缩水：</strong>总资产从2021年的1,183,741下降至2023年的549,820，下降53.6%，主要由于固定资产大幅减少</li>
+                    <li><strong>负债持续增长：</strong>总负债从2021年的1,489,383增长至2023年的2,249,132.2，增长51%，与资产缩水形成鲜明对比</li>
+                    <li><strong>资本结构异常：</strong>股东权益三年均为0，表明银行可能完全依赖债务融资，存在极高的财务风险</li>
+                    <li><strong>流动性压力：</strong>流动资产下降而流动负债上升，流动性比率恶化，可能面临短期偿债压力</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 利润表分析 -->
+        <section id="income-statement" class="mb-5">
+            <h2 class="section-title">利润表分析</h2>
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="chart-container">
+                        <canvas id="incomeChart"></canvas>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-header">盈利能力指标</div>
+                        <div class="card-body">
+                            <h6>毛利率变化</h6>
+                            <div class="mb-3">
+                                <span class="badge bg-success">2021: 60.9%</span>
+                                <span class="badge bg-danger">2022: -18.2%</span>
+                                <span class="badge bg-danger">2023: -263.6%</span>
+                            </div>
+                            <h6>净利率变化</h6>
+                            <div>
+                                <span class="badge bg-success">2021: 26.2%</span>
+                                <span class="badge bg-danger">2022: -19.0%</span>
+                                <span class="badge bg-danger">2023: -227.9%</span>
+                            </div>
+                            <hr>
+                            <p class="small">毛利率 = 毛利 / 收入 × 100%</p>
+                            <p class="small">净利率 = 净利润 / 收入 × 100%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="insight-box mt-4">
+                <h5>利润表分析洞察：</h5>
+                <ul>
+                    <li><strong>收入波动剧烈：</strong>收入从2021年的336,137增长至2022年的739,983（增长120%），但2023年又骤降至222,782（下降70%）</li>
+                    <li><strong>成本控制失效：</strong>2022年和2023年成本均超过收入，导致毛利为负，特别是2023年成本是收入的3.6倍</li>
+                    <li><strong>盈利能力崩溃：</strong>净利润从2021年的88,193.6下降至2023年的-507,845.6，银行已陷入严重亏损</li>
+                    <li><strong>费用管理相对稳定：</strong>费用在三年间变化不大，表明主要问题在于收入下降和成本激增</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 现金流量表分析 -->
+        <section id="cash-flow" class="mb-5">
+            <h2 class="section-title">现金流量表分析</h2>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="chart-container">
+                        <canvas id="cashFlowChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">经营活动现金流</div>
+                        <div class="card-body">
+                            <p>2021: <span class="positive">553,633</span></p>
+                            <p>2022: <span class="positive">175,088</span></p>
+                            <p>2023: <span class="positive">651,026</span></p>
+                            <p class="small text-muted">2023年经营活动现金流显著改善</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">投资活动现金流</div>
+                        <div class="card-body">
+                            <p>2021: <span class="positive">988,611</span></p>
+                            <p>2022: <span class="positive">941,833</span></p>
+                            <p>2023: <span class="positive">235,346</span></p>
+                            <p class="small text-muted">2023年投资活动现金流大幅减少</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">筹资活动现金流</div>
+                        <div class="card-body">
+                            <p>2021: <span class="positive">543,810</span></p>
+                            <p>2022: <span class="positive">250,921</span></p>
+                            <p>2023: <span class="positive">30,450</span></p>
+                            <p class="small text-muted">筹资活动现金流持续下降</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="insight-box mt-4">
+                <h5>现金流量分析洞察：</h5>
+                <ul>
+                    <li><strong>净现金流持续下降：</strong>从2021年的2,086,054下降至2023年的916,822，下降56%</li>
+                    <li><strong>经营活动现金流改善：</strong>2023年经营活动现金流大幅增长至651,026，是2022年的3.7倍，表明核心业务现金流有所改善</li>
+                    <li><strong>投资活动收缩：</strong>投资活动现金流从2021年的988,611下降至2023年的235,346，下降76%，可能反映资本支出减少或资产处置</li>
+                    <li><strong>筹资能力减弱：</strong>筹资活动现金流从2021年的543,810大幅下降至2023年的30,450，表明银行外部融资能力显著下降</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 结论与建议 -->
+        <section id="conclusions" class="mb-5">
+            <h2 class="section-title">结论与建议</h2>
+            <div class="conclusion-box">
+                <h5>主要结论：</h5>
+                <ol>
+                    <li><strong>财务状况严重恶化：</strong>银行在2022-2023年期间盈利能力崩溃，净利润大幅为负，资产负债表严重失衡</li>
+                    <li><strong>资本结构存在根本性问题：</strong>股东权益为0，完全依赖债务融资，财务风险极高</li>
+                    <li><strong>成本收入结构失衡：</strong>2022年和2023年成本超过收入，成本控制完全失效</li>
+                    <li><strong>现金流管理面临挑战：</strong>尽管2023年经营活动现金流改善，但整体净现金流持续下降，筹资能力减弱</li>
+                </ol>
+            </div>
+            
+            <div class="row mt-4">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">短期建议 (1-6个月)</div>
+                        <div class="card-body">
+                            <ul>
+                                <li>立即进行成本结构分析，识别并削减非必要支出</li>
+                                <li>重新评估高风险资产，考虑处置不良资产</li>
+                                <li>与主要债权人协商债务重组，缓解短期偿债压力</li>
+                                <li>暂停非核心投资，集中资源于核心盈利业务</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">长期建议 (6-24个月)</div>
+                        <div class="card-body">
+                            <ul>
+                                <li>引入战略投资者或进行资本重组，解决股东权益为0的问题</li>
+                                <li>重建可持续的收入模式，减少对单一收入来源的依赖</li>
+                                <li>实施全面的风险管理框架，监控资产负债匹配</li>
+                                <li>投资于数字化和流程优化，提高运营效率</li>
+                                <li>建立定期财务健康检查机制，及早识别风险</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="alert alert-warning mt-4" role="alert">
+                <h5 class="alert-heading">风险提示</h5>
+                <p>基于当前财务状况，该银行面临极高的破产风险。如果没有及时有效的干预措施，可能在短期内无法持续经营。建议监管机构和董事会立即采取紧急措施。</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>银行三年财报分析报告</h5>
+                    <p>本报告基于2021-2023年财务数据生成，仅供内部管理决策参考。</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p>报告版本: 1.0</p>
+                    <p>生成时间: <span id="report-date"></span></p>
+                    <p>© 2023 财务分析团队</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // 设置当前日期
+        const now = new Date();
+        document.getElementById('current-date').textContent = now.toLocaleDateString('zh-CN');
+        document.getElementById('report-date').textContent = now.toLocaleDateString('zh-CN');
+        
+        // 数据准备
+        const years = ['2021', '2022', '2023'];
+        
+        // 资产负债表数据
+        const currentAssets = [421481, 429232, 361957];
+        const fixedAssets = [762260, 348801, 187863];
+        const currentLiabilities = [1063845, 1453566, 1606523];
+        const longTermLiabilities = [425538, 581426.4, 642609.2];
+        
+        // 利润表数据
+        const revenues = [336137, 739983, 222782];
+        const costs = [131441, 874797, 810272];
+        const grossProfits = [204696, -134814, -587490];
+        const netProfits = [88193.6, -140912, -507845.6];
+        
+        // 现金流量表数据
+        const operatingCashFlow = [553633, 175088, 651026];
+        const investingCashFlow = [988611, 941833, 235346];
+        const financingCashFlow = [543810, 250921, 30450];
+        const netCashFlow = [2086054, 1367842, 916822];
+        
+        // 图表颜色配置
+        const chartColors = {
+            primary: 'rgba(52, 152, 219, 0.8)',
+            secondary: 'rgba(155, 89, 182, 0.8)',
+            success: 'rgba(46, 204, 113, 0.8)',
+            warning: 'rgba(241, 196, 15, 0.8)',
+            danger: 'rgba(231, 76, 60, 0.8)',
+            dark: 'rgba(52, 73, 94, 0.8)',
+            light: 'rgba(236, 240, 241, 0.8)'
+        };
+        
+        // 1. 执行摘要图表
+        const summaryCtx = document.getElementById('summaryChart').getContext('2d');
+        const summaryChart = new Chart(summaryCtx, {
+            type: 'bar',
+            data: {
+                labels: years,
+                datasets: [
+                    {
+                        label: '净利润',
+                        data: netProfits,
+                        backgroundColor: netProfits.map(profit => profit >= 0 ? chartColors.success : chartColors.danger),
+                        borderColor: netProfits.map(profit => profit >= 0 ? 'rgba(46, 204, 113, 1)' : 'rgba(231, 76, 60, 1)'),
+                        borderWidth: 1
+                    },
+                    {
+                        label: '净现金流',
+                        data: netCashFlow,
+                        backgroundColor: chartColors.primary,
+                        borderColor: 'rgba(52, 152, 219, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: '净利润与净现金流趋势'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        title: {
+                            display: true,
+                            text: '金额'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // 2. 资产构成图表
+        const assetsCtx = document.getElementById('assetsChart').getContext('2d');
+        const assetsChart = new Chart(assetsCtx, {
+            type: 'line',
+            data: {
+                labels: years,
+                datasets: [
+                    {
+                        label: '流动资产',
+                        data: currentAssets,
+                        borderColor: chartColors.primary,
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    },
+                    {
+                        label: '固定资产',
+                        data: fixedAssets,
+                        borderColor: chartColors.warning,
+                        backgroundColor: 'rgba(241, 196, 15, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: '资产构成变化趋势'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        title: {
+                            display: true,
+                            text: '金额'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // 3. 负债构成图表
+        const liabilitiesCtx = document.getElementById('liabilitiesChart').getContext('2d');
+        const liabilitiesChart = new Chart(liabilitiesCtx, {
+            type: 'bar',
+            data: {
+                labels: years,
+                datasets: [
+                    {
+                        label: '流动负债',
+                        data: currentLiabilities,
+                        backgroundColor: chartColors.danger,
+                        borderColor: 'rgba(231, 76, 60, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: '长期负债',
+                        data: longTermLiabilities,
+                        backgroundColor: chartColors.warning,
+                        borderColor: 'rgba(241, 196, 15, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: '负债构成变化趋势'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '金额'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // 4. 利润表图表
+        const incomeCtx = document.getElementById('incomeChart').getContext('2d');
+        const incomeChart = new Chart(incomeCtx, {
+            type: 'line',
+            data: {
+                labels: years,
+                datasets: [
+                    {
+                        label: '收入',
+                        data: revenues,
+                        borderColor: chartColors.success,
+                        backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    },
+                    {
+                        label: '成本',
+                        data: costs,
+                        borderColor: chartColors.danger,
+                        backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    },
+                    {
+                        label: '净利润',
+                        data: netProfits,
+                        borderColor: chartColors.primary,
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        fill: false,
+                        tension: 0.3,
+                        borderDash: [5, 5]
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: '收入、成本与净利润趋势'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        title: {
+                            display: true,
+                            text: '金额'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // 5. 现金流量表图表
+        const cashFlowCtx = document.getElementById('cashFlowChart').getContext('2d');
+        const cashFlowChart = new Chart(cashFlowCtx, {
+            type: 'bar',
+            data: {
+                labels: years,
+                datasets: [
+                    {
+                        label: '经营活动现金流',
+                        data: operatingCashFlow,
+                        backgroundColor: chartColors.success,
+                        borderColor: 'rgba(46, 204, 113, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: '投资活动现金流',
+                        data: investingCashFlow,
+                        backgroundColor: chartColors.primary,
+                        borderColor: 'rgba(52, 152, 219, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: '筹资活动现金流',
+                        data: financingCashFlow,
+                        backgroundColor: chartColors.warning,
+                        borderColor: 'rgba(241, 196, 15, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: '净现金流',
+                        data: netCashFlow,
+                        backgroundColor: chartColors.dark,
+                        borderColor: 'rgba(52, 73, 94, 1)',
+                        borderWidth: 1,
+                        type: 'line',
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: '现金流量构成与净现金流趋势'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        title: {
+                            display: true,
+                            text: '金额'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // 平滑滚动到锚点
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if(targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if(targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+```
+
+## 报告特点
+
+1. **专业分析框架**：包含执行摘要、关键指标、详细分析和建议等完整结构
+2. **交互式数据可视化**：使用Chart.js创建了5个交互式图表，直观展示财务趋势
+3. **响应式设计**：基于Bootstrap的响应式布局，适配各种设备
+4. **深入洞察**：对每个财务报表提供了详细的分析和商业洞察
+5. **风险预警**：明确指出了银行面临的财务风险和建议的应对措施
+6. **美观的UI设计**：使用协调的配色方案和现代设计元素
+
+报告可以直接在浏览器中打开使用，所有图表都是交互式的，用户可以悬停查看具体数值。报告还包含平滑滚动导航，便于用户浏览不同部分。
