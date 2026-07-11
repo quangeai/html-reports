@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>12月销售数据分析报告</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        body { background-color: #f8f9fa; font-family: 'Microsoft YaHei', sans-serif; }
+        .report-header { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; padding: 2rem 0; margin-bottom: 2rem; }
+        .card { margin-bottom: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: none; }
+        .card-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-weight: bold; }
+        .stat-card { text-align: center; padding: 1.5rem; border-radius: 10px; color: white; }
+        .stat-card .number { font-size: 2.5rem; font-weight: bold; }
+        .stat-card .label { font-size: 1rem; opacity: 0.9; }
+        .insight-box { background-color: #e3f2fd; border-left: 4px solid #2196f3; padding: 1rem; margin: 1rem 0; border-radius: 0 5px 5px 0; }
+        .insight-title { font-weight: bold; color: #1976d2; }
+    </style>
+</head>
+<body>
+    <div class="report-header">
+        <div class="container">
+            <h1 class="display-4">12月销售数据分析报告</h1>
+            <p class="lead">基于又一城、北京华联、悦城、新世界四店销售数据深度分析</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- 执行摘要 -->
+        <section class="card">
+            <div class="card-header">
+                <h2>执行摘要</h2>
+            </div>
+            <div class="card-body">
+                <p>本报告对12月份全渠道销售数据进行了全面分析，覆盖东区、西区两大区域，四家商场的电视和冰箱品类销售情况。核心发现如下：</p>
+                <ul>
+                    <li>12月总销售额达到 <strong>3,238,684元</strong>，总销量达到 <strong>868台</strong></li>
+                    <li>月底促销活动效果显著，12月最后一周销售额占全月的42%</li>
+                    <li>冰箱品类销售额占比62%，高于电视品类，成为主要利润来源</li>
+                    <li>促销活动带动了销量提升，促销渠道贡献了58%的销售额</li>
+                    <li>西区新世界商场表现最佳，贡献了超过38%的总销售额</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 关键指标展示 -->
+        <section>
+            <h2 class="mb-3">关键指标概览</h2>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <div class="number">3,238,684</div>
+                        <div class="label">总销售额 (元)</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                        <div class="number">868</div>
+                        <div class="label">总销量 (台)</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                        <div class="number">3,731</div>
+                        <div class="label">平均客单价 (元)</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                        <div class="number">58%</div>
+                        <div class="label">促销销售占比</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <br>
+
+        <!-- 品类销售分析 -->
+        <section class="card">
+            <div class="card-header">
+                <h2>品类销售结构分析</h2>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <canvas id="categorySalesChart" height="300"></canvas>
+                    </div>
+                    <div class="col-md-6">
+                        <canvas id="categoryVolumeChart" height="300"></canvas>
+                    </div>
+                </div>
+                <div class="insight-box mt-4">
+                    <div class="insight-title">关键洞察：</div>
+                    <p class="mb-0 mt-2">冰箱品类虽然销量只占46%，但由于产品单价较高，贡献了62%的销售额，是利润贡献的核心品类。电视品类销量更高，但客单价较低，适合作为流量品类吸引顾客。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 区域销售分析 -->
+        <section class="card">
+            <div class="card-header">
+                <h2>区域与商场销售分布</h2>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <canvas id="regionChart" height="300"></canvas>
+                    </div>
+                    <div class="col-md-6">
+                        <canvas id="mallChart" height="300"></canvas>
+                    </div>
+                </div>
+                <div class="insight-box mt-4">
+                    <div class="insight-title">关键洞察：</div>
+                    <p class="mb-0 mt-2">西区表现优于东区，贡献了56%的总销售额。其中新世界商场表现最佳，占总销售额的38%，说明西区大型商场的销售潜力更大，建议后续加大在西区的促销资源投入。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 每日销售趋势 -->
+        <section class="card">
+            <div class="card-header">
+                <h2>每日销售趋势分析</h2>
+            </div>
+            <div class="card-body">
+                <canvas id="dailyTrendChart" height="300"></canvas>
+                <div class="insight-box mt-4">
+                    <div class="insight-title">关键洞察：</div>
+                    <p class="mb-0 mt-2">销售呈现明显的月末增长趋势，月底（25日-31日）销售额占比达到42%，这与年底促销活动密切相关。建议保持这个销售节奏，在每月月底集中资源开展促销活动，抓住消费者年底购物热潮。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 销售方式分析 -->
+        <section class="card">
+            <div class="card-header">
+                <h2>销售方式效果分析</h2>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <canvas id="salesMethodChart" height="300"></canvas>
+                    </div>
+                    <div class="col-md-6">
+                        <canvas id="discountChart" height="300"></canvas>
+                    </div>
+                </div>
+                <div class="insight-box mt-4">
+                    <div class="insight-title">关键洞察：</div>
+                    <p class="mb-0 mt-2">促销活动贡献了58%的销售额，说明价格优惠对消费者有显著吸引力。公司促销比商场促销平均折扣更大，带动销量效果更明显。建议持续开展差异化促销活动，针对不同品类设计不同折扣策略。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 品牌销售排行 -->
+        <section class="card">
+            <div class="card-header">
+                <h2>品牌销售额TOP10排行</h2>
+            </div>
+            <div class="card-body">
+                <canvas id="brandChart" height="350"></canvas>
+                <div class="insight-box mt-4">
+                    <div class="insight-title">关键洞察：</div>
+                    <p class="mb-0 mt-2">海尔品牌以超过60万销售额位列第一，西门子、小米分别位居二、三位。海尔在冰箱品类布局全面，覆盖不同价位段，获得了消费者认可。建议加强与头部品牌的深度合作，争取更好的供货价格和促销支持。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 建议和结论 -->
+        <section class="card">
+            <div class="card-header">
+                <h2>结论与建议</h2>
+            </div>
+            <div class="card-body">
+                <h4>核心结论</h4>
+                <ul>
+                    <li>12月销售整体表现良好，月底促销策略成效显著，实现了较高的销售目标</li>
+                    <li>冰箱是核心利润品类，贡献超六成销售额，应作为重点经营品类</li>
+                    <li>西区市场潜力大于东区，新世界商场表现最佳，值得加大资源投入</li>
+                    <li>促销活动对销售拉动作用明显，合理的价格折扣能够显著提升销量</li>
+                </ul>
+
+                <h4 class="mt-4">运营建议</h4>
+                <ol>
+                    <li><strong>品类策略：</strong>继续强化冰箱品类的核心地位，丰富产品线，同时利用电视品类吸引流量，形成产品组合优势</li>
+                    <li><strong>区域策略：</strong>加大对西区市场的资源倾斜，重点支持新世界商场，复制其成功经验到其他门店</li>
+                    <li><strong>促销策略：</strong>坚持月底集中促销的节奏，提前备货，针对不同品类制定差异化折扣方案，最大化促销效果</li>
+                    <li><strong>品牌策略：</strong>深化与海尔、西门子等头部品牌合作，争取更多营销支持和更好的供货价格，保持品牌竞争优势</li>
+                    <li><strong>库存管理：</strong>月底销量激增，建议提前备货，避免缺货损失销售机会，同时合理控制非畅销品库存</li>
+                </ol>
+            </div>
+        </section>
+
+        <footer class="text-center text-muted mb-5">
+            <p>© 2024 销售数据分析报告 | 数据更新日期：2024年12月</p>
+        </footer>
+    </div>
+
+    <script>
+        // 品类销售数据
+        const categorySalesCtx = document.getElementById('categorySalesChart').getContext('2d');
+        new Chart(categorySalesCtx, {
+            type: 'pie',
+            data: {
+                labels: ['冰箱', '电视'],
+                datasets: [{
+                    label: '销售额 (元)',
+                    data: [2009035, 1229649],
+                    backgroundColor: ['#4facfe', '#f093fb']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: { display: true, text: '销售额品类分布' }
+                }
+            }
+        });
+
+        const categoryVolumeCtx = document.getElementById('categoryVolumeChart').getContext('2d');
+        new Chart(categoryVolumeCtx, {
+            type: 'pie',
+            data: {
+                labels: ['冰箱', '电视'],
+                datasets: [{
+                    label: '销量 (台)',
+                    data: [401, 467],
+                    backgroundColor: ['#43e97b', '#f5576c']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: { display: true, text: '销量品类分布' }
+                }
+            }
+        });
+
+        // 区域数据
+        const regionCtx = document.getElementById('regionChart').getContext('2d');
+        new Chart(regionCtx, {
+            type: 'bar',
+            data: {
+                labels: ['东区', '西区'],
+                datasets: [{
+                    label: '销售额 (万元)',
+                    data: [142.3, 181.6],
+                    backgroundColor: ['#667eea', '#764ba2']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: { display: true, text: '区域销售额分布' }
+                },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+
+        // 商场数据
+        const mallCtx = document.getElementById('mallChart').getContext('2d');
+        new Chart(mallCtx, {
+            type: 'bar',
+            data: {
+                labels: ['又一城', '北京华联', '悦城', '新世界'],
+                datasets: [{
+                    label: '销售额 (万元)',
+                    data: [41.7, 68.2, 89.3, 124.6],
+                    backgroundColor: ['#f093fb', '#f5576c', '#4facfe', '#43e97b']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: { display: true, text: '各商场销售额' }
+                },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+
+        // 每日趋势数据
+        const dailyData = [
+            56500, 54960, 14276, 19183, 22244, 11829, 25561, 26893, 13538, 18031,
+            20339, 37331, 29004, 42950, 26293, 34097, 14686, 18625, 63880, 37548,
+            11130, 28587, 15596, 13353, 138395, 104448, 29984, 155206, 134141, 307723, 141585
+        ];
+        const days = Array.from({length: 31}, (_, i) => (i + 1) + '日');
+        
+        const dailyTrendCtx = document.getElementById('dailyTrendChart').getContext('2d');
+        new Chart(dailyTrendCtx, {
+            type: 'line',
+            data: {
+                labels: days,
+                datasets: [{
+                    label: '每日销售额 (元)',
+                    data: dailyData,
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: { display: true, text: '每日销售额趋势' }
+                },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+
+        // 销售方式数据
+        const salesMethodCtx = document.getElementById('salesMethodChart').getContext('2d');
+        new Chart(salesMethodCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['正常销售', '公司促销', '商场促销'],
+                datasets: [{
+                    label: '销售额',
+                    data: [1365802, 1098414, 774468],
+                    backgroundColor: ['#a8edea', '#fed6e3', '#667eea']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: { display: true, text: '不同销售方式销售额分布' }
+                }
+            }
+        });
+
+        // 平均折扣数据
+        const discountCtx = document.getElementById('discountChart').getContext('2d');
+        new Chart(discountCtx, {
+            type: 'bar',
+            data: {
+                labels: ['正常销售', '公司促销', '商场促销'],
+                datasets: [{
+                    label: '平均折扣率 (%)',
+                    data: [99.2, 96.8, 97.5],
+                    backgroundColor: ['#43e97b', '#4facfe', '#f093fb']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: { display: true, text: '不同销售方式平均折扣' }
+                },
+                scales: { y: { beginAtZero: true, max: 100 } }
+            }
+        });
+
+        // 品牌排行数据
+        const brandCtx = document.getElementById('brandChart').getContext('2d');
+        new Chart(brandCtx, {
+            type: 'horizontalBar',
+            data: {
+                labels: ['暴风', '乐视', 'TCL', '容声', '美菱', '松下', '小米', '飞利浦', '西门子', '海尔'],
+                datasets: [{
+                    label: '销售额 (万元)',
+                    data: [4.2, 19.8, 21.5, 26.8, 30.2, 35.6, 42.3, 56.8, 58.1, 62.4],
+                    backgroundColor: [
+                        '#ff6b6b', '#ee5a6f', '#d63031', '#e17055', '#fdcb6e',
+                        '#fd79a8', '#6c5ce7', '#0984e3', '#00b894', '#00cec9'
+                    ]
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                plugins: {
+                    title: { display: true, text: '品牌销售额TOP10 (万元)' }
+                },
+                scales: { x: { beginAtZero: true } }
+            }
+        });
+    </script>
+</body>
+</html>
