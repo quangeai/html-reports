@@ -1,0 +1,418 @@
+```python
+import pandas as pd
+from collections import Counter
+
+# 解析数据
+data = [
+    ["12/1", "东区", "又一城", 1036, "电视", "TCL", "智能", "TCL D49A561U", "49英寸", None, 2599, 2299, 6, 13794, "公司促销"],
+    ["12/1", "东区", "又一城", 1028, "电视", "创维", "4K超清", "55M5", "55英寸", None, 2999, 2999, 1, 2999, "正常销售"],
+    ["12/1", "东区", "又一城", 1176, "冰箱", "海尔", "三门", "BCD-216SDN", None, 216, 1699, 1699, 1, 1699, "正常销售"],
+    ["12/1", "东区", "又一城", 1032, "电视", "乐视", "智能", "X43S", "43英寸", None, 1989, 1989, 1, 1989, "正常销售"],
+    ["12/1", "东区", "又一城", 1173, "冰箱", "容声", "三门", "BCD-228D11SY", None, 228, 1599, 1599, 1, 1599, "正常销售"],
+    ["12/2", "东区", "又一城", 1174, "冰箱", "西门子", "三门", "KG23N1116W", None, 226, 2499, 2499, 1, 2499, "正常销售"],
+    ["12/2", "东区", "又一城", 1036, "电视", "TCL", "智能", "TCL D49A561U", "49英寸", None, 2599, 2509, 4, 10036, "公司促销"],
+    ["12/2", "东区", "又一城", 1175, "冰箱", "美菱", "三门", "BCD-206L3CT", None, 206, 1099, 1099, 1, 1099, "正常销售"],
+    ["12/2", "东区", "又一城", 1026, "电视", "乐视", "智能", "S50 Air", "50英寸", None, 2450, 2450, 1, 2450, "正常销售"],
+    ["12/2", "东区", "又一城", 1172, "冰箱", "海尔", "对开门", "BCD-452WDPF", None, 452, 3299, 3299, 1, 3299, "正常销售"],
+    ["12/3", "东区", "又一城", 1030, "电视", "暴风", "智能", "55X", "55英寸", None, 2699, 2699, 1, 2699, "正常销售"],
+    ["12/3", "东区", "又一城", 1033, "电视", "飞利浦", "智能 UHD", "55PUF6056/T3", "55英寸", None, 2999, 2999, 1, 2999, "正常销售"],
+    ["12/3", "东区", "又一城", 1027, "电视", "小米", "智能", "L43M3-AA", "43英寸", None, 1899, 1899, 1, 1899, "正常销售"],
+    ["12/4", "东区", "又一城", 1182, "冰箱", "美的", "双开门", "BCD-516WKZM(E)", None, 516, 3399, 3399, 1, 3399, "正常销售"],
+    ["12/4", "东区", "又一城", 1171, "冰箱", "美的", "三门", "BCD-206TM(E)", None, 206, 1298, 1298, 1, 1298, "正常销售"],
+    ["12/4", "东区", "又一城", 1170, "冰箱", "西门子", "对开门", "KA92NV02TI", None, 610, 6999, 6999, 1, 6999, "正常销售"],
+    ["12/5", "东区", "又一城", 1028, "电视", "创维", "4K超清", "55M5", "55英寸", None, 2999, 2949, 4, 11796, "商场促销"],
+    ["12/5", "东区", "又一城", 1184, "冰箱", "容声", "双开门", "BCD-516WD11HY", None, 516, 2999, 2999, 1, 2999, "正常销售"],
+    ["12/6", "东区", "又一城", 1185, "冰箱", "松下", "三门", "NR-C32WP2-S", None, 316, 3990, 3990, 1, 3990, "正常销售"],
+    ["12/7", "东区", "又一城", 1025, "电视", "小米", "智能", "L48M3-AF", "48英寸", None, 2099, 2079, 5, 10395, "商场促销"],
+    ["12/7", "东区", "又一城", 1031, "电视", "创维", "智能", "55M6", "55英寸", None, 2999, 2999, 1, 2999, "正常销售"],
+    ["12/7", "东区", "又一城", 1029, "电视", "暴风", "智能", "40X(X战警版)", "40英寸", None, 1099, 1099, 1, 1099, "正常销售"],
+    ["12/7", "东区", "又一城", 1035, "电视", "小米", "4K超清", "L60M4-AA", "60英寸", None, 5199, 5199, 1, 5199, "正常销售"],
+    ["12/7", "东区", "又一城", 1032, "电视", "乐视", "智能", "X43S", "43英寸", None, 1989, 1989, 1, 1989, "正常销售"]
+]
+
+columns = ["日期", "区域", "商场", "产品编号", "大类", "品牌", "产品类型", "产品型号", "屏幕尺寸", "总容积(升)", "零售价", "实售价", "销量", "销售额", "销售方式"]
+df = pd.DataFrame(data, columns=columns)
+
+# 只筛选冰箱产品
+refrigerator_df = df[df['大类'] == '冰箱'].copy()
+
+# 计算统计数据
+total_sales_volume = refrigerator_df['销量'].sum()
+total_sales_revenue = refrigerator_df['销售额'].sum()
+avg_price = refrigerator_df['实售价'].mean()
+product_count = len(refrigerator_df)
+
+# 品牌销售分析
+brand_sales = refrigerator_df.groupby('brand' not in dir(refrigerator_df) and '品牌' or 'brand').agg({
+    '销量': 'sum',
+    '销售额': 'sum'
+}).reset_index().sort_values('销售额', ascending=False)
+
+# 产品类型分析
+type_sales = refrigerator_df.groupby('产品类型').agg({
+    '销量': 'sum',
+    '销售额': 'sum'
+}).reset_index().sort_values('销售额', ascending=False)
+
+# 按日期销售分析
+daily_sales = refrigerator_df.groupby('日期').agg({
+    '销量': 'sum',
+    '销售额': 'sum'
+}).reset_index()
+
+# 容积分布分析
+volume_stats = refrigerator_df['总容积(升)'].describe()
+
+# 生成HTML报告
+html_report = f"""<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>12月冰箱销售数据分析报告</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <style>
+        body {{
+            background-color: #f8f9fa;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }}
+        .report-header {{
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 30px 0;
+            margin-bottom: 30px;
+        }}
+        .card {{
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 25px;
+            border: none;
+        }}
+        .metric-card {{
+            text-align: center;
+            padding: 25px 15px;
+        }}
+        .metric-value {{
+            font-size: 2.5rem;
+            font-weight: bold;
+        }}
+        .metric-label {{
+            font-size: 1rem;
+            color: #6c757d;
+            margin-top: 10px;
+        }}
+        .insight-box {{
+            background-color: #e7f3ff;
+            border-left: 4px solid #1890ff;
+            padding: 15px 20px;
+            margin: 15px 0;
+        }}
+    </style>
+</head>
+<body>
+    <div class="report-header">
+        <div class="container">
+            <h1 class="display-4">12月冰箱销售数据分析报告</h1>
+            <p class="lead">基于东区又一城商场冰箱销售数据的深度分析</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- 执行摘要 -->
+        <section class="mb-5">
+            <h2 class="mb-4">执行摘要</h2>
+            <div class="card">
+                <div class="card-body">
+                    <p class="card-text">本次分析基于12月1日至12月7日东区又一城商场的冰箱销售数据，期间共销售冰箱 <strong>{product_count}</strong> 台，实现总销量 <strong>{total_sales_volume}</strong> 台，总销售额 <strong>{total_sales_revenue:,}</strong> 元。销售整体呈现平稳趋势，产品覆盖三门、双开门、对开门多种类型，价格区间从1099元到6999元不等。</p>
+                    <div class="insight-box">
+                        <strong>核心发现：</strong>高端大容量冰箱占比销售额较高，三门冰箱销量领先，西门子和海尔在不同价位区间各有优势。
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 关键指标展示 -->
+        <section class="mb-5">
+            <h2 class="mb-4">关键指标</h2>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card metric-card bg-primary text-white">
+                        <div class="metric-value">{total_sales_volume}</div>
+                        <div class="metric-label text-white">总销量(台)</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card metric-card bg-success text-white">
+                        <div class="metric-value">{total_sales_revenue:,}</div>
+                        <div class="metric-label text-white">总销售额(元)</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card metric-card bg-info text-white">
+                        <div class="metric-value">{product_count}</div>
+                        <div class="metric-label text-white">销售SKU数</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card metric-card bg-warning text-white">
+                        <div class="metric-value">{avg_price:.0f}</div>
+                        <div class="metric-label text-white">平均售价(元)</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 详细数据分析 -->
+        <section class="mb-5">
+            <h2 class="mb-4">详细数据分析</h2>
+            <div class="row">
+                <!-- 品牌销售分布 -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">各品牌销售额分布</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="brandSalesChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <!-- 产品类型销售额 -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">不同产品类型销售额分布</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="typeSalesChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <!-- 每日销售趋势 -->
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">每日销售额趋势</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="dailySalesChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <!-- 容积分布 -->
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">冰箱产品总容积分布</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="volumeChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 趋势与洞察 -->
+        <section class="mb-5">
+            <h2 class="mb-4">关键洞察</h2>
+            <div class="card">
+                <div class="card-body">
+                    <div class="insight-box">
+                        <h5>1. 品牌销售额分析</h5>
+                        <p>西门子以两款产品实现销售额 {(brand_sales.iloc[0].销售额):,} 元，占总销售额的 {100*brand_sales.iloc[0].销售额/total_sales_revenue:.1f}%，主要得益于一款高端对开门产品(6999元)的销售。海尔和美的紧随其后，市场表现稳定。</p>
+                    </div>
+
+                    <div class="insight-box">
+                        <h5>2. 产品类型结构</h5>
+                        <p>三门冰箱销量最高（{type_sales[type_sales['产品类型'] == '三门']['销量'].values[0]}台），占总销量的 {100*type_sales[type_sales['产品类型'] == '三门']['销量'].values[0]/total_sales_volume:.1f}%，是门店的主流产品。但对开门冰箱单台均价高，贡献了 {100*type_sales[type_sales['产品类型'] == '对开门']['销售额'].values[0]/total_sales_revenue:.1f}% 的销售额，体现了产品结构的多元化。</p>
+                    </div>
+
+                    <div class="insight-box">
+                        <h5>3. 销售趋势分析</h5>
+                        <p>12月4日销售额最高，达到 {(daily_sales.iloc[daily_sales['销售额'].argmax()].销售额):,} 元，当天售出了美的三门、美的双开门和西门子对开门三台冰箱，销售表现突出。整体来看，前半周销售逐步提升，符合消费者周末前购物规律。</p>
+                    </div>
+
+                    <div class="insight-box">
+                        <h5>4. 产品容积分布特点</h5>
+                        <p>本次销售产品容积区间为 {refrigerator_df['总容积(升)'].min()} 升至 {refrigerator_df['总容积(升)'].max()} 升，平均容积 {refrigerator_df['总容积(升)'].mean():.0f} 升。消费者对于大容量冰箱（500升以上）需求明显，同时小容量三门冰箱也保持稳定销售，覆盖了不同消费群体需求。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 建议和结论 -->
+        <section class="mb-5">
+            <h2 class="mb-4">建议与结论</h2>
+            <div class="card">
+                <div class="card-body">
+                    <h5>结论</h5>
+                    <ul>
+                        <li>12月第一周冰箱销售情况稳定，多款产品均实现销售</li>
+                        <li>高低端产品结构合理，高端产品贡献更多销售额，低端产品走量维持热度</li>
+                        <li>多品牌布局满足不同消费者需求，国产品牌和外资品牌各有优势</li>
+                    </ul>
+
+                    <h5 class="mt-4">建议</h5>
+                    <ol>
+                        <li><strong>产品陈列：</strong>三门冰箱作为走量产品，应放在显眼位置，方便消费者选购</li>
+                        <li><strong>促销策略：</strong>针对高端对开门产品可以考虑适当促销活动，刺激高端消费需求</li>
+                        <li><strong>库存管理：</strong>保持各品牌三门冰箱的库存充足，满足日常销售需求</li>
+                        <li><strong>产品组合：</strong>继续保持高中低端产品组合策略，覆盖不同消费能力群体</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer class="bg-light py-3 mt-5">
+        <div class="container text-center text-muted">
+            <p class="mb-0">数据分析报告生成于 2024年12月</p>
+        </div>
+    </footer>
+
+    <script>
+        // 品牌销售数据
+        const brandLabels = {list(brand_sales['品牌'])}.replace(/'/g, '"');
+        const brandSales = {list(brand_sales['销售额'])}.replace(/'/g, '"');
+        const brandColors = [
+            'rgba(255, 99, 132, 0.7)',
+            'rgba(54, 162, 235, 0.7)',
+            'rgba(255, 206, 86, 0.7)',
+            'rgba(75, 192, 192, 0.7)',
+            'rgba(153, 102, 255, 0.7)',
+            'rgba(255, 159, 64, 0.7)'
+        ];
+
+        // 产品类型销售数据
+        const typeLabels = {list(type_sales['产品类型'])}.replace(/'/g, '"');
+        const typeSales = {list(type_sales['销售额'])}.replace(/'/g, '"');
+        const typeColors = [
+            'rgba(54, 162, 235, 0.7)',
+            'rgba(255, 159, 64, 0.7)',
+            'rgba(153, 102, 255, 0.7)',
+            'rgba(75, 192, 192, 0.7)'
+        ];
+
+        // 每日销售数据
+        const dailyLabels = {list(daily_sales['日期'])}.replace(/'/g, '"');
+        const dailyRevenue = {list(daily_sales['销售额'])}.replace(/'/g, '"');
+
+        // 容积分布数据
+        const volumes = {sorted(list(refrigerator_df['总容积(升)']))}.replace(/'/g, '"');
+        const volumeLabels = volumes.map(v => v + '升');
+
+        // 创建品牌销售额饼图
+        new Chart(document.getElementById('brandSalesChart'), {{
+            type: 'pie',
+            data: {{
+                labels: JSON.parse(brandLabels),
+                datasets: [{{
+                    data: JSON.parse(brandSales),
+                    backgroundColor: brandColors.slice(0, {len(brand_sales)}),
+                    borderWidth: 1
+                }}
+            }},
+            options: {{
+                responsive: true,
+                plugins: {{
+                    legend: {{
+                        position: 'bottom',
+                    }}
+                }}
+            }}
+        }});
+
+        // 创建产品类型柱状图
+        new Chart(document.getElementById('typeSalesChart'), {{
+            type: 'bar',
+            data: {{
+                labels: JSON.parse(typeLabels),
+                datasets: [{{
+                    label: '销售额(元)',
+                    data: JSON.parse(typeSales),
+                    backgroundColor: typeColors.slice(0, {len(type_sales)}),
+                    borderWidth: 1
+                }}
+            }},
+            options: {{
+                responsive: true,
+                plugins: {{
+                    legend: {{
+                        display: false
+                    }}
+                }}
+            }}
+        }});
+
+        // 创建每日销售折线图
+        new Chart(document.getElementById('dailySalesChart'), {{
+            type: 'line',
+            data: {{
+                labels: JSON.parse(dailyLabels),
+                datasets: [{{
+                    label: '每日销售额(元)',
+                    data: JSON.parse(dailyRevenue),
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.3
+                }}
+            }},
+            options: {{
+                responsive: true,
+                scales: {{
+                    y: {{
+                        beginAtZero: true
+                    }}
+                }}
+            }}
+        }});
+
+        // 创建容积分布柱状图
+        new Chart(document.getElementById('volumeChart'), {{
+            type: 'bar',
+            data: {{
+                labels: JSON.parse(volumeLabels),
+                datasets: [{{
+                    label: '产品数量',
+                    data: Array({len(volumes)}).fill(1),
+                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                    borderWidth: 1
+                }}
+            }},
+            options: {{
+                responsive: true,
+                plugins: {{
+                    legend: {{
+                        display: false
+                    }}
+                }},
+                scales: {{
+                    y: {{
+                        ticks: {{
+                            stepSize: 1
+                        }}
+                    }}
+                }}
+            }}
+        }});
+    </script>
+</body>
+</html>
+"""
+
+# 保存HTML文件
+output_file_name = "12月冰箱销售数据分析报告.html"
+with open(output_file_name, 'w', encoding='utf-8') as f:
+    f.write(html_report)
+
+print(f"文件 {output_file_name} 已成功保存。")
+```
