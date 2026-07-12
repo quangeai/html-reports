@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学生成绩分析报告</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+        .report-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin: 0 auto;
+            max-width: 1200px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+        }
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 20px 0;
+        }
+        .section-title {
+            color: #4a5568;
+            border-left: 5px solid #667eea;
+            padding-left: 15px;
+            margin: 30px 0 20px 0;
+        }
+        .highlight {
+            background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .data-alert {
+            background-color: #fff3cd;
+            border-color: #ffeaa7;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="report-container">
+        <!-- 头部信息 -->
+        <div class="header">
+            <h1>班级成绩分析报告</h1>
+            <p class="lead">报告生成日期：<span id="currentDate"></span> | 数据来源：用户上传成绩表</p>
+        </div>
+
+        <!-- 数据完整性提示 -->
+        <div class="alert alert-warning data-alert" role="alert">
+            <h4 class="alert-heading">⚠️ 数据等待分析</h4>
+            <p>检测到用户上传了成绩表数据，但未提供具体的成绩数据内容。</p>
+            <p>为了生成详细的分析报告，请提供包含以下字段的结构化成绩数据：</p>
+            <ul>
+                <li><strong>必需字段：</strong>学号、姓名、各科成绩（如语文、数学、英语等）、总分、班级排名</li>
+                <li><strong>可选字段：</strong>年级排名、考试时间、班级名称、教师信息等</li>
+            </ul>
+            <hr>
+            <p class="mb-0">您可以将数据以CSV、Excel或JSON格式提供，系统将根据数据自动生成可视化图表和深度分析。</p>
+        </div>
+
+        <!-- 数据概览（示例占位） -->
+        <h2 class="section-title">成绩数据概览（示例）</h2>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card metric-card">
+                    <h5>班级平均分</h5>
+                    <h2>-- 分</h2>
+                    <p>等待数据</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card metric-card">
+                    <h5>班级优秀率</h5>
+                    <h2>-- %</h2>
+                    <p>(≥85分)</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card metric-card">
+                    <h5>班级及格率</h5>
+                    <h2>-- %</h2>
+                    <p>(≥60分)</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card metric-card">
+                    <h5>年级排名</h5>
+                    <h2>-- 名</h2>
+                    <p>等待数据</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 图表区（示例说明） -->
+        <h2 class="section-title">成绩分布与趋势（示例）</h2>
+        <div class="card">
+            <div class="card-body">
+                <h4>总分分布直方图</h4>
+                <div class="chart-container">
+                    <canvas id="scoreDistributionChart"></canvas>
+                </div>
+                <p class="text-muted">待数据加载后，此处将展示班级总分的分布情况，帮助识别整体成绩水平。</p>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5>各科平均分对比</h5>
+                        <div class="chart-container">
+                            <canvas id="subjectAvgChart"></canvas>
+                        </div>
+                        <p class="text-muted">待数据加载后，此处将对比各学科平均分，直观展示优势与薄弱科目。</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5>班级排名趋势</h5>
+                        <div class="chart-container">
+                            <canvas id="rankingTrendChart"></canvas>
+                        </div>
+                        <p class="text-muted">若提供多次考试数据，此处将展示学生或班级排名的变化趋势。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 分析洞察（通用说明） -->
+        <h2 class="section-title">分析洞察</h2>
+        <div class="highlight">
+            <h4>📊 报告将包含以下分析维度</h4>
+            <ul>
+                <li><strong>整体水平评估：</strong>班级平均分、及格率、优秀率在年级中的位置。</li>
+                <li><strong>科目均衡性分析：</strong>识别班级的优势科目与薄弱环节。</li>
+                <li><strong>成绩分布特征：</strong>分析成绩的集中趋势、离散程度及是否存在两极分化。</li>
+                <li><strong>个体追踪（如数据支持）：</strong>关注进步显著或退步明显的学生。</li>
+                <li><strong>趋势预测（如数据支持）：</strong>基于历次考试数据，分析成绩变化趋势。</li>
+            </ul>
+        </div>
+
+        <!-- 提升建议（通用框架） -->
+        <h2 class="section-title">教学建议框架</h2>
+        <div class="card">
+            <div class="card-body">
+                <h4>📚 基于成绩数据的典型建议方向</h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="alert alert-success">
+                            <strong>针对优势科目：</strong>
+                            <ul>
+                                <li>总结成功教学经验，推广至其他科目。</li>
+                                <li>设置提高班或兴趣小组，培养学科尖子生。</li>
+                                <li>鼓励学生参与相关竞赛或拓展活动。</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="alert alert-info">
+                            <strong>针对薄弱科目：</strong>
+                            <ul>
+                                <li>进行专项学情分析，定位知识薄弱点。</li>
+                                <li>开展分层教学或课后辅导。</li>
+                                <li>调整教学策略，增加课堂互动与练习。</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-12">
+                        <div class="alert alert-warning">
+                            <strong>针对成绩分布：</strong>
+                            <ul>
+                                <li>若两极分化严重，需加强中间层学生的关注。</li>
+                                <li>若整体偏低，需反思教学进度与难度是否匹配。</li>
+                                <li>建立学习小组，促进同伴互助。</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 总结 -->
+        <div class="text-center mt-5">
+            <div class="alert alert-primary">
+                <h4>报告状态：等待数据</h4>
+                <p>本报告框架已就绪。请提供具体的班级学生成绩数据，系统将立即生成包含可视化图表和定制化分析的完整报告。</p>
+                <p><small>我们承诺：分析将严格基于您提供的数据，确保逻辑严谨与可视化准确。</small></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 设置当前日期
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('zh-CN');
+
+        // 示例图表 - 总分分布（空数据状态）
+        const distCtx = document.getElementById('scoreDistributionChart').getContext('2d');
+        new Chart(distCtx, {
+            type: 'bar', // 默认使用柱状图
+            data: {
+                labels: ['数据加载后显示'],
+                datasets: [{
+                    label: '人数',
+                    data: [0],
+                    backgroundColor: 'rgba(102, 126, 234, 0.6)',
+                    borderColor: 'rgba(102, 126, 234, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    title: {
+                        display: true,
+                        text: '等待成绩数据...'
+                    },
+                    tooltip: { enabled: false }
+                },
+                scales: {
+                    y: { beginAtZero: true, title: { display: true, text: '人数' } },
+                    x: { title: { display: true, text: '分数段' } }
+                }
+            }
+        });
+
+        // 示例图表 - 各科平均分（空数据状态）
+        const subjectCtx = document.getElementById('subjectAvgChart').getContext('2d');
+        new Chart(subjectCtx, {
+            type: 'bar',
+            data: {
+                labels: ['语文', '数学', '英语', '物理', '化学', '生物'], // 示例科目
+                datasets: [{
+                    label: '班级平均分',
+                    data: [0, 0, 0, 0, 0, 0],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.6)',
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(255, 206, 86, 0.6)',
+                        'rgba(75, 192, 192, 0.6)',
+                        'rgba(153, 102, 255, 0.6)',
+                        'rgba(255, 159, 64, 0.6)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: { display: true, text: '等待成绩数据...' },
+                    tooltip: { enabled: false }
+                },
+                scales: {
+                    y: { beginAtZero: true, max: 100, title: { display: true, text: '分数' } }
+                }
+            }
+        });
+
+        // 示例图表 - 排名趋势（空数据状态）
+        const rankCtx = document.getElementById('rankingTrendChart').getContext('2d');
+        new Chart(rankCtx, {
+            type: 'line',
+            data: {
+                labels: ['第一次', '第二次', '第三次'], // 示例考试次数
+                datasets: [{
+                    label: '班级平均排名',
+                    data: [null, null, null],
+                    borderColor: '#36a2eb',
+                    backgroundColor: 'rgba(54, 162, 235, 0.1)',
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: { display: true, text: '等待成绩数据...' },
+                    tooltip: { enabled: false }
+                },
+                scales: {
+                    y: { 
+                        reverse: true, // 排名越小越好，所以Y轴反向
+                        title: { display: true, text: '排名' },
+                        ticks: { callback: function(value) { return '第' + value + '名'; } }
+                    },
+                    x: { title: { display: true, text: '考试次序' } }
+                }
+            }
+        });
+
+        // 提示函数（当用户提供数据后可调用）
+        function loadRealData(studentData, analysisCriteria) {
+            alert('数据加载函数已就绪！请将实际成绩数据和分析标准传入此函数。');
+            // 此处将根据真实数据重新渲染所有图表和更新报告内容
+            console.log('待分析数据：', studentData);
+            console.log('分析标准：', analysisCriteria);
+        }
+    </script>
+</body>
+</html>
