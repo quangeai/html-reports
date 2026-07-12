@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学生成绩分析报告</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+        }
+        .report-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin: 0 auto;
+            max-width: 1200px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+        }
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 20px 0;
+        }
+        .section-title {
+            color: #4a5568;
+            border-left: 5px solid #667eea;
+            padding-left: 15px;
+            margin: 30px 0 20px 0;
+        }
+        .highlight {
+            background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .alert-custom {
+            border-left: 5px solid #dc3545;
+            background-color: #f8d7da;
+        }
+    </style>
+</head>
+<body>
+    <div class="report-container">
+        <!-- 头部信息 -->
+        <div class="header">
+            <h1>班级学生成绩分析报告</h1>
+            <p class="lead">报告生成日期：<span id="reportDate"></span> | 数据状态：<span id="dataStatus">等待数据上传</span></p>
+        </div>
+
+        <!-- 数据完整性提示 -->
+        <div class="card alert-custom">
+            <div class="card-body">
+                <h4 class="text-danger">⚠️ 数据缺失提示</h4>
+                <p>当前系统未检测到有效的学生成绩表数据。请上传包含以下基础字段的CSV或Excel文件：<strong>学号、姓名、各科成绩、班级排名、总分</strong>。</p>
+                <p>系统将根据您上传的数据自动分析并生成完整的可视化报告。</p>
+                <div class="highlight">
+                    <h5>📁 数据格式示例：</h5>
+                    <table class="table table-sm table-bordered">
+                        <thead>
+                            <tr>
+                                <th>学号</th>
+                                <th>姓名</th>
+                                <th>语文</th>
+                                <th>数学</th>
+                                <th>英语</th>
+                                <th>总分</th>
+                                <th>班级排名</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>520527200000000001</td>
+                                <td>学生A</td>
+                                <td>85</td>
+                                <td>90</td>
+                                <td>88</td>
+                                <td>263</td>
+                                <td>5</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 数据概览（占位符） -->
+        <h2 class="section-title">成绩数据概览</h2>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card metric-card">
+                    <h5>班级平均分</h5>
+                    <h2>-- 分</h2>
+                    <p>等待数据计算</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card metric-card">
+                    <h5>班级优秀率</h5>
+                    <h2>-- %</h2>
+                    <p>（≥85分）</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card metric-card">
+                    <h5>班级及格率</h5>
+                    <h2>-- %</h2>
+                    <p>（≥60分）</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card metric-card">
+                    <h5>年级排名</h5>
+                    <h2>-- 名</h2>
+                    <p>等待数据</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 图表区（占位符） -->
+        <h2 class="section-title">科目成绩分布</h2>
+        <div class="card">
+            <div class="card-body">
+                <h4>各科平均分对比</h4>
+                <div class="chart-container">
+                    <canvas id="subjectAvgChart"></canvas>
+                </div>
+                <p class="text-muted">上传成绩数据后，此处将显示各科目平均分的柱状对比图。</p>
+            </div>
+        </div>
+
+        <h2 class="section-title">总分分布情况</h2>
+        <div class="card">
+            <div class="card-body">
+                <h4>学生总分区间分布</h4>
+                <div class="chart-container">
+                    <canvas id="scoreDistributionChart"></canvas>
+                </div>
+                <p class="text-muted">上传成绩数据后，此处将显示学生总分在不同分数段的分布情况。</p>
+            </div>
+        </div>
+
+        <!-- 分析洞察（占位符） -->
+        <h2 class="section-title">关键发现</h2>
+        <div class="highlight">
+            <h4>📊 待生成的分析洞察</h4>
+            <p>系统将根据您上传的成绩数据，自动分析并生成以下洞察：</p>
+            <ul>
+                <li>班级整体成绩水平与年级对比</li>
+                <li>优势科目与薄弱科目识别</li>
+                <li>学生成绩分布（如是否两极分化）</li>
+                <li>成绩进步/退步趋势（如有多次考试数据）</li>
+            </ul>
+        </div>
+
+        <!-- 提升建议（占位符） -->
+        <h2 class="section-title">学习建议</h2>
+        <div class="card">
+            <div class="card-body">
+                <h4>📚 基于数据的教学建议</h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="alert alert-success">
+                            <strong>整体建议：</strong>
+                            <ul>
+                                <li>上传数据后，系统将提供针对性的班级教学建议</li>
+                                <li>识别需要重点关注的学生群体</li>
+                                <li>为差异化教学提供数据支持</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="alert alert-info">
+                            <strong>个性化建议：</strong>
+                            <ul>
+                                <li>为每位学生生成个性化的学习建议</li>
+                                <li>分析学生的优势与待提升领域</li>
+                                <li>提供具体的行动方案</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 总结 -->
+        <div class="text-center mt-5">
+            <div class="alert alert-primary">
+                <h4>准备生成报告</h4>
+                <p>请上传完整的成绩数据表以生成专业、可视化的班级成绩分析报告。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 设置报告日期
+        document.getElementById('reportDate').textContent = new Date().toLocaleDateString('zh-CN');
+
+        // 初始化空图表（占位）
+        const subjectCtx = document.getElementById('subjectAvgChart').getContext('2d');
+        new Chart(subjectCtx, {
+            type: 'bar',
+            data: {
+                labels: ['语文', '数学', '英语', '物理', '化学', '生物'],
+                datasets: [{
+                    label: '平均分',
+                    data: [0, 0, 0, 0, 0, 0],
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: '各科平均分（等待数据）'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return '暂无数据';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: '分数'
+                        }
+                    }
+                }
+            }
+        });
+
+        const distributionCtx = document.getElementById('scoreDistributionChart').getContext('2d');
+        new Chart(distributionCtx, {
+            type: 'pie',
+            data: {
+                labels: ['优秀 (≥85)', '良好 (70-84)', '及格 (60-69)', '不及格 (<60)'],
+                datasets: [{
+                    data: [1, 1, 1, 1], // 均等占位
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.6)',
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(255, 206, 86, 0.6)',
+                        'rgba(255, 99, 132, 0.6)'
+                    ],
+                    borderColor: [
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(255, 99, 132, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: '总分分布（等待数据）'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return '暂无数据';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
