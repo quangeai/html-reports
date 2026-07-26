@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试报表，直播数据分析</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #0a0e27;
+            color: #ffffff;
+            font-weight: 700;
+        }
+        .header-section {
+            background: linear-gradient(90deg, #1a2a6c 0%, #b21f1f 50%, #1a2a6c 100%);
+            padding: 15px 0;
+            margin-bottom: 20px;
+        }
+        .main-title {
+            font-size: 36px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .kpi-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0, 150, 255, 0.3);
+        }
+        .kpi-value {
+            font-size: 42px;
+            color: #00d4ff;
+            font-weight: 900;
+        }
+        .kpi-label {
+            font-size: 16px;
+            color: #e0e0e0;
+        }
+        .chart-container {
+            height: 450px;
+            min-height: 450px;
+            margin: 2rem 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 0 15px rgba(0, 150, 255, 0.2);
+        }
+        .footer-note {
+            text-align: center;
+            color: #aaaaaa;
+            padding: 15px 0;
+            margin-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="header-section">
+            <h1 class="main-title">直播数据分析</h1>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="kpi-card">
+                            <div class="kpi-label">总曝光次数</div>
+                            <div class="kpi-value" id="total-exposure">13008</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="kpi-card">
+                            <div class="kpi-label">总曝光人数</div>
+                            <div class="kpi-value" id="total-viewers">8837</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="kpi-card">
+                            <div class="kpi-label">累积总观看</div>
+                            <div class="kpi-value" id="total-watch">4613</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="kpi-card">
+                            <div class="kpi-label">平均曝光观看率</div>
+                            <div class="kpi-value" id="avg-rate">59.2%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="chart-container">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="chart-container">
+                        <canvas id="durationExposureChart"></canvas>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="chart-container">
+                        <canvas id="rateDistributionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="chart-container">
+                        <canvas id="onlineChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-note container">
+            <p>数据统计时间：2024年10月21日 - 2024年11月21日 | 数据更新时间：2024年11月21日</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function(){
+            if (typeof Chart === 'undefined') {
+                console.error('Chart.js 未加载成功');
+                return;
+            }
+
+            const data = [
+                {date: "2024/10/21", exposure: 2937, exposureUser: 2370, watch: 1641, rate: 69.24, maxOnline: 50},
+                {date: "2024/10/22", exposure: 1787, exposureUser: 1373, watch: 1018, rate: 74.14, maxOnline: 12},
+                {date: "2024/10/23", exposure: 679, exposureUser: 461, watch: 316, rate: 68.55, maxOnline: 4},
+                {date: "2024/10/24", exposure: 615, exposureUser: 300, watch: 189, rate: 63.00, maxOnline: 4},
+                {date: "2024/10/28", exposure: 1113, exposureUser: 473, watch: 264, rate: 55.81, maxOnline: 5},
+                {date: "2024/10/29", exposure: 983, exposureUser: 382, watch: 242, rate: 63.35, maxOnline: 4},
+                {date: "2024/10/31", exposure: 315, exposureUser: 196, watch: 93, rate: 47.45, maxOnline: 4},
+                {date: "2024/11/1", exposure: 680, exposureUser: 315, watch: 162, rate: 51.43, maxOnline: 6},
+                {date: "2024/11/4", exposure: 326, exposureUser: 168, watch: 66, rate: 39.29, maxOnline: 4},
+                {date: "2024/11/5", exposure: 234, exposureUser: 179, watch: 116, rate: 64.80, maxOnline: 4},
+                {date: "2024/11/6", exposure: 392, exposureUser: 268, watch: 190, rate: 70.90, maxOnline: 6},
+                {date: "2024/11/7", exposure: 365, exposureUser: 280, watch: 180, rate: 64.29, maxOnline: 8},
+                {date: "2024/11/8", exposure: 254, exposureUser: 166, watch: 93, rate: 56.02, maxOnline: 5},
+                {date: "2024/11/10", exposure: 386, exposureUser: 238, watch: 97, rate: 40.76, maxOnline: 3},
+                {date: "2024/11/11", exposure: 408, exposureUser: 239, watch: 136, rate: 56.90, maxOnline: 11},
+                {date: "2024/11/12", exposure: 302, exposureUser: 207, watch: 124, rate: 59.90, maxOnline: 4},
+                {date: "2024/11/13", exposure: 331, exposureUser: 229, watch: 162, rate: 70.74, maxOnline: 7},
+                {date: "2024/11/14", exposure: 216, exposureUser: 105, watch: 58, rate: 55.24, maxOnline: 4},
+                {date: "2024/11/15", exposure: 253, exposureUser: 170, watch: 106, rate: 62.35, maxOnline: 4},
+                {date: "2024/11/18", exposure: 264, exposureUser: 183, watch: 125, rate: 68.31, maxOnline: 4},
+                {date: "2024/11/19", exposure: 404, exposureUser: 297, watch: 143, rate: 48.15, maxOnline: 5},
+                {date: "2024/11/20", exposure: 359, exposureUser: 219, watch: 96, rate: 43.84, maxOnline: 3},
+                {date: "2024/11/21", exposure: 330, exposureUser: 219, watch: 144, rate: 65.75, maxOnline: 4}
+            ];
+
+            const labels = data.map(item => item.date);
+            const exposureData = data.map(item => item.exposure);
+            const watchData = data.map(item => item.watch);
+            const rateData = data.map(item => item.rate);
+            const onlineData = data.map(item => item.maxOnline);
+
+            // 趋势图：曝光与观看趋势
+            const trendCtx = document.getElementById('trendChart').getContext('2d');
+            new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: '直播曝光次数',
+                            data: exposureData,
+                            borderColor: '#00d4ff',
+                            backgroundColor: 'rgba(0, 212, 255, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.2
+                        },
+                        {
+                            label: '累积观看人数',
+                            data: watchData,
+                            borderColor: '#ff6b6b',
+                            backgroundColor: 'rgba(255, 107, 107, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '每日直播曝光与观看人数趋势',
+                            font: {size: 20, weight: 'bold'}
+                        },
+                        legend: {
+                            labels: {
+                                font: {size: 14, weight: 'bold'}
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {font: {size: 14, weight: 'bold'}}
+                        },
+                        x: {
+                            ticks: {font: {size: 14, weight: 'bold'}, maxRotation: 45}
+                        }
+                    }
+                }
+            });
+
+            // 柱状图：曝光观看率分布
+            const rateCtx = document.getElementById('rateDistributionChart').getContext('2d');
+            const rateBins = ['<40%', '40-50%', '50-60%', '60-70%', '>70%'];
+            const rateCounts = [
+                data.filter(d => d.rate < 40).length,
+                data.filter(d => d.rate >= 40 && d.rate < 50).length,
+                data.filter(d => d.rate >= 50 && d.rate < 60).length,
+                data.filter(d => d.rate >= 60 && d.rate < 70).length,
+                data.filter(d => d.rate >= 70).length
+            ];
+            new Chart(rateCtx, {
+                type: 'bar',
+                data: {
+                    labels: rateBins,
+                    datasets: [{
+                        label: '直播场次数量',
+                        data: rateCounts,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.7)',
+                            'rgba(255, 159, 64, 0.7)',
+                            'rgba(255, 205, 86, 0.7)',
+                            'rgba(75, 192, 192, 0.7)',
+                            'rgba(54, 162, 235, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgb(255, 99, 132)',
+                            'rgb(255, 159, 64)',
+                            'rgb(255, 205, 86)',
+                            'rgb(75, 192, 192)',
+                            'rgb(54, 162, 235)'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '曝光观看率分布（场次统计）',
+                            font: {size: 20, weight: 'bold'}
+                        },
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {font: {size: 14, weight: 'bold'}, stepSize: 1}
+                        },
+                        x: {
+                            ticks: {font: {size: 14, weight: 'bold'}}
+                        }
+                    }
+                }
+            });
+
+            // 双轴图：直播时长和曝光的关系
+            const durationCtx = document.getElementById('durationExposureChart').getContext('2d');
+            const durationList = [
+                355, 321, 182, 94, 101, 91, 90, 94, 89, 90, 94, 102, 87, 88, 85, 89, 90, 90, 89, 89, 94, 103, 91
+            ];
+            new Chart(durationCtx, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: '直播时长(分钟) vs 曝光次数',
+                        data: data.map((d, i) => ({x: durationList[i], y: d.exposure})),
+                        backgroundColor: 'rgba(153, 102, 255, 0.7)',
+                        pointRadius: 8,
+                        pointHoverRadius: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '直播时长与曝光次数相关性',
+                            font: {size: 20, weight: 'bold'}
+                        },
+                        legend: {
+                            labels: {
+                                font: {size: 14, weight: 'bold'}
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {display: true, text: '直播时长(分钟)', font: {size: 16, weight: 'bold'}},
+                            ticks: {font: {size: 14, weight: 'bold'}}
+                        },
+                        y: {
+                            title: {display: true, text: '曝光次数', font: {size: 16, weight: 'bold'}},
+                            ticks: {font: {size: 14, weight: 'bold'}}
+                        }
+                    }
+                }
+            });
+
+            // 最高在线人数柱状图
+            const onlineCtx = document.getElementById('onlineChart').getContext('2d');
+            new Chart(onlineCtx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '最高在线人数',
+                        data: onlineData,
+                        backgroundColor: 'rgba(0, 212, 255, 0.6)',
+                        borderColor: 'rgba(0, 212, 255, 1)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '每日直播最高在线人数',
+                            font: {size: 20, weight: 'bold'}
+                        },
+                        legend: {
+                            labels: {
+                                font: {size: 14, weight: 'bold'}
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {font: {size: 14, weight: 'bold'}, stepSize: 5}
+                        },
+                        x: {
+                            ticks: {font: {size: 14, weight: 'bold'}, maxRotation: 45}
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
