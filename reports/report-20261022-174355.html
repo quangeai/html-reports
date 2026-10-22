@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>译林七上 Unit 4 单词闯关</title>
+<style>
+*{box-sizing:border-box;font-family:system-ui,sans-serif;}
+body{max-width:680px;margin:24px auto;padding:16px;}
+h2{text-align:center;color:#222;}
+.box{border:1px solid #ddd;border-radius:12px;padding:20px;margin-bottom:16px;background:#fff;}
+.word{font-size:22px;font-weight:bold;margin-bottom:14px;color:#1e40af;}
+.opt{padding:10px 12px;margin:8px 0;border:1px solid #ccc;border-radius:8px;cursor:pointer;}
+.opt:hover{background:#f0f7ff;}
+.opt.right{background:#dcfce7;border-color:#22c55e;}
+.opt.wrong{background:#fee2e2;border-color:#ef4444;}
+button{width:100%;padding:14px;border:none;background:#2563eb;color:#fff;font-size:17px;border-radius:10px;cursor:pointer;margin-top:10px;}
+.result{margin-top:20px;padding:20px;border-radius:12px;background:#f8fafc;display:none;}
+.ok{color:#16a34a;font-weight:bold;}
+.no{color:#dc2626;font-weight:bold;}
+</style>
+</head>
+<body>
+<h2>译林七上 Unit 4 单词闯关（共5关）</h2>
+<div id="wrap"></div>
+<div class="result" id="resultBox">
+  <h3>闯关汇总</h3>
+  <div id="summary"></div>
+  <button onclick="restart()">重新闯关</button>
+</div>
+
+<script>
+const wordList = [
+  {
+    eng: "bedroom",
+    ans: "卧室",
+    opts: ["卧室", "书房", "厨房", "浴室"]
+  },
+  {
+    eng: "living room",
+    ans: "客厅，起居室",
+    opts: ["卧室", "客厅，起居室", "阳台", "餐厅"]
+  },
+  {
+    eng: "sofa",
+    ans: "沙发",
+    opts: ["桌子", "椅子", "沙发", "床"]
+  },
+  {
+    eng: "mirror",
+    ans: "镜子",
+    opts: ["柜子", "镜子", "台灯", "书架"]
+  },
+  {
+    eng: "between",
+    ans: "在……之间",
+    opts: ["在……上面", "在……下面", "在……之间", "在……旁边"]
+  }
+];
+const label = ["A","B","C","D"];
+let current = 0;
+let score = 0;
+let record = [];
+const wrap = document.getElementById("wrap");
+const resultBox = document.getElementById("resultBox");
+const summary = document.getElementById("summary");
+
+function render(){
+  wrap.innerHTML = "";
+  const item = wordList[current];
+  let html = `<div class="box">
+    <div class="word">第${current+1}关 单词：${item.eng}</div>`;
+  item.opts.forEach((txt,i)=>{
+    html += `<div class="opt" data-val="${txt}" onclick="select(this,'${item.ans}')">${label[i]}. ${txt}</div>`
+  })
+  html += `<button onclick="next()">提交本关答案</button></div>`;
+  wrap.innerHTML = html;
+}
+let selectedDom = null;
+let userPick = "";
+function select(dom,rightAns){
+  if(selectedDom) selectedDom.classList.remove("right","wrong");
+  selectedDom = dom;
+  userPick = dom.dataset.val;
+}
+function next(){
+  if(!userPick){
+    alert("请选择A/B/C/D其中一项！");
+    return;
+  }
+  const right = (userPick === wordList[current].ans);
+  if(right) score++;
+  record.push({
+    level:current+1,
+    word:wordList[current].eng,
+    your:userPick,
+    correct:wordList[current].ans,
+    pass:right
+  })
+  selectedDom.classList.add(right?"right":"wrong");
+  setTimeout(()=>{
+    current++;
+    userPick = "";
+    selectedDom=null;
+    if(current >= wordList.length){
+      showResult();
+    }else{
+      render();
+    }
+  },600)
+}
+function showResult(){
+  wrap.style.display = "none";
+  resultBox.style.display = "block";
+  let s = `<p>一共闯了 <b>${wordList.length}</b> 关，闯关成功 <b>${score}</b> 关</p >`;
+  record.forEach(r=>{
+    s += r.pass
+      ? `<p class="ok">✅第${r.level}关 ${r.word}：答对</p >`
+      : `<p class="no">❌第${r.level}关 ${r.word}，你选：${r.your}，正确：${r.correct}</p >`
+  })
+  summary.innerHTML = s;
+}
+function restart(){
+  current=0;score=0;record=[];userPick="";selectedDom=null;
+  wrap.style.display="block";
+  resultBox.style.display="none";
+  render();
+}
+render();
+</script>
+</body>
+</html>
