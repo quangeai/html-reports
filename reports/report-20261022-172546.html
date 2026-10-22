@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>译林版七上 Unit4 词汇闯关练习</title>
+    <style>
+        * {box-sizing: border-box;font-family: "Microsoft YaHei", system-ui, sans-serif;}
+        body {max-width: 720px;margin: 30px auto;padding: 0 16px;background-color: #f8fafc;}
+        h2 {text-align: center;color: #1e40af;}
+        .question-box {background: #fff;border: 1px solid #e2e8f0;border-radius: 12px;padding: 18px;margin-bottom: 16px;box-shadow: 0 2px 6px #00000010;}
+        .q-title {font-size: 17px;font-weight: bold;margin-bottom: 12px;line-height: 1.6;}
+        .option-item {padding: 8px 0;cursor: pointer;font-size:16px;}
+        .option-item input {margin-right: 8px;}
+        .btn-submit {display:block;margin:20px auto;padding:13px 36px;font-size:18px;background:#2563eb;color:white;border:none;border-radius:10px;cursor:pointer;}
+        .result-panel {background:#ecfdf5;border-radius:12px;padding:20px;margin-top:20px;display:none;}
+        .score-text {font-size:24px;font-weight:bold;color:#047857;margin-bottom:12px;}
+        .ok {color:#16a34a; font-weight:bold;}
+        .no {color:#dc2626; font-weight:bold;}
+        .btn-reset {margin-top:15px;padding:8px 20px;background:#64748b;color:white;border:none;border-radius:8px;cursor:pointer;}
+    </style>
+</head>
+<body>
+    <h2>译林版七上 Unit 4 词汇闯关练习</h2>
+    <div id="questionWrap"></div>
+    <button class="btn-submit" id="submitBtn">提交答案，查看得分</button>
+    <div class="result-panel" id="resultPanel">
+        <div class="score-text" id="scoreShow"></div>
+        <div id="detailShow"></div>
+        <button class="btn-reset" id="resetBtn">重新练习</button>
+    </div>
+<script>
+const questionData = [
+    {q: "—Where is my ____? I want to put my books in it. —It’s over there.",opt: ["sofa", "desk", "bookcase", "clock"],ans: "C"},
+    {q: "My ball is ____ the floor, under the bed.",opt: ["in", "on", "under", "at"],ans: "B"},
+    {q: "There is a nice ____ on the wall.",opt: ["picture", "radio", "chair", "table"],ans: "A"},
+    {q: "—Can you see my keys? —Yes, they are ____ the box.",opt: ["of", "for", "inside", "with"],ans: "C"},
+    {q: "Don’t put your schoolbag on the ____. It’s for our dinner.",opt: ["sofa", "table", "bed", "bookcase"],ans: "B"}
+];
+const labelArr = ["A","B","C","D"];
+const wrap = document.getElementById("questionWrap");
+function renderQuestions(){
+    wrap.innerHTML = "";
+    questionData.forEach((item, qIndex)=>{
+        const box = document.createElement("div");
+        box.className = "question-box";
+        let html = `<div class="q-title">第 ${qIndex+1} 题：${item.q}</div>`;
+        item.opt.forEach((val, i)=>{
+            html += `<div class="option-item"><label><input type="radio" name="q${qIndex}" value="${labelArr[i]}">${labelArr[i]}. ${val}</label></div>`
+        })
+        box.innerHTML = html;
+        wrap.appendChild(box);
+    })
+}
+renderQuestions();
+document.getElementById("submitBtn").onclick = function(){
+    let rightNum = 0;
+    let detailHtml = "";
+    questionData.forEach((item, idx)=>{
+        const checked = document.querySelector(`input[name="q${idx}"]:checked`);
+        if(!checked){
+            detailHtml += `<div>第${idx+1}题：未作答，正确答案：${item.ans}</div>`;
+        }else{
+            const userAns = checked.value;
+            if(userAns === item.ans){
+                rightNum++;
+                detailHtml += `<div class="ok">第${idx+1}题 ✔ 答对</div>`;
+            }else{
+                detailHtml += `<div class="no">第${idx+1}题 ✘ 你的答案：${userAns}，正确答案：${item.ans}</div>`;
+            }
+        }
+    })
+    const totalScore = rightNum * 20;
+    document.getElementById("scoreShow").innerText = `总分：${totalScore} / 100  （答对 ${rightNum} 题）`;
+    document.getElementById("detailShow").innerHTML = detailHtml;
+    document.getElementById("resultPanel").style.display = "block";
+}
+document.getElementById("resetBtn").onclick = function(){
+    renderQuestions();
+    document.getElementById("resultPanel").style.display = "none";
+}
+</script>
+</body>
+</html>
