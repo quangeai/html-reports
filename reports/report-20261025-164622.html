@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分层课后短文填空｜译林七上Unit4</title>
+    <style>
+        body {width:92%;max-width:780px;margin:24px auto;font-size:17px;line-height:2.2;font-family:Arial;}
+        .block {margin:22px 0;padding:18px;border-radius:10px;border:1px solid #eee;}
+        .must {border-left:6px solid #22c55e;background:#f0fdf4;}
+        .opt {border-left:6px solid #3b82f6;background:#eff6ff;}
+        .cha {border-left:6px solid #f97316;background:#fff7ed;}
+        .blank {width:110px;padding:4px 6px;border:1px solid #555;border-radius:4px;margin:0 4px;}
+        .tip {color:#666;font-size:15px;margin-bottom:8px;}
+        #submitAll {padding:10px 24px;background:#2563eb;color:#fff;border:none;border-radius:6px;font-size:16px;cursor:pointer;margin:12px 0;}
+        .ok {color:#16a34a;font-weight:bold;}
+        .err {color:#dc2626;font-weight:bold;}
+        .result-box {margin:16px 0;}
+    </style>
+</head>
+<body>
+    <h2>课后分层短文填空练习</h2>
+    <p class="tip">✅ 完成【必做题】即可提交；选做题、挑战题自愿完成，不计入基础得分</p >
+
+    <div class="block must">
+        <h3>📌 必做题（基础，必须完成）</h3>
+        <div id="mustBox">Hi, I'm Tom. This is my ______ room. It's very tidy. You can see a red ______ on the sofa. The sofa is ______ the living room. And my blue ______ is on the desk. My white cat is sleeping ______ the chair.</div>
+        <div class="result-box" id="mustRes"></div>
+    </div>
+
+    <div class="block opt">
+        <h3>📘 选做题（中等，自愿）</h3>
+        <div id="optBox">My name is Alice. I decorated my ______ bedroom with them last weekend. A nice cotton ______ lies on the small sofa by the window. All of our family photos are ______ the big wall of the room. I usually put my colourful ______ on the desk when I do homework. My little brother often hides his toy car ______ the sofa when we play hide and seek.</div>
+        <div class="result-box" id="optRes"></div>
+    </div>
+
+    <div class="block cha">
+        <h3>🔥 挑战题（提升，自愿）</h3>
+        <div id="chaBox">Welcome to my new house. The big soft sofa in my ______ living room is my favourite place to relax. Please put your coat ______ the arm of the sofa. My mother's nice blue ______ is always on the sofa when she comes back from work. Some small pot plants are ______ the corner of the living room. Yesterday I lost my key, and finally found it ______ the sofa.</div>
+        <div class="result-box" id="chaRes"></div>
+    </div>
+
+    <button id="submitAll">提交，核对全部答案</button>
+
+<script>
+const mustAns = ["parents'", "hat", "in", "pencil box", "under"];
+const optAns = ["parents'", "hat", "on", "pencil box", "under"];
+const chaAns = ["parents'", "on", "hat", "in", "under"];
+
+function renderBox(boxId) {
+    const dom = document.getElementById(boxId);
+    let html = dom.innerHTML;
+    let idx = 0;
+    html = html.replaceAll("______", ()=>{
+        return `<input class="blank" data-i="${idx++}" placeholder="填单词">`
+    })
+    dom.innerHTML = html;
+}
+
+function check(boxId, resId, stdAns, title) {
+    const inputs = document.querySelectorAll(`#${boxId} .blank`);
+    let score = 0;
+    let tip = `<div style="font-weight:bold">${title}：</div>`;
+    inputs.forEach((inp,i)=>{
+        const u = inp.value.trim().toLowerCase();
+        const s = stdAns[i].toLowerCase();
+        if(u === s) {
+            score++;
+            tip += `<div class="ok">第${i+1}空 ✔ 正确，答案：${stdAns[i]}</div>`
+        }else{
+            tip += `<div class="err">第${i+1}空 ✘ 你的答案：${inp.value.trim()}，标准答案：${stdAns[i]}</div>`
+        }
+    })
+    tip += `<div>得分：${score}/${stdAns.length}</div>`
+    document.getElementById(resId).innerHTML = tip;
+    return score;
+}
+
+renderBox("mustBox");
+renderBox("optBox");
+renderBox("chaBox");
+
+document.getElementById("submitAll").onclick = function(){
+    const mustScore = check("mustBox","mustRes",mustAns,"必做题");
+    check("optBox","optRes",optAns,"选做题");
+    check("chaBox","chaRes",chaAns,"挑战题");
+    alert(`基础总分（必做题）：${mustScore} / ${mustAns.length}，选做、挑战自愿完成！`);
+}
+</script>
+</body>
+</html>
