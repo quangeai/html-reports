@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>译林七上Unit4 短文填空</title>
+    <style>
+        body {width:92%;max-width:750px;margin:30px auto;font-size:18px;line-height:2.3;font-family:Arial,sans-serif;}
+        .blank {width:120px;padding:5px 6px;border:1px solid #444;border-radius:4px;margin:0 4px;}
+        .wrap {margin:24px 0;padding:20px;border:1px solid #e5e7eb;border-radius:10px;}
+        #submit {padding:11px 26px;background:#2563eb;color:#fff;border:none;border-radius:6px;font-size:17px;cursor:pointer;margin-top:10px;}
+        #result {margin-top:20px;font-size:18px;}
+        .ok {color:#16a34a;font-weight:bold;}
+        .err {color:#dc2626;font-weight:bold;}
+    </style>
+</head>
+<body>
+    <h3>短文填空练习</h3>
+    <div class="wrap" id="content">
+        This is my new home. I'd like to introduce it to you. My bedroom is next ______ the dining room. Some of my favourite storybooks are ______ the desk beside my bed. A lovely white cat often stays ______ the desk to play with my pencil. My ______ room is near the balcony, and a pot of green plant is in ______ room. We all love our warm home.
+    </div>
+    <button id="submit">提交核对答案</button>
+    <div id="result"></div>
+
+<script>
+const standardAnswers = ["to", "on", "under", "parents'", "their"];
+let text = document.getElementById("content").innerHTML;
+let index = 0;
+text = text.replaceAll("______", function(){
+    return `<input class="blank" data-no="'+index+'" placeholder="填单词">`;
+});
+document.getElementById("content").innerHTML = text;
+
+document.getElementById("submit").onclick = function(){
+    const inputs = document.querySelectorAll(".blank");
+    let score = 0;
+    let htmlTip = "";
+    inputs.forEach(function(inp, i){
+        const user = inp.value.trim().toLowerCase();
+        const std = standardAnswers[i].toLowerCase();
+        if(user === std){
+            score += 1;
+            htmlTip += `<div class="ok">第${i+1}空 ✔ 正确，标准答案：${standardAnswers[i]}</div>`;
+        }else{
+            htmlTip += `<div class="err">第${i+1}空 ✘ 错误，你的答案：${inp.value.trim()}，标准答案：${standardAnswers[i]}</div>`;
+        }
+    })
+    htmlTip = `<div style="font-size:20px;margin-bottom:10px;">总分：${score} / ${standardAnswers.length}</div>` + htmlTip;
+    document.getElementById("result").innerHTML = htmlTip;
+}
+</script>
+</body>
+</html>
