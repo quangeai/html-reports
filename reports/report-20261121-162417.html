@@ -1,0 +1,229 @@
+### 题目知识点分析
+本题核心知识点为**斜面上静止物体的受力平衡分析**，涵盖重力的正交分解、静摩擦力与支持力的动态变化规律，重点考察对共点力平衡条件的应用能力。
+
+### 动画功能说明
+生成的交互式HTML动画将：
+1.  直观展示斜面上木块的受力示意图，用不同颜色带箭头线段分别标注重力、支持力、静摩擦力，同时分解重力为沿斜面和垂直斜面的两个分力
+2.  提供滑块控件可实时调整斜面倾角θ，动态演示倾角变化时各力的数值变化过程
+3.  配套展示完整原题、受力分析推导过程与标准答案
+4.  加入演示控制按钮，支持一键重置、自动播放倾角变化过程，方便课堂演示使用
+
+以下是完整可运行的HTML动画代码：
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>斜面上木块受力平衡动态分析</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        .force-arrow {
+            stroke-linecap: round;
+            transition: all 0.3s ease;
+        }
+        .block {
+            transition: transform 0.3s ease;
+        }
+    </style>
+</head>
+<body class="p-6">
+    <div class="max-w-6xl mx-auto bg-white/90 backdrop-blur-sm rounded-2xl shadow-2xl p-8">
+        <h1 class="text-3xl font-bold text-center text-blue-800 mb-6">斜面上静止木块受力动态分析</h1>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- 题目与知识点区域 -->
+            <div class="space-y-6">
+                <div class="bg-blue-50 p-5 rounded-xl border-l-4 border-blue-600">
+                    <h2 class="text-xl font-semibold text-blue-900 mb-3">原题内容</h2>
+                    <p class="text-gray-700 leading-relaxed">木块置于倾角为θ的固定斜面上，始终保持静止状态。若缓慢减小斜面倾角θ，以下关于木块受力的说法正确的是（  ）</p>
+                    <ul class="mt-3 space-y-2 text-gray-700">
+                        <li>A. 静摩擦力大小保持为mg不变</li>
+                        <li>B. 木块对斜面的压力始终等于mg</li>
+                        <li>C. θ缓慢减小，静摩擦力随之减小</li>
+                        <li>D. θ缓慢减小，木块对斜面的压力随之减小</li>
+                    </ul>
+                </div>
+                
+                <div class="bg-green-50 p-5 rounded-xl border-l-4 border-green-600">
+                    <h2 class="text-xl font-semibold text-green-900 mb-3">核心知识点</h2>
+                    <ul class="space-y-2 text-gray-700">
+                        <li>1. 重力的正交分解：重力沿斜面向下分力为 \( G_1 = mg\sin\theta \)，垂直斜面向下分力为 \( G_2 = mg\cos\theta \)</li>
+                        <li>2. 共点力平衡条件：静止物体合力为0，沿斜面与垂直斜面方向分力各自平衡</li>
+                        <li>3. 动态平衡分析：倾角变化时分力的变化规律</li>
+                    </ul>
+                </div>
+                
+                <div class="bg-amber-50 p-5 rounded-xl border-l-4 border-amber-600">
+                    <h2 class="text-xl font-semibold text-amber-900 mb-3">标准答案：C</h2>
+                    <p class="text-gray-700 leading-relaxed">推导过程：木块静止，沿斜面方向静摩擦力 \( f = mg\sin\theta \)，垂直斜面方向支持力 \( N = mg\cos\theta \)。当θ缓慢减小时，\( \sin\theta \) 减小，故静摩擦力f随之减小；\( \cos\theta \) 增大，故支持力N增大，木块对斜面的压力等于N也随之增大，因此仅C选项正确。</p>
+                </div>
+            </div>
+            
+            <!-- 动画演示区域 -->
+            <div class="flex flex-col items-center">
+                <svg id="animationCanvas" width="550" height="450" class="border border-gray-200 rounded-xl bg-gray-50 shadow-inner">
+                    <!-- 坐标系基础 -->
+                    <defs>
+                        <marker id="arrowhead-red" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#ef4444" />
+                        </marker>
+                        <marker id="arrowhead-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#22c55e" />
+                        </marker>
+                        <marker id="arrowhead-blue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#3b82f6" />
+                        </marker>
+                        <marker id="arrowhead-purple" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#a855f7" />
+                        </marker>
+                    </defs>
+                    <!-- 斜面 -->
+                    <path id="inclinedPlane" stroke="#64748b" stroke-width="4" fill="none" />
+                    <!-- 木块 -->
+                    <rect id="block" class="block" x="0" y="0" width="60" height="60" fill="#f97316" rx="4" />
+                    <!-- 受力箭头 -->
+                    <line id="gravityArrow" class="force-arrow" stroke="#ef4444" stroke-width="3" marker-end="url(#arrowhead-red)" />
+                    <line id="supportArrow" class="force-arrow" stroke="#22c55e" stroke-width="3" marker-end="url(#arrowhead-green)" />
+                    <line id="frictionArrow" class="force-arrow" stroke="#3b82f6" stroke-width="3" marker-end="url(#arrowhead-blue)" />
+                    <line id="g1Arrow" class="force-arrow" stroke="#a855f7" stroke-width="2" marker-end="url(#arrowhead-purple)" stroke-dasharray="5,3" />
+                    <line id="g2Arrow" class="force-arrow" stroke="#a855f7" stroke-width="2" marker-end="url(#arrowhead-purple)" stroke-dasharray="5,3" />
+                    <!-- 标注文字 -->
+                    <text id="gLabel" fill="#ef4444" font-size="16" font-weight="bold"></text>
+                    <text id="nLabel" fill="#22c55e" font-size="16" font-weight="bold"></text>
+                    <text id="fLabel" fill="#3b82f6" font-size="16" font-weight="bold"></text>
+                    <text id="g1Label" fill="#a855f7" font-size="14"></text>
+                    <text id="g2Label" fill="#a855f7" font-size="14"></text>
+                    <text id="thetaLabel" fill="#1e293b" font-size="18" font-weight="bold"></text>
+                </svg>
+                
+                <!-- 控制区域 -->
+                <div class="w-full mt-6 space-y-4">
+                    <div class="flex items-center gap-4">
+                        <label class="text-lg font-medium text-gray-700 min-w-24">调整倾角θ：</label>
+                        <input type="range" id="thetaSlider" min="10" max="60" value="30" step="1" class="flex-1 h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer">
+                        <span id="thetaValue" class="text-xl font-bold text-blue-800 min-w-16 text-center">30°</span>
+                    </div>
+                    
+                    <div class="flex gap-4 justify-center">
+                        <button id="resetBtn" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-md">重置视图</button>
+                        <button id="autoPlayBtn" class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors shadow-md">自动演示倾角减小</button>
+                        <button id="pauseBtn" class="px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors shadow-md">暂停演示</button>
+                    </div>
+                    
+                    <div class="bg-gray-50 p-4 rounded-lg text-center">
+                        <p class="text-lg">当前受力数值：<span id="forceValues" class="font-semibold text-blue-900"></span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 基础参数设置
+        const canvas = document.getElementById('animationCanvas');
+        const centerX = 275;
+        const baseY = 400;
+        const mgScale = 120; // 力的显示缩放系数
+        const m = 1, g = 10;
+        
+        const thetaSlider = document.getElementById('thetaSlider');
+        const thetaValue = document.getElementById('thetaValue');
+        const forceValues = document.getElementById('forceValues');
+        
+        // 元素获取
+        const plane = document.getElementById('inclinedPlane');
+        const block = document.getElementById('block');
+        const gravityArrow = document.getElementById('gravityArrow');
+        const supportArrow = document.getElementById('supportArrow');
+        const frictionArrow = document.getElementById('frictionArrow');
+        const g1Arrow = document.getElementById('g1Arrow');
+        const g2Arrow = document.getElementById('g2Arrow');
+        
+        let playInterval = null;
+        
+        // 更新动画函数
+        function updateAnimation(thetaDeg) {
+            const theta = thetaDeg * Math.PI / 180;
+            const planeLength = 350;
+            const planeEndX = centerX + planeLength * Math.cos(theta);
+            const planeEndY = baseY - planeLength * Math.sin(theta);
+            
+            // 绘制斜面
+            plane.setAttribute('d', `M${centerX},${baseY} L${planeEndX},${planeEndY}`);
+            
+            // 木块位置计算
+            const blockCenterDist = 180;
+            const blockCenterX = centerX + blockCenterDist * Math.cos(theta);
+            const blockCenterY = baseY - blockCenterDist * Math.sin(theta);
+            const blockSize = 60;
+            
+            block.setAttribute('x', blockCenterX - blockSize/2);
+            block.setAttribute('y', blockCenterY - blockSize/2);
+            block.style.transformOrigin = `${blockCenterX}px ${blockCenterY}px`;
+            block.style.transform = `rotate(${-thetaDeg}deg)`;
+            
+            // 各力计算
+            const G = m * g;
+            const G1 = G * Math.sin(theta);
+            const G2 = G * Math.cos(theta);
+            const fVal = G1;
+            const NVal = G2;
+            
+            // 重力箭头（竖直向下）
+            gravityArrow.setAttribute('x1', blockCenterX);
+            gravityArrow.setAttribute('y1', blockCenterY);
+            gravityArrow.setAttribute('x2', blockCenterX);
+            gravityArrow.setAttribute('y2', blockCenterY + G * mgScale / G);
+            document.getElementById('gLabel').setAttribute('x', blockCenterX + 10);
+            document.getElementById('gLabel').setAttribute('y', blockCenterY + G * mgScale / G / 2);
+            document.getElementById('gLabel').textContent = `G=mg`;
+            
+            // 支持力箭头（垂直斜面向上）
+            const nDirX = Math.sin(theta);
+            const nDirY = Math.cos(theta);
+            supportArrow.setAttribute('x1', blockCenterX);
+            supportArrow.setAttribute('y1', blockCenterY);
+            supportArrow.setAttribute('x2', blockCenterX + nDirX * NVal * mgScale / G);
+            supportArrow.setAttribute('y2', blockCenterY - nDirY * NVal * mgScale / G);
+            document.getElementById('nLabel').setAttribute('x', blockCenterX + nDirX * NVal * mgScale / G + 5);
+            document.getElementById('nLabel').setAttribute('y', blockCenterY - nDirY * NVal * mgScale / G);
+            document.getElementById('nLabel').textContent = `N=${NVal.toFixed(1)}`;
+            
+            // 静摩擦力箭头（沿斜面向上）
+            const fDirX = -Math.cos(theta);
+            const fDirY = Math.sin(theta);
+            frictionArrow.setAttribute('x1', blockCenterX);
+            frictionArrow.setAttribute('y1', blockCenterY);
+            frictionArrow.setAttribute('x2', blockCenterX + fDirX * fVal * mgScale / G);
+            frictionArrow.setAttribute('y2', blockCenterY + fDirY * fVal * mgScale / G);
+            document.getElementById('fLabel').setAttribute('x', blockCenterX + fDirX * fVal * mgScale / G - 30);
+            document.getElementById('fLabel').setAttribute('y', blockCenterY + fDirY * fVal * mgScale / G - 5);
+            document.getElementById('fLabel').textContent = `f=${fVal.toFixed(1)}`;
+            
+            // 分力G1（沿斜面向下）
+            g1Arrow.setAttribute('x1', blockCenterX);
+            g1Arrow.setAttribute('y1', blockCenterY);
+            g1Arrow.setAttribute('x2', blockCenterX + Math.cos(theta) * G1 * mgScale / G);
+            g1Arrow.setAttribute('y2', blockCenterY - Math.sin(theta) * G1 * mgScale / G);
+            document.getElementById('g1Label').setAttribute('x', blockCenterX + Math.cos(theta) * G1 * mgScale / G + 5);
+            document.getElementById('g1Label').setAttribute('y', blockCenterY - Math.sin(theta) * G1 * mgScale / G + 5);
+            document.getElementById('g1Label').textContent = `G₁=${G1.toFixed(1)}`;
+            
+            // 分力G2（垂直斜面向下）
+            g2Arrow.setAttribute('x1', blockCenterX);
+            g2Arrow.setAttribute('y1', blockCenterY);
+            g2Arrow.setAttribute('x2', blockCenterX - Math.sin(theta) * G2 * mgScale / G);
+            g2Arrow.setAttribute('y2', blockCenterY - Math.cos(theta) * G2 * mgScale / G);
+            document.getElementById('g2Label').setAttribute('x', blockCenterX - Math.sin(theta) * G2 * mgScale / G - 35);
+            document.getElementById('g2Label').setAttribute('y', blockCenterY - Math.cos(theta) * G2 * mgScale / G);
+            document.getElementById('g2Label').textContent = `G₂=${G2.toFixed(1)}`;
+            
+            // 角度标注
+            document.getElementById('thetaLabel').setAttribute('x', centerX + 15);
+            document.getElementById('thetaLabel').setAttribute('y', baseY - 15);
+            document.getElementById('thetaLabel').textContent = `θ=${thetaDeg}°`
