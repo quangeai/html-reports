@@ -1,0 +1,249 @@
+### 题目分析
+这是一道斜面上静止木块的静力学平衡问题，核心知识点为：斜面上物体的重力正交分解、静力学平衡条件、静摩擦力与支持力随斜面倾角的变化规律。
+
+原解析存在书写疏漏，完整正确的受力分析逻辑为：设斜面倾角为θ，木块重力mg，将重力沿斜面和垂直斜面正交分解，沿斜面向下分力为$mg\sin\theta$，垂直斜面向下分力为$mg\cos\theta$。木块静止时由平衡条件可得：沿斜面方向静摩擦力$f = mg\sin\theta$，垂直斜面方向支持力$N = mg\cos\theta$。当θ缓慢减小时，$\sin\theta$减小、$\cos\theta$增大，因此静摩擦力f随θ减小而减小，支持力N随θ减小而增大。
+
+### 生成交互演示代码
+我将生成可视化交互演示页面，直观展示木块受力、倾角变化时力的大小改变过程，完整呈现本题知识点。以下是可直接运行的HTML动画代码：
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>斜面木块静力学平衡演示</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+        .force-arrow {
+            transform-origin: left center;
+        }
+        .control-btn {
+            transition: all 0.3s ease;
+        }
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8">
+    <div class="max-w-6xl mx-auto bg-white rounded-2xl shadow-xl p-6 md:p-8">
+        <h1 class="text-2xl md:text-3xl font-bold text-center text-blue-800 mb-6">斜面上静止木块受力分析演示</h1>
+        
+        <div class="grid md:grid-cols-2 gap-6 mb-6">
+            <!-- 知识点与原题区域 -->
+            <div class="bg-blue-50 p-5 rounded-xl border border-blue-100">
+                <h2 class="text-xl font-semibold text-blue-700 mb-3">📚 本题知识点</h2>
+                <ul class="list-disc pl-5 space-y-2 text-gray-700">
+                    <li>重力的正交分解：将重力分解为沿斜面、垂直斜面两个方向的分量</li>
+                    <li>静力学平衡条件：静止物体合外力为0</li>
+                    <li>静摩擦力与支持力随斜面倾角θ的变化规律</li>
+                </ul>
+                <div class="mt-4 p-3 bg-white rounded-lg border border-blue-200">
+                    <h3 class="font-semibold text-gray-800 mb-2">原题回顾</h3>
+                    <p class="text-gray-700">一木块静止在倾角为θ的固定斜面上，若θ缓慢减小，木块始终保持静止，下列说法正确的是（  ）</p>
+                    <p class="mt-2 text-gray-600">A. 摩擦力大小为mg，木块对斜面的压力为mg</p>
+                    <p class="text-gray-600">B. 摩擦力大小为mg，木块对斜面的压力小于mg</p>
+                    <p class="text-gray-600">C. 静摩擦力随θ减小而逐渐减小</p>
+                    <p class="text-gray-600">D. 木块对斜面的压力随θ减小而逐渐减小</p>
+                </div>
+                <div class="mt-3 p-3 bg-green-50 rounded-lg border border-green-200">
+                    <h3 class="font-semibold text-green-700">✅ 正确答案：C</h3>
+                </div>
+            </div>
+
+            <!-- 动画区域 -->
+            <div class="flex flex-col items-center justify-center bg-gray-50 p-4 rounded-xl border border-gray-200">
+                <svg id="scene" width="450" height="400" viewBox="0 0 450 400">
+                    <!-- 坐标系与背景 -->
+                    <rect x="0" y="0" width="450" height="400" fill="#f8fafc"/>
+                    <g id="slopeGroup">
+                        <!-- 斜面 -->
+                        <line id="slopeLine" x1="50" y1="350" x2="400" y2="350" stroke="#475569" stroke-width="4"/>
+                        <!-- 木块 -->
+                        <rect id="block" x="0" y="0" width="60" height="60" rx="4" fill="#3b82f6" stroke="#1d4ed8" stroke-width="2"/>
+                        <!-- 力的箭头 -->
+                        <g id="forceGroup">
+                            <!-- 重力G -->
+                            <line id="gravityArrow" class="force-arrow" x1="0" y1="0" x2="0" y2="100" stroke="#ef4444" stroke-width="3" marker-end="url(#arrowRed)"/>
+                            <text id="gravityText" x="-15" y="120" fill="#ef4444" font-size="16">G=mg</text>
+                            <!-- 沿斜面向下分力 -->
+                            <line id="fParallelArrow" class="force-arrow" x1="0" y1="0" x2="90" y2="0" stroke="#f97316" stroke-width="3" marker-end="url(#arrowOrange)"/>
+                            <text id="fParallelText" x="45" y="-10" fill="#f97316" font-size="16">mgsinθ</text>
+                            <!-- 垂直斜面向下分力 -->
+                            <line id="fPerpArrow" class="force-arrow" x1="0" y1="0" x2="0" y2="90" stroke="#eab308" stroke-width="3" marker-end="url(#arrowYellow)"/>
+                            <text id="fPerpText" x="15" y="50" fill="#eab308" font-size="16">mgcosθ</text>
+                            <!-- 静摩擦力f -->
+                            <line id="frictionArrow" class="force-arrow" x1="0" y1="0" x2="-90" y2="0" stroke="#10b981" stroke-width="3" marker-end="url(#arrowGreen)"/>
+                            <text id="frictionText" x="-55" y="-10" fill="#10b981" font-size="16">静摩擦力f</text>
+                            <!-- 支持力N -->
+                            <line id="normalArrow" class="force-arrow" x1="0" y1="0" x2="0" y2="-90" stroke="#8b5cf6" stroke-width="3" marker-end="url(#arrowPurple)"/>
+                            <text id="normalText" x="15" y="-55" fill="#8b5cf6" font-size="16">支持力N</text>
+                        </g>
+                    </g>
+                    <!-- 箭头定义 -->
+                    <defs>
+                        <marker id="arrowRed" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                            <polygon points="0 0, 10 5, 0 10" fill="#ef4444"/>
+                        </marker>
+                        <marker id="arrowOrange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                            <polygon points="0 0, 10 5, 0 10" fill="#f97316"/>
+                        </marker>
+                        <marker id="arrowYellow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                            <polygon points="0 0, 10 5, 0 10" fill="#eab308"/>
+                        </marker>
+                        <marker id="arrowGreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                            <polygon points="0 0, 10 5, 0 10" fill="#10b981"/>
+                        </marker>
+                        <marker id="arrowPurple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                            <polygon points="0 0, 10 5, 0 10" fill="#8b5cf6"/>
+                        </marker>
+                    </defs>
+                    <text id="angleText" x="225" y="380" font-size="18" fill="#1e293b" text-anchor="middle">斜面倾角 θ = 30°</text>
+                </svg>
+            </div>
+        </div>
+
+        <!-- 控制面板 -->
+        <div class="bg-gray-50 p-5 rounded-xl border border-gray-200">
+            <div class="flex flex-wrap gap-4 justify-center mb-4">
+                <button id="playBtn" class="control-btn bg-blue-600 text-white px-6 py-3 rounded-lg font-medium">开始演示</button>
+                <button id="resetBtn" class="control-btn bg-gray-600 text-white px-6 py-3 rounded-lg font-medium">重置</button>
+                <button id="slowDownBtn" class="control-btn bg-amber-600 text-white px-6 py-3 rounded-lg font-medium">调慢速度</button>
+                <button id="speedUpBtn" class="control-btn bg-emerald-600 text-white px-6 py-3 rounded-lg font-medium">调快速度</button>
+            </div>
+            <div class="w-full max-w-lg mx-auto">
+                <label class="block text-gray-700 font-medium mb-2 text-center">手动调整斜面倾角 θ (0° ~ 60°)</label>
+                <input type="range" id="angleSlider" min="0" max="60" value="30" step="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 初始化变量
+        const svg = document.getElementById('scene');
+        const slopeLine = document.getElementById('slopeLine');
+        const slopeGroup = document.getElementById('slopeGroup');
+        const block = document.getElementById('block');
+        const angleText = document.getElementById('angleText');
+        const angleSlider = document.getElementById('angleSlider');
+        const playBtn = document.getElementById('playBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const slowDownBtn = document.getElementById('slowDownBtn');
+        const speedUpBtn = document.getElementById('speedUpBtn');
+
+        let currentAngle = 30;
+        let isPlaying = false;
+        let animationSpeed = 1;
+        let animationId = null;
+
+        // 更新场景函数
+        function updateScene(angleDeg) {
+            const angleRad = angleDeg * Math.PI / 180;
+            const baseX = 80;
+            const baseY = 340;
+            const slopeLength = 320;
+            const endX = baseX + slopeLength * Math.cos(angleRad);
+            const endY = baseY - slopeLength * Math.sin(angleRad);
+            
+            // 更新斜面位置
+            slopeLine.setAttribute('x1', baseX);
+            slopeLine.setAttribute('y1', baseY);
+            slopeLine.setAttribute('x2', endX);
+            slopeLine.setAttribute('y2', endY);
+
+            // 更新木块位置与旋转
+            const blockCenterX = baseX + (slopeLength/2) * Math.cos(angleRad);
+            const blockCenterY = baseY - (slopeLength/2) * Math.sin(angleRad);
+            slopeGroup.setAttribute('transform', `translate(${blockCenterX}, ${blockCenterY}) rotate(${-angleDeg})`);
+            block.setAttribute('x', -30);
+            block.setAttribute('y', -30);
+
+            // 更新力的长度
+            const gravityLen = 100;
+            const fParallelLen = gravityLen * Math.sin(angleRad);
+            const fPerpLen = gravityLen * Math.cos(angleRad);
+
+            document.getElementById('fParallelArrow').setAttribute('x2', fParallelLen);
+            document.getElementById('frictionArrow').setAttribute('x2', -fParallelLen);
+            document.getElementById('fPerpArrow').setAttribute('y2', fPerpLen);
+            document.getElementById('normalArrow').setAttribute('y2', -fPerpLen);
+
+            // 更新文字位置
+            document.getElementById('fParallelText').setAttribute('x', fParallelLen/2);
+            document.getElementById('frictionText').setAttribute('x', -fParallelLen/2 - 20);
+            document.getElementById('fPerpText').setAttribute('y', fPerpLen/2 + 10);
+            document.getElementById('normalText').setAttribute('y', -fPerpLen/2 - 10);
+
+            // 更新角度文字
+            angleText.textContent = `斜面倾角 θ = ${angleDeg}°`;
+        }
+
+        // 动画循环
+        function animate() {
+            if (!isPlaying) return;
+            currentAngle -= 0.5 * animationSpeed;
+            if (currentAngle <= 5) {
+                currentAngle = 5;
+                isPlaying = false;
+                playBtn.textContent = '开始演示';
+            }
+            angleSlider.value = currentAngle;
+            updateScene(currentAngle);
+            if (isPlaying) {
+                animationId = requestAnimationFrame(animate);
+            }
+        }
+
+        // 事件绑定
+        angleSlider.addEventListener('input', (e) => {
+            currentAngle = Number(e.target.value);
+            updateScene(currentAngle);
+        });
+
+        playBtn.addEventListener('click', () => {
+            if (!isPlaying) {
+                isPlaying = true;
+                playBtn.textContent = '暂停演示';
+                animate();
+            } else {
+                isPlaying = false;
+                playBtn.textContent = '继续演示';
+                cancelAnimationFrame(animationId);
+            }
+        });
+
+        resetBtn.addEventListener('click', () => {
+            isPlaying = false;
+            cancelAnimationFrame(animationId);
+            currentAngle = 30;
+            angleSlider.value = 30;
+            updateScene(currentAngle);
+            playBtn.textContent = '开始演示';
+        });
+
+        slowDownBtn.addEventListener('click', () => {
+            animationSpeed = Math.max(0.2, animationSpeed * 0.5);
+        });
+
+        speedUpBtn.addEventListener('click', () => {
+            animationSpeed = Math.min(3, animationSpeed * 2);
+        });
+
+        // 初始化场景
+        updateScene(30);
+    </script>
+</body>
+</html>
+```
+
+### 功能说明
+该页面可直接运行，支持以下操作：
+1.  点击「开始演示」自动缓慢减小斜面倾角，直观看到静摩擦力随倾角减小而缩短、支持力随倾角减小而伸长的变化过程
+2.  可拖动滑块手动调整斜面倾角，实时观察受力变化
+3.  支持调整动画速度，方便课堂教学演示时清晰展示受力变化细节
+4.  不同颜色箭头区分重力、分力、静摩擦力、支持力，物理意义清晰直观
