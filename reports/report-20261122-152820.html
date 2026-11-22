@@ -1,0 +1,266 @@
+### 题目分析与动画说明
+本题为斜面上静止木块的静力学平衡问题，核心知识点为：斜面上物体的受力分解（正交分解法）、静力学平衡条件、分力随斜面倾角的变化规律。通过动画可以直观展示木块受力情况，以及倾角改变时摩擦力、支持力的动态变化过程。
+
+### 生成的交互动画代码
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>斜面上静止木块受力分析动画</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+        .canvas-container {
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border-radius: 12px;
+        }
+        .control-btn {
+            transition: all 0.3s ease;
+        }
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="min-h-screen py-8 px-4">
+    <div class="max-w-5xl mx-auto">
+        <!-- 标题区域 -->
+        <div class="text-center mb-6">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">斜面上静止木块受力分析演示</h1>
+            <p class="text-gray-600">物体静力学平衡与斜面倾角变化的受力规律</p>
+        </div>
+
+        <!-- 题目与知识点区域 -->
+        <div class="bg-white rounded-xl p-5 mb-6 shadow-md">
+            <h2 class="text-xl font-semibold text-blue-700 mb-3">📚 原题与知识点说明</h2>
+            <div class="text-gray-700 space-y-2">
+                <p><strong>题目：</strong>在倾角为θ的固定斜面上，一木块静止不动。下列说法正确的是（  ）</p>
+                <p>A. 木块受到的摩擦力大小为mg</p>
+                <p>B. 木块对斜面的压力大小为mg</p>
+                <p>C. 若θ缓慢减小，木块受到的静摩擦力随之减小</p>
+                <p>D. 若θ缓慢减小，木块对斜面的压力随之减小</p>
+                <p class="mt-3 p-3 bg-blue-50 rounded-lg">
+                    <strong>核心知识点：</strong><br>
+                    1. 重力的正交分解：沿斜面向下分力为 ( G_1 = mgsin	heta )，垂直斜面向下分力为 ( G_2 = mgcos	heta )<br>
+                    2. 静力学平衡条件：静止物体合外力为0，因此静摩擦力 ( f = mgsin	heta )，斜面支持力 ( N = mgcos	heta )<br>
+                    3. 力的相互作用：木块对斜面的压力与斜面对木块的支持力大小相等
+                </p>
+                <p class="text-green-700 font-medium">✅ 正确答案：C</p>
+            </div>
+        </div>
+
+        <!-- 动画画布区域 -->
+        <div class="canvas-container bg-white p-4 mb-6">
+            <canvas id="physCanvas" width="900" height="550" class="w-full"></canvas>
+        </div>
+
+        <!-- 控制面板 -->
+        <div class="bg-white rounded-xl p-5 shadow-md">
+            <div class="flex flex-wrap gap-4 justify-center items-center">
+                <button id="playBtn" class="control-btn px-5 py-2 bg-green-500 text-white rounded-lg font-medium">开始演示</button>
+                <button id="pauseBtn" class="control-btn px-5 py-2 bg-yellow-500 text-white rounded-lg font-medium">暂停</button>
+                <button id="resetBtn" class="control-btn px-5 py-2 bg-blue-500 text-white rounded-lg font-medium">重置</button>
+                <div class="flex items-center gap-2">
+                    <label for="thetaSlider" class="text-gray-700">调整斜面倾角θ：</label>
+                    <input type="range" id="thetaSlider" min="10" max="70" value="45" class="w-40">
+                    <span id="thetaValue" class="text-gray-700 font-bold">45°</span>
+                </div>
+            </div>
+            <div id="statusInfo" class="mt-4 p-3 bg-gray-50 rounded-lg text-gray-700 text-center">
+                当前状态：初始静止，可拖动滑块调整倾角或点击自动演示按钮观察受力变化
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('physCanvas');
+        const ctx = canvas.getContext('2d');
+        const playBtn = document.getElementById('playBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const thetaSlider = document.getElementById('thetaSlider');
+        const thetaValue = document.getElementById('thetaValue');
+        const statusInfo = document.getElementById('statusInfo');
+
+        // 物理参数设定
+        let theta = 45 * Math.PI / 180; // 初始倾角弧度制
+        const g = 10;
+        const m = 1; // 木块质量，单位kg
+        const mg = m * g;
+        let isPlaying = false;
+        let autoDirection = -1; // 自动演示时倾角变化方向，-1为减小，1为增大
+
+        // 坐标变换辅助函数：将点绕支点旋转指定角度
+        function rotatePoint(x, y, cx, cy, angle) {
+            const cos = Math.cos(angle);
+            const sin = Math.sin(angle);
+            const nx = cos * (x - cx) - sin * (y - cy) + cx;
+            const ny = sin * (x - cx) + cos * (y - cy) + cy;
+            return {x: nx, y: ny};
+        }
+
+        // 绘制带箭头的力矢量
+        function drawForceArrow(startX, startY, endX, endY, color, label) {
+            const arrowLen = 12;
+            const angle = Math.atan2(endY - startY, endX - startX);
+            ctx.strokeStyle = color;
+            ctx.fillStyle = color;
+            ctx.lineWidth = 3;
+            // 绘制力线段
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+            ctx.lineTo(endX, endY);
+            ctx.stroke();
+            // 绘制箭头头部
+            ctx.beginPath();
+            ctx.moveTo(endX, endY);
+            ctx.lineTo(endX - arrowLen * Math.cos(angle - Math.PI/6), endY - arrowLen * Math.sin(angle - Math.PI/6));
+            ctx.lineTo(endX - arrowLen * Math.cos(angle + Math.PI/6), endY - arrowLen * Math.sin(angle + Math.PI/6));
+            ctx.closePath();
+            ctx.fill();
+            // 绘制力标签
+            ctx.font = '18px Arial';
+            ctx.fillText(label, endX + 8, endY - 8);
+        }
+
+        // 主绘制函数
+        function drawScene() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const pivotX = 150;
+            const pivotY = 480;
+            const slopeLength = 550;
+            const blockSize = 70;
+
+            // 计算斜面两个端点坐标
+            const x2 = pivotX + slopeLength * Math.cos(theta);
+            const y2 = pivotY - slopeLength * Math.sin(theta);
+            // 绘制斜面和水平面
+            ctx.fillStyle = '#7a869a';
+            ctx.beginPath();
+            ctx.moveTo(pivotX, pivotY);
+            ctx.lineTo(x2, y2);
+            ctx.lineTo(x2, pivotY);
+            ctx.closePath();
+            ctx.fill();
+            ctx.fillStyle = '#b8c2cc';
+            ctx.fillRect(0, pivotY, canvas.width, canvas.height - pivotY);
+
+            // 计算木块位置：斜面中点位置
+            const blockDistFromPivot = slopeLength / 2;
+            const blockCenterX = pivotX + blockDistFromPivot * Math.cos(theta);
+            const blockCenterY = pivotY - blockDistFromPivot * Math.sin(theta);
+
+            // 绘制旋转后的木块（矩形绕中心旋转theta角度）
+            ctx.save();
+            ctx.translate(blockCenterX, blockCenterY);
+            ctx.rotate(-theta);
+            ctx.fillStyle = '#4f46e5';
+            ctx.fillRect(-blockSize/2, -blockSize/2, blockSize, blockSize);
+            ctx.strokeStyle = '#312e81';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(-blockSize/2, -blockSize/2, blockSize, blockSize);
+            ctx.restore();
+
+            // 计算各力大小（缩放显示：1单位力对应12像素）
+            const scale = 12;
+            const G1 = mg * Math.sin(theta); // 沿斜面向下分力
+            const G2 = mg * Math.cos(theta); // 垂直斜面向下分力
+            const f = G1; // 静摩擦力，沿斜面向上
+            const N = G2; // 支持力，垂直斜面向上
+
+            // 绘制重力G
+            drawForceArrow(blockCenterX, blockCenterY, blockCenterX, blockCenterY + mg*scale, '#ef4444', 'G=mg');
+            // 绘制静摩擦力f
+            const fEndX = blockCenterX - f * scale * Math.cos(theta);
+            const fEndY = blockCenterY + f * scale * Math.sin(theta);
+            drawForceArrow(blockCenterX, blockCenterY, fEndX, fEndY, '#22c55e', 'f=mg sinθ');
+            // 绘制支持力N
+            const NEndX = blockCenterX + N * scale * Math.sin(theta);
+            const NEndY = blockCenterY + N * scale * Math.cos(theta);
+            drawForceArrow(blockCenterX, blockCenterY, NEndX, NEndY, '#3b82f6', 'N=mg cosθ');
+
+            // 绘制分力辅助虚线
+            ctx.strokeStyle = '#9ca3af';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([5,5]);
+            const gEndX = blockCenterX;
+            const gEndY = blockCenterY + mg*scale;
+            const proj1 = rotatePoint(gEndX, gEndY, blockCenterX, blockCenterY, theta);
+            const proj2 = rotatePoint(gEndX, gEndY, blockCenterX, blockCenterY, theta - Math.PI/2);
+            ctx.beginPath();
+            ctx.moveTo(fEndX, fEndY);
+            ctx.lineTo(proj1.x, proj1.y);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(NEndX, NEndY);
+            ctx.lineTo(proj1.x, proj1.y);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // 绘制信息面板
+            ctx.fillStyle = 'rgba(255,255,255,0.9)';
+            ctx.fillRect(680, 50, 200, 200);
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.strokeRect(680, 50, 200, 200);
+            ctx.fillStyle = '#1e293b';
+            ctx.font = '18px Arial';
+            ctx.fillText(`斜面倾角 θ = ${(theta*180/Math.PI).toFixed(0)}°`, 695, 85);
+            ctx.fillText(`重力分力 G1 = ${G1.toFixed(1)} N`, 695, 120);
+            ctx.fillText(`重力分力 G2 = ${G2.toFixed(1)} N`, 695, 155);
+            ctx.fillText(`静摩擦力 f = ${f.toFixed(1)} N`, 695, 190);
+            ctx.fillText(`支持力 N = ${N.toFixed(1)} N`, 695, 225);
+        }
+
+        // 动画循环
+        function animateLoop() {
+            if (isPlaying) {
+                theta += autoDirection * 0.005;
+                const minTheta = 10 * Math.PI / 180;
+                const maxTheta = 70 * Math.PI / 180;
+                // 边界判断，自动反转方向
+                if (theta <= minTheta || theta >= maxTheta) {
+                    autoDirection *= -1;
+                }
+                thetaSlider.value = Math.round(theta * 180 / Math.PI);
+                thetaValue.textContent = `${thetaSlider.value}°`;
+            }
+            drawScene();
+            requestAnimationFrame(animateLoop);
+        }
+
+        // 事件绑定
+        playBtn.addEventListener('click', ()=>{
+            isPlaying = true;
+            statusInfo.textContent = '当前状态：自动演示中，倾角在10°~70°之间动态变化，观察受力同步改变';
+        });
+        pauseBtn.addEventListener('click', ()=>{
+            isPlaying = false;
+            statusInfo.textContent = '当前状态：暂停，可手动调整倾角查看受力';
+        });
+        resetBtn.addEventListener('click', ()=>{
+            isPlaying = false;
+            theta = 45 * Math.PI / 180;
+            thetaSlider.value = 45;
+            thetaValue.textContent = '45°';
+            statusInfo.textContent = '当前状态：已重置，回到初始45°倾角';
+        });
+        thetaSlider.addEventListener('input', (e)=>{
+            theta = e.target.value * Math.PI / 180;
+            thetaValue.textContent = `${e.target.value}°`;
+        });
+
+        // 启动动画
+        animateLoop();
+    </script>
+</body>
+</html>
+```
+
+### 运行链接说明
+你可以将上述完整代码复制保存为HTML文件，直接在任意现代浏览器中打开即可运行交互演示，无需额外依赖。动画支持手动拖动调整斜面倾角，也可以点击自动演示按钮，动态观察倾角变化时木块受力的同步变化规律，直观验证静摩擦力随θ减小而减小、支持力随θ减小而增大的物理结论。
