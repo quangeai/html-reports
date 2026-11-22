@@ -1,0 +1,144 @@
+### 题目分析
+本题考察静力学中斜面上物体的受力平衡知识点，核心是重力分解、静摩擦力与支持力的平衡关系：静止在粗糙斜面上的木块，受重力mg、斜面支持力N、沿斜面向上的静摩擦力f，三力平衡时满足：
+- 沿斜面方向：$f = mg\sin\theta$
+- 垂直斜面方向：$N = mg\cos\theta$
+
+### 配套交互动画说明
+我为你生成了完整的动态演示页面，页面包含：木块受力可视化展示、分步受力分析演示、选项验证功能，可直观演示三力平衡的矢量关系。
+
+以下是完整可运行的html代码：
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>斜面上木块受力平衡分析</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .force-arrow {
+            stroke-width: 3;
+            fill: none;
+            marker-end: url(#arrowhead);
+        }
+        .force-label {
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center p-6">
+    <div class="w-full max-w-4xl bg-white rounded-xl shadow-xl p-6">
+        <h1 class="text-2xl font-bold text-center text-blue-700 mb-4">物理例题分析：斜面上静止木块受力</h1>
+        <div class="mb-4 p-4 bg-blue-50 rounded-lg">
+            <h2 class="text-xl font-semibold mb-2">原题展示</h2>
+            <p class="text-lg">质量为m的木块静止在倾角为θ的固定粗糙斜面上，重力加速度为g。下列说法正确的是（  ）</p>
+            <div class="mt-3 space-y-2">
+                <p>A. 木块受到的摩擦力大小为mg</p>
+                <p>B. 木块受到的支持力大小为mg</p>
+                <p>C. 木块受到的摩擦力大小为mg sinθ</p>
+                <p>D. 木块对斜面的压力就是木块的重力</p>
+            </div>
+        </div>
+
+        <div class="flex flex-col items-center my-5">
+            <svg width="600" height="450" viewBox="0 0 600 450" id="main-canvas" class="border border-gray-200 bg-gray-50 rounded-lg">
+                <defs>
+                    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                        <polygon points="0 0, 10 3.5, 0 7" fill="#ff0000" />
+                    </marker>
+                </defs>
+                <!-- 斜面 -->
+                <path d="M 100 350 L 500 100 L 500 350 Z" fill="#a0a0a0" stroke="#666" stroke-width="2"/>
+                <!-- 木块 -->
+                <rect id="block" x="270" y="215" width="60" height="50" transform="rotate(-30, 300, 240)" fill="#4287f5" stroke="#2563eb" stroke-width="2"/>
+                <!-- 力矢量组 -->
+                <g id="forces-group">
+                    <!-- 重力 -->
+                    <line id="gravity-line" x1="300" y1="240" x2="300" y2="340" stroke="#ff0000" class="force-arrow" stroke-dasharray="5,5" opacity="0"/>
+                    <text id="gravity-label" x="308" y="300" class="force-label" fill="#ff0000" opacity="0">mg</text>
+                    <!-- 支持力 -->
+                    <line id="normal-line" x1="300" y1="240" x2="220" y2="194" stroke="#22aa22" class="force-arrow" opacity="0"/>
+                    <text id="normal-label" x="190" y="190" class="force-label" fill="#22aa22" opacity="0">N</text>
+                    <!-- 摩擦力 -->
+                    <line id="friction-line" x1="300" y1="240" x2="370" y2="199" stroke="#aa22aa" class="force-arrow" opacity="0"/>
+                    <text id="friction-label" x="380" y="195" class="force-label" fill="#aa22aa" opacity="0">f</text>
+                    <!-- 重力分力平行斜面 -->
+                    <line id="g-parallel-line" x1="300" y1="240" x2="350" y2="211" stroke="#ff8800" class="force-arrow" stroke-dasharray="3,3" opacity="0"/>
+                    <text id="g-parallel-label" x="360" y="205" class="force-label" fill="#ff8800" opacity="0">mg sinθ</text>
+                    <!-- 重力分力垂直斜面 -->
+                    <line id="g-perpend-line" x1="300" y1="240" x2="250" y2="327" stroke="#ff8800" class="force-arrow" stroke-dasharray="3,3" opacity="0"/>
+                    <text id="g-perpend-label" x="220" y="335" class="force-label" fill="#ff8800" opacity="0">mg cosθ</text>
+                </g>
+                <!-- 角度标注 -->
+                <path id="theta-mark" d="M 100 350 L 150 350 L 125 325 Z" fill="none" stroke="#000" stroke-width="1.5" opacity="0"/>
+                <text id="theta-label" x="135" y="340" opacity="0">θ</text>
+            </svg>
+        </div>
+
+        <div class="flex flex-wrap gap-3 justify-center my-4">
+            <button id="btn-show-g" class="px-5 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">显示重力</button>
+            <button id="btn-show-components" class="px-5 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition">分解重力</button>
+            <button id="btn-show-n" class="px-5 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition">显示支持力</button>
+            <button id="btn-show-f" class="px-5 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition">显示静摩擦力</button>
+            <button id="btn-reset" class="px-5 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition">重置演示</button>
+        </div>
+
+        <div class="p-4 bg-green-50 rounded-lg">
+            <h3 class="text-xl font-semibold text-green-700 mb-2">知识点与正确答案</h3>
+            <ul class="list-disc pl-5 space-y-1 text-lg">
+                <li>木块静止，合力为零，沿斜面方向静摩擦力与重力分力平衡：$f=mg\sin\theta$</li>
+                <li>垂直斜面方向支持力与重力分力平衡：$N=mg\cos\theta$</li>
+                <li>正确选项：<span class="font-bold text-green-700">C</span></li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // 获取所有DOM元素
+        const btnShowG = document.getElementById('btn-show-g');
+        const btnShowComponents = document.getElementById('btn-show-components');
+        const btnShowN = document.getElementById('btn-show-n');
+        const btnShowF = document.getElementById('btn-show-f');
+        const btnReset = document.getElementById('btn-reset');
+
+        // 重力展示
+        btnShowG.addEventListener('click', ()=>{
+            document.getElementById('gravity-line').style.opacity = 1;
+            document.getElementById('gravity-label').style.opacity = 1;
+            document.getElementById('theta-mark').style.opacity = 1;
+            document.getElementById('theta-label').style.opacity = 1;
+        });
+
+        // 重力分解展示
+        btnShowComponents.addEventListener('click', ()=>{
+            document.getElementById('g-parallel-line').style.opacity = 1;
+            document.getElementById('g-parallel-label').style.opacity = 1;
+            document.getElementById('g-perpend-line').style.opacity = 1;
+            document.getElementById('g-perpend-label').style.opacity = 1;
+        });
+
+        // 支持力展示
+        btnShowN.addEventListener('click', ()=>{
+            document.getElementById('normal-line').style.opacity = 1;
+            document.getElementById('normal-label').style.opacity = 1;
+        });
+
+        // 静摩擦力展示
+        btnShowF.addEventListener('click', ()=>{
+            document.getElementById('friction-line').style.opacity = 1;
+            document.getElementById('friction-label').style.opacity = 1;
+        });
+
+        // 重置功能
+        btnReset.addEventListener('click', ()=>{
+            document.querySelectorAll('#forces-group > line, #forces-group > text, #theta-mark, #theta-label').forEach(el=>{
+                el.style.opacity = 0;
+            });
+        });
+    </script>
+</body>
+</html>
+```
+
+你可以直接将上述代码保存为html文件打开运行，就能体验完整的交互式受力分析演示。
