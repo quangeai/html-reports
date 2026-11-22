@@ -1,0 +1,265 @@
+### 题目分析
+本题考查斜面上静止木块的受力平衡问题，核心知识点是力的正交分解、静摩擦力与支持力随斜面倾角的变化规律：将重力沿斜面和垂直斜面两个正交方向分解，利用共点力平衡条件推导静摩擦力和支持力的表达式，分析倾角变化时两个力的变化趋势。
+
+### 生成完整交互演示HTML代码
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>斜面上静止木块受力分析演示</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .arrow { stroke-linecap: round; }
+        .control-btn {
+            transition: all 0.2s ease;
+        }
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen p-4 md:p-8">
+    <div class="max-w-6xl mx-auto">
+        <h1 class="text-3xl font-bold text-center text-indigo-800 mb-6">斜面上静止木块受力分析演示</h1>
+        
+        <!-- 知识点与原题区域 -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold text-gray-800 border-b-2 border-indigo-200 pb-2 mb-4">知识点与题目说明</h2>
+            <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                    <h3 class="font-medium text-indigo-700 mb-2">核心知识点</h3>
+                    <ul class="list-disc pl-5 text-gray-700 space-y-1">
+                        <li>重力的正交分解：将重力分解为沿斜面向下的分力 ( G_x = mgsin	heta ) 和垂直斜面向下的分力 ( G_y = mgcos	heta )</li>
+                        <li>共点力平衡条件：木块静止时合外力为0，沿斜面方向静摩擦力与重力分力平衡，垂直斜面方向支持力与重力分力平衡</li>
+                        <li>倾角变化时的力的变化规律：θ减小，( sin	heta ) 减小静摩擦力减小，( cos	heta ) 增大支持力增大</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-medium text-indigo-700 mb-2">题目与答案</h3>
+                    <p class="text-gray-700 mb-2">静止在斜面上的木块，当斜面倾角θ缓慢减小时，下列说法正确的是：</p>
+                    <p class="text-green-700 font-medium">正确答案：静摩擦力随θ减小而逐渐减小</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 动画演示区域 -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+            <div class="flex justify-center mb-4">
+                <svg id="mainCanvas" width="700" height="450" class="border border-gray-200 rounded-lg bg-gray-50">
+                    <!-- 坐标系与基础元素将通过JS动态生成 -->
+                </svg>
+            </div>
+
+            <!-- 控制面板 -->
+            <div class="flex flex-wrap gap-3 justify-center mb-4">
+                <button id="playBtn" class="control-btn bg-indigo-600 text-white px-5 py-2 rounded-lg font-medium">开始演示</button>
+                <button id="pauseBtn" class="control-btn bg-yellow-500 text-white px-5 py-2 rounded-lg font-medium">暂停</button>
+                <button id="resetBtn" class="control-btn bg-red-500 text-white px-5 py-2 rounded-lg font-medium">重置</button>
+                <div class="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-lg">
+                    <label class="text-gray-700">调整斜面倾角θ:</label>
+                    <input type="range" id="thetaSlider" min="10" max="60" value="45" class="w-32">
+                    <span id="thetaDisplay" class="text-indigo-700 font-bold">45°</span>
+                </div>
+            </div>
+
+            <!-- 实时数据面板 -->
+            <div class="grid grid-cols-3 gap-4 text-center">
+                <div class="bg-blue-50 p-3 rounded-lg">
+                    <p class="text-sm text-gray-600">静摩擦力 f</p>
+                    <p id="fValue" class="text-xl font-bold text-blue-700">0.707 mg</p>
+                </div>
+                <div class="bg-green-50 p-3 rounded-lg">
+                    <p class="text-sm text-gray-600">支持力 N</p>
+                    <p id="nValue" class="text-xl font-bold text-green-700">0.707 mg</p>
+                </div>
+                <div class="bg-purple-50 p-3 rounded-lg">
+                    <p class="text-sm text-gray-600">重力沿斜面分力 Gₓ</p>
+                    <p id="gxValue" class="text-xl font-bold text-purple-700">0.707 mg</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const svg = document.getElementById('mainCanvas');
+        const playBtn = document.getElementById('playBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const thetaSlider = document.getElementById('thetaSlider');
+        const thetaDisplay = document.getElementById('thetaDisplay');
+        const fValue = document.getElementById('fValue');
+        const nValue = document.getElementById('nValue');
+        const gxValue = document.getElementById('gxValue');
+
+        let isPlaying = false;
+        let animationId = null;
+        let currentTheta = 45;
+        const baseX = 100;
+        const baseY = 380;
+        const slopeLength = 500;
+        const blockSize = 50;
+        const forceScale = 100;
+
+        // 清空画布并绘制所有元素
+        function drawScene(thetaDeg) {
+            svg.innerHTML = '';
+            const thetaRad = thetaDeg * Math.PI / 180;
+
+            // 绘制地面
+            const ground = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            ground.setAttribute('x1', 0);
+            ground.setAttribute('y1', baseY);
+            ground.setAttribute('x2', 700);
+            ground.setAttribute('y2', baseY);
+            ground.setAttribute('stroke', '#333');
+            ground.setAttribute('stroke-width', '3');
+            svg.appendChild(ground);
+
+            // 绘制斜面
+            const slopeEndX = baseX + slopeLength * Math.cos(thetaRad);
+            const slopeEndY = baseY - slopeLength * Math.sin(thetaRad);
+            const slope = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            slope.setAttribute('x1', baseX);
+            slope.setAttribute('y1', baseY);
+            slope.setAttribute('x2', slopeEndX);
+            slope.setAttribute('y2', slopeEndY);
+            slope.setAttribute('stroke', '#8B4513');
+            slope.setAttribute('stroke-width', '6');
+            svg.appendChild(slope);
+
+            // 绘制木块
+            const blockCenterDist = slopeLength * 0.4;
+            const blockCX = baseX + blockCenterDist * Math.cos(thetaRad);
+            const blockCY = baseY - blockCenterDist * Math.sin(thetaRad);
+            const block = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            block.setAttribute('x', blockCX - blockSize/2 * Math.cos(thetaRad) + blockSize/2 * Math.sin(thetaRad));
+            block.setAttribute('y', blockCY - blockSize/2 * Math.sin(thetaRad) - blockSize/2 * Math.cos(thetaRad));
+            block.setAttribute('width', blockSize);
+            block.setAttribute('height', blockSize);
+            block.setAttribute('transform', `rotate(${thetaDeg}, ${blockCX}, ${blockCY})`);
+            block.setAttribute('fill', '#4f46e5');
+            block.setAttribute('rx', '4');
+            svg.appendChild(block);
+
+            // 绘制重力G箭头（竖直向下）
+            const gLen = forceScale;
+            const gEndX = blockCX;
+            const gEndY = blockCY + gLen;
+            drawArrow(blockCX, blockCY, gEndX, gEndY, '#ef4444', 'G');
+
+            // 绘制重力分力Gx（沿斜面向下）
+            const gxLen = forceScale * Math.sin(thetaRad);
+            const gxEndX = blockCX + gxLen * Math.cos(thetaRad);
+            const gxEndY = blockCY + gxLen * Math.sin(thetaRad);
+            drawArrow(blockCX, blockCY, gxEndX, gxEndY, '#a855f7', 'Gₓ');
+
+            // 绘制重力分力Gy（垂直斜面向下）
+            const gyLen = forceScale * Math.cos(thetaRad);
+            const gyEndX = blockCX - gyLen * Math.sin(thetaRad);
+            const gyEndY = blockCY + gyLen * Math.cos(thetaRad);
+            drawArrow(blockCX, blockCY, gyEndX, gyEndY, '#ec4899', 'Gᵧ');
+
+            // 绘制静摩擦力f（沿斜面向上）
+            const fLen = gxLen;
+            const fEndX = blockCX - fLen * Math.cos(thetaRad);
+            const fEndY = blockCY - fLen * Math.sin(thetaRad);
+            drawArrow(blockCX, blockCY, fEndX, fEndY, '#3b82f6', 'f');
+
+            // 绘制支持力N（垂直斜面向上）
+            const nLen = gyLen;
+            const nEndX = blockCX + nLen * Math.sin(thetaRad);
+            const nEndY = blockCY - nLen * Math.cos(thetaRad);
+            drawArrow(blockCX, blockCY, nEndX, nEndY, '#10b981', 'N');
+
+            // 更新数据显示
+            thetaDisplay.textContent = `${thetaDeg}°`;
+            fValue.textContent = `${(Math.sin(thetaRad)).toFixed(3)} mg`;
+            nValue.textContent = `${(Math.cos(thetaRad)).toFixed(3)} mg`;
+            gxValue.textContent = `${(Math.sin(thetaRad)).toFixed(3)} mg`;
+        }
+
+        // 绘制带标签的箭头工具函数
+        function drawArrow(x1, y1, x2, y2, color, labelText) {
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line.setAttribute('x1', x1);
+            line.setAttribute('y1', y1);
+            line.setAttribute('x2', x2);
+            line.setAttribute('y2', y2);
+            line.setAttribute('stroke', color);
+            line.setAttribute('stroke-width', '3');
+            line.classList.add('arrow');
+            svg.appendChild(line);
+
+            // 箭头头部
+            const dx = x2 - x1;
+            const dy = y2 - y1;
+            const len = Math.sqrt(dx*dx + dy*dy);
+            const ux = dx / len;
+            const uy = dy / len;
+            const p1x = x2 - 12*ux + 7*uy;
+            const p1y = y2 - 12*uy -7*ux;
+            const p2x = x2 - 12*ux -7*uy;
+            const p2y = y2 - 12*uy +7*ux;
+            const arrowHead = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+            arrowHead.setAttribute('points', `${x2},${y2} ${p1x},${p1y} ${p2x},${p2y}`);
+            arrowHead.setAttribute('fill', color);
+            svg.appendChild(arrowHead);
+
+            // 标签
+            const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            text.setAttribute('x', (x1 + x2)/2 + 10*uy);
+            text.setAttribute('y', (y1 + y2)/2 - 10*ux);
+            text.setAttribute('fill', color);
+            text.setAttribute('font-size', '16');
+            text.setAttribute('font-weight', 'bold');
+            text.textContent = labelText;
+            svg.appendChild(text);
+        }
+
+        // 动画循环
+        function animate() {
+            if (!isPlaying) return;
+            currentTheta -= 0.2;
+            if (currentTheta <= 10) {
+                currentTheta = 10;
+                isPlaying = false;
+                return;
+            }
+            thetaSlider.value = currentTheta;
+            drawScene(currentTheta);
+            animationId = requestAnimationFrame(animate);
+        }
+
+        // 事件绑定
+        playBtn.addEventListener('click', () => {
+            isPlaying = true;
+            animate();
+        });
+        pauseBtn.addEventListener('click', () => {
+            isPlaying = false;
+            cancelAnimationFrame(animationId);
+        });
+        resetBtn.addEventListener('click', () => {
+            isPlaying = false;
+            cancelAnimationFrame(animationId);
+            currentTheta = 45;
+            thetaSlider.value = 45;
+            drawScene(45);
+        });
+        thetaSlider.addEventListener('input', (e) => {
+            currentTheta = parseFloat(e.target.value);
+            drawScene(currentTheta);
+        });
+
+        // 初始渲染
+        drawScene(45);
+    </script>
+</body>
+</html>
+```
+
+### 运行链接说明
+将上述完整HTML代码保存为后缀名为.html的文件，直接使用任意现代浏览器打开即可运行交互演示，您可以通过滑块手动调整斜面倾角，也可点击自动演示按钮观察θ缓慢减小时各个力的动态变化过程，直观验证受力平衡的物理规律。
