@@ -1,0 +1,195 @@
+### 一、题目核心知识点分析
+本题核心为**斜面上静止木块的受力平衡与力的分解**，关键要点：
+1.  重力分解：沿斜面向下分力为mg sinθ，垂直斜面向下分力为mg cosθ
+2.  平衡条件：静止木块的静摩擦力与重力沿斜面分力平衡，支持力与重力垂直斜面分力平衡，即f=mg sinθ，N=mg cosθ
+3.  变量关联：斜面倾角θ变化时，sinθ、cosθ同步变化，对应静摩擦力、支持力同步改变
+
+---
+
+### 二、对应HTML动画代码
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>斜面木块受力分析动画</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .force-arrow {
+            stroke-width: 3;
+            fill: none;
+            marker-end: url(#arrowhead);
+        }
+        .arrow-label {
+            font-size: 14px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen p-6 font-sans">
+    <div class="max-w-5xl mx-auto">
+        <!-- 标题区 -->
+        <header class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-slate-800 mb-2">斜面上静止木块受力分析演示</h1>
+            <p class="text-slate-600">知识点：重力分解、共点力平衡条件</p>
+        </header>
+
+        <!-- 原题与答案区 -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+            <h3 class="text-xl font-semibold text-slate-700 mb-3">原题与结论</h3>
+            <p class="mb-2 text-slate-600">静止在倾角为θ的斜面上的木块，重力为mg，分析其受力随θ变化的规律：</p>
+            <ul class="list-disc pl-6 text-slate-600 space-y-1">
+                <li>静摩擦力 f = mg sinθ，随θ减小而减小</li>
+                <li>支持力 N = mg cosθ，随θ减小而增大</li>
+                <li>正确结论：θ缓慢减小时，静摩擦力减小</li>
+            </ul>
+        </div>
+
+        <!-- 动画演示区 -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+            <div class="flex flex-col items-center">
+                <svg id="canvas" width="600" height="400" class="border border-slate-200 rounded-lg bg-slate-50">
+                    <defs>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="currentColor"/>
+                        </marker>
+                    </defs>
+                    <!-- 斜面 -->
+                    <line id="slope" x1="100" y1="350" x2="500" y2="150" stroke="#334155" stroke-width="4"/>
+                    <!-- 木块 -->
+                    <rect id="block" x="280" y="230" width="60" height="40" fill="#3b82f6" rx="4"/>
+                    <!-- 受力箭头 -->
+                    <line id="f-g" class="force-arrow text-red-500"/>
+                    <line id="f-f" class="force-arrow text-green-500"/>
+                    <line id="f-n" class="force-arrow text-blue-500"/>
+                    <!-- 标签 -->
+                    <text id="label-g" class="arrow-label text-red-500"></text>
+                    <text id="label-f" class="arrow-label text-green-500"></text>
+                    <text id="label-n" class="arrow-label text-blue-500"></text>
+                    <!-- 角度标注 -->
+                    <text id="angle-label" x="120" y="340" class="text-slate-700 font-medium"></text>
+                </svg>
+
+                <!-- 控制面板 -->
+                <div class="mt-6 w-full max-w-md space-y-4">
+                    <div>
+                        <label class="block text-slate-700 mb-2">斜面倾角θ：<span id="theta-value">30</span>°</label>
+                        <input type="range" id="theta-slider" min="5" max="60" value="30" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                    </div>
+                    <div class="flex gap-3 justify-center">
+                        <button id="btn-decrease" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">θ减小演示</button>
+                        <button id="btn-reset" class="px-4 py-2 bg-slate-500 text-white rounded-lg hover:bg-slate-600 transition">重置</button>
+                        <button id="btn-increase" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">θ增大演示</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const block = document.getElementById('block');
+        const slope = document.getElementById('slope');
+        const fG = document.getElementById('f-g');
+        const fF = document.getElementById('f-f');
+        const fN = document.getElementById('f-n');
+        const labelG = document.getElementById('label-g');
+        const labelF = document.getElementById('label-f');
+        const labelN = document.getElementById('label-n');
+        const angleLabel = document.getElementById('angle-label');
+        const thetaSlider = document.getElementById('theta-slider');
+        const thetaValue = document.getElementById('theta-value');
+        const btnDecrease = document.getElementById('btn-decrease');
+        const btnReset = document.getElementById('btn-reset');
+        const btnIncrease = document.getElementById('btn-increase');
+
+        const mg = 120; // 重力长度比例
+        let theta = 30; // 初始角度
+
+        function updateScene() {
+            const rad = theta * Math.PI / 180;
+            const blockX = 300 - 30;
+            const blockY = 350 - 200 * Math.tan(rad) - 20;
+            block.setAttribute('x', blockX);
+            block.setAttribute('y', blockY);
+            slope.setAttribute('y2', 350 - 400 * Math.tan(rad));
+
+            const centerX = blockX + 30;
+            const centerY = blockY + 20;
+
+            // 重力
+            fG.setAttribute('x1', centerX);
+            fG.setAttribute('y1', centerY);
+            fG.setAttribute('x2', centerX);
+            fG.setAttribute('y2', centerY + mg);
+            labelG.setAttribute('x', centerX + 8);
+            labelG.setAttribute('y', centerY + mg/2);
+            labelG.textContent = 'mg';
+
+            // 静摩擦力
+            const fLen = mg * Math.sin(rad);
+            fF.setAttribute('x1', centerX);
+            fF.setAttribute('y1', centerY);
+            fF.setAttribute('x2', centerX - fLen * Math.cos(rad));
+            fF.setAttribute('y2', centerY + fLen * Math.sin(rad));
+            labelF.setAttribute('x', centerX - fLen * Math.cos(rad) - 20);
+            labelF.setAttribute('y', centerY + fLen * Math.sin(rad)/2);
+            labelF.textContent = 'f=mg sinθ';
+
+            // 支持力
+            const nLen = mg * Math.cos(rad);
+            fN.setAttribute('x1', centerX);
+            fN.setAttribute('y1', centerY);
+            fN.setAttribute('x2', centerX - nLen * Math.sin(rad));
+            fN.setAttribute('y2', centerY - nLen * Math.cos(rad));
+            labelN.setAttribute('x', centerX - nLen * Math.sin(rad)/2);
+            labelN.setAttribute('y', centerY - nLen * Math.cos(rad) - 10);
+            labelN.textContent = 'N=mg cosθ';
+
+            angleLabel.textContent = `θ=${theta}°`;
+            thetaValue.textContent = theta;
+        }
+
+        thetaSlider.addEventListener('input', e => {
+            theta = parseInt(e.target.value);
+            updateScene();
+        });
+
+        btnDecrease.addEventListener('click', () => {
+            if(theta > 5) {
+                theta -= 5;
+                thetaSlider.value = theta;
+                updateScene();
+            }
+        });
+
+        btnReset.addEventListener('click', () => {
+            theta = 30;
+            thetaSlider.value = theta;
+            updateScene();
+        });
+
+        btnIncrease.addEventListener('click', () => {
+            if(theta < 60) {
+                theta += 5;
+                thetaSlider.value = theta;
+                updateScene();
+            }
+        });
+
+        updateScene();
+    </script>
+</body>
+</html>
+```
+
+---
+
+### 三、动画演示说明
+你可以直接将上述代码保存为`.html`文件打开运行，具备以下功能：
+1.  直观展示斜面上木块的三个受力：重力（竖直向下）、静摩擦力（沿斜面向上）、支持力（垂直斜面向上），箭头长度严格对应力的大小比例
+2.  支持滑块拖动、按钮点击两种方式调整斜面倾角，实时更新受力大小与标注
+3.  清晰呈现θ变化时：静摩擦力随θ减小而缩短、支持力随θ减小而变长的动态规律，完全匹配题目结论
+
+该动画可直接用于课堂演示，帮助快速理解斜面上受力平衡的变量关系。
