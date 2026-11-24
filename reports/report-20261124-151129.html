@@ -1,0 +1,196 @@
+### 题目分析
+本题为斜面静止木块的受力平衡分析题，核心知识点：
+1.  斜面重力的正交分解：沿斜面向下分力为mg sinθ，垂直斜面向下分力为mg cosθ
+2.  共点力平衡条件：静止物体合力为0，静摩擦力与重力沿斜面向下的分力平衡，支持力与重力垂直斜面的分力平衡
+3.  静摩擦力、支持力随斜面倾角θ的变化规律：θ减小时，sinθ减小、cosθ增大，对应静摩擦力减小、支持力增大
+
+---
+
+### 可运行HTML动画代码
+以下代码可直接保存为html文件打开，包含交互式倾角调节、实时受力显示、知识点与原题说明：
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>斜面木块受力平衡分析</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen p-6 font-sans">
+    <div class="max-w-5xl mx-auto">
+        <!-- 标题与知识点 -->
+        <header class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-slate-800 mb-3">斜面静止木块受力平衡分析</h1>
+            <div class="bg-white rounded-lg shadow p-4 inline-block">
+                <h3 class="font-semibold text-slate-700 mb-2">核心知识点</h3>
+                <p class="text-slate-600 text-sm">1. 重力正交分解：沿斜面分力mg sinθ、垂直斜面分力mg cosθ<br>
+                2. 共点力平衡：静止物体合力为0，f = mg sinθ，N = mg cosθ<br>
+                3. 倾角变化影响：θ减小→sinθ减小、cosθ增大→f减小、N增大</p>
+            </div>
+        </header>
+
+        <!-- 主内容区 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- 动画画布区 -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <canvas id="physicsCanvas" width="500" height="450" class="w-full border border-slate-200 rounded"></canvas>
+                <div class="mt-4 flex flex-col gap-3">
+                    <label class="text-slate-700 font-medium">调节斜面倾角 θ：<span id="angleValue">30°</span></label>
+                    <input type="range" id="angleSlider" min="10" max="60" value="30" class="w-full accent-blue-600">
+                </div>
+            </div>
+
+            <!-- 受力数据与题目说明 -->
+            <div class="flex flex-col gap-6">
+                <!-- 实时受力数据 -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="font-semibold text-slate-800 mb-4">实时受力值（取m=1kg，g=10m/s²）</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center p-2 bg-orange-50 rounded">
+                            <span class="text-orange-700">重力 G</span>
+                            <span class="font-mono" id="gravityVal">10 N</span>
+                        </div>
+                        <div class="flex justify-between items-center p-2 bg-blue-50 rounded">
+                            <span class="text-blue-700">静摩擦力 f</span>
+                            <span class="font-mono" id="frictionVal">5 N</span>
+                        </div>
+                        <div class="flex justify-between items-center p-2 bg-green-50 rounded">
+                            <span class="text-green-700">支持力 N</span>
+                            <span class="font-mono" id="supportVal">8.66 N</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 原题与答案 -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="font-semibold text-slate-800 mb-3">原题结论</h3>
+                    <p class="text-slate-600 text-sm mb-3">木块静止在斜面上，缓慢减小斜面倾角θ，判断受力变化：</p>
+                    <ul class="text-sm space-y-2 text-slate-700">
+                        <li>❌ A/B：摩擦力为mg、压力为mg → 错误</li>
+                        <li>✅ C：θ减小，静摩擦力随之减小 → 正确</li>
+                        <li>❌ D：θ减小，木块对斜面的压力增大 → 错误（结论描述本身正确，但对应选项错误）</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('physicsCanvas');
+        const ctx = canvas.getContext('2d');
+        const angleSlider = document.getElementById('angleSlider');
+        const angleValue = document.getElementById('angleValue');
+        const frictionVal = document.getElementById('frictionVal');
+        const supportVal = document.getElementById('supportVal');
+
+        const m = 1, g = 10;
+        const originX = 100, originY = 350;
+        const slopeLen = 350;
+
+        function drawScene(thetaDeg) {
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            const theta = thetaDeg * Math.PI / 180;
+
+            // 绘制斜面
+            ctx.beginPath();
+            ctx.moveTo(originX, originY);
+            const endX = originX + slopeLen * Math.cos(theta);
+            const endY = originY - slopeLen * Math.sin(theta);
+            ctx.lineTo(endX, endY);
+            ctx.lineTo(endX, originY);
+            ctx.closePath();
+            ctx.fillStyle = '#e2e8f0';
+            ctx.fill();
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // 木块位置
+            const blockX = originX + 180 * Math.cos(theta);
+            const blockY = originY - 180 * Math.sin(theta);
+            // 绘制木块
+            ctx.fillStyle = '#3b82f6';
+            ctx.fillRect(blockX-25, blockY-20, 50, 40);
+            ctx.strokeStyle = '#1d4ed8';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(blockX-25, blockY-20, 50, 40);
+
+            // 力的缩放系数
+            const scale = 15;
+            // 重力G
+            const gLen = m*g * scale;
+            ctx.beginPath();
+            ctx.moveTo(blockX, blockY);
+            ctx.lineTo(blockX, blockY + gLen);
+            ctx.strokeStyle = '#f97316';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            drawArrow(blockX, blockY + gLen, blockX, blockY, '#f97316');
+            ctx.fillStyle = '#f97316';
+            ctx.fillText('G=mg', blockX+5, blockY + gLen/2);
+
+            // 静摩擦力f
+            const f = m*g * Math.sin(theta);
+            const fLen = f * scale;
+            ctx.beginPath();
+            ctx.moveTo(blockX, blockY);
+            ctx.lineTo(blockX - fLen * Math.cos(theta), blockY + fLen * Math.sin(theta));
+            ctx.strokeStyle = '#2563eb';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            drawArrow(blockX - fLen * Math.cos(theta), blockY + fLen * Math.sin(theta), blockX, blockY, '#2563eb');
+            ctx.fillStyle = '#2563eb';
+            ctx.fillText('f', blockX - fLen/2 * Math.cos(theta)-15, blockY + fLen/2 * Math.sin(theta));
+
+            // 支持力N
+            const N = m*g * Math.cos(theta);
+            const NLen = N * scale;
+            ctx.beginPath();
+            ctx.moveTo(blockX, blockY);
+            ctx.lineTo(blockX - NLen * Math.sin(theta), blockY - NLen * Math.cos(theta));
+            ctx.strokeStyle = '#16a34a';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            drawArrow(blockX - NLen * Math.sin(theta), blockY - NLen * Math.cos(theta), blockX, blockY, '#16a34a');
+            ctx.fillStyle = '#16a34a';
+            ctx.fillText('N', blockX - NLen/2 * Math.sin(theta)-15, blockY - NLen/2 * Math.cos(theta));
+
+            // 更新数值
+            angleValue.textContent = `${thetaDeg}°`;
+            frictionVal.textContent = f.toFixed(2) + ' N';
+            supportVal.textContent = N.toFixed(2) + ' N';
+        }
+
+        function drawArrow(fromX, fromY, toX, toY, color) {
+            const headLen = 10;
+            const angle = Math.atan2(toY - fromY, toX - fromX);
+            ctx.beginPath();
+            ctx.moveTo(fromX, fromY);
+            ctx.lineTo(fromX - headLen * Math.cos(angle - Math.PI/6), fromY - headLen * Math.sin(angle - Math.PI/6));
+            ctx.moveTo(fromX, fromY);
+            ctx.lineTo(fromX - headLen * Math.cos(angle + Math.PI/6), fromY - headLen * Math.sin(angle + Math.PI/6));
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        angleSlider.addEventListener('input', (e) => {
+            drawScene(Number(e.target.value));
+        });
+
+        // 初始绘制
+        drawScene(30);
+    </script>
+</body>
+</html>
+```
+
+---
+
+### 运行说明
+直接将上述代码保存为后缀为`.html`的文件，用浏览器打开即可：
+1.  拖动滑块可以实时调整斜面倾角θ，观察斜面、木块的位置变化
+2.  画布中会用不同颜色的箭头实时显示重力、静摩擦力、支持力的大小与方向
+3.  右侧面板会同步更新对应受力的数值，直观展示θ减小时静摩擦力减小、支持力增大的规律
+4.  页面内置了完整的知识点总结与原题结论说明，可直接用于课堂演示或自学验证
