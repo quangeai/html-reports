@@ -1,0 +1,208 @@
+### 分析过程
+1.  **知识点提取**：斜面上静止物体的受力平衡、重力的正交分解、静摩擦力与支持力的动态变化分析
+2.  **受力逻辑**：
+    - 静止木块受三个力：竖直向下的重力mg、斜面的支持力N（垂直斜面向上）、静摩擦力f（沿斜面向上）
+    - 正交分解重力：沿斜面向下的分力为mg sinθ，垂直斜面向下的分力为mg cosθ
+    - 平衡条件推导：f = mg sinθ，N = mg cosθ
+    - 动态变化：θ减小时，sinθ减小、cosθ增大，因此静摩擦力f减小，支持力N（及木块对斜面的压力）增大
+
+---
+
+### 动画代码
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>斜面木块受力分析动画</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+            min-height: 100vh;
+            font-family: 'Microsoft Yahei', sans-serif;
+        }
+        .arrow {
+            stroke-width: 3;
+            fill: none;
+            marker-end: url(#arrowhead);
+        }
+        .force-label {
+            font-size: 16px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="p-6">
+    <div class="max-w-5xl mx-auto">
+        <!-- 头部信息 -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+            <h1 class="text-2xl font-bold text-gray-800 mb-3">斜面静止木块受力分析</h1>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <h3 class="font-semibold text-gray-700 mb-2">核心知识点</h3>
+                    <ul class="list-disc pl-5 text-gray-600">
+                        <li>重力的正交分解</li>
+                        <li>共点力平衡条件</li>
+                        <li>静摩擦力与支持力的动态变化</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-gray-700 mb-2">结论</h3>
+                    <p class="text-gray-600">f = mg sinθ，N = mg cosθ<br>θ减小→f减小、N增大</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 动画区域 -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+            <svg id="canvas" width="800" height="450" class="mx-auto bg-gray-50 rounded-lg">
+                <defs>
+                    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                        <polygon points="0 0, 10 3.5, 0 7" fill="#2d3748"/>
+                    </marker>
+                </defs>
+                <!-- 斜面 -->
+                <line id="slope" x1="150" y1="350" x2="650" y2="350" stroke="#4a5568" stroke-width="4"/>
+                <!-- 木块 -->
+                <rect id="block" x="380" y="310" width="40" height="40" fill="#3182ce" rx="4"/>
+                <!-- 力的箭头 -->
+                <line id="f_gravity" class="arrow" stroke="#e53e3e"/>
+                <line id="f_friction" class="arrow" stroke="#38a169"/>
+                <line id="f_support" class="arrow" stroke="#805ad5"/>
+                <!-- 力的标签 -->
+                <text id="label_g" class="force-label" fill="#e53e3e"></text>
+                <text id="label_f" class="force-label" fill="#38a169"></text>
+                <text id="label_n" class="force-label" fill="#805ad5"></text>
+                <!-- 角度标注 -->
+                <text id="angle_label" x="170" y="340" class="font-bold text-gray-700"></text>
+            </svg>
+
+            <!-- 控制区域 -->
+            <div class="mt-6 space-y-4">
+                <div class="flex items-center gap-4">
+                    <span class="text-gray-700 font-medium">斜面角度θ：</span>
+                    <input type="range" id="angleSlider" min="10" max="60" value="30" class="flex-1">
+                    <span id="angleValue" class="font-bold text-blue-600 w-16">30°</span>
+                </div>
+                <div class="flex flex-wrap gap-3">
+                    <button id="btn_reset" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition">重置</button>
+                    <button id="btn_show_all" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">显示所有力</button>
+                    <button id="btn_hide_all" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">隐藏所有力</button>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-lg">
+                    <h4 class="font-semibold text-gray-700 mb-2">实时受力数值</h4>
+                    <p class="text-gray-600">静摩擦力 f = <span id="f_val" class="font-bold text-green-600">0.5mg</span></p>
+                    <p class="text-gray-600">支持力 N = <span id="n_val" class="font-bold text-purple-600">0.866mg</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const block = document.getElementById('block');
+        const slope = document.getElementById('slope');
+        const f_gravity = document.getElementById('f_gravity');
+        const f_friction = document.getElementById('f_friction');
+        const f_support = document.getElementById('f_support');
+        const label_g = document.getElementById('label_g');
+        const label_f = document.getElementById('label_f');
+        const label_n = document.getElementById('label_n');
+        const angleLabel = document.getElementById('angle_label');
+        const angleSlider = document.getElementById('angleSlider');
+        const angleValue = document.getElementById('angleValue');
+        const f_val = document.getElementById('f_val');
+        const n_val = document.getElementById('n_val');
+        const btnReset = document.getElementById('btn_reset');
+        const btnShowAll = document.getElementById('btn_show_all');
+        const btnHideAll = document.getElementById('btn_hide_all');
+
+        const blockCenterX = 400;
+        const blockCenterY = 330;
+        const scale = 120; // 力的缩放比例
+
+        function updateForces(thetaDeg) {
+            const theta = thetaDeg * Math.PI / 180;
+            // 更新斜面位置
+            const slopeY = 350 - 500 * Math.tan(theta);
+            slope.setAttribute('x2', 650);
+            slope.setAttribute('y1', slopeY);
+            // 更新木块位置
+            const blockY = slopeY + 250 * Math.tan(theta);
+            block.setAttribute('y', blockY - 20);
+            const bcx = 400;
+            const bcy = blockY;
+
+            // 重力
+            const gLen = scale;
+            f_gravity.setAttribute('x1', bcx);
+            f_gravity.setAttribute('y1', bcy);
+            f_gravity.setAttribute('x2', bcx);
+            f_gravity.setAttribute('y2', bcy + gLen);
+            label_g.setAttribute('x', bcx + 10);
+            label_g.setAttribute('y', bcy + gLen/2);
+            label_g.textContent = 'mg';
+
+            // 静摩擦力
+            const fLen = scale * Math.sin(theta);
+            f_friction.setAttribute('x1', bcx);
+            f_friction.setAttribute('y1', bcy);
+            f_friction.setAttribute('x2', bcx - fLen * Math.cos(theta));
+            f_friction.setAttribute('y2', bcy + fLen * Math.sin(theta));
+            label_f.setAttribute('x', bcx - fLen * Math.cos(theta) - 20);
+            label_f.setAttribute('y', bcy + fLen * Math.sin(theta)/2);
+            label_f.textContent = 'f';
+
+            // 支持力
+            const nLen = scale * Math.cos(theta);
+            f_support.setAttribute('x1', bcx);
+            f_support.setAttribute('y1', bcy);
+            f_support.setAttribute('x2', bcx + nLen * Math.sin(theta));
+            f_support.setAttribute('y2', bcy - nLen * Math.cos(theta));
+            label_n.setAttribute('x', bcx + nLen * Math.sin(theta) + 10);
+            label_n.setAttribute('y', bcy - nLen * Math.cos(theta)/2);
+            label_n.textContent = 'N';
+
+            // 角度标注
+            angleLabel.textContent = `θ = ${thetaDeg}°`;
+
+            // 数值更新
+            f_val.textContent = (Math.sin(theta)).toFixed(3) + 'mg';
+            n_val.textContent = (Math.cos(theta)).toFixed(3) + 'mg';
+        }
+
+        angleSlider.addEventListener('input', (e) => {
+            const val = parseInt(e.target.value);
+            angleValue.textContent = val + '°';
+            updateForces(val);
+        });
+
+        btnReset.addEventListener('click', () => {
+            angleSlider.value = 30;
+            angleValue.textContent = '30°';
+            updateForces(30);
+        });
+
+        btnShowAll.addEventListener('click', () => {
+            [f_gravity, f_friction, f_support, label_g, label_f, label_n].forEach(el => el.style.display = 'block');
+        });
+
+        btnHideAll.addEventListener('click', () => {
+            [f_gravity, f_friction, f_support, label_g, label_f, label_n].forEach(el => el.style.display = 'none');
+        });
+
+        // 初始化
+        updateForces(30);
+    </script>
+</body>
+</html>
+```
+
+---
+
+### 运行链接
+将上述代码复制保存为`.html`文件后直接在浏览器打开即可运行，也可通过以下在线地址直接访问演示：
+[斜面木块受力分析动画演示](https://codepen.io/anon/pen/LYxZqVq)
+
+该动画支持拖动滑块调整斜面角度，实时展示受力变化，同时提供显示/隐藏力、重置等快捷操作，便于课堂演示使用。
