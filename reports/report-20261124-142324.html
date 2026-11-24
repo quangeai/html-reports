@@ -1,0 +1,175 @@
+### 物理题分析过程
+1. **核心知识点**：斜面上静止物体的受力平衡、重力的正交分解、静摩擦力与支持力的动态变化分析
+2. **受力分析逻辑**：
+   - 静止在斜面上的木块受三个力：竖直向下的重力mg、斜面的支持力N（垂直斜面向上）、静摩擦力f（沿斜面向上）
+   - 将重力沿斜面和垂直斜面正交分解：沿斜面向下的分力为mg sinθ，垂直斜面向下的分力为mg cosθ
+   - 由平衡条件可得：静摩擦力f = mg sinθ，支持力N = mg cosθ
+3. **动态变化分析**：当斜面倾角θ缓慢减小时，sinθ减小、cosθ增大，因此静摩擦力f随θ减小而减小，支持力N（等于木块对斜面的压力）随θ减小而增大
+
+---
+
+### 对应HTML动画代码
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>斜面木块受力分析动画</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        .canvas-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+        .btn {
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body class="p-6 font-sans">
+    <div class="max-w-5xl mx-auto">
+        <!-- 题目与知识点区域 -->
+        <div class="bg-white rounded-xl p-6 mb-6 shadow-lg">
+            <h1 class="text-2xl font-bold text-gray-800 mb-4">斜面静止木块受力分析</h1>
+            <div class="mb-4">
+                <h3 class="font-semibold text-gray-700 mb-2">核心知识点：</h3>
+                <ul class="list-disc pl-5 text-gray-600">
+                    <li>重力的正交分解（沿斜面/垂直斜面方向）</li>
+                    <li>共点力平衡条件的应用</li>
+                    <li>斜面倾角变化时静摩擦力、支持力的动态变化规律</li>
+                </ul>
+            </div>
+            <div class="bg-blue-50 p-4 rounded-lg">
+                <h3 class="font-semibold text-blue-800 mb-2">原题结论：</h3>
+                <p class="text-gray-700">静止在斜面上的木块：静摩擦力f = mg sinθ，支持力N = mg cosθ；θ减小时，f减小、N增大。</p>
+            </div>
+        </div>
+
+        <!-- 动画区域 -->
+        <div class="canvas-container p-6 mb-6">
+            <canvas id="physicsCanvas" width="800" height="450"></canvas>
+            <div class="flex gap-4 justify-center mt-4">
+                <button id="decreaseBtn" class="btn bg-blue-500 text-white px-6 py-2 rounded-lg font-medium">减小倾角θ</button>
+                <button id="resetBtn" class="btn bg-gray-500 text-white px-6 py-2 rounded-lg font-medium">重置倾角</button>
+                <button id="increaseBtn" class="btn bg-green-500 text-white px-6 py-2 rounded-lg font-medium">增大倾角θ</button>
+            </div>
+            <div class="mt-4 text-center text-gray-700">
+                <p>当前倾角：<span id="angleDisplay" class="font-bold text-blue-600">30°</span></p>
+                <p>静摩擦力f = <span id="fDisplay" class="font-bold text-red-600">0.5mg</span> | 支持力N = <span id="nDisplay" class="font-bold text-green-600">0.87mg</span></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('physicsCanvas');
+        const ctx = canvas.getContext('2d');
+        let angle = 30; // 初始倾角
+        const g = 100; // 比例系数
+        const blockX = 400;
+        const blockY = 250;
+
+        function drawScene() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const rad = angle * Math.PI / 180;
+            
+            // 绘制斜面
+            ctx.beginPath();
+            ctx.moveTo(100, 400);
+            ctx.lineTo(700, 400 - 600 * Math.tan(rad));
+            ctx.lineTo(700, 400);
+            ctx.closePath();
+            ctx.fillStyle = '#e2e8f0';
+            ctx.fill();
+            ctx.strokeStyle = '#64748b';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            // 绘制木块
+            ctx.save();
+            ctx.translate(blockX, blockY);
+            ctx.rotate(rad);
+            ctx.fillStyle = '#3b82f6';
+            ctx.fillRect(-30, -20, 60, 40);
+            ctx.strokeStyle = '#1e40af';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(-30, -20, 60, 40);
+            ctx.restore();
+
+            // 绘制力的箭头
+            const f = Math.sin(rad) * g;
+            const n = Math.cos(rad) * g;
+            
+            // 重力mg
+            drawArrow(blockX, blockY, blockX, blockY + g, '#ef4444', 'mg');
+            // 静摩擦力f
+            drawArrow(blockX, blockY, blockX - f * Math.cos(rad), blockY + f * Math.sin(rad), '#f97316', 'f');
+            // 支持力N
+            drawArrow(blockX, blockY, blockX - n * Math.sin(rad), blockY - n * Math.cos(rad), '#22c55e', 'N');
+
+            // 更新显示数值
+            document.getElementById('angleDisplay').textContent = `${Math.round(angle)}°`;
+            document.getElementById('fDisplay').textContent = `${Math.sin(rad).toFixed(2)}mg`;
+            document.getElementById('nDisplay').textContent = `${Math.cos(rad).toFixed(2)}mg`;
+        }
+
+        function drawArrow(x1, y1, x2, y2, color, label) {
+            const headLen = 12;
+            const angle = Math.atan2(y2 - y1, x2 - x1);
+            
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.lineTo(x2 - headLen * Math.cos(angle - Math.PI/6), y2 - headLen * Math.sin(angle - Math.PI/6));
+            ctx.moveTo(x2, y2);
+            ctx.lineTo(x2 - headLen * Math.cos(angle + Math.PI/6), y2 - headLen * Math.sin(angle + Math.PI/6));
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            ctx.fillStyle = color;
+            ctx.font = 'bold 16px sans-serif';
+            ctx.fillText(label, x2 + 10 * Math.cos(angle), y2 + 10 * Math.sin(angle));
+        }
+
+        // 按钮事件
+        document.getElementById('decreaseBtn').addEventListener('click', () => {
+            if(angle > 5) {
+                angle -= 5;
+                drawScene();
+            }
+        });
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            angle = 30;
+            drawScene();
+        });
+        document.getElementById('increaseBtn').addEventListener('click', () => {
+            if(angle < 60) {
+                angle += 5;
+                drawScene();
+            }
+        });
+
+        // 初始绘制
+        drawScene();
+    </script>
+</body>
+</html>
+```
+
+---
+
+### 运行说明
+将上述代码复制保存为`.html`文件，直接在浏览器中打开即可使用：
+1.  页面可直观看到斜面上木块的三个受力（重力、静摩擦力、支持力）的方向与大小比例
+2.  通过三个按钮可以调整斜面倾角，实时观察静摩擦力、支持力随倾角的变化规律
+3.  页面同步显示当前倾角、对应f和N的数值，完全匹配题目分析结论，适合课堂演示与知识点讲解
