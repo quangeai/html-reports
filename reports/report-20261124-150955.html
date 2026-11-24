@@ -1,0 +1,195 @@
+### 分析过程
+1.  **核心知识点**：斜面上静止物体的受力平衡、重力的正交分解、静摩擦力与支持力的动态变化规律
+2.  **受力逻辑**：
+    - 斜面上静止的木块受3个力：竖直向下的重力mg、垂直斜面向上的支持力N、沿斜面向上的静摩擦力f
+    - 正交分解重力：沿斜面向下的分力为mg sinθ，垂直斜面向下的分力为mg cosθ
+    - 平衡条件推导：f = mg sinθ，N = mg cosθ
+    - 动态变化：θ减小时，sinθ减小、cosθ增大，因此静摩擦力f减小，支持力N（木块对斜面的压力与N大小相等）增大
+
+---
+
+### 可运行HTML动画代码
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>斜面木块受力分析动画</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        .arrow {
+            stroke-width: 3;
+            fill: none;
+            marker-end: url(#arrowhead);
+        }
+        .label {
+            font-weight: bold;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body class="p-6 font-sans">
+    <div class="max-w-5xl mx-auto">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">斜面静止木块受力分析动画</h1>
+        
+        <!-- 题目与知识点区域 -->
+        <div class="bg-white rounded-xl shadow-lg p-5 mb-6">
+            <h2 class="text-xl font-semibold text-gray-700 mb-3">📚 知识点与原题</h2>
+            <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                    <h3 class="font-medium text-blue-600 mb-2">核心知识点</h3>
+                    <ul class="list-disc pl-5 text-gray-600 space-y-1">
+                        <li>重力的正交分解（斜面场景）</li>
+                        <li>共点力平衡条件的应用</li>
+                        <li>静摩擦力、支持力的动态变化规律</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-medium text-blue-600 mb-2">原题结论</h3>
+                    <p class="text-gray-600">静止在斜面上的木块，当斜面倾角θ缓慢减小时：</p>
+                    <p class="text-green-600 font-medium">✅ 静摩擦力随θ减小而减小</p>
+                    <p class="text-red-600 font-medium">❌ 木块对斜面的压力随θ减小而增大</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 动画控制区域 -->
+        <div class="bg-white rounded-xl shadow-lg p-5 mb-6">
+            <div class="flex flex-wrap items-center justify-center gap-4 mb-4">
+                <button id="decreaseTheta" class="px-5 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">减小倾角θ</button>
+                <button id="increaseTheta" class="px-5 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">增大倾角θ</button>
+                <button id="reset" class="px-5 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition">重置</button>
+                <div class="text-lg font-medium text-gray-700">当前倾角：<span id="thetaValue" class="text-blue-600">30°</span></div>
+            </div>
+            <div class="text-center text-gray-600">
+                静摩擦力f = <span id="fValue" class="font-semibold text-orange-600">0.5mg</span> | 
+                支持力N = <span id="nValue" class="font-semibold text-purple-600">0.87mg</span>
+            </div>
+        </div>
+
+        <!-- 动画画布区域 -->
+        <div class="bg-white rounded-xl shadow-lg p-4 flex justify-center">
+            <svg id="canvas" width="700" height="450" viewBox="0 0 700 450">
+                <defs>
+                    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                        <polygon points="0 0, 10 3.5, 0 7" fill="currentColor"/>
+                    </marker>
+                </defs>
+                <!-- 斜面 -->
+                <line id="slope" x1="100" y1="350" x2="600" y2="350" stroke="#333" stroke-width="4"/>
+                <!-- 木块 -->
+                <rect id="block" x="380" y="310" width="60" height="40" fill="#4299e1" rx="5"/>
+                <!-- 力的箭头 -->
+                <line id="gravity" class="arrow" stroke="#e53e3e"/>
+                <line id="friction" class="arrow" stroke="#ed8936"/>
+                <line id="support" class="arrow" stroke="#805ad5"/>
+                <!-- 力的标签 -->
+                <text id="labelG" class="label" fill="#e53e3e"></text>
+                <text id="labelF" class="label" fill="#ed8936"></text>
+                <text id="labelN" class="label" fill="#805ad5"></text>
+            </svg>
+        </div>
+    </div>
+
+    <script>
+        let theta = 30; // 初始角度 单位：度
+        const svg = document.getElementById('canvas');
+        const block = document.getElementById('block');
+        const slope = document.getElementById('slope');
+        const gravity = document.getElementById('gravity');
+        const friction = document.getElementById('friction');
+        const support = document.getElementById('support');
+        const labelG = document.getElementById('labelG');
+        const labelF = document.getElementById('labelF');
+        const labelN = document.getElementById('labelN');
+        const thetaValue = document.getElementById('thetaValue');
+        const fValue = document.getElementById('fValue');
+        const nValue = document.getElementById('nValue');
+
+        function updateScene() {
+            const rad = theta * Math.PI / 180;
+            const baseX = 100, baseY = 350;
+            const slopeLen = 500;
+            const endX = baseX + slopeLen * Math.cos(rad);
+            const endY = baseY - slopeLen * Math.sin(rad);
+            slope.setAttribute('x2', endX);
+            slope.setAttribute('y2', endY);
+
+            // 木块位置 斜面中点
+            const blockX = (baseX + endX)/2 - 30;
+            const blockY = (baseY + endY)/2 - 20;
+            block.setAttribute('x', blockX);
+            block.setAttribute('y', blockY);
+            const cx = blockX + 30, cy = blockY + 20;
+
+            // 力的长度系数 放大便于观察
+            const scale = 80;
+            // 重力 竖直向下
+            const gLen = scale * 1.2;
+            gravity.setAttribute('x1', cx);
+            gravity.setAttribute('y1', cy);
+            gravity.setAttribute('x2', cx);
+            gravity.setAttribute('y2', cy + gLen);
+            labelG.setAttribute('x', cx + 10);
+            labelG.setAttribute('y', cy + gLen/2);
+            labelG.textContent = 'mg';
+
+            // 静摩擦力 沿斜面向上
+            const fLen = scale * Math.sin(rad);
+            friction.setAttribute('x1', cx);
+            friction.setAttribute('y1', cy);
+            friction.setAttribute('x2', cx - fLen * Math.cos(rad));
+            friction.setAttribute('y2', cy + fLen * Math.sin(rad));
+            labelF.setAttribute('x', cx - fLen * Math.cos(rad) - 15);
+            labelF.setAttribute('y', cy + fLen * Math.sin(rad)/2);
+            labelF.textContent = 'f';
+
+            // 支持力 垂直斜面向上
+            const nLen = scale * Math.cos(rad);
+            support.setAttribute('x1', cx);
+            support.setAttribute('y1', cy);
+            support.setAttribute('x2', cx - nLen * Math.sin(rad));
+            support.setAttribute('y2', cy - nLen * Math.cos(rad));
+            labelN.setAttribute('x', cx - nLen * Math.sin(rad)/2);
+            labelN.setAttribute('y', cy - nLen * Math.cos(rad) - 10);
+            labelN.textContent = 'N';
+
+            // 更新数值显示
+            thetaValue.textContent = `${theta}°`;
+            fValue.textContent = `${Math.sin(rad).toFixed(2)}mg`;
+            nValue.textContent = `${Math.cos(rad).toFixed(2)}mg`;
+        }
+
+        // 按钮事件
+        document.getElementById('decreaseTheta').addEventListener('click', ()=>{
+            if(theta > 5) theta -=5;
+            updateScene();
+        });
+        document.getElementById('increaseTheta').addEventListener('click', ()=>{
+            if(theta < 60) theta +=5;
+            updateScene();
+        });
+        document.getElementById('reset').addEventListener('click', ()=>{
+            theta = 30;
+            updateScene();
+        });
+
+        // 初始化
+        updateScene();
+    </script>
+</body>
+</html>
+```
+
+---
+
+### 运行说明
+将上述代码复制保存为`.html`文件，直接在浏览器打开即可使用：
+1.  点击「减小倾角θ」「增大倾角θ」按钮可动态调整斜面角度
+2.  页面实时显示当前倾角、静摩擦力、支持力的数值
+3.  动画中直观展示三个力的方向与大小随角度的变化，清晰对应平衡条件的推导结论
