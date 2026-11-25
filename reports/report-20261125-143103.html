@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>动量守恒概念辨析</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 30px;
+        }
+        h1 {
+            text-align: center;
+            color: #2d3748;
+            margin-bottom: 25px;
+        }
+        .question-box {
+            background: #f7fafc;
+            border-left: 4px solid #4a90e2;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+        .options {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .option-card {
+            padding: 18px;
+            border-radius: 8px;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .option-card:hover {
+            border-color: #4a90e2;
+            transform: translateX(5px);
+        }
+        .option-card.correct {
+            border-color: #48bb78;
+            background: #f0fff4;
+        }
+        .option-card.wrong {
+            border-color: #f56565;
+            background: #fff5f5;
+        }
+        .animation-area {
+            height: 300px;
+            background: linear-gradient(to bottom, #ebf8ff 0%, #e6fffa 100%);
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            background: #4a90e2;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #357abd;
+        }
+        .explanation {
+            background: #fefcbf;
+            border-left: 4px solid #ecc94b;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            line-height: 1.6;
+        }
+        .ball {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            transition: all 0.05s linear;
+        }
+        .ball1 {
+            background: #4a90e2;
+        }
+        .ball2 {
+            background: #ed64a6;
+        }
+        .ground {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 20px;
+            background: #68d391;
+        }
+        .arrow {
+            position: absolute;
+            height: 3px;
+            background: #2d3748;
+            transform-origin: left center;
+        }
+        .arrow::after {
+            content: '';
+            position: absolute;
+            right: -6px;
+            top: -3px;
+            border: 6px solid transparent;
+            border-left: 8px solid #2d3748;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>动量守恒概念辨析</h1>
+        
+        <div class="question-box">
+            <strong>题目：</strong>下列关于动量守恒的说法正确的是（ ）
+        </div>
+
+        <div class="options">
+            <div class="option-card wrong" id="optA">
+                <strong>A.</strong> 系统动量守恒，则机械能也一定守恒
+            </div>
+            <div class="option-card correct" id="optB">
+                <strong>B.</strong> 系统内各物体动量都不变，系统总动量才守恒
+            </div>
+            <div class="option-card wrong" id="optC">
+                <strong>C.</strong> 系统所受合外力不为零，总动量一定不守恒
+            </div>
+            <div class="option-card wrong" id="optD">
+                <strong>D.</strong> 系统有摩擦力作用，动量就不可能守恒
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <button onclick="startAnimation('A')">演示选项A反例</button>
+            <button onclick="startAnimation('B')">演示选项B原理</button>
+            <button onclick="startAnimation('C')">演示选项C反例</button>
+            <button onclick="startAnimation('D')">演示选项D反例</button>
+            <button onclick="resetAnimation()">重置动画</button>
+        </div>
+
+        <div class="animation-area" id="animationArea">
+            <div class="ground"></div>
+        </div>
+
+        <div class="explanation">
+            <strong>知识点解析：</strong><br>
+            1. 动量守恒条件：系统所受合外力的矢量和为0，总动量保持不变<br>
+            2. 动量是矢量，总动量为各物体动量的矢量和<br>
+            3. 动量守恒和机械能守恒是两个独立的守恒条件，无必然联系<br>
+            4. 正确答案为 <strong>B</strong>：当系统内各物体动量都不变时，矢量和必然不变，总动量守恒
+        </div>
+    </div>
+
+    <script>
+        let animationId = null;
+        const area = document.getElementById('animationArea');
+
+        function clearArea() {
+            const balls = area.querySelectorAll('.ball');
+            const arrows = area.querySelectorAll('.arrow');
+            [...balls, ...arrows].forEach(el => el.remove());
+            if (animationId) cancelAnimationFrame(animationId);
+        }
+
+        function startAnimation(type) {
+            clearArea();
+            
+            if (type === 'A') {
+                // 完全非弹性碰撞：动量守恒，机械能减少
+                let ball1 = document.createElement('div');
+                ball1.className = 'ball ball1';
+                ball1.textContent = 'm1';
+                ball1.style.left = '50px';
+                ball1.style.bottom = '40px';
+                area.appendChild(ball1);
+
+                let ball2 = document.createElement('div');
+                ball2.className = 'ball ball2';
+                ball2.textContent = 'm2';
+                ball2.style.left = '300px';
+                ball2.style.bottom = '40px';
+                area.appendChild(ball2);
+
+                let v1 = 3, v2 = 0;
+                let x1 = 50, x2 = 300;
+                
+                function animate() {
+                    x1 += v1;
+                    if (x1 >= x2 - 40) {
+                        v1 = 1;
+                        v2 = 1;
+                    }
+                    x2 += v2;
+                    ball1.style.left = x1 + 'px';
+                    ball2.style.left = x2 + 'px';
+                    animationId = requestAnimationFrame(animate);
+                }
+                animate();
+            } else if (type === 'B') {
+                // 两个匀速运动物体，各自动量不变，总动量不变
+                let ball1 = document.createElement('div');
+                ball1.className = 'ball ball1';
+                ball1.textContent = 'm1';
+                ball1.style.left = '50px';
+                ball1.style.bottom = '100px';
+                area.appendChild(ball1);
+
+                let ball2 = document.createElement('div');
+                ball2.className = 'ball ball2';
+                ball2.textContent = 'm2';
+                ball2.style.left = '150px';
+                ball2.style.bottom = '40px';
+                area.appendChild(ball2);
+
+                // 动量箭头
+                let arr1 = document.createElement('div');
+                arr1.className = 'arrow';
+                arr1.style.left = '90px';
+                arr1.style.top = '160px';
+                arr1.style.width = '80px';
+                area.appendChild(arr1);
+
+                let arr2 = document.createElement('div');
+                arr2.className = 'arrow';
+                arr2.style.left = '190px';
+                arr2.style.top = '200px';
+                arr2.style.width = '60px';
+                area.appendChild(arr2);
+
+                let x1 = 50, x2 = 150;
+                const v1 = 2, v2 = 2;
+                
+                function animate() {
+                    x1 += v1;
+                    x2 += v2;
+                    ball1.style.left = x1 + 'px';
+                    ball2.style.left = x2 + 'px';
+                    arr1.style.left = (x1 + 40) + 'px';
+                    arr2.style.left = (x2 + 40) + 'px';
+                    if (x1 < 700) animationId = requestAnimationFrame(animate);
+                }
+                animate();
+            } else if (type === 'C') {
+                // 爆炸：合外力不为0，但内力远大于外力，动量近似守恒
+                let ball = document.createElement('div');
+                ball.className = 'ball ball1';
+                ball.textContent = '💥';
+                ball.style.left = '380px';
+                ball.style.bottom = '40px';
+                area.appendChild(ball);
+
+                setTimeout(() => {
+                    ball.remove();
+                    let b1 = document.createElement('div');
+                    b1.className = 'ball ball1';
+                    b1.textContent = 'm1';
+                    b1.style.left = '380px';
+                    b1.style.bottom = '40px';
+                    area.appendChild(b1);
+
+                    let b2 = document.createElement('div');
+                    b2.className = 'ball ball2';
+                    b2.textContent = 'm2';
+                    b2.style.left = '380px';
+                    b2.style.bottom = '40px';
+                    area.appendChild(b2);
+
+                    let x1 = 380, x2 = 380;
+                    const v1 = -3, v2 = 3;
+                    
+                    function animate() {
+                        x1 += v1;
+                        x2 += v2;
+                        b1.style.left = x1 + 'px';
+                        b2.style.left = x2 + 'px';
+                        if (x1 > 0 && x2 < 760) animationId = requestAnimationFrame(animate);
+                    }
+                    animate();
+                }, 1000);
+            } else if (type === 'D') {
+                // 木板上滑动的木块：系统含摩擦力，但合外力为0，动量守恒
+                let board = document.createElement('div');
+                board.style.position = 'absolute';
+                board.style.width = '200px';
+                board.style.height = '30px';
+                board.style.background = '#a0aec0';
+                board.style.bottom = '40px';
+                board.style.left = '200px';
+                area.appendChild(board);
+
+                let block = document.createElement('div');
+                block.className = 'ball ball1';
+                block.textContent = '块';
+                block.style.width = '30px';
+                block.style.height = '30px';
+                block.style.bottom = '50px';
+                block.style.left = '220px';
+                area.appendChild(block);
+
+                let bx = 200, blx = 220;
+                let v_board = 1, v_block = 3;
+                
+                function animate() {
+                    bx += v_board;
+                    blx += v_block;
+                    if (blx >= bx + 170) {
+                        v_board = 2;
+                        v_block = 2;
+                    }
+                    board.style.left = bx + 'px';
+                    block.style.left = blx + 'px';
+                    if (bx < 600) animationId = requestAnimationFrame(animate);
+                }
+                animate();
+            }
+        }
+
+        function resetAnimation() {
+            clearArea();
+        }
+    </script>
+</body>
+</html>
