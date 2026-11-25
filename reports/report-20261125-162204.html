@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>动量守恒知识点分析</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-size: 28px;
+        }
+        .knowledge-point {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 5px solid #2196f3;
+        }
+        .knowledge-point h3 {
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+        .question {
+            background: #fff3e0;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 5px solid #ff9800;
+            font-size: 18px;
+            line-height: 1.8;
+        }
+        .options {
+            margin-top: 15px;
+        }
+        .option {
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+        .option:hover {
+            background: #ffe0b2;
+        }
+        .animation-area {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        canvas {
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            background: white;
+        }
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            background: #2196f3;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #1976d2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(33,150,243,0.3);
+        }
+        .analysis {
+            background: #e8f5e9;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 5px solid #4caf50;
+            line-height: 1.8;
+            font-size: 17px;
+        }
+        .analysis h3 {
+            color: #388e3c;
+            margin-bottom: 15px;
+        }
+        .correct {
+            color: #2e7d32;
+            font-weight: bold;
+        }
+        .wrong {
+            color: #c62828;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>动量守恒知识点分析与动画演示</h1>
+        
+        <div class="knowledge-point">
+            <h3>📌 核心知识点：动量守恒定律</h3>
+            <p><strong>定义：</strong>如果一个系统不受外力或所受合外力的矢量和为零，这个系统的总动量保持不变，即：
+            $$ \sum_{i=1}^{n} m_i \vec{v}_i = 恒矢量 $$</p>
+            <p>关键要点：
+                <ul>
+                    <li>动量是矢量，守恒指的是系统总动量的矢量和不变，不是各物体动量都不变</li>
+                    <li>动量守恒的条件是系统合外力为零，和内力的类型（包括摩擦力）无关</li>
+                    <li>动量守恒和机械能守恒是完全不同的两个守恒定律，没有必然联系</li>
+                </ul>
+            </p>
+        </div>
+
+        <div class="question">
+            <h3>原题：</h3>
+            <p>下列关于动量守恒的说法正确的是（ ）</p>
+            <div class="options">
+                <div class="option">A. 系统动量守恒，则机械能也一定守恒</div>
+                <div class="option">B. 系统内各物体动量都不变，系统总动量才守恒</div>
+                <div class="option">C. 系统所受合外力不为零，总动量一定不守恒</div>
+                <div class="option">D. 系统有摩擦力作用，动量就不可能守恒</div>
+            </div>
+        </div>
+
+        <div class="animation-area">
+            <h3 style="margin-bottom: 15px; color: #2c3e50;">动量守恒动画演示（两球碰撞模型）</h3>
+            <canvas id="momentumCanvas" width="700" height="250"></canvas>
+            <div class="controls">
+                <button id="startBtn">开始演示</button>
+                <button id="resetBtn">重置</button>
+            </div>
+            <div id="info" style="margin-top:15px; font-size:16px; color: #555;">
+                系统总动量：<span id="totalMomentum">20</span> kg·m/s
+            </div>
+        </div>
+
+        <div class="analysis">
+            <h3>🔍 选项逐一分析：</h3>
+            <p><span class="wrong">A选项错误：</span>动量守恒和机械能守恒没有必然联系。例如完全非弹性碰撞，动量守恒但机械能有损失。</p>
+            <p><span class="wrong">B选项正确：</span>系统总动量是各物体动量的矢量和，只有当每个物体的动量都不发生变化时，总动量才会保持恒定不变。这是动量守恒的典型情况之一。</p>
+            <p><span class="wrong">C选项错误：</span>若系统某一方向上合外力为零，该方向上动量守恒；即使合外力不为零，若内力远大于外力，也可近似认为动量守恒（如碰撞瞬间）。</p>
+            <p><span class="wrong">D选项错误：</span>摩擦力属于系统内力时，不影响总动量守恒。例如两个木块在光滑水平面内相互摩擦，系统总动量仍然守恒。</p>
+            <p style="margin-top:15px; font-size:18px;">✅ 最终正确答案：<strong>B</strong></p>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('momentumCanvas');
+        const ctx = canvas.getContext('2d');
+        const startBtn = document.getElementById('startBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const totalMomentumSpan = document.getElementById('totalMomentum');
+
+        let ball1 = { x: 100, y: 125, vx: 2, m: 5, r: 30, color: '#2196f3' };
+        let ball2 = { x: 500, y: 125, vx: -2, m: 5, r: 30, color: '#ff9800' };
+        let animating = false;
+        let animationId = null;
+
+        function drawBall(ball) {
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2);
+            ctx.fillStyle = ball.color;
+            ctx.fill();
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            // 绘制速度箭头
+            ctx.beginPath();
+            ctx.moveTo(ball.x, ball.y);
+            ctx.lineTo(ball.x + ball.vx * 20, ball.y);
+            ctx.strokeStyle = '#e91e63';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            // 箭头头部
+            let arrowX = ball.x + ball.vx * 20;
+            let dir = ball.vx > 0 ? 1 : -1;
+            ctx.beginPath();
+            ctx.moveTo(arrowX, ball.y);
+            ctx.lineTo(arrowX - 8*dir, ball.y - 5);
+            ctx.lineTo(arrowX - 8*dir, ball.y + 5);
+            ctx.fillStyle = '#e91e63';
+            ctx.fill();
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // 绘制水平线
+            ctx.beginPath();
+            ctx.moveTo(50, 155);
+            ctx.lineTo(650, 155);
+            ctx.strokeStyle = '#999';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            drawBall(ball1);
+            drawBall(ball2);
+            // 计算总动量
+            let total = ball1.m * ball1.vx + ball2.m * ball2.vx;
+            totalMomentumSpan.textContent = total.toFixed(1);
+        }
+
+        function animate() {
+            if (!animating) return;
+            ball1.x += ball1.vx;
+            ball2.x += ball2.vx;
+            
+            // 碰撞检测
+            if (ball1.x + ball1.r >= ball2.x - ball2.r) {
+                // 交换速度（弹性碰撞，等质量）
+                let temp = ball1.vx;
+                ball1.vx = ball2.vx;
+                ball2.vx = temp;
+            }
+
+            // 边界反弹
+            if (ball1.x < ball1.r + 50) {
+                ball1.vx = Math.abs(ball1.vx);
+            }
+            if (ball2.x > canvas.width - ball2.r -50) {
+                ball2.vx = -Math.abs(ball2.vx);
+            }
+
+            draw();
+            animationId = requestAnimationFrame(animate);
+        }
+
+        startBtn.addEventListener('click', () => {
+            if (!animating) {
+                animating = true;
+                animate();
+            }
+        });
+
+        resetBtn.addEventListener('click', () => {
+            animating = false;
+            cancelAnimationFrame(animationId);
+            ball1 = { x: 100, y: 125, vx: 2, m: 5, r: 30, color: '#2196f3' };
+            ball2 = { x: 500, y: 125, vx: -2, m: 5, r: 30, color: '#ff9800' };
+            draw();
+        });
+
+        draw();
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</body>
+</html>
