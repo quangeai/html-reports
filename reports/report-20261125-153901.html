@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>动量守恒概念辨析</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+        .option-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .option-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+        }
+        .correct {
+            background-color: #10b981 !important;
+            color: white;
+        }
+        .wrong {
+            background-color: #ef4444 !important;
+            color: white;
+        }
+        .animation-box {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+        }
+        .btn {
+            transition: all 0.2s ease;
+        }
+        .btn:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body class="p-6 md:p-8">
+    <div class="max-w-5xl mx-auto">
+        <!-- 标题区域 -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">动量守恒概念辨析</h1>
+            <p class="text-gray-600">深入理解动量守恒的核心定义与适用条件</p>
+        </div>
+
+        <!-- 知识点卡片 -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-3 flex items-center">
+                <span class="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center mr-3 text-sm">知</span>
+                核心知识点
+            </h2>
+            <div class="space-y-2 text-gray-700">
+                <p>1. <strong>动量守恒定义</strong>：如果一个系统不受外力或所受合外力的矢量和为零，那么这个系统的总动量保持不变。</p>
+                <p>2. <strong>总动量守恒≠各物体动量不变</strong>：系统内物体间可以发生动量转移，只要总矢量和不变即可。</p>
+                <p>3. <strong>动量守恒与机械能守恒无关</strong>：动量守恒的系统机械能可能因内力做功而不守恒。</p>
+                <p>4. <strong>合外力不为零的特殊情况</strong>：若某一方向合外力为零，该方向动量仍守恒。</p>
+            </div>
+        </div>
+
+        <!-- 题目展示 -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                <span class="bg-purple-500 text-white rounded-full w-8 h-8 flex items-center justify-center mr-3 text-sm">题</span>
+                原题呈现
+            </h2>
+            <p class="text-lg text-gray-800 mb-6">下列关于动量守恒的说法正确的是（ ）</p>
+            
+            <!-- 选项区域 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div id="optA" class="option-card border-2 border-gray-200 rounded-lg p-4">
+                    <span class="font-semibold">A.</span> 系统动量守恒，则机械能也一定守恒
+                </div>
+                <div id="optB" class="option-card border-2 border-gray-200 rounded-lg p-4">
+                    <span class="font-semibold">B.</span> 系统内各物体动量都不变，系统总动量才守恒
+                </div>
+                <div id="optC" class="option-card border-2 border-gray-200 rounded-lg p-4">
+                    <span class="font-semibold">C.</span> 系统所受合外力不为零，总动量一定不守恒
+                </div>
+                <div id="optD" class="option-card border-2 border-gray-200 rounded-lg p-4">
+                    <span class="font-semibold">D.</span> 系统有摩擦力作用，动量就不可能守恒
+                </div>
+            </div>
+
+            <!-- 操作按钮 -->
+            <div class="flex flex-wrap gap-3 justify-center">
+                <button id="showBtn" class="btn bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-medium">
+                    查看解析
+                </button>
+                <button id="resetBtn" class="btn bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg font-medium">
+                    重置
+                </button>
+            </div>
+        </div>
+
+        <!-- 动画演示区域 -->
+        <div class="animation-box p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                <span class="bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center mr-3 text-sm">演</span>
+                概念动画演示
+            </h2>
+            <canvas id="animCanvas" width="800" height="300" class="w-full rounded-lg bg-gray-50"></canvas>
+            <div class="mt-4 text-center">
+                <button id="playBtn" class="btn bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg font-medium">
+                    播放演示动画
+                </button>
+            </div>
+        </div>
+
+        <!-- 答案区域 -->
+        <div id="answerBox" class="mt-6 bg-green-50 border-l-4 border-green-500 p-5 rounded-r-lg hidden">
+            <h3 class="font-semibold text-green-800 mb-2">正确答案：B</h3>
+            <div class="text-gray-700 space-y-2">
+                <p><strong>选项A错误：</strong>动量守恒和机械能守恒是两个独立的物理规律，比如完全非弹性碰撞，动量守恒但机械能因摩擦生热而损失。</p>
+                <p><strong>选项B正确：</strong>当系统内每个物体的动量都不变时，系统总动量必然保持不变，这是总动量守恒的充分条件。</p>
+                <p><strong>选项C错误：</strong>若合外力在某一方向分量为零，该方向动量仍然守恒，比如平抛运动水平方向动量守恒。</p>
+                <p><strong>选项D错误：</strong>摩擦力属于系统内力时，只要合外力为零，系统动量依然守恒。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 元素获取
+        const optA = document.getElementById('optA');
+        const optB = document.getElementById('optB');
+        const optC = document.getElementById('optC');
+        const optD = document.getElementById('optD');
+        const showBtn = document.getElementById('showBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const playBtn = document.getElementById('playBtn');
+        const answerBox = document.getElementById('answerBox');
+        const canvas = document.getElementById('animCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // 显示解析功能
+        showBtn.addEventListener('click', () => {
+            optA.classList.add('wrong');
+            optB.classList.add('correct');
+            optC.classList.add('wrong');
+            optD.classList.add('wrong');
+            answerBox.classList.remove('hidden');
+        });
+
+        // 重置功能
+        resetBtn.addEventListener('click', () => {
+            [optA, optB, optC, optD].forEach(el => {
+                el.classList.remove('correct', 'wrong');
+            });
+            answerBox.classList.add('hidden');
+        });
+
+        // 动画演示
+        playBtn.addEventListener('click', () => {
+            // 动画状态变量
+            let t = 0;
+            const ball1 = {x: 150, y: 150, vx: 2, radius: 30, color: '#3b82f6'};
+            const ball2 = {x: 650, y: 150, vx: -2, radius: 30, color: '#ef4444'};
+            
+            function animate() {
+                // 清空画布
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // 绘制坐标轴
+                ctx.strokeStyle = '#cbd5e1';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(0, 150);
+                ctx.lineTo(800, 150);
+                ctx.stroke();
+                
+                // 更新位置
+                ball1.x += ball1.vx;
+                ball2.x += ball2.vx;
+                
+                // 碰撞检测
+                if (ball1.x + ball1.radius >= ball2.x - ball2.radius) {
+                    // 交换速度（弹性碰撞演示）
+                    const temp = ball1.vx;
+                    ball1.vx = ball2.vx;
+                    ball2.vx = temp;
+                }
+                
+                // 绘制小球
+                [ball1, ball2].forEach(ball => {
+                    ctx.beginPath();
+                    ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = ball.color;
+                    ctx.fill();
+                    
+                    // 绘制动量箭头
+                    ctx.beginPath();
+                    ctx.moveTo(ball.x, ball.y);
+                    const arrowLen = ball.vx * 20;
+                    ctx.lineTo(ball.x + arrowLen, ball.y);
+                    ctx.strokeStyle = '#1e293b';
+                    ctx.lineWidth = 3;
+                    ctx.stroke();
+                    
+                    // 箭头头部
+                    ctx.beginPath();
+                    ctx.moveTo(ball.x + arrowLen, ball.y);
+                    ctx.lineTo(ball.x + arrowLen - 8, ball.y - 6);
+                    ctx.lineTo(ball.x + arrowLen - 8, ball.y + 6);
+                    ctx.closePath();
+                    ctx.fillStyle = '#1e293b';
+                    ctx.fill();
+                });
+                
+                // 绘制总动量提示
+                ctx.fillStyle = '#1e293b';
+                ctx.font = '16px sans-serif';
+                ctx.fillText('系统总动量 P = m1v1 + m2v2 = 0（保持不变）', 300, 50);
+                
+                t++;
+                if (t < 200) {
+                    requestAnimationFrame(animate);
+                } else {
+                    // 重置小球位置
+                    ball1.x = 150;
+                    ball2.x = 650;
+                    ball1.vx = 2;
+                    ball2.vx = -2;
+                }
+            }
+            
+            animate();
+        });
+    </script>
+</body>
+</html>
