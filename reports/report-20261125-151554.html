@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>动量守恒知识点动画演示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft Yahei', sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #f1f5f9;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(90deg, #38bdf8, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+        .knowledge-point {
+            background: rgba(30, 41, 59, 0.7);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+        .knowledge-point h2 {
+            color: #38bdf8;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        .question-section {
+            background: rgba(30, 41, 59, 0.7);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+        .question-section h3 {
+            color: #a855f7;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+        .options {
+            line-height: 2;
+            font-size: 1.1rem;
+        }
+        .animation-container {
+            background: rgba(15, 23, 42, 0.85);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        .animation-container canvas {
+            background: #0f172a;
+            border-radius: 12px;
+            margin: 15px auto;
+            display: block;
+        }
+        .control-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(90deg, #38bdf8, #a855f7);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(56, 189, 248, 0.4);
+        }
+        .answer-section {
+            background: rgba(30, 41, 59, 0.7);
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+        .answer-section h3 {
+            color: #10b981;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        .answer {
+            font-size: 1.2rem;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>动量守恒知识点动画演示</h1>
+        </div>
+        
+        <div class="knowledge-point">
+            <h2>核心知识点</h2>
+            <p style="font-size:1.1rem;line-height:1.8;">
+                1. <strong>动量守恒定义</strong>：当系统所受合外力的矢量和为零时，系统的总动量保持不变。<br>
+                2. <strong>关键误区</strong>：
+                <ul style="margin-left:20px;margin-top:10px;line-height:1.8;">
+                    <li>动量守恒 ≠ 机械能守恒，内力做功可能改变机械能</li>
+                    <li>动量守恒是系统总动量不变，不等于系统内每个物体动量都不变</li>
+                    <li>合外力不为零但某一方向合外力为零，该方向动量仍可守恒</li>
+                    <li>存在摩擦力时，若摩擦力为系统内力，总动量仍可能守恒</li>
+                </ul>
+            </p>
+        </div>
+
+        <div class="question-section">
+            <h3>原题内容</h3>
+            <div class="options">
+                <p style="font-size:1.2rem;margin-bottom:10px;">2. 下列关于动量守恒的说法正确的是（&nbsp;&nbsp;）</p>
+                <p>A. 系统动量守恒，则机械能也一定守恒</p>
+                <p>B. 系统内各物体动量都不变，系统总动量才守恒</p>
+                <p>C. 系统所受合外力不为零，总动量一定不守恒</p>
+                <p>D. 系统有摩擦力作用，动量就不可能守恒</p>
+            </div>
+        </div>
+
+        <div class="animation-container">
+            <h3 style="color:#38bdf8;margin-bottom:10px;">动量守恒过程动画演示</h3>
+            <canvas id="momentumCanvas" width="800" height="300"></canvas>
+            <div class="control-buttons">
+                <button id="playBtn">播放演示</button>
+                <button id="resetBtn">重置动画</button>
+            </div>
+        </div>
+
+        <div class="answer-section">
+            <h3>本题答案与解析</h3>
+            <div class="answer">
+                <p><strong style="color:#10b981;">正确答案：B</strong></p>
+                <p style="margin-top:10px;">
+                    <strong>选项解析：</strong><br>
+                    A错误：动量守恒时内力可能做功，机械能不一定守恒（如爆炸过程，动量守恒机械能增加）<br>
+                    B正确：系统总动量是各物体动量的矢量和，只有各物体动量都不变，总动量才保持恒定<br>
+                    C错误：若某一方向合外力为零，该方向动量守恒，即使整体合外力不为零<br>
+                    D错误：若摩擦力为系统内力，系统合外力为零的话动量仍可守恒
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('momentumCanvas');
+        const ctx = canvas.getContext('2d');
+        const playBtn = document.getElementById('playBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        
+        let animationId = null;
+        let time = 0;
+        const isPlaying = false;
+
+        // 绘制两个小球
+        function drawBalls(t) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 坐标轴
+            ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(50, 200);
+            ctx.lineTo(750, 200);
+            ctx.stroke();
+
+            // 小球1参数
+            let x1 = 150 + 60 * t;
+            let y1 = 150;
+            const v1x = 60;
+            
+            // 小球2参数
+            let x2 = 550 - 60 * t;
+            let y2 = 150;
+            const v2x = -60;
+
+            // 碰撞判断
+            if (x1 > 350 && x1 < 450) {
+                x1 = 400 + 60 * (t - 1);
+                x2 = 400 - 60 * (t - 1);
+            }
+
+            // 绘制小球1
+            ctx.fillStyle = '#38bdf8';
+            ctx.beginPath();
+            ctx.arc(x1, y1, 25, 0, Math.PI * 2);
+            ctx.fill();
+            // 动量箭头
+            drawArrow(x1, y1, x1 + (x1 < 400 ? 100 : -100), y1, '#f97316');
+
+            // 绘制小球2
+            ctx.fillStyle = '#a855f7';
+            ctx.beginPath();
+            ctx.arc(x2, y2, 25, 0, Math.PI * 2);
+            ctx.fill();
+            // 动量箭头
+            drawArrow(x2, y2, x2 + (x2 > 400 ? -100 : 100), y2, '#f97316');
+
+            // 文字标注
+            ctx.fillStyle = '#fff';
+            ctx.font = '16px Microsoft Yahei';
+            ctx.fillText('m1', x1-8, y1+5);
+            ctx.fillText('m2', x2-8, y2+5);
+            ctx.fillText('总动量: p总 = m1v1 + m2v2 = 0 (守恒)', 300, 260);
+        }
+
+        // 绘制箭头函数
+        function drawArrow(x1, y1, x2, y2, color) {
+            const headlen = 15;
+            const angle = Math.atan2(y2 - y1, x2 - x1);
+            ctx.strokeStyle = color;
+            ctx.fillStyle = color;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.lineTo(x2 - headlen * Math.cos(angle - Math.PI / 7), y2 - headlen * Math.sin(angle - Math.PI / 7));
+            ctx.moveTo(x2, y2);
+            ctx.lineTo(x2 - headlen * Math.cos(angle + Math.PI / 7), y2 - headlen * Math.sin(angle + Math.PI / 7));
+            ctx.stroke();
+        }
+
+        function animate() {
+            time += 0.016;
+            if (time > 3) time = 0;
+            drawBalls(time);
+            animationId = requestAnimationFrame(animate);
+        }
+
+        playBtn.addEventListener('click', () => {
+            if (!animationId) {
+                animate();
+                playBtn.textContent = '暂停演示';
+            } else {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+                playBtn.textContent = '播放演示';
+            }
+        });
+
+        resetBtn.addEventListener('click', () => {
+            cancelAnimationFrame(animationId);
+            animationId = null;
+            time = 0;
+            drawBalls(0);
+            playBtn.textContent = '播放演示';
+        });
+
+        // 初始绘制
+        drawBalls(0);
+    </script>
+</body>
+</html>
