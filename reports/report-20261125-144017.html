@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>动量守恒知识点辨析</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-size: 28px;
+        }
+        .knowledge-point {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+        .knowledge-point h3 {
+            margin-bottom: 12px;
+            font-size: 18px;
+        }
+        .question {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border-left: 4px solid #667eea;
+        }
+        .options {
+            margin-top: 15px;
+            line-height: 2;
+            font-size: 17px;
+        }
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+        .btn {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .btn-check {
+            background: #667eea;
+            color: white;
+        }
+        .btn-check:hover {
+            background: #5a67d8;
+        }
+        .btn-reset {
+            background: #e2e8f0;
+            color: #2d3748;
+        }
+        .btn-reset:hover {
+            background: #cbd5e0;
+        }
+        .analysis-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        .option-card {
+            background: #f8f9fa;
+            padding: 18px;
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s;
+        }
+        .option-card h4 {
+            margin-bottom: 10px;
+            color: #2d3748;
+        }
+        .option-card.correct {
+            border-color: #48bb78;
+            background: #f0fff4;
+        }
+        .option-card.wrong {
+            border-color: #f56565;
+            background: #fff5f5;
+        }
+        .canvas-wrap {
+            background: #f0f4f8;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        canvas {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .result {
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        .result.correct {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        .result.wrong {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>动量守恒知识点辨析</h1>
+        
+        <div class="knowledge-point">
+            <h3>📚 核心知识点：动量守恒定律</h3>
+            <p>1. 动量守恒条件：系统所受<strong>合外力为零</strong>，或某一方向合外力为零，或内力远大于外力时，系统在该方向动量近似守恒。</p>
+            <p>2. 动量守恒：系统总动量保持不变，指的是总动量的大小和方向都不变，系统内各物体动量可以发生转移。</p>
+            <p>3. 动量守恒与机械能守恒无必然联系：动量守恒时机械能不一定守恒，反之亦然。</p>
+        </div>
+
+        <div class="question">
+            <h3>题目：下列关于动量守恒的说法正确的是（ ）</h3>
+            <div class="options">
+                <p>A. 系统动量守恒，则机械能也一定守恒</p>
+                <p>B. 系统内各物体动量都不变，系统总动量才守恒</p>
+                <p>C. 系统所受合外力不为零，总动量一定不守恒</p>
+                <p>D. 系统有摩擦力作用，动量就不可能守恒</p>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-check" onclick="checkAnswer()">查看选项分析</button>
+            <button class="btn btn-reset" onclick="reset()">重置演示</button>
+        </div>
+
+        <div class="canvas-wrap">
+            <canvas id="demoCanvas" width="800" height="250"></canvas>
+            <p style="margin-top:10px; color:#4a5568;">碰撞过程动量守恒演示（两个小球碰撞，总动量保持不变）</p>
+        </div>
+
+        <div class="analysis-area" id="analysisArea"></div>
+
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('demoCanvas');
+        const ctx = canvas.getContext('2d');
+        let ball1 = {x: 150, y: 125, vx: 3, r: 30, color: '#667eea'};
+        let ball2 = {x: 650, y: 125, vx: -1, r: 30, color: '#764ba2'};
+        let animating = true;
+
+        function drawBall(b, label) {
+            ctx.beginPath();
+            ctx.arc(b.x, b.y, b.r, 0, Math.PI*2);
+            ctx.fillStyle = b.color;
+            ctx.fill();
+            ctx.strokeStyle = '#2d3748';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            // 速度箭头
+            ctx.beginPath();
+            ctx.moveTo(b.x, b.y);
+            ctx.lineTo(b.x + b.vx*20, b.y);
+            ctx.strokeStyle = '#e53e3e';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            // 箭头头部
+            ctx.beginPath();
+            ctx.moveTo(b.x + b.vx*20, b.y);
+            ctx.lineTo(b.x + b.vx*20 - 5*Math.sign(b.vx), b.y-5);
+            ctx.lineTo(b.x + b.vx*20 - 5*Math.sign(b.vx), b.y+5);
+            ctx.fillStyle = '#e53e3e';
+            ctx.fill();
+            // 标签
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 16px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(label, b.x, b.y+5);
+        }
+
+        function animate() {
+            if(!animating) return;
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            
+            // 画坐标轴提示
+            ctx.strokeStyle = '#cbd5e0';
+            ctx.beginPath();
+            ctx.moveTo(50, 125);
+            ctx.lineTo(750, 125);
+            ctx.stroke();
+
+            ball1.x += ball1.vx;
+            ball2.x += ball2.vx;
+
+            // 碰撞检测
+            if(ball1.x + ball1.r >= ball2.x - ball2.r) {
+                // 弹性碰撞简单模拟，总动量不变：m1v1 + m2v2 = m1v1' + m2v2'
+                // 假设质量相同，交换速度
+                let temp = ball1.vx;
+                ball1.vx = ball2.vx;
+                ball2.vx = temp;
+                ball1.x = ball2.x - ball1.r - ball2.r;
+            }
+
+            // 边界回弹
+            if(ball1.x < 50 + ball1.r) { ball1.x = 50 + ball1.r; ball1.vx *= -1; }
+            if(ball2.x > 750 - ball2.r) { ball2.x = 750 - ball2.r; ball2.vx *= -1; }
+
+            drawBall(ball1, 'A');
+            drawBall(ball2, 'B');
+
+            // 显示总动量
+            ctx.fillStyle = '#2d3748';
+            ctx.font = '18px sans-serif';
+            ctx.textAlign = 'left';
+            let totalMomentum = (ball1.vx*1 + ball2.vx*1).toFixed(2); // 假设质量都是1
+            ctx.fillText(`总动量: p总 = ${totalMomentum} (守恒不变)`, 300, 220);
+
+            requestAnimationFrame(animate);
+        }
+
+        function checkAnswer() {
+            animating = false;
+            const analysisArea = document.getElementById('analysisArea');
+            const result = document.getElementById('result');
+
+            const options = [
+                {
+                    opt: 'A',
+                    text: '系统动量守恒，则机械能也一定守恒',
+                    desc: '错误：动量守恒和机械能守恒无必然联系，例如完全非弹性碰撞，动量守恒但机械能有损失转化为内能。',
+                    correct: false
+                },
+                {
+                    opt: 'B',
+                    text: '系统内各物体动量都不变，系统总动量才守恒',
+                    desc: '正确：总动量是系统内所有物体动量的矢量和，若总动量守恒，意味着各物体的动量矢量和始终不变，当系统内物体动量均不变时，总动量必然保持恒定。',
+                    correct: true
+                },
+                {
+                    opt: 'C',
+                    text: '系统所受合外力不为零，总动量一定不守恒',
+                    desc: '错误：当内力远大于外力时，例如爆炸、碰撞瞬间，外力的影响可以忽略，此时总动量近似守恒。',
+                    correct: false
+                },
+                {
+                    opt: 'D',
+                    text: '系统有摩擦力作用，动量就不可能守恒',
+                    desc: '错误：如果摩擦力是系统的内力，且系统合外力为零，那么即使有摩擦力，系统动量仍然守恒。',
+                    correct: false
+                }
+            ];
+
+            analysisArea.innerHTML = '';
+            options.forEach(opt => {
+                const card = document.createElement('div');
+                card.className = `option-card ${opt.correct?'correct':'wrong'}`;
+                card.innerHTML = `
+                    <h4>选项${opt.opt}</h4>
+                    <p style="margin-bottom:8px;">${opt.text}</p>
+                    <p style="color:#4a5568; font-size:14px;">${opt.desc}</p>
+                `;
+                analysisArea.appendChild(card);
+            });
+
+            result.className = 'result correct';
+            result.innerHTML = '✅ 正确答案：B';
+        }
+
+        function reset() {
+            animating = true;
+            ball1 = {x: 150, y: 125, vx: 3, r: 30, color: '#667eea'};
+            ball2 = {x: 650, y: 125, vx: -1, r: 30, color: '#764ba2'};
+            document.getElementById('analysisArea').innerHTML = '';
+            document.getElementById('result').innerHTML = '';
+            animate();
+        }
+
+        animate();
+    </script>
+</body>
+</html>
