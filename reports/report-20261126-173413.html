@@ -1,0 +1,247 @@
+### 题目分析
+本题涉及的核心知识点为**斜面上静止物体的受力平衡与力的分解**：
+1.  受力分解规则：斜面上静止的木块，重力可分解为沿斜面向下的分力与垂直斜面向下的分力，对应分量为：沿斜面分力 = mg sinθ，垂直斜面分力 = mg cosθ
+2.  平衡条件：静止物体合力为0，因此静摩擦力与沿斜面向下的分力大小相等、方向相反，斜面对木块的支持力与垂直斜面的分力大小相等、方向相反，即 f = mg sinθ，N = mg cosθ
+3.  变量变化规律：当斜面倾角θ缓慢减小时，sinθ减小、cosθ增大，因此静摩擦力f随θ减小而减小，支持力N（以及木块对斜面的压力）随θ减小而增大
+
+---
+
+### 可运行动画代码
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>斜面上木块受力分析演示</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        .canvas-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+        .btn {
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body class="p-6">
+    <div class="max-w-5xl mx-auto">
+        <!-- 标题区域 -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">斜面上静止木块受力分析演示</h1>
+            <p class="text-gray-600">知识点：重力分解、共点力平衡条件</p>
+        </div>
+
+        <!-- 题目与答案区域 -->
+        <div class="bg-white rounded-xl p-6 mb-6 shadow-md">
+            <h3 class="text-xl font-semibold text-gray-800 mb-3">原题回顾</h3>
+            <p class="text-gray-700 mb-4">静止在倾角为θ的斜面上的木块，下列说法正确的是：
+                <br>A. 木块受到的摩擦力大小为mg
+                <br>B. 木块对斜面的压力大小为mg
+                <br>C. 当θ缓慢减小时，木块受到的静摩擦力减小
+                <br>D. 当θ缓慢减小时，木块对斜面的压力减小
+            </p>
+            <h3 class="text-xl font-semibold text-gray-800 mb-2">正确答案：C</h3>
+        </div>
+
+        <!-- 动画演示区域 -->
+        <div class="canvas-container p-6 mb-6">
+            <canvas id="physicsCanvas" width="800" height="450"></canvas>
+            
+            <!-- 控制按钮 -->
+            <div class="flex flex-wrap justify-center gap-4 mt-6">
+                <button id="increaseTheta" class="btn bg-blue-500 text-white px-6 py-2 rounded-lg font-medium">增大倾角θ</button>
+                <button id="decreaseTheta" class="btn bg-green-500 text-white px-6 py-2 rounded-lg font-medium">减小倾角θ</button>
+                <button id="reset" class="btn bg-gray-500 text-white px-6 py-2 rounded-lg font-medium">重置</button>
+            </div>
+
+            <!-- 实时数据显示 -->
+            <div class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                <div class="bg-blue-50 p-3 rounded-lg">
+                    <p class="text-sm text-gray-600">当前倾角θ</p>
+                    <p class="text-lg font-bold text-blue-600" id="thetaValue">30°</p>
+                </div>
+                <div class="bg-orange-50 p-3 rounded-lg">
+                    <p class="text-sm text-gray-600">静摩擦力f</p>
+                    <p class="text-lg font-bold text-orange-600" id="fValue">0.5mg</p>
+                </div>
+                <div class="bg-purple-50 p-3 rounded-lg">
+                    <p class="text-sm text-gray-600">支持力N</p>
+                    <p class="text-lg font-bold text-purple-600" id="nValue">0.87mg</p>
+                </div>
+                <div class="bg-red-50 p-3 rounded-lg">
+                    <p class="text-sm text-gray-600">木块对斜面压力</p>
+                    <p class="text-lg font-bold text-red-600" id="pressureValue">0.87mg</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 知识点说明 -->
+        <div class="bg-white rounded-xl p-6 shadow-md">
+            <h3 class="text-xl font-semibold text-gray-800 mb-3">核心公式</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700">
+                <p>沿斜面重力分力：Gx = mg sinθ</p>
+                <p>垂直斜面重力分力：Gy = mg cosθ</p>
+                <p>静摩擦力：f = mg sinθ（与Gx平衡）</p>
+                <p>支持力：N = mg cosθ（与Gy平衡）</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('physicsCanvas');
+        const ctx = canvas.getContext('2d');
+        let theta = 30 * Math.PI / 180; // 初始30度
+        const mg = 150; // 重力大小的可视化长度
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制斜面
+            const baseX = 150;
+            const baseY = 350;
+            const slopeLength = 500;
+            const endX = baseX + slopeLength * Math.cos(theta);
+            const endY = baseY - slopeLength * Math.sin(theta);
+            
+            ctx.beginPath();
+            ctx.moveTo(baseX, baseY);
+            ctx.lineTo(endX, endY);
+            ctx.lineTo(endX, baseY);
+            ctx.closePath();
+            ctx.fillStyle = '#e0e0e0';
+            ctx.fill();
+            ctx.strokeStyle = '#666';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            // 木块位置
+            const blockX = baseX + 250 * Math.cos(theta);
+            const blockY = baseY - 250 * Math.sin(theta);
+            
+            // 绘制木块
+            ctx.fillStyle = '#3b82f6';
+            ctx.fillRect(blockX - 30, blockY - 25, 60, 50);
+            ctx.strokeStyle = '#1d4ed8';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(blockX - 30, blockY - 25, 60, 50);
+
+            // 绘制重力mg
+            ctx.beginPath();
+            ctx.moveTo(blockX, blockY);
+            ctx.lineTo(blockX, blockY + mg);
+            const arrowY1 = blockY + mg - 10;
+            ctx.lineTo(blockX - 6, arrowY1);
+            ctx.lineTo(blockX + 6, arrowY1);
+            ctx.closePath();
+            ctx.fillStyle = '#ef4444';
+            ctx.fill();
+            ctx.strokeStyle = '#ef4444';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            ctx.fillStyle = '#ef4444';
+            ctx.font = '16px bold';
+            ctx.fillText('mg', blockX + 10, blockY + mg/2);
+
+            // 绘制沿斜面分力
+            const fLen = mg * Math.sin(theta);
+            const fx = blockX + fLen * Math.cos(theta);
+            const fy = blockY - fLen * Math.sin(theta);
+            ctx.beginPath();
+            ctx.moveTo(blockX, blockY);
+            ctx.lineTo(fx, fy);
+            ctx.strokeStyle = '#f97316';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            ctx.fillStyle = '#f97316';
+            ctx.fillText('Gx=mg sinθ', fx + 10, fy);
+
+            // 绘制垂直斜面分力
+            const nLen = mg * Math.cos(theta);
+            const nx = blockX - nLen * Math.sin(theta);
+            const ny = blockY - nLen * Math.cos(theta);
+            ctx.beginPath();
+            ctx.moveTo(blockX, blockY);
+            ctx.lineTo(nx, ny);
+            ctx.strokeStyle = '#8b5cf6';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            ctx.fillStyle = '#8b5cf6';
+            ctx.fillText('Gy=mg cosθ', nx - 70, ny - 10);
+
+            // 绘制静摩擦力f
+            const f_x = blockX - fLen * Math.cos(theta);
+            const f_y = blockY + fLen * Math.sin(theta);
+            ctx.beginPath();
+            ctx.moveTo(blockX, blockY);
+            ctx.lineTo(f_x, f_y);
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            ctx.fillStyle = '#10b981';
+            ctx.fillText('f', f_x - 20, f_y);
+
+            // 绘制支持力N
+            const n_x = blockX + nLen * Math.sin(theta);
+            const n_y = blockY + nLen * Math.cos(theta);
+            ctx.beginPath();
+            ctx.moveTo(blockX, blockY);
+            ctx.lineTo(n_x, n_y);
+            ctx.strokeStyle = '#ec4899';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            ctx.fillStyle = '#ec4899';
+            ctx.fillText('N', n_x + 10, n_y);
+
+            // 更新数值显示
+            document.getElementById('thetaValue').textContent = Math.round(theta * 180 / Math.PI) + '°';
+            document.getElementById('fValue').textContent = (Math.sin(theta)).toFixed(2) + 'mg';
+            document.getElementById('nValue').textContent = (Math.cos(theta)).toFixed(2) + 'mg';
+            document.getElementById('pressureValue').textContent = (Math.cos(theta)).toFixed(2) + 'mg';
+        }
+
+        // 按钮事件
+        document.getElementById('increaseTheta').addEventListener('click', () => {
+            if(theta < 60 * Math.PI / 180) {
+                theta += 5 * Math.PI / 180;
+                draw();
+            }
+        });
+
+        document.getElementById('decreaseTheta').addEventListener('click', () => {
+            if(theta > 10 * Math.PI / 180) {
+                theta -= 5 * Math.PI / 180;
+                draw();
+            }
+        });
+
+        document.getElementById('reset').addEventListener('click', () => {
+            theta = 30 * Math.PI / 180;
+            draw();
+        });
+
+        // 初始绘制
+        draw();
+    </script>
+</body>
+</html>
+```
+
+---
+
+### 运行说明
+你可以直接将上述代码复制到本地的`.html`文件中，使用任意主流浏览器打开即可运行：
+1.  通过「增大倾角θ」「减小倾角θ」按钮可以动态调整斜面倾角，直观观察各力的大小变化
+2.  页面实时显示当前倾角、静摩擦力、支持力、木块对斜面压力的数值
+3.  动画用不同颜色的线段清晰展示重力、重力分力、静摩擦力、支持力的方向与大小关系，完全对应题目涉及的受力平衡知识点
