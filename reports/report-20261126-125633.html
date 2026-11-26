@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>动量守恒概念辨析</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        h1 {
+            color: #102a43;
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 28px;
+        }
+        .knowledge-point {
+            background: #e6f7ff;
+            border-left: 4px solid #1890ff;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+        .knowledge-point h3 {
+            color: #1890ff;
+            margin-bottom: 10px;
+        }
+        .question-area {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+        .question-area h3 {
+            color: #102a43;
+            margin-bottom: 15px;
+        }
+        .options {
+            line-height: 2;
+            font-size: 17px;
+            color: #334e68;
+        }
+        .canvas-container {
+            background: #f0f4f8;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        canvas {
+            border: 2px solid #cbd2d9;
+            border-radius: 8px;
+            background: white;
+        }
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        button {
+            background: #1890ff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #40a9ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(24,144,255,0.3);
+        }
+        .analysis {
+            background: #f6ffed;
+            border-left: 4px solid #52c41a;
+            padding: 15px 20px;
+            border-radius: 8px;
+        }
+        .analysis h3 {
+            color: #52c41a;
+            margin-bottom: 10px;
+        }
+        .analysis p {
+            line-height: 1.8;
+            color: #2e7d32;
+        }
+        .correct-answer {
+            font-weight: bold;
+            color: #f5222d;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>动量守恒概念辨析</h1>
+        
+        <div class="knowledge-point">
+            <h3>📚 核心知识点</h3>
+            <p>动量守恒定律：如果一个系统不受外力或所受合外力为零，那么这个系统的总动量保持不变。关键要点：<br>
+            1. 守恒指系统总动量的大小和方向都不变<br>
+            2. 系统内物体可以有内力作用，内力只改变单个物体动量，不改变系统总动量<br>
+            3. 动量守恒和机械能守恒无必然联系</p>
+        </div>
+
+        <div class="question-area">
+            <h3>📝 原题</h3>
+            <p>2. 下列关于动量守恒的说法正确的是（ ）</p>
+            <div class="options">
+                A. 系统动量守恒，则机械能也一定守恒<br>
+                B. 系统内各物体动量都不变，系统总动量才守恒<br>
+                C. 系统所受合外力不为零，总动量一定不守恒<br>
+                D. 系统有摩擦力作用，动量就不可能守恒
+            </div>
+        </div>
+
+        <div class="canvas-container">
+            <canvas id="demoCanvas" width="700" height="300"></canvas>
+        </div>
+
+        <div class="controls">
+            <button onclick="showOptionA()">演示选项A</button>
+            <button onclick="showOptionB()">演示选项B</button>
+            <button onclick="showOptionC()">演示选项C</button>
+            <button onclick="showOptionD()">演示选项D</button>
+            <button onclick="resetDemo()">重置演示</button>
+        </div>
+
+        <div class="analysis">
+            <h3>✅ 答案与解析</h3>
+            <p class="correct-answer">正确答案：B</p>
+            <p>
+                <strong>选项A错误：</strong>动量守恒与机械能守恒无必然联系，比如完全非弹性碰撞，动量守恒但机械能有损失。<br>
+                <strong>选项B正确：</strong>系统总动量是各物体动量的矢量和，只有各物体动量都不变，总动量才会保持恒定。<br>
+                <strong>选项C错误：</strong>若合外力不为零但某一方向合外力为零，该方向动量仍守恒。<br>
+                <strong>选项D错误：</strong>若摩擦力是系统内力，且系统合外力为零，动量依然可以守恒。
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('demoCanvas');
+        const ctx = canvas.getContext('2d');
+        let currentDemo = null;
+        let animationId = null;
+
+        function drawBlock(x, y, width, height, color, label) {
+            ctx.fillStyle = color;
+            ctx.fillRect(x, y, width, height);
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(x, y, width, height);
+            ctx.fillStyle = '#000';
+            ctx.font = '14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(label, x + width/2, y - 10);
+        }
+
+        function drawArrow(x1, y1, x2, y2, color) {
+            ctx.strokeStyle = color;
+            ctx.fillStyle = color;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+            const angle = Math.atan2(y2 - y1, x2 - x1);
+            ctx.beginPath();
+            ctx.moveTo(x2, y2);
+            ctx.lineTo(x2 - 10 * Math.cos(angle - Math.PI/6), y2 - 10 * Math.sin(angle - Math.PI/6));
+            ctx.lineTo(x2 - 10 * Math.cos(angle + Math.PI/6), y2 - 10 * Math.sin(angle + Math.PI/6));
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function showOptionA() {
+            cancelAnimationFrame(animationId);
+            clearCanvas();
+            let t = 0;
+            function animate() {
+                clearCanvas();
+                const x1 = 150 + t * 30;
+                const x2 = 450 - t * 30;
+                drawBlock(x1, 130, 60, 60, '#ff9999', '物体1');
+                drawBlock(x2, 130, 60, 60, '#9999ff', '物体2');
+                
+                if (t < 1.2) {
+                    drawArrow(x1 + 60, 160, x1 + 100, 160, '#ff0000');
+                    drawArrow(x2, 160, x2 - 40, 160, '#0000ff');
+                    ctx.fillStyle = '#000';
+                    ctx.font = '16px Arial';
+                    ctx.fillText('动量守恒 | 机械能因碰撞损失', canvas.width/2, 250);
+                } else {
+                    const mergeX = 300 - t*10;
+                    drawBlock(mergeX, 130, 120, 60, '#cccccc', '粘合体');
+                    ctx.fillStyle = '#000';
+                    ctx.font = '16px Arial';
+                    ctx.fillText('完全非弹性碰撞：动量守恒，机械能不守恒', canvas.width/2, 250);
+                }
+                t += 0.02;
+                if (t < 2.5) animationId = requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        function showOptionB() {
+            cancelAnimationFrame(animationId);
+            clearCanvas();
+            function draw() {
+                clearCanvas();
+                drawBlock(150, 130, 60, 60, '#ff9999', '物体1');
+                drawBlock(400, 130, 60, 60, '#9999ff', '物体2');
+                drawArrow(180, 160, 230, 160, '#ff0000');
+                drawArrow(430, 160, 480, 160, '#0000ff');
+                ctx.fillStyle = '#000';
+                ctx.font = '16px Arial';
+                ctx.fillText('两物体动量大小方向均不变，总动量守恒', canvas.width/2, 250);
+            }
+            draw();
+        }
+
+        function showOptionC() {
+            cancelAnimationFrame(animationId);
+            clearCanvas();
+            let t = 0;
+            function animate() {
+                clearCanvas();
+                const ballY = 150 + Math.sin(t * 2) * 50;
+                ctx.beginPath();
+                ctx.arc(350, ballY, 30, 0, Math.PI * 2);
+                ctx.fillStyle = '#ffcc00';
+                ctx.fill();
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                drawArrow(350, ballY - 30, 350, ballY - 80, '#00aa00');
+                ctx.fillStyle = '#000';
+                ctx.font = '16px Arial';
+                ctx.fillText('竖直方向合外力不为零，但水平方向动量守恒', canvas.width/2, 250);
+                t += 0.05;
+                animationId = requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        function showOptionD() {
+            cancelAnimationFrame(animationId);
+            clearCanvas();
+            function draw() {
+                drawBlock(180, 130, 80, 60, '#99ff99', '木块');
+                drawBlock(500, 130, 80, 60, '#99ff99', '木块');
+                drawArrow(260, 160, 320, 160, '#aa0000');
+                drawArrow(500, 160, 440, 160, '#aa0000');
+                ctx.fillStyle = '#aa0000';
+                ctx.font = '14px Arial';
+                ctx.fillText('相互摩擦力（内力）', 370, 150);
+                ctx.fillStyle = '#000';
+                ctx.font = '16px Arial';
+                ctx.fillText('系统内力为摩擦力，合外力为零，动量守恒', canvas.width/2, 250);
+            }
+            draw();
+        }
+
+        function resetDemo() {
+            cancelAnimationFrame(animationId);
+            clearCanvas();
+            ctx.fillStyle = '#666';
+            ctx.font = '20px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('点击上方按钮查看各选项演示', canvas.width/2, canvas.height/2);
+        }
+
+        resetDemo();
+    </script>
+</body>
+</html>
