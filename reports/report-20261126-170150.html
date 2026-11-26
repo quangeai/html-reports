@@ -1,0 +1,264 @@
+### 题目分析
+本题考查**斜面上静止物体的受力平衡分析**，核心知识点：
+1.  重力的分解：将重力分解为沿斜面向下的分力mg sinθ、垂直斜面向下的分力mg cosθ
+2.  共点力平衡条件：静止物体合力为0，因此静摩擦力与重力沿斜面向下的分力平衡，支持力与重力垂直斜面的分力平衡
+3.  静摩擦力、支持力随斜面倾角θ的变化规律：θ减小时，sinθ减小、cosθ增大，因此静摩擦力减小、支持力（及木块对斜面的压力）增大
+
+---
+
+### 对应HTML动画代码
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>斜面木块受力分析动画</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .btn-active {
+            background: #2563eb !important;
+            color: white !important;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen p-6 font-sans">
+    <div class="max-w-5xl mx-auto">
+        <!-- 标题与原题区域 -->
+        <header class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-slate-800 mb-3">斜面静止木块受力分析演示</h1>
+            <div class="bg-white rounded-xl shadow p-5 text-left">
+                <h3 class="font-semibold text-slate-700 mb-2">原题：</h3>
+                <p class="text-slate-600">木块静止在倾角为θ的斜面上，关于木块的受力情况，下列说法正确的是（  ）<br>
+                A. 木块受到的摩擦力大小为mg<br>
+                B. 木块对斜面的压力大小为mg<br>
+                C. 若θ缓慢减小，木块受到的静摩擦力将减小<br>
+                D. 若θ缓慢减小，木块对斜面的压力将减小</p>
+                <p class="mt-3 text-green-700 font-medium">正确答案：C</p>
+            </div>
+        </header>
+
+        <!-- 动画画布区域 -->
+        <div class="bg-white rounded-xl shadow p-6 mb-6">
+            <canvas id="physicsCanvas" width="800" height="450" class="mx-auto border border-slate-200 rounded-lg"></canvas>
+            <!-- 控制条 -->
+            <div class="flex flex-wrap justify-center gap-4 mt-5">
+                <button id="btnForce" class="px-5 py-2 rounded-lg border border-slate-300 hover:bg-slate-100 transition">显示受力</button>
+                <button id="btnDecompose" class="px-5 py-2 rounded-lg border border-slate-300 hover:bg-slate-100 transition">显示重力分解</button>
+                <button id="btnChangeAngle" class="px-5 py-2 rounded-lg border border-slate-300 hover:bg-slate-100 transition">演示θ减小过程</button>
+                <button id="btnReset" class="px-5 py-2 rounded-lg border border-slate-300 hover:bg-slate-100 transition">重置</button>
+            </div>
+            <!-- 实时参数显示 -->
+            <div class="mt-5 grid grid-cols-3 gap-4 text-center">
+                <div class="bg-blue-50 rounded-lg p-3">
+                    <p class="text-sm text-slate-500">斜面倾角θ</p>
+                    <p id="angleVal" class="text-xl font-bold text-blue-700">30°</p>
+                </div>
+                <div class="bg-green-50 rounded-lg p-3">
+                    <p class="text-sm text-slate-500">静摩擦力f</p>
+                    <p id="fVal" class="text-xl font-bold text-green-700">0.5mg</p>
+                </div>
+                <div class="bg-orange-50 rounded-lg p-3">
+                    <p class="text-sm text-slate-500">支持力N</p>
+                    <p id="nVal" class="text-xl font-bold text-orange-700">0.87mg</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 知识点总结 -->
+        <div class="bg-white rounded-xl shadow p-5">
+            <h3 class="font-semibold text-slate-700 mb-2">核心知识点：</h3>
+            <ul class="text-slate-600 space-y-1">
+                <li>1. 重力分解：沿斜面分力 G₁ = mg sinθ，垂直斜面分力 G₂ = mg cosθ</li>
+                <li>2. 平衡条件：静摩擦力 f = G₁ = mg sinθ，支持力 N = G₂ = mg cosθ</li>
+                <li>3. 倾角变化规律：θ减小 → sinθ减小、cosθ增大 → f减小、N增大</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('physicsCanvas');
+        const ctx = canvas.getContext('2d');
+        let angle = 30; // 初始角度 单位：度
+        let showForce = false;
+        let showDecompose = false;
+        let animating = false;
+
+        // 按钮绑定
+        const btnForce = document.getElementById('btnForce');
+        const btnDecompose = document.getElementById('btnDecompose');
+        const btnChangeAngle = document.getElementById('btnChangeAngle');
+        const btnReset = document.getElementById('btnReset');
+
+        btnForce.addEventListener('click', () => {
+            showForce = !showForce;
+            btnForce.classList.toggle('btn-active', showForce);
+            draw();
+        });
+        btnDecompose.addEventListener('click', () => {
+            showDecompose = !showDecompose;
+            btnDecompose.classList.toggle('btn-active', showDecompose);
+            draw();
+        });
+        btnChangeAngle.addEventListener('click', () => {
+            if(animating) return;
+            animating = true;
+            btnChangeAngle.classList.add('btn-active');
+            const timer = setInterval(() => {
+                angle -= 0.5;
+                updateValues();
+                draw();
+                if(angle <= 10) {
+                    clearInterval(timer);
+                    animating = false;
+                    btnChangeAngle.classList.remove('btn-active');
+                }
+            }, 20);
+        });
+        btnReset.addEventListener('click', () => {
+            angle = 30;
+            showForce = false;
+            showDecompose = false;
+            btnForce.classList.remove('btn-active');
+            btnDecompose.classList.remove('btn-active');
+            updateValues();
+            draw();
+        });
+
+        // 更新参数显示
+        function updateValues() {
+            const rad = angle * Math.PI / 180;
+            const f = Math.sin(rad).toFixed(2);
+            const n = Math.cos(rad).toFixed(2);
+            document.getElementById('angleVal').textContent = `${angle.toFixed(0)}°`;
+            document.getElementById('fVal').textContent = `${f}mg`;
+            document.getElementById('nVal').textContent = `${n}mg`;
+        }
+
+        // 绘制带箭头线段
+        function drawArrow(fromX, fromY, toX, toY, color, lineWidth=3) {
+            const headLen = 12;
+            const angle = Math.atan2(toY - fromY, toX - fromX);
+            ctx.strokeStyle = color;
+            ctx.fillStyle = color;
+            ctx.lineWidth = lineWidth;
+            ctx.beginPath();
+            ctx.moveTo(fromX, fromY);
+            ctx.lineTo(toX, toY);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(toX, toY);
+            ctx.lineTo(toX - headLen * Math.cos(angle - Math.PI/6), toY - headLen * Math.sin(angle - Math.PI/6));
+            ctx.lineTo(toX - headLen * Math.cos(angle + Math.PI/6), toY - headLen * Math.sin(angle + Math.PI/6));
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        // 主绘制函数
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const rad = angle * Math.PI / 180;
+            const baseX = 150, baseY = 350;
+            const slopeLen = 500;
+            const topX = baseX + slopeLen * Math.cos(rad);
+            const topY = baseY - slopeLen * Math.sin(rad);
+            const blockX = baseX + 200 * Math.cos(rad);
+            const blockY = baseY - 200 * Math.sin(rad);
+            const blockSize = 40;
+
+            // 绘制斜面
+            ctx.beginPath();
+            ctx.moveTo(baseX, baseY);
+            ctx.lineTo(topX, topY);
+            ctx.lineTo(topX, baseY);
+            ctx.closePath();
+            ctx.fillStyle = '#e2e8f0';
+            ctx.fill();
+            ctx.strokeStyle = '#64748b';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            // 绘制木块
+            ctx.save();
+            ctx.translate(blockX, blockY);
+            ctx.rotate(-rad);
+            ctx.fillStyle = '#3b82f6';
+            ctx.fillRect(-blockSize/2, -blockSize/2, blockSize, blockSize);
+            ctx.restore();
+
+            // 绘制角度标注
+            ctx.beginPath();
+            ctx.arc(baseX, baseY, 40, 0, rad, false);
+            ctx.strokeStyle = '#ef4444';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            ctx.fillStyle = '#ef4444';
+            ctx.fillText('θ', baseX + 50, baseY - 20);
+
+            // 受力绘制
+            if(showForce) {
+                // 重力mg
+                drawArrow(blockX, blockY, blockX, blockY + 120, '#ef4444', 3);
+                ctx.fillStyle = '#ef4444';
+                ctx.fillText('mg', blockX + 10, blockY + 80);
+                // 支持力N
+                const nLen = 100 * Math.cos(rad);
+                const nX = blockX - nLen * Math.sin(rad);
+                const nY = blockY - nLen * Math.cos(rad);
+                drawArrow(blockX, blockY, nX, nY, '#f97316', 3);
+                ctx.fillStyle = '#f97316';
+                ctx.fillText('N', nX - 20, nY - 10);
+                // 静摩擦力f
+                const fLen = 100 * Math.sin(rad);
+                const fX = blockX - fLen * Math.cos(rad);
+                const fY = blockY + fLen * Math.sin(rad);
+                drawArrow(blockX, blockY, fX, fY, '#22c55e', 3);
+                ctx.fillStyle = '#22c55e';
+                ctx.fillText('f', fX - 20, fY + 10);
+            }
+
+            // 重力分解绘制
+            if(showDecompose) {
+                const decompLen = 100;
+                // 沿斜面分力 mg sinθ
+                const g1x = blockX - decompLen * Math.cos(rad);
+                const g1y = blockY + decompLen * Math.sin(rad);
+                drawArrow(blockX, blockY, g1x, g1y, '#9333ea', 2);
+                ctx.fillStyle = '#9333ea';
+                ctx.fillText('mg sinθ', g1x - 30, g1y + 15);
+                // 垂直斜面分力 mg cosθ
+                const g2x = blockX - decompLen * Math.sin(rad);
+                const g2y = blockY - decompLen * Math.cos(rad);
+                drawArrow(blockX, blockY, g2x, g2y, '#9333ea', 2);
+                ctx.fillStyle = '#9333ea';
+                ctx.fillText('mg cosθ', g2x - 30, g2y - 10);
+                // 分解虚线框
+                ctx.setLineDash([5,5]);
+                ctx.strokeStyle = '#9333ea';
+                ctx.beginPath();
+                ctx.moveTo(blockX, blockY + 120);
+                ctx.lineTo(g1x, g1y);
+                ctx.lineTo(g2x, g2y);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+        }
+
+        // 初始绘制
+        updateValues();
+        draw();
+    </script>
+</body>
+</html>
+```
+
+---
+
+### 运行说明
+你可以直接将上述代码复制保存为`.html`文件，用任意现代浏览器打开即可使用：
+1.  点击「显示受力」按钮可展示木块受到的重力、支持力、静摩擦力
+2.  点击「显示重力分解」可查看重力沿斜面、垂直斜面的两个分力
+3.  点击「演示θ减小过程」可自动模拟斜面倾角从30°逐渐减小到10°的过程，实时观察静摩擦力、支持力的变化
+4.  点击「重置」可回到初始状态
+
+动画完全对应题目中的受力平衡规律，直观展示了θ变化时力的大小变化趋势，可直接用于课堂演示或自主复习。
