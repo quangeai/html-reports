@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>动量守恒概念辨析</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #f1f5f9;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            font-size: 2.2rem;
+            color: #38bdf8;
+            margin-bottom: 10px;
+        }
+        .header p {
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+        .card {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+        .card h2 {
+            color: #38bdf8;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+        .knowledge-point {
+            background: rgba(56, 189, 248, 0.1);
+            border-left: 4px solid #38bdf8;
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+        .question {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        .option {
+            padding: 12px 15px;
+            border-radius: 8px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .option:hover {
+            background: rgba(56, 189, 248, 0.15);
+            border-color: rgba(56, 189, 248, 0.4);
+        }
+        .option.correct {
+            background: rgba(34, 197, 94, 0.2);
+            border-color: rgba(34, 197, 94, 0.6);
+        }
+        .option.wrong {
+            background: rgba(239, 68, 68, 0.15);
+            border-color: rgba(239, 68, 68, 0.4);
+        }
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background: linear-gradient(90deg, #0ea5e9, #38bdf8);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(14, 165, 233, 0.4);
+        }
+        .btn-secondary {
+            background: rgba(148, 163, 184, 0.2);
+            color: #f1f5f9;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+        }
+        .btn-secondary:hover {
+            background: rgba(148, 163, 184, 0.3);
+        }
+        .analysis-area {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 8px;
+            display: none;
+            line-height: 1.8;
+        }
+        .analysis-area.active {
+            display: block;
+        }
+        .animation-container {
+            width: 100%;
+            height: 280px;
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 12px;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        .answer-key {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #22c55e;
+            text-align: center;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>动量守恒概念辨析</h1>
+            <p>物理作业动画演示</p>
+        </div>
+
+        <div class="card">
+            <h2>知识点回顾</h2>
+            <div class="knowledge-point">
+                <strong>动量守恒定律：</strong>如果一个系统不受外力，或者所受外力的矢量和为零，这个系统的总动量保持不变。<br>
+                核心要点：
+                <ul style="margin-top: 8px; padding-left: 20px;">
+                    <li>系统总动量不变≠系统内每个物体动量不变</li>
+                    <li>动量守恒和机械能守恒无必然关联</li>
+                    <li>合外力为零是动量守恒的核心条件</li>
+                </ul>
+            </div>
+
+            <h2>题目内容</h2>
+            <div class="question">
+                下列关于动量守恒的说法正确的是（&nbsp;&nbsp;&nbsp;&nbsp;）
+            </div>
+            <div class="options" id="options">
+                <div class="option" data-idx="0">A. 系统动量守恒，则机械能也一定守恒</div>
+                <div class="option" data-idx="1">B. 系统内各物体动量都不变，系统总动量才守恒</div>
+                <div class="option" data-idx="2">C. 系统所受合外力不为零，总动量一定不守恒</div>
+                <div class="option" data-idx="3">D. 系统有摩擦力作用，动量就不可能守恒</div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" id="showAnalysis">查看详细解析</button>
+                <button class="btn btn-secondary" id="playAnim">播放动画演示</button>
+                <button class="btn btn-secondary" id="reset">重置</button>
+            </div>
+
+            <div class="animation-container" id="animContainer">
+                <canvas id="animCanvas" width="950" height="280"></canvas>
+            </div>
+
+            <div class="analysis-area" id="analysisArea">
+                <h3>逐项分析：</h3>
+                <p><strong>选项A错误：</strong>动量守恒仅要求合外力为零，存在内力做功时机械能会改变，例如完全非弹性碰撞，动量守恒但机械能有损失。</p>
+                <p><strong>选项B正确：</strong>系统总动量是各物体动量的矢量和，只有每个物体动量都不变，它们的矢量和才会保持恒定，这是总动量守恒的充分必要条件。</p>
+                <p><strong>选项C错误：</strong>当合外力在某一方向上分量为零时，该方向上动量依然守恒；即使合外力不为零，若作用时间极短，外力冲量可忽略，动量也近似守恒。</p>
+                <p><strong>选项D错误：</strong>若摩擦力是系统内力，且系统合外力为零，动量依然可以守恒，例如两个物体在接触面粗糙的水平面上相互作用，若水平面无摩擦，总动量守恒。</p>
+            </div>
+
+            <div class="answer-key">
+                正确答案：B
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 初始化
+        const canvas = document.getElementById('animCanvas');
+        const ctx = canvas.getContext('2d');
+        const options = document.querySelectorAll('.option');
+        const showAnalysisBtn = document.getElementById('showAnalysis');
+        const playAnimBtn = document.getElementById('playAnim');
+        const resetBtn = document.getElementById('reset');
+        const analysisArea = document.getElementById('analysisArea');
+
+        // 标记正确选项
+        options[1].classList.add('correct');
+        options[0].classList.add('wrong');
+        options[2].classList.add('wrong');
+        options[3].classList.add('wrong');
+
+        // 按钮事件
+        showAnalysisBtn.addEventListener('click', () => {
+            analysisArea.classList.add('active');
+        });
+
+        resetBtn.addEventListener('click', () => {
+            analysisArea.classList.remove('active');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        });
+
+        // 动画演示：展示系统总动量守恒时，单个物体动量变化但总和不变
+        playAnimBtn.addEventListener('click', () => {
+            let frame = 0;
+            const maxFrames = 180;
+            
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // 绘制坐标系
+                ctx.strokeStyle = '#64748b';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(50, 140);
+                ctx.lineTo(900, 140);
+                ctx.moveTo(50, 220);
+                ctx.lineTo(900, 220);
+                ctx.stroke();
+
+                // 绘制标签
+                ctx.fillStyle = '#94a3b8';
+                ctx.font = '14px Microsoft YaHei';
+                ctx.fillText('物体A动量', 60, 130);
+                ctx.fillText('物体B动量', 60, 210);
+                ctx.fillText('系统总动量', 700, 140);
+
+                // 动画计算
+                const t = frame / 60;
+                const pA = 100 + 80 * Math.sin(t);
+                const pB = 100 - 80 * Math.sin(t);
+                const totalP = pA + pB;
+
+                // 绘制物体A动量箭头
+                ctx.strokeStyle = '#38bdf8';
+                ctx.fillStyle = '#38bdf8';
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.moveTo(150, 140);
+                ctx.lineTo(150 + pA, 140);
+                ctx.lineTo(150 + pA - 8, 135);
+                ctx.lineTo(150 + pA - 8, 145);
+                ctx.closePath();
+                ctx.fill();
+
+                // 绘制物体B动量箭头
+                ctx.strokeStyle = '#a855f7';
+                ctx.fillStyle = '#a855f7';
+                ctx.beginPath();
+                ctx.moveTo(150, 220);
+                ctx.lineTo(150 + pB, 220);
+                ctx.lineTo(150 + pB - 8, 215);
+                ctx.lineTo(150 + pB - 8, 225);
+                ctx.closePath();
+                ctx.fill();
+
+                // 绘制总动量箭头（恒定不变）
+                ctx.strokeStyle = '#22c55e';
+                ctx.fillStyle = '#22c55e';
+                ctx.beginPath();
+                ctx.moveTo(700, 160);
+                ctx.lineTo(700 + totalP, 160);
+                ctx.lineTo(700 + totalP - 8, 155);
+                ctx.lineTo(700 + totalP - 8, 165);
+                ctx.closePath();
+                ctx.fill();
+
+                // 数值显示
+                ctx.fillStyle = '#f1f5f9';
+                ctx.font = '16px Microsoft YaHei';
+                ctx.fillText(`p_A = ${pA.toFixed(1)}`, 300, 135);
+                ctx.fillText(`p_B = ${pB.toFixed(1)}`, 300, 215);
+                ctx.fillText(`p总 = ${totalP.toFixed(1)} （恒定）`, 850, 165);
+
+                // 提示文字
+                ctx.fillStyle = '#f1f5f9';
+                ctx.font = '18px Microsoft YaHei';
+                ctx.textAlign = 'center';
+                ctx.fillText('系统内单个物体动量会变化，但总动量始终保持恒定', canvas.width/2, 50);
+                ctx.fillText('只有当所有物体动量都不变时，总动量才严格守恒', canvas.width/2, 80);
+                ctx.textAlign = 'left';
+
+                frame++;
+                if (frame < maxFrames) {
+                    requestAnimationFrame(animate);
+                }
+            }
+            animate();
+        });
+    </script>
+</body>
+</html>
