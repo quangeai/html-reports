@@ -1,0 +1,221 @@
+### 一、题目核心分析
+1. **涉及知识点**：斜面静止物体的受力平衡、重力的正交分解、静摩擦力与支持力的动态变化分析
+2. **受力逻辑**：静止在斜面上的木块受重力mg、斜面支持力N、静摩擦力f，三力平衡；将重力沿斜面/垂直斜面正交分解可得：
+   - 沿斜面方向：f = mg sinθ
+   - 垂直斜面方向：N = mg cosθ
+3. **动态变化规律**：当斜面倾角θ缓慢减小时，sinθ减小、cosθ增大，因此静摩擦力f减小，支持力N（及木块对斜面的压力）增大
+
+---
+
+### 二、对应HTML动画代码
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>斜面木块受力动态分析</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+            min-height: 100vh;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+        .canvas-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+        .btn {
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+    </style>
+</head>
+<body class="p-6">
+    <div class="max-w-5xl mx-auto">
+        <!-- 标题区 -->
+        <div class="text-center mb-6">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">斜面静止木块受力动态分析</h1>
+            <p class="text-gray-600">知识点：重力正交分解、受力平衡、静摩擦力与支持力的动态变化</p>
+        </div>
+
+        <!-- 原题与答案区 -->
+        <div class="bg-white rounded-xl p-5 mb-6 shadow-sm">
+            <h3 class="font-bold text-lg text-gray-800 mb-2">原题（节选）</h3>
+            <p class="text-gray-700 mb-3">静止在倾角为θ的斜面上的木块，重力为mg，下列说法正确的是：</p>
+            <ul class="list-disc pl-6 text-gray-700 space-y-1 mb-3">
+                <li>A. 木块受到的摩擦力大小为mg cosθ</li>
+                <li>B. 木块对斜面的压力大小为mg</li>
+                <li>C. 斜面倾角θ缓慢减小时，木块受到的静摩擦力减小</li>
+                <li>D. 斜面倾角θ缓慢减小时，木块对斜面的压力减小</li>
+            </ul>
+            <h3 class="font-bold text-lg text-gray-800 mb-2">正确答案：C</h3>
+        </div>
+
+        <!-- 动画与控制区 -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- 画布区 -->
+            <div class="lg:col-span-2 canvas-container p-4">
+                <canvas id="physicsCanvas" width="700" height="450"></canvas>
+            </div>
+
+            <!-- 控制面板 -->
+            <div class="bg-white rounded-xl p-5 shadow-sm">
+                <h3 class="font-bold text-lg text-gray-800 mb-4">参数控制</h3>
+                <div class="mb-5">
+                    <label class="block text-gray-700 mb-2">斜面倾角θ：<span id="thetaValue">30</span>°</label>
+                    <input type="range" id="thetaSlider" min="10" max="60" value="30" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                </div>
+                <div class="space-y-3">
+                    <button id="autoBtn" class="btn w-full bg-blue-500 text-white py-2 rounded-lg font-medium">自动演示θ变化</button>
+                    <button id="resetBtn" class="btn w-full bg-gray-500 text-white py-2 rounded-lg font-medium">重置参数</button>
+                </div>
+
+                <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+                    <h4 class="font-semibold text-gray-800 mb-2">实时受力值</h4>
+                    <p class="text-gray-700">静摩擦力f = <span id="fValue">0.50</span> mg</p>
+                    <p class="text-gray-700">支持力N = <span id="nValue">0.87</span> mg</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('physicsCanvas');
+        const ctx = canvas.getContext('2d');
+        const thetaSlider = document.getElementById('thetaSlider');
+        const thetaValue = document.getElementById('thetaValue');
+        const fValue = document.getElementById('fValue');
+        const nValue = document.getElementById('nValue');
+        const autoBtn = document.getElementById('autoBtn');
+        const resetBtn = document.getElementById('resetBtn');
+
+        let theta = 30 * Math.PI / 180;
+        let autoPlay = false;
+        let autoDir = 1;
+
+        // 绘制函数
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const centerX = 350;
+            const centerY = 350;
+            const slopeLen = 250;
+            const blockSize = 40;
+
+            // 绘制斜面
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            ctx.rotate(-theta);
+            ctx.beginPath();
+            ctx.moveTo(-slopeLen, 0);
+            ctx.lineTo(slopeLen, 0);
+            ctx.lineTo(slopeLen, 30);
+            ctx.lineTo(-slopeLen, 30);
+            ctx.closePath();
+            ctx.fillStyle = '#94a3b8';
+            ctx.fill();
+            ctx.restore();
+
+            // 绘制木块
+            const blockX = centerX + (slopeLen - 60) * Math.cos(theta);
+            const blockY = centerY - (slopeLen - 60) * Math.sin(theta);
+            ctx.save();
+            ctx.translate(blockX, blockY);
+            ctx.rotate(-theta);
+            ctx.fillStyle = '#3b82f6';
+            ctx.fillRect(-blockSize/2, -blockSize/2, blockSize, blockSize);
+            ctx.restore();
+
+            // 绘制力矢量
+            const scale = 80;
+            // 重力mg
+            drawArrow(blockX, blockY, 0, scale, '#ef4444', 3);
+            // 支持力N
+            const nx = -Math.sin(theta) * scale * Math.cos(theta);
+            const ny = -Math.cos(theta) * scale * Math.cos(theta);
+            drawArrow(blockX, blockY, nx, ny, '#10b981', 3);
+            // 静摩擦力f
+            const fx = -Math.cos(theta) * scale * Math.sin(theta);
+            const fy = Math.sin(theta) * scale * Math.sin(theta);
+            drawArrow(blockX, blockY, fx, fy, '#f59e0b', 3);
+
+            // 标注文字
+            ctx.fillStyle = '#ef4444';
+            ctx.font = 'bold 16px Arial';
+            ctx.fillText('mg', blockX + 10, blockY + scale/2);
+            ctx.fillStyle = '#10b981';
+            ctx.fillText('N', blockX + nx/2 + 10, blockY + ny/2);
+            ctx.fillStyle = '#f59e0b';
+            ctx.fillText('f', blockX + fx/2, blockY + fy/2 - 10);
+        }
+
+        function drawArrow(x, y, dx, dy, color, width) {
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(x + dx, y + dy);
+            const headLen = 10;
+            const angle = Math.atan2(dy, dx);
+            ctx.lineTo(x + dx - headLen * Math.cos(angle - Math.PI/6), y + dy - headLen * Math.sin(angle - Math.PI/6));
+            ctx.moveTo(x + dx, y + dy);
+            ctx.lineTo(x + dx - headLen * Math.cos(angle + Math.PI/6), y + dy - headLen * Math.sin(angle + Math.PI/6));
+            ctx.strokeStyle = color;
+            ctx.lineWidth = width;
+            ctx.stroke();
+        }
+
+        function update() {
+            theta = parseInt(thetaSlider.value) * Math.PI / 180;
+            thetaValue.textContent = thetaSlider.value;
+            const f = Math.sin(theta).toFixed(2);
+            const n = Math.cos(theta).toFixed(2);
+            fValue.textContent = f;
+            nValue.textContent = n;
+            draw();
+        }
+
+        // 自动演示逻辑
+        function autoAnimate() {
+            if (!autoPlay) return;
+            let val = parseInt(thetaSlider.value);
+            val += autoDir * 0.5;
+            if (val >= 60) autoDir = -1;
+            if (val <= 10) autoDir = 1;
+            thetaSlider.value = val;
+            update();
+            requestAnimationFrame(autoAnimate);
+        }
+
+        // 事件绑定
+        thetaSlider.addEventListener('input', update);
+        autoBtn.addEventListener('click', () => {
+            autoPlay = !autoPlay;
+            autoBtn.textContent = autoPlay ? '停止演示' : '自动演示θ变化';
+            if (autoPlay) autoAnimate();
+        });
+        resetBtn.addEventListener('click', () => {
+            autoPlay = false;
+            autoBtn.textContent = '自动演示θ变化';
+            thetaSlider.value = 30;
+            update();
+        });
+
+        // 初始化
+        update();
+    </script>
+</body>
+</html>
+```
+
+---
+
+### 三、运行说明
+你可以将上述代码复制保存为`.html`文件，直接用浏览器打开即可运行：
+1.  拖动滑块可手动调整斜面倾角θ的大小，实时观察三个力的长度变化与对应数值
+2.  点击「自动演示θ变化」按钮，可自动模拟θ从10°到60°的动态变化过程，直观看到静摩擦力随θ减小而减小、支持力随θ减小而增大的规律
+3.  点击「重置参数」可恢复到初始30°倾角的状态
+4.  页面完整包含题目、正确答案、受力动态可视化与参数控制，适合课堂演示与自主理解
