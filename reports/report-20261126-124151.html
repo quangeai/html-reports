@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>动量守恒知识点辨析</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        h1 {
+            text-align: center;
+            color: #102a43;
+            margin-bottom: 25px;
+            font-size: 28px;
+        }
+        .knowledge-point {
+            background: #e6f7ff;
+            border-left: 5px solid #1890ff;
+            padding: 18px;
+            margin-bottom: 25px;
+            border-radius: 0 8px 8px 0;
+        }
+        .knowledge-point h3 {
+            color: #1890ff;
+            margin-bottom: 10px;
+        }
+        .question {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border: 1px solid #e2e8f0;
+        }
+        .question h3 {
+            color: #0f172a;
+            margin-bottom: 15px;
+        }
+        .options {
+            line-height: 2;
+            font-size: 17px;
+        }
+        .canvas-container {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        canvas {
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            background: white;
+        }
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        button {
+            padding: 12px 24px;
+            background: #4299e1;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #2b6cb0;
+            transform: translateY(-2px);
+        }
+        .answer {
+            background: #f0fff4;
+            border-left: 5px solid #38a169;
+            padding: 18px;
+            border-radius: 0 8px 8px 0;
+        }
+        .answer h3 {
+            color: #38a169;
+            margin-bottom: 10px;
+        }
+        .analysis {
+            margin-top: 12px;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>动量守恒概念辨析</h1>
+        
+        <div class="knowledge-point">
+            <h3>核心知识点</h3>
+            <p>动量守恒定律：如果一个系统不受外力或所受合外力的矢量和为零，那么这个系统的总动量保持不变。注意：<br>
+            1. 动量守恒是系统总动量的矢量和不变，不是单个物体动量不变<br>
+            2. 动量守恒和机械能守恒无必然联系<br>
+            3. 合外力不为零时，某一方向合外力为零则该方向动量守恒</p>
+        </div>
+
+        <div class="question">
+            <h3>题目：下列关于动量守恒的说法正确的是（ ）</h3>
+            <div class="options">
+                A. 系统动量守恒，则机械能也一定守恒<br>
+                B. 系统内各物体动量都不变，系统总动量才守恒<br>
+                C. 系统所受合外力不为零，总动量一定不守恒<br>
+                D. 系统有摩擦力作用，动量就不可能守恒
+            </div>
+        </div>
+
+        <div class="canvas-container">
+            <canvas id="momentumCanvas" width="800" height="300"></canvas>
+        </div>
+
+        <div class="controls">
+            <button onclick="startCollision()">演示碰撞（动量守恒示例）</button>
+            <button onclick="resetCanvas()">重置动画</button>
+            <button onclick="showExplosion()">演示爆炸（总动量守恒）</button>
+        </div>
+
+        <div class="answer">
+            <h3>正确答案：B</h3>
+            <div class="analysis">
+                <p><strong>选项分析：</strong><br>
+                A错误：动量守恒的系统机械能不一定守恒，比如完全非弹性碰撞，动量守恒但机械能有损失<br>
+                B正确：当系统内各物体动量都不变时，总动量的矢量和必然保持不变，符合动量守恒的定义<br>
+                C错误：合外力不为零时，若在某一方向上合外力为零，则该方向上动量守恒<br>
+                D错误：若系统内的摩擦力是内力，且系统合外力为零，动量依然可以守恒</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('momentumCanvas');
+        const ctx = canvas.getContext('2d');
+        let animationId;
+        let balls = [];
+
+        function drawBall(x, y, r, color, label, momentum) {
+            ctx.beginPath();
+            ctx.arc(x, y, r, 0, Math.PI * 2);
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            ctx.fillStyle = '#333';
+            ctx.font = '14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(label, x, y + r + 20);
+            
+            // 绘制动量箭头
+            if (momentum !== 0) {
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.lineTo(x + momentum * 15, y);
+                ctx.strokeStyle = '#e53e3e';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+                // 箭头
+                ctx.beginPath();
+                ctx.moveTo(x + momentum * 15, y);
+                ctx.lineTo(x + momentum * 15 - 8, y - 5);
+                ctx.lineTo(x + momentum * 15 - 8, y + 5);
+                ctx.fillStyle = '#e53e3e';
+                ctx.fill();
+            }
+        }
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // 绘制基线
+            ctx.beginPath();
+            ctx.moveTo(50, 150);
+            ctx.lineTo(750, 150);
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+        }
+
+        function startCollision() {
+            cancelAnimationFrame(animationId);
+            clearCanvas();
+            balls = [
+                {x: 150, y: 150, r: 30, vx: 2, color: '#4299e1', label: '球1', mass: 1},
+                {x: 550, y: 150, r: 30, vx: -1, color: '#f56565', label: '球2', mass: 2}
+            ];
+
+            function animate() {
+                clearCanvas();
+                // 更新位置
+                balls[0].x += balls[0].vx;
+                balls[1].x += balls[1].vx;
+
+                // 碰撞检测
+                if (balls[0].x + balls[0].r >= balls[1].x - balls[1].r) {
+                    // 弹性碰撞公式
+                    let v1 = balls[0].vx;
+                    let v2 = balls[1].vx;
+                    let m1 = balls[0].mass;
+                    let m2 = balls[1].mass;
+                    balls[0].vx = ((m1 - m2)*v1 + 2*m2*v2)/(m1 + m2);
+                    balls[1].vx = ((m2 - m1)*v2 + 2*m1*v1)/(m1 + m2);
+                }
+
+                // 绘制
+                drawBall(balls[0].x, balls[0].y, balls[0].r, balls[0].color, balls[0].label, balls[0].vx * balls[0].mass);
+                drawBall(balls[1].x, balls[1].y, balls[1].r, balls[1].color, balls[1].label, balls[1].vx * balls[1].mass);
+
+                // 标注总动量
+                ctx.font = '16px Arial';
+                ctx.fillStyle = '#2d3748';
+                ctx.fillText('系统总动量守恒：p总 = p1 + p2 保持不变', 300, 250);
+
+                if (balls[0].x > 100 && balls[0].x < 700) {
+                    animationId = requestAnimationFrame(animate);
+                }
+            }
+            animate();
+        }
+
+        function showExplosion() {
+            cancelAnimationFrame(animationId);
+            clearCanvas();
+            let center = {x: 400, y: 150};
+            let pieces = [
+                {x: 400, y: 150, r: 20, vx: -3, color: '#9f7aea', label: '碎片1'},
+                {x: 400, y: 150, r: 25, vx: 2, color: '#ed8936', label: '碎片2'},
+                {x: 400, y: 150, r: 15, vx: 1, color: '#48bb78', label: '碎片3'}
+            ];
+            let frame = 0;
+
+            function explodeAnimate() {
+                clearCanvas();
+                frame++;
+                pieces.forEach(p => {
+                    p.x += p.vx;
+                });
+
+                pieces.forEach(p => {
+                    drawBall(p.x, p.y, p.r, p.color, p.label, p.vx);
+                });
+
+                ctx.font = '16px Arial';
+                ctx.fillStyle = '#2d3748';
+                ctx.fillText('爆炸前总动量为0，爆炸后碎片动量矢量和仍为0', 250, 250);
+
+                if (frame < 80) {
+                    animationId = requestAnimationFrame(explodeAnimate);
+                }
+            }
+            explodeAnimate();
+        }
+
+        function resetCanvas() {
+            cancelAnimationFrame(animationId);
+            clearCanvas();
+        }
+
+        // 初始化画布
+        clearCanvas();
+        ctx.font = '18px Arial';
+        ctx.fillStyle = '#718096';
+        ctx.textAlign = 'center';
+        ctx.fillText('点击下方按钮查看动量守恒示例动画', 400, 80);
+    </script>
+</body>
+</html>
