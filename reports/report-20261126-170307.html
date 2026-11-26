@@ -1,0 +1,206 @@
+### 分析过程
+1.  **知识点提取**：本题考查斜面上静止物体的受力平衡、重力的正交分解、静摩擦力与支持力的动态变化分析
+2.  **核心逻辑**：
+    - 重力正交分解：沿斜面向下分力为mg sinθ，垂直斜面向下分力为mg cosθ
+    - 静止物体受力平衡：静摩擦力f与重力沿斜面向下的分力平衡，支持力N与重力垂直斜面的分力平衡，即f = mg sinθ，N = mg cosθ
+    - 动态变化：当斜面倾角θ缓慢减小时，sinθ减小、cosθ增大，因此静摩擦力f减小，支持力N（及木块对斜面的压力）增大
+
+---
+
+### 完整HTML动画代码
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>斜面木块受力分析动画</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Microsoft Yahei', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        .canvas-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        }
+        .btn {
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+    </style>
+</head>
+<body class="p-6">
+    <div class="max-w-5xl mx-auto">
+        <!-- 标题区 -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">斜面静止木块受力分析</h1>
+            <p class="text-gray-600">知识点：重力正交分解、共点力平衡、动态受力变化</p>
+        </div>
+
+        <!-- 题目与答案区 -->
+        <div class="bg-white rounded-xl p-6 mb-6 shadow-md">
+            <h3 class="font-bold text-lg text-gray-800 mb-3">原题内容</h3>
+            <p class="text-gray-700 mb-4">静止在斜面上的木块，关于其受力与斜面倾角变化的影响，下列说法正确的是：
+                <br>A. 木块受到的摩擦力为mg
+                <br>B. 木块对斜面的压力为mg
+                <br>C. 斜面倾角θ缓慢减小时，木块受到的静摩擦力减小
+                <br>D. 斜面倾角θ缓慢减小时，木块对斜面的压力减小
+            </p>
+            <h3 class="font-bold text-lg text-gray-800 mb-2">正确答案：C</h3>
+            <p class="text-gray-600">解析：静止木块受力平衡，静摩擦力f=mg sinθ，支持力N=mg cosθ；θ减小时sinθ减小、cosθ增大，因此摩擦力减小、压力增大。</p>
+        </div>
+
+        <!-- 动画区 -->
+        <div class="canvas-container p-6 mb-6">
+            <canvas id="forceCanvas" width="800" height="450"></canvas>
+            
+            <!-- 控制按钮 -->
+            <div class="flex justify-center gap-4 mt-6 flex-wrap">
+                <button id="decreaseBtn" class="btn bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-medium">
+                    减小倾角θ
+                </button>
+                <button id="resetBtn" class="btn bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg font-medium">
+                    重置倾角
+                </button>
+                <button id="increaseBtn" class="btn bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-medium">
+                    增大倾角θ
+                </button>
+            </div>
+
+            <!-- 数值显示 -->
+            <div class="mt-6 grid grid-cols-3 gap-4 text-center">
+                <div class="bg-blue-50 p-4 rounded-lg">
+                    <p class="text-gray-600">当前倾角θ</p>
+                    <p id="thetaVal" class="text-2xl font-bold text-blue-600">30°</p>
+                </div>
+                <div class="bg-green-50 p-4 rounded-lg">
+                    <p class="text-gray-600">静摩擦力f</p>
+                    <p id="fVal" class="text-2xl font-bold text-green-600">0.5mg</p>
+                </div>
+                <div class="bg-orange-50 p-4 rounded-lg">
+                    <p class="text-gray-600">支持力N</p>
+                    <p id="nVal" class="text-2xl font-bold text-orange-600">0.87mg</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('forceCanvas');
+        const ctx = canvas.getContext('2d');
+        let theta = 30; // 初始角度 单位：度
+        const g = 100; // 重力大小的可视化比例
+
+        function drawArrow(fromX, fromY, toX, toY, color, label) {
+            const headLen = 12;
+            const angle = Math.atan2(toY - fromY, toX - fromX);
+            
+            ctx.strokeStyle = color;
+            ctx.fillStyle = color;
+            ctx.lineWidth = 3;
+
+            // 画线段
+            ctx.beginPath();
+            ctx.moveTo(fromX, fromY);
+            ctx.lineTo(toX, toY);
+            ctx.stroke();
+
+            // 画箭头
+            ctx.beginPath();
+            ctx.moveTo(toX, toY);
+            ctx.lineTo(toX - headLen * Math.cos(angle - Math.PI/6), toY - headLen * Math.sin(angle - Math.PI/6));
+            ctx.lineTo(toX - headLen * Math.cos(angle + Math.PI/6), toY - headLen * Math.sin(angle + Math.PI/6));
+            ctx.closePath();
+            ctx.fill();
+
+            // 标签
+            ctx.font = 'bold 16px Microsoft Yahei';
+            ctx.fillText(label, toX + 10, toY - 10);
+        }
+
+        function draw() {
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            const rad = theta * Math.PI / 180;
+            const baseX = 150, baseY = 350;
+            const slopeLen = 500;
+            const endX = baseX + slopeLen * Math.cos(rad);
+            const endY = baseY - slopeLen * Math.sin(rad);
+
+            // 画斜面
+            ctx.beginPath();
+            ctx.moveTo(baseX, baseY);
+            ctx.lineTo(endX, endY);
+            ctx.lineTo(endX, baseY);
+            ctx.closePath();
+            ctx.fillStyle = '#e2e8f0';
+            ctx.fill();
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // 木块位置
+            const blockX = baseX + 250 * Math.cos(rad);
+            const blockY = baseY - 250 * Math.sin(rad);
+            // 画木块
+            ctx.fillStyle = '#3b82f6';
+            ctx.fillRect(blockX - 30, blockY - 30, 60, 60);
+            ctx.strokeStyle = '#1d4ed8';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(blockX - 30, blockY - 30, 60, 60);
+
+            // 力的绘制
+            const centerX = blockX, centerY = blockY;
+            // 重力mg 竖直向下
+            drawArrow(centerX, centerY, centerX, centerY + g, '#ef4444', 'mg');
+            // 重力分力 沿斜面向下
+            const fLen = g * Math.sin(rad);
+            drawArrow(centerX, centerY, centerX + fLen * Math.cos(rad), centerY + fLen * Math.sin(rad), '#22c55e', 'f=mg sinθ');
+            // 重力分力 垂直斜面向下
+            const nLen = g * Math.cos(rad);
+            drawArrow(centerX, centerY, centerX + nLen * Math.sin(rad), centerY - nLen * Math.cos(rad), '#f97316', 'N=mg cosθ');
+
+            // 更新数值显示
+            document.getElementById('thetaVal').textContent = theta.toFixed(0) + '°';
+            document.getElementById('fVal').textContent = (Math.sin(rad)).toFixed(2) + 'mg';
+            document.getElementById('nVal').textContent = (Math.cos(rad)).toFixed(2) + 'mg';
+        }
+
+        // 按钮事件
+        document.getElementById('decreaseBtn').addEventListener('click', ()=>{
+            if(theta > 5) {
+                theta -= 5;
+                draw();
+            }
+        });
+        document.getElementById('resetBtn').addEventListener('click', ()=>{
+            theta = 30;
+            draw();
+        });
+        document.getElementById('increaseBtn').addEventListener('click', ()=>{
+            if(theta < 80) {
+                theta += 5;
+                draw();
+            }
+        });
+
+        // 初始绘制
+        draw();
+    </script>
+</body>
+</html>
+```
+
+---
+
+### 运行说明
+你可以直接将上述代码复制保存为`.html`文件，用浏览器打开即可运行：
+1.  页面直观展示斜面上静止木块的受力情况，包含重力、沿斜面的静摩擦力、垂直斜面的支持力的可视化箭头
+2.  通过三个控制按钮可以调整斜面倾角，实时观察静摩擦力、支持力的数值变化
+3.  页面内置完整的题目、知识点说明与正确答案，可直接用于课堂演示或自主学习
