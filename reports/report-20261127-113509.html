@@ -1,0 +1,222 @@
+### 题目分析
+本题考查**斜面上静止物体的受力平衡与力的分解**，核心知识点：
+1.  斜面上物体的重力分解：沿斜面向下的分力为mg sinθ，垂直斜面向下的分力为mg cosθ
+2.  静止物体的受力平衡：静摩擦力与重力沿斜面向下的分力平衡，支持力与重力垂直斜面的分力平衡
+3.  静摩擦力、支持力随斜面倾角θ的变化规律：θ减小时，sinθ减小、cosθ增大，因此静摩擦力减小、支持力增大
+
+---
+
+### 对应HTML动画代码
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>斜面木块受力分析动画</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .force-arrow {
+            stroke-width: 3;
+            fill: none;
+            marker-end: url(#arrowhead);
+        }
+        .axis-line {
+            stroke: #666;
+            stroke-width: 2;
+        }
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+    </style>
+</head>
+<body class="p-6 font-sans">
+    <div class="max-w-5xl mx-auto">
+        <!-- 标题与原题 -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+            <h1 class="text-2xl font-bold text-gray-800 mb-4">斜面静止木块受力分析演示</h1>
+            <div class="bg-blue-50 p-4 rounded-lg mb-4">
+                <h3 class="font-semibold text-blue-800">原题核心：</h3>
+                <p class="text-gray-700">倾角为θ的斜面上静止一质量为m的木块，分析木块的受力、各力大小随θ的变化规律</p>
+            </div>
+            <div class="bg-green-50 p-4 rounded-lg">
+                <h3 class="font-semibold text-green-800">正确结论：</h3>
+                <p class="text-gray-700">静摩擦力f = mg sinθ，支持力N = mg cosθ；θ缓慢减小时，静摩擦力减小、木块对斜面的压力增大</p>
+            </div>
+        </div>
+
+        <!-- 动画区域 -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold text-gray-800">受力动画演示</h2>
+                <div class="flex gap-3">
+                    <button id="decreaseTheta" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">减小倾角θ</button>
+                    <button id="resetTheta" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition">重置倾角</button>
+                </div>
+            </div>
+            <svg id="forceSvg" width="700" height="450" class="mx-auto border border-gray-200 rounded-lg bg-gray-50">
+                <defs>
+                    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                        <polygon points="0 0, 10 3.5, 0 7" fill="currentColor"/>
+                    </marker>
+                </defs>
+                <!-- 斜面 -->
+                <line id="slope" x1="100" y1="350" x2="600" y2="350" stroke="#333" stroke-width="4"/>
+                <!-- 木块 -->
+                <rect id="block" x="380" y="300" width="60" height="40" fill="#ef4444" rx="4"/>
+                <!-- 力的箭头 -->
+                <line id="gravity" class="force-arrow text-purple-600"/>
+                <line id="gPara" class="force-arrow text-orange-500"/>
+                <line id="gPerp" class="force-arrow text-cyan-500"/>
+                <line id="friction" class="force-arrow text-green-600"/>
+                <line id="support" class="force-arrow text-blue-600"/>
+                <!-- 标注文本 -->
+                <text id="labelG" fill="#7c3aed" font-size="16" font-weight="bold"></text>
+                <text id="labelGPara" fill="#f97316" font-size="16" font-weight="bold"></text>
+                <text id="labelGPerp" fill="#06b6d4" font-size="16" font-weight="bold"></text>
+                <text id="labelF" fill="#16a34a" font-size="16" font-weight="bold"></text>
+                <text id="labelN" fill="#2563eb" font-size="16" font-weight="bold"></text>
+                <text id="thetaLabel" fill="#333" font-size="18" font-weight="bold"></text>
+            </svg>
+            <!-- 实时参数 -->
+            <div class="grid grid-cols-3 gap-4 mt-4">
+                <div class="bg-gray-100 p-3 rounded-lg text-center">
+                    <p class="text-gray-600">当前倾角θ</p>
+                    <p id="thetaValue" class="text-xl font-bold text-gray-800">37°</p>
+                </div>
+                <div class="bg-gray-100 p-3 rounded-lg text-center">
+                    <p class="text-gray-600">静摩擦力f</p>
+                    <p id="fValue" class="text-xl font-bold text-green-600">0.6mg</p>
+                </div>
+                <div class="bg-gray-100 p-3 rounded-lg text-center">
+                    <p class="text-gray-600">支持力N</p>
+                    <p id="nValue" class="text-xl font-bold text-blue-600">0.8mg</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 知识点说明 -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-3">核心知识点总结</h3>
+            <ul class="list-disc pl-5 text-gray-700 space-y-2">
+                <li>重力分解遵循平行四边形定则：沿斜面分力mg sinθ，垂直斜面分力mg cosθ</li>
+                <li>静止木块受力平衡：静摩擦力与沿斜面向下的分力等大反向，支持力与垂直斜面向下的分力等大反向</li>
+                <li>倾角θ变化规律：θ减小 → sinθ减小、cosθ增大 → 静摩擦力减小、支持力（木块对斜面的压力）增大</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let thetaDeg = 37;
+        const svg = document.getElementById('forceSvg');
+        const block = document.getElementById('block');
+        const slope = document.getElementById('slope');
+        const gravity = document.getElementById('gravity');
+        const gPara = document.getElementById('gPara');
+        const gPerp = document.getElementById('gPerp');
+        const friction = document.getElementById('friction');
+        const support = document.getElementById('support');
+
+        function updateScene() {
+            const theta = thetaDeg * Math.PI / 180;
+            const slopeLen = 500;
+            const slopeTopY = 350 - slopeLen * Math.sin(theta);
+            slope.setAttribute('x2', 100 + slopeLen * Math.cos(theta));
+            slope.setAttribute('y2', 350 - slopeLen * Math.sin(theta));
+
+            // 木块位置
+            const blockCenterX = 380 + 30;
+            const blockCenterY = 350 - 20 - 300 * Math.sin(theta);
+            block.setAttribute('x', blockCenterX - 30);
+            block.setAttribute('y', blockCenterY - 20);
+
+            // 力的长度比例
+            const scale = 1.5;
+            const gLen = 100 * scale;
+            const gParaLen = gLen * Math.sin(theta);
+            const gPerpLen = gLen * Math.cos(theta);
+
+            // 重力
+            gravity.setAttribute('x1', blockCenterX);
+            gravity.setAttribute('y1', blockCenterY);
+            gravity.setAttribute('x2', blockCenterX);
+            gravity.setAttribute('y2', blockCenterY + gLen);
+            document.getElementById('labelG').setAttribute('x', blockCenterX + 10);
+            document.getElementById('labelG').setAttribute('y', blockCenterY + gLen/2);
+            document.getElementById('labelG').textContent = 'mg';
+
+            // 重力分力-沿斜面向下
+            gPara.setAttribute('x1', blockCenterX);
+            gPara.setAttribute('y1', blockCenterY);
+            gPara.setAttribute('x2', blockCenterX + gParaLen * Math.cos(theta));
+            gPara.setAttribute('y2', blockCenterY + gParaLen * Math.sin(theta));
+            document.getElementById('labelGPara').setAttribute('x', blockCenterX + (gParaLen * Math.cos(theta))/2 + 10);
+            document.getElementById('labelGPara').setAttribute('y', blockCenterY + (gParaLen * Math.sin(theta))/2);
+            document.getElementById('labelGPara').textContent = 'mg sinθ';
+
+            // 重力分力-垂直斜面向下
+            gPerp.setAttribute('x1', blockCenterX);
+            gPerp.setAttribute('y1', blockCenterY);
+            gPerp.setAttribute('x2', blockCenterX - gPerpLen * Math.sin(theta));
+            gPerp.setAttribute('y2', blockCenterY + gPerpLen * Math.cos(theta));
+            document.getElementById('labelGPerp').setAttribute('x', blockCenterX - (gPerpLen * Math.sin(theta))/2 - 50);
+            document.getElementById('labelGPerp').setAttribute('y', blockCenterY + (gPerpLen * Math.cos(theta))/2);
+            document.getElementById('labelGPerp').textContent = 'mg cosθ';
+
+            // 静摩擦力（与沿斜面向下分力反向）
+            friction.setAttribute('x1', blockCenterX);
+            friction.setAttribute('y1', blockCenterY);
+            friction.setAttribute('x2', blockCenterX - gParaLen * Math.cos(theta));
+            friction.setAttribute('y2', blockCenterY - gParaLen * Math.sin(theta));
+            document.getElementById('labelF').setAttribute('x', blockCenterX - (gParaLen * Math.cos(theta))/2 - 30);
+            document.getElementById('labelF').setAttribute('y', blockCenterY - (gParaLen * Math.sin(theta))/2);
+            document.getElementById('labelF').textContent = 'f';
+
+            // 支持力（与垂直斜面向下分力反向）
+            support.setAttribute('x1', blockCenterX);
+            support.setAttribute('y1', blockCenterY);
+            support.setAttribute('x2', blockCenterX + gPerpLen * Math.sin(theta));
+            support.setAttribute('y2', blockCenterY - gPerpLen * Math.cos(theta));
+            document.getElementById('labelN').setAttribute('x', blockCenterX + (gPerpLen * Math.sin(theta))/2 + 10);
+            document.getElementById('labelN').setAttribute('y', blockCenterY - (gPerpLen * Math.cos(theta))/2);
+            document.getElementById('labelN').textContent = 'N';
+
+            // 倾角标注
+            document.getElementById('thetaLabel').setAttribute('x', 120);
+            document.getElementById('thetaLabel').setAttribute('y', 340);
+            document.getElementById('thetaLabel').textContent = `θ = ${thetaDeg}°`;
+
+            // 实时数值更新
+            document.getElementById('thetaValue').textContent = `${thetaDeg}°`;
+            document.getElementById('fValue').textContent = `${Math.sin(theta).toFixed(1)}mg`;
+            document.getElementById('nValue').textContent = `${Math.cos(theta).toFixed(1)}mg`;
+        }
+
+        // 按钮事件
+        document.getElementById('decreaseTheta').addEventListener('click', () => {
+            if(thetaDeg > 10) {
+                thetaDeg -= 5;
+                updateScene();
+            }
+        });
+        document.getElementById('resetTheta').addEventListener('click', () => {
+            thetaDeg = 37;
+            updateScene();
+        });
+
+        // 初始化
+        updateScene();
+    </script>
+</body>
+</html>
+```
+
+---
+
+### 运行说明
+你可以将上述代码复制保存为`.html`文件，直接在浏览器中打开即可运行：
+1.  页面会自动展示倾角为37°时木块的受力情况，包含重力、重力的两个分力、静摩擦力、支持力的可视化箭头
+2.  点击「减小倾角θ」按钮可逐步降低斜面倾角，实时观察各力的大小变化
+3.  点击「重置倾角」可恢复到初始37°的状态
+4.  页面底部会同步更新当前倾角、静摩擦力、支持力的数值，直观验证θ减小时静摩擦力减小、支持力增大的规律
